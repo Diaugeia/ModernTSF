@@ -7,7 +7,7 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Models: 178](https://img.shields.io/badge/models-178-orange.svg)](docs/en/models.md)
+[![Models: 198](https://img.shields.io/badge/models-198-orange.svg)](docs/en/models.md)
 [![Real-time tracks: 6](https://img.shields.io/badge/real--time%20tracks-6-purple.svg)](docs/en/realtime.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -41,7 +41,7 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | Module | What it does |
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
-| 🧩 **Code & interface** | 178 methods as peers in one flat catalog, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
+| 🧩 **Code & interface** | 198 methods as peers in one flat catalog, composed from 47 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
 | 🗃️ **Data** | 89 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
 | ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |

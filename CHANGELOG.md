@@ -32,6 +32,20 @@ real-time evaluation.
   and implementation with independent verification; community requests through
   the new-model issue form), real-time forecast checks in `web-validate`.
 - `realtime` optional dependency group (`akshare`, `requests`, `pyarrow`).
+- 20 new methods (178 → 198) added through the paper-to-model workflow:
+  SDMixer, SEMixer, LSINet, Dualformer, DPWMixer, AWEMixer, TimeExpert,
+  WDformer, TQNet, TimePro, Gateformer, CANet, ReFocus, FreqMoE, SWIFT,
+  Sensorformer, VisiFold, Extralonger, ST-SSDL, RAGC.
+- 23 new shared components (24 → 47), extracted from the new methods and from
+  existing models so that methods can be recombined: e.g. `wavelet`,
+  `mixer_block`, `gated_dilated_conv`, `adaptive_node_embedding_adjacency`,
+  `topk_expert_router`, `last_value_center`, `freq_band_moe`,
+  `periodic_query_bank`, `node_visibility`, `deviation_memory`. 26 existing
+  models now consume shared components; equivalence tests pin their state_dict,
+  outputs, and gradients to the pre-refactor behavior.
+- UltraTraffic PeMS datasets (`ultratraffic_st` / `ultratraffic_ts`): hourly flow
+  for Caltrans Districts 3, 4, 7, 8 (2003–2023) with continual-learning splits;
+  9 presets (89 in total) and real-time tracks `traffic_pems_{ba,la,sac,sb}`.
 
 ### Changed
 
@@ -44,6 +58,14 @@ real-time evaluation.
 - The site pipeline validates with the TSF-Core pydantic contracts; its
   hand-written `contract.schema.json` and the duplicate aggregator are removed.
 - `build_model_meta.py` reads the current model-card fields.
+
+### Fixed
+
+- `tsf model add` compared a set of declared components with a tuple of imported
+  ones, so admitting any model that declares components always failed.
+- Scaffold templates (`tsf model scaffold`, `tsf dataset add`) generated imports
+  from the removed top-level packages.
+- Interrupted stock fetches now resume from a per-symbol cache.
 
 ## [0.8.0] — 2026-09-04
 
