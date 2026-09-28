@@ -31,6 +31,7 @@ Execution:
 Project and publishing:
     init             scaffold a standalone project on the installed package
     hub              pack, push, list, or pull weights on the Hugging Face Hub
+    realtime         rolling real-time tracks: releases, rounds, forecasts, scores
 
 Records and integration:
     research         manage lightweight research rounds
@@ -113,6 +114,10 @@ def main(argv: list[str] | None = None) -> int:
         from moderntsf.scaffold import main as init_main
 
         return init_main(rest)
+    if command == "realtime":
+        from moderntsf.realtime.cli import main as realtime_main
+
+        return realtime_main(rest)
     if command == "hub":
         from moderntsf.benchmark.commands.hub import hub_command
 

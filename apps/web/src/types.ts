@@ -4,7 +4,10 @@
 //
 // Metric abbreviations (MSE/MAE/Sharpe/Win Rate…) are intentionally NOT here —
 // they render as fixed English labels in the components.
+import type { RollingCopy } from "./rolling-rounds";
+
 export interface LeaderboardDict {
+  rolling?: RollingCopy;
   title: string;
   lede: string;
   updated: string;

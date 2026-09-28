@@ -1,0 +1,50 @@
+"""Replay the rolling protocol over historical weeks.
+
+Each replayed round is opened at a past weekly cutoff on a store that already
+contains the following weeks, forecast by baselines (and optionally catalog
+models trained only on data up to that cutoff), and scored immediately. The
+rounds are written to a separate root so they never mix with live rounds.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pandas as pd
+
+from moderntsf.realtime import rounds as R
+from moderntsf.realtime.baselines import run_baselines
+from moderntsf.realtime.store import PanelStore
+from moderntsf.realtime.tracks import TrackSpec
+
+REPLAY_ROOT = Path("work_dirs") / "_realtime_replay"
+
+
+def weekly_cutoffs(store: PanelStore, track: TrackSpec, end: pd.Timestamp, weeks: int) -> list[pd.Timestamp]:
+    """Last observed timestamp before each of the ``weeks`` Mondays ending at ``end``."""
+    index = store.read(start=end - pd.Timedelta(weeks=weeks + 2), end=end).dropna(how="all").index
+    mondays = pd.date_range(end=end, periods=weeks, freq="W-MON")
+    return [index[index < monday].max() for monday in mondays if (index < monday).any()]
+
+
+def replay(track: TrackSpec, store: PanelStore, *, end: pd.Timestamp, weeks: int,
+           models: list[str] | None = None, root: Path = REPLAY_ROOT,
+           work_dir: Path = Path("work_dirs") / "_realtime_replay_runs") -> dict:
+    for cutoff in weekly_cutoffs(store, track, end, weeks):
+        opened = (cutoff + pd.Timedelta(hours=1)).tz_localize(track.tz)
+        spec = R.open_round(track, store, now=opened.to_pydatetime(), root=root, cutoff=cutoff)
+        existing = {p.stem for p in (R.round_dir(track.id, spec.round_id, root) / "forecasts").glob("*.json")}
+        for submission in run_baselines(spec, store, track):
+            if submission.model not in existing:
+                R.write_forecast(submission.model_copy(update={"submitted_at": spec.opened_at}), spec, root)
+        for model in models or []:
+            if model in existing:
+                continue
+            from moderntsf.realtime.forecast import forecast_with_model
+
+            submission = forecast_with_model(spec, store, track, model, work_dir)
+            R.write_forecast(submission.model_copy(update={"submitted_at": spec.opened_at}), spec, root)
+        scores = R.score_round(spec, store, track.min_coverage, root)
+        print(f"{track.id} {spec.round_id}: cutoff {spec.cutoff} "
+              f"{'scored ' + str(len(scores)) if scores else 'incomplete truth'}")
+    return R.track_summary(track.id, root)

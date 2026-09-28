@@ -1,8 +1,9 @@
 """TSF-Core — the contract layer shared by ModernTSF (producer) and ModernTSF Leaderboard (consumer).
 
 This is a dependency-light pydantic package (pydantic + stdlib only). It defines
-the three contract models — :class:`DatasetSpec`, :class:`RunRecord`,
-:class:`SubmissionReport` — and exports them to JSON Schema, which is the *only*
+the contract models — :class:`DatasetSpec`, :class:`RunRecord`,
+:class:`SubmissionReport`, and the real-time :class:`RoundSpec`,
+:class:`ForecastSubmission`, and :class:`RoundScore` — and exports them to JSON Schema, which is the *only*
 artifact ModernTSF Leaderboard reads. Do not import ``benchmark`` / ``data`` / ``models`` /
 ``torch`` / ``numpy`` / ``datasets`` from here: that boundary is what keeps the
 consumer side free of the ML stack.
@@ -19,6 +20,7 @@ from .constants import (
 )
 from .dataset_spec import DatasetSpec
 from .export import export_schemas, iter_models
+from .realtime import ForecastSubmission, RoundScore, RoundSpec
 from .run_record import (
     HorizonResult,
     MetricSet,

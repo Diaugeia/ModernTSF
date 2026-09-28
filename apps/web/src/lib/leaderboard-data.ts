@@ -34,6 +34,20 @@ export interface TrackBlock {
   datasets: Record<string, DatasetBlock>;
 }
 
+export interface RollingMethod {
+  model: string;
+  rounds: number;
+  mean_mse: number;
+  mean_rank: number;
+}
+
+export interface RollingSummary {
+  track: string;
+  scored_rounds: string[];
+  methods: RollingMethod[];
+  rank_stability: { consecutive_kendall_tau: number[]; mean: number | null };
+}
+
 export interface LeaderboardData {
   schema_version: string;
   generated_at: string;
@@ -41,4 +55,6 @@ export interface LeaderboardData {
   n_submissions: number;
   n_rejected: number;
   tracks: Record<string, TrackBlock>;
+  /** Rolling real-time rounds, keyed by real-time track id (schema >= 1.1). */
+  realtime?: Record<string, RollingSummary>;
 }

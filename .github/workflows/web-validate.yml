@@ -13,11 +13,40 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install --quiet jsonschema
+      - run: pip install --quiet jsonschema "pydantic==2.12.5" pandas pyarrow numpy
       - name: Validate contract + ModernTSF binding
         working-directory: apps/web
         run: python3 pipeline/validate.py
+      - name: Validate real-time forecast submissions
+        env:
+          PYTHONPATH: src
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          # Trusted arrival time: when GitHub last saw this PR change. A forecast
+          # pushed after a round's deadline therefore fails even if its
+          # self-reported submitted_at is earlier.
+          RECEIVED_AT: ${{ github.event.pull_request.updated_at }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          changed=$(git diff --name-only "$BASE" "$HEAD" -- 'apps/web/submissions/realtime/')
+          [ -z "$changed" ] && { echo "no real-time changes"; exit 0; }
+          forecasts=$(echo "$changed" | grep -E '/rounds/[^/]+/forecasts/[^/]+\.json$' || true)
+          protected=$(echo "$changed" | grep -E '/rounds/[^/]+/(round|scores)\.json$' || true)
+          if [ -n "$protected" ] && [ "$AUTHOR" != "github-actions[bot]" ]; then
+            echo "::error::round.json and scores.json are written only by the weekly workflow:"
+            echo "$protected"
+            exit 1
+          fi
+          existing=$(for f in $forecasts; do [ -f "$f" ] && echo "$f"; done)
+          [ -z "$existing" ] && exit 0
+          if [ "$AUTHOR" = "github-actions[bot]" ]; then
+            python -m moderntsf.realtime validate $existing
+          else
+            python -m moderntsf.realtime validate $existing --received-at "$RECEIVED_AT"
+          fi

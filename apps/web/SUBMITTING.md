@@ -84,6 +84,38 @@ Curated blocks are preserved on every rebuild (see `overlay_curated` in
 `pipeline/build_leaderboard.py`). To make them submission-driven, add the
 corresponding `submission.json` files and they'll replace the curated rows.
 
+## Real-time rounds
+
+Real-time tracks (`stock_hs300`, `traffic_pems_sb`, `air_openaq_cn`) are
+evaluated in weekly **rounds**. Each Monday the `realtime-weekly` workflow
+releases new data, scores rounds whose target window is now observed, and opens
+a new round:
+
+```
+submissions/realtime/<track>/rounds/<round_id>/
+    round.json              # the round: cutoff, target timestamps, channels, deadline
+    forecasts/<model>.json  # one ForecastSubmission per method
+    scores.json             # written by the workflow once the truth is released
+```
+
+To take part, open a pull request that adds `forecasts/<YourModel>.json` for an
+open round **before its `deadline`**. The file is a `ForecastSubmission`
+(`src/moderntsf/tsf_core/schema/forecast_submission.schema.json`):
+`predictions` has shape `(len(target_timestamps), len(channels))` in the
+round's raw units. CI checks the shape and rejects the file if the pull request
+was last updated after the deadline, so forecasts always precede their truth.
+Only the workflow may write `round.json` and `scores.json`.
+
+Catalog models can produce a forecast directly (GPU recommended):
+
+```bash
+uv run tsf realtime forecast --track traffic_pems_sb --model DLinear
+```
+
+Scores use MSE/MAE on channels z-scored with statistics frozen at the round's
+cutoff. The site shows the mean rank over scored rounds and rank stability
+(Kendall's tau between consecutive rounds).
+
 ## Build & validate locally
 
 ```bash

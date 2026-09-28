@@ -16,6 +16,7 @@ from pathlib import Path
 
 from .constants import SCHEMA_VERSION
 from .dataset_spec import DatasetSpec
+from .realtime import ForecastSubmission, RoundScore, RoundSpec
 from .run_record import RunRecord
 from .submission import SubmissionReport
 
@@ -31,6 +32,9 @@ def iter_models() -> list[tuple[str, type]]:
         ("dataset_spec", DatasetSpec),
         ("run_record", RunRecord),
         ("submission_report", SubmissionReport),
+        ("round_spec", RoundSpec),
+        ("forecast_submission", ForecastSubmission),
+        ("round_score", RoundScore),
     ]
 
 

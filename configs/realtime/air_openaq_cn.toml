@@ -1,0 +1,24 @@
+# Hourly PM2.5 from government monitors in China, aggregated by OpenAQ v3.
+[track]
+id = "air_openaq_cn"
+tz = "UTC"
+title = "OpenAQ China hourly PM2.5"
+mode = "spatiotemporal"
+freq = "h"
+seq_len = 168
+horizon = 24
+submission_hours = 24
+seasonal_period = 24
+min_coverage = 0.7
+history_days = 365
+
+[source]
+kind = "openaq"
+country = "CN"
+parameter = "pm25"
+max_sensors = 200
+credentials = ["OPENAQ_API_KEY"]
+
+[bootstrap]
+kind = "source"             # no archive: backfill from the API
+days = 365

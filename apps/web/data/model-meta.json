@@ -18,37 +18,37 @@
     "year": 2026
   },
   "ARIMATS": {
-    "arxiv": null,
+    "arxiv": "https://search.worldcat.org/title/Time-series-analysis-forecasting-and-control/oclc/1422106714",
     "paper": "Time Series Analysis: Forecasting and Control",
     "venue": "Holden-Day (book) / N/A (classical baseline)",
     "year": 1970
   },
   "ASTGCN": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1609/aaai.v33i01.3301922",
     "paper": "Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting",
     "venue": "AAAI 2019",
     "year": 2019
   },
   "AirCade": {
-    "arxiv": "https://arxiv.org/abs/2505.20119",
+    "arxiv": "https://doi.org/10.1109/ICASSP49660.2025.11099015",
     "paper": "Spatiotemporal Causal Decoupling Model for Air Quality Forecasting",
-    "venue": "arXiv preprint",
+    "venue": "ICASSP 2025",
     "year": 2025
   },
   "AirDualODE": {
-    "arxiv": "https://arxiv.org/abs/2410.19892",
+    "arxiv": "https://openreview.net/forum?id=kOJf7Dklyv",
     "paper": "Air Quality Prediction with Physics-Guided Dual Neural ODEs in Open Systems",
     "venue": "ICLR 2025",
     "year": 2025
   },
   "AirFormer": {
-    "arxiv": "https://arxiv.org/abs/2211.15979",
+    "arxiv": "https://doi.org/10.1609/aaai.v37i12.26676",
     "paper": "AirFormer: Predicting Nationwide Air Quality in China with Transformers",
     "venue": "AAAI 2023",
     "year": 2023
   },
   "AirPhyNet": {
-    "arxiv": "https://arxiv.org/abs/2402.03784",
+    "arxiv": "https://openreview.net/forum?id=JW3jTjaaAB",
     "paper": "AirPhyNet: Harnessing Physics-Guided Neural Networks for Air Quality Prediction",
     "venue": "ICLR 2024",
     "year": 2024
@@ -66,22 +66,22 @@
     "year": 2026
   },
   "AutoRegressiveTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://search.worldcat.org/title/1422106714",
+    "paper": "Time Series Analysis: Forecasting and Control",
+    "venue": "Holden-Day",
+    "year": 1970
   },
   "Autoformer": {
-    "arxiv": "https://arxiv.org/abs/2106.13008",
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2021/hash/bcc0d400288793e8bdcd7c19a8ac0c2b-Abstract.html",
     "paper": "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting",
     "venue": "NeurIPS 2021",
     "year": 2021
   },
   "BayesianRidgeTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1162/neco.1992.4.3.415",
+    "paper": "Bayesian Interpolation",
+    "venue": "Neural Computation",
+    "year": 1992
   },
   "BiMamba": {
     "arxiv": "https://arxiv.org/abs/2404.15772",
@@ -90,13 +90,13 @@
     "year": 2024
   },
   "BiST": {
-    "arxiv": null,
+    "arxiv": "https://www.vldb.org/pvldb/vol18/p1663-wang.pdf",
     "paper": "BiST: A Lightweight and Efficient Bi-Directional Model for Spatiotemporal Prediction",
     "venue": "PVLDB 2025",
     "year": 2025
   },
   "BigST": {
-    "arxiv": null,
+    "arxiv": "https://www.vldb.org/pvldb/vol17/p1081-han.pdf",
     "paper": "BigST: Linear Complexity Spatio-Temporal Graph Neural Network for Traffic Forecasting on Large-Scale Road Networks",
     "venue": "PVLDB 2024",
     "year": 2024
@@ -108,7 +108,7 @@
     "year": 2024
   },
   "CATS": {
-    "arxiv": "https://arxiv.org/abs/2405.16877",
+    "arxiv": "https://openreview.net/forum?id=iN43sJoib7",
     "paper": "Are Self-Attentions Effective for Time Series Forecasting?",
     "venue": "NeurIPS 2024",
     "year": 2024
@@ -116,12 +116,18 @@
   "CMoS": {
     "arxiv": "https://arxiv.org/abs/2505.19090",
     "paper": "CMoS: Rethinking Time Series Prediction Through the Lens of Chunk-wise Spatial Correlations",
-    "venue": "arXiv preprint",
+    "venue": "ICML 2025",
     "year": 2025
   },
   "COSA": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/forum?id=L7Z5wBMPrW",
     "paper": "COSA: Context-aware Output-Space Adapter for Test-Time Adaptation in Time Series Forecasting",
+    "venue": "ICLR 2026",
+    "year": 2026
+  },
+  "CRIB": {
+    "arxiv": "https://arxiv.org/abs/2509.23494",
+    "paper": "Revisiting Multivariate Time Series Forecasting with Missing Values",
     "venue": "ICLR 2026",
     "year": 2026
   },
@@ -132,7 +138,7 @@
     "year": 2018
   },
   "CauAir": {
-    "arxiv": null,
+    "arxiv": "https://www.ijcai.org/proceedings/2025/353",
     "paper": "Causal Learning Meet Covariates: Empowering Lightweight and Effective Nationwide Air Quality Forecasting",
     "venue": "IJCAI 2025",
     "year": 2025
@@ -144,7 +150,7 @@
     "year": 2026
   },
   "CrossGNN": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/9278abf072b58caf21d48dd670b4c721-Abstract-Conference.html",
     "paper": "CrossGNN: Confronting Noisy Multivariate Time Series Via Cross Interaction Refinement",
     "venue": "NeurIPS 2023",
     "year": 2023
@@ -156,7 +162,7 @@
     "year": 2025
   },
   "Crossformer": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/forum?id=vSVLM2j9eie",
     "paper": "Crossformer: Transformer Utilizing Cross-Dimension Dependency for Multivariate Time Series Forecasting",
     "venue": "ICLR 2023",
     "year": 2023
@@ -168,25 +174,25 @@
     "year": 2024
   },
   "D2STGNN": {
-    "arxiv": "https://arxiv.org/abs/2206.09112",
+    "arxiv": "https://www.vldb.org/pvldb/vol15/p2733-shao.pdf",
     "paper": "Decoupled Dynamic Spatial-Temporal Graph Neural Network for Traffic Forecasting",
     "venue": "VLDB 2022",
     "year": 2022
   },
   "DCRNN": {
-    "arxiv": "https://arxiv.org/abs/1707.01926",
+    "arxiv": "https://openreview.net/forum?id=SJiHXGWAZ",
     "paper": "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting",
     "venue": "ICLR 2018",
     "year": 2018
   },
   "DFDGCN": {
-    "arxiv": "https://arxiv.org/abs/2312.11933",
+    "arxiv": "https://doi.org/10.1109/ICASSP48485.2024.10446144",
     "paper": "Dynamic Frequency Domain Graph Convolutional Network for Traffic Forecasting",
-    "venue": "arXiv preprint",
-    "year": 2023
+    "venue": "ICASSP 2024",
+    "year": 2024
   },
   "DGCRN": {
-    "arxiv": "https://arxiv.org/abs/2104.14917",
+    "arxiv": "https://doi.org/10.1145/3532611",
     "paper": "Dynamic Graph Convolutional Recurrent Network for Traffic Prediction: Benchmark and Solution",
     "venue": "ACM TKDD 2023",
     "year": 2023
@@ -204,7 +210,7 @@
     "year": 2023
   },
   "DSTAGNN": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.mlr.press/v162/lan22a.html",
     "paper": "DSTAGNN: Dynamic Spatial-Temporal Aware Graph Neural Network for Traffic Flow Forecasting",
     "venue": "ICML 2022",
     "year": 2022
@@ -222,10 +228,10 @@
     "year": 2025
   },
   "DecisionTreeTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://search.worldcat.org/title/1422106714",
+    "paper": "Classification and Regression Trees",
+    "venue": "Wadsworth, 1984",
+    "year": 1984
   },
   "DeepAR": {
     "arxiv": "https://arxiv.org/abs/1704.04110",
@@ -234,7 +240,7 @@
     "year": 2020
   },
   "DeepAir": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1145/3219819.3219822",
     "paper": "Deep Distributed Fusion Network for Air Quality Prediction",
     "venue": "KDD 2018",
     "year": 2018
@@ -246,7 +252,7 @@
     "year": 2026
   },
   "DynamicTMoE": {
-    "arxiv": null,
+    "arxiv": "https://arxiv.org/abs/2605.20678",
     "paper": "Dynamic TMoE: A Drift-Aware Dynamic Mixture of Experts Framework for Non-Stationary Time Series Forecasting",
     "venue": "ICML 2026",
     "year": 2026
@@ -258,25 +264,25 @@
     "year": 2022
   },
   "ElasticNetTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1111/j.1467-9868.2005.00503.x",
     "paper": "Regularization and Variable Selection via the Elastic Net",
     "venue": "Journal of the Royal Statistical Society, Series B",
     "year": 2005
   },
   "ExpSmoothingTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1016/j.ijforecast.2003.09.015",
+    "paper": "Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages",
+    "venue": "International Journal of Forecasting",
+    "year": 2004
   },
   "ExtraTreesTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1007/s10994-006-6226-1",
     "paper": "Extremely Randomized Trees",
     "venue": "Machine Learning 2006",
     "year": 2006
   },
   "FEDformer": {
-    "arxiv": "https://arxiv.org/abs/2201.12740",
+    "arxiv": "https://proceedings.mlr.press/v162/zhou22g.html",
     "paper": "FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting",
     "venue": "ICML 2022",
     "year": 2022
@@ -288,13 +294,13 @@
     "year": 2024
   },
   "FTP": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1609/aaai.v40i33.40072",
     "paper": "Unifying Channel Independence and Mixing: Multi-Scale Patch Recursion for Global-Local Representation Synergy in Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
     "year": 2026
   },
   "FeTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1609/aaai.v40i31.39838",
     "paper": "FeTS: A Feature-Aware Framework for Time Series Forecasting",
     "venue": "AAAI 2026",
     "year": 2026
@@ -306,7 +312,7 @@
     "year": 2022
   },
   "FreTS": {
-    "arxiv": "https://arxiv.org/abs/2311.06184",
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/f1d16af76939f476b5f040fd1398c0a3-Abstract-Conference.html",
     "paper": "Frequency-domain MLPs are More Effective Learners in Time Series Forecasting",
     "venue": "NeurIPS 2023",
     "year": 2023
@@ -318,13 +324,13 @@
     "year": 2024
   },
   "GAGNN": {
-    "arxiv": "https://arxiv.org/abs/2108.12238",
+    "arxiv": "https://doi.org/10.1145/3631713",
     "paper": "Group-Aware Graph Neural Network for Nationwide City Air Quality Forecasting",
     "venue": "ACM TKDD 2024",
     "year": 2024
   },
   "GCLSTM": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1016/j.scitotenv.2019.01.333",
     "paper": "A hybrid model for spatiotemporal forecasting of PM2.5 based on graph convolutional neural network and long short-term memory",
     "venue": "Science of the Total Environment 2019",
     "year": 2019
@@ -354,37 +360,49 @@
     "year": 2021
   },
   "GWNet": {
-    "arxiv": "https://arxiv.org/abs/1906.00121",
+    "arxiv": "https://www.ijcai.org/proceedings/2019/264",
     "paper": "Graph WaveNet for Deep Spatial-Temporal Graph Modeling",
     "venue": "IJCAI 2019",
     "year": 2019
   },
-  "GaussianProcessTS": {
+  "GaussianMLP": {
     "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "paper": "Gaussian-head MLP (ModernTSF parametric probabilistic baseline)",
+    "venue": "ModernTSF",
+    "year": 2026
+  },
+  "GaussianProcessTS": {
+    "arxiv": "https://gaussianprocess.org/gpml/chapters/",
+    "paper": "Gaussian Processes for Machine Learning",
+    "venue": "MIT Press",
+    "year": 2006
+  },
+  "GlocalIB": {
+    "arxiv": "https://arxiv.org/abs/2510.04910",
+    "paper": "Glocal Information Bottleneck for Time Series Imputation",
+    "venue": "NeurIPS 2025",
+    "year": 2025
   },
   "GradientBoostingTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1214/aos/1013203451",
     "paper": "Greedy function approximation: A gradient boosting machine",
     "venue": "Annals of Statistics, 2001",
     "year": 2001
   },
   "HDMixer": {
-    "arxiv": null,
+    "arxiv": "https://ojs.aaai.org/index.php/AAAI/article/view/29155",
     "paper": "HDMixer: Hierarchical Dependency with Extendable Patch for Multivariate Time Series Forecasting",
     "venue": "AAAI 2024",
     "year": 2024
   },
   "HL": {
     "arxiv": null,
-    "paper": null,
+    "paper": "Historical-last persistence baseline (no associated paper)",
     "venue": "N/A (classical baseline)",
     "year": null
   },
   "HMformer": {
-    "arxiv": null,
+    "arxiv": "https://ojs.aaai.org/index.php/AAAI/article/view/39355",
     "paper": "HMformer: Unleashing Transformer's Potential for Time Series Forecasting via Hierarchical Multi-Scale Modeling",
     "venue": "AAAI 2026",
     "year": 2026
@@ -396,19 +414,19 @@
     "year": 2026
   },
   "HimNet": {
-    "arxiv": "https://arxiv.org/abs/2405.10800",
+    "arxiv": "https://doi.org/10.1145/3637528.3671961",
     "paper": "Heterogeneity-Informed Meta-Parameter Learning for Spatiotemporal Time Series Forecasting",
     "venue": "KDD 2024",
     "year": 2024
   },
   "ImplicitForecaster": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/0e82ef0c89df6a6eff8734ea7e27c42f-Abstract-Conference.html",
     "paper": "Towards Accurate Time Series Forecasting via Implicit Decoding",
     "venue": "NeurIPS 2025",
     "year": 2025
   },
   "Informer": {
-    "arxiv": "https://arxiv.org/abs/2012.07436",
+    "arxiv": "https://doi.org/10.1609/aaai.v35i12.17325",
     "paper": "Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting",
     "venue": "AAAI 2021",
     "year": 2021
@@ -420,16 +438,16 @@
     "year": 2026
   },
   "KNNForecasterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1109/TIT.1967.1053964",
+    "paper": "Nearest Neighbor Pattern Classification",
+    "venue": "IEEE Transactions on Information Theory",
+    "year": 1967
   },
   "KalmanFilterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1115/1.3662552",
+    "paper": "A New Approach to Linear Filtering and Prediction Problems",
+    "venue": "Journal of Basic Engineering",
+    "year": 1960
   },
   "Koopa": {
     "arxiv": "https://arxiv.org/abs/2305.18803",
@@ -444,19 +462,19 @@
     "year": 2026
   },
   "LSTM": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1162/neco.1997.9.8.1735",
     "paper": "Long Short-Term Memory",
     "venue": "Neural Computation 1997",
     "year": 1997
   },
   "LSTMForecasterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1162/neco.1997.9.8.1735",
+    "paper": "Long Short-Term Memory",
+    "venue": "Neural Computation",
+    "year": 1997
   },
   "LassoRegressionTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1111/j.2517-6161.1996.tb02080.x",
     "paper": "Regression Shrinkage and Selection via the Lasso",
     "venue": "Journal of the Royal Statistical Society: Series B, 1996",
     "year": 1996
@@ -468,7 +486,7 @@
     "year": 2026
   },
   "LightGBMTS": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.neurips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html",
     "paper": "LightGBM: A Highly Efficient Gradient Boosting Decision Tree",
     "venue": "NeurIPS 2017",
     "year": 2017
@@ -486,40 +504,46 @@
     "year": 2023
   },
   "MAFS": {
-    "arxiv": null,
+    "arxiv": "https://papers.nips.cc/paper_files/paper/2025/hash/f34f0630c33be15b8c89426bb8056798-Abstract-Conference.html",
     "paper": "Many Minds, One Goal: Time Series Forecasting via Sub-task Specialization and Inter-agent Cooperation",
     "venue": "NeurIPS 2025",
     "year": 2025
   },
   "MAGE": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/54c9bfb0885ae07f23607f617ab64c2b-Abstract-Conference.html",
     "paper": "Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting",
     "venue": "NeurIPS 2025",
     "year": 2025
   },
   "MGSFformer": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1016/j.inffus.2024.102607",
     "paper": "MGSFformer: A Multi-Granularity Spatiotemporal Fusion Transformer for air quality prediction",
     "venue": "Information Fusion 2025",
     "year": 2025
   },
   "MICN": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/references/pdf?id=u64xKhWy-T",
     "paper": "MICN: Multi-scale Local and Global Context Modeling for Long-term Series Forecasting",
     "venue": "ICLR 2023",
     "year": 2023
   },
   "MLPForecasterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1038/323533a0",
+    "paper": "Learning Representations by Back-Propagating Errors",
+    "venue": "Nature",
+    "year": 1986
   },
   "MMPD": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.iclr.cc/paper_files/paper/2026/hash/be7b70477c8fca697f14b1dbb1c086d1-Abstract-Conference.html",
     "paper": "MMPD: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss",
     "venue": "ICLR 2026",
     "year": 2026
+  },
+  "MQRNN": {
+    "arxiv": "https://arxiv.org/abs/1711.11053",
+    "paper": "A Multi-Horizon Quantile Recurrent Forecaster",
+    "venue": "NeurIPS 2017 Time Series Workshop",
+    "year": 2017
   },
   "MSGNet": {
     "arxiv": "https://arxiv.org/abs/2401.00423",
@@ -528,7 +552,7 @@
     "year": 2024
   },
   "MTGNN": {
-    "arxiv": "https://arxiv.org/abs/2005.11650",
+    "arxiv": "https://doi.org/10.1145/3394486.3403118",
     "paper": "Connecting the Dots: Multivariate Time Series Forecasting with Graph Neural Networks",
     "venue": "KDD 2020",
     "year": 2020
@@ -536,8 +560,8 @@
   "MTSMixer": {
     "arxiv": "https://arxiv.org/abs/2302.04501",
     "paper": "MTS-Mixers: Multivariate Time Series Forecasting via Factorized Temporal and Channel Mixing",
-    "venue": "arXiv preprint",
-    "year": 2023
+    "venue": "IJCNN 2025",
+    "year": 2025
   },
   "MambaSimple": {
     "arxiv": "https://arxiv.org/abs/2312.00752",
@@ -554,23 +578,23 @@
   "MixLinear": {
     "arxiv": "https://arxiv.org/abs/2410.02081",
     "paper": "MixLinear: Extreme Low Resource Multivariate Time Series Forecasting with 0.1K Parameters",
-    "venue": "arXiv preprint",
-    "year": 2024
+    "venue": "ICLR 2026",
+    "year": 2026
   },
   "MoFo": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/7a99ad21706dec5b28f9ad715e12197f-Abstract-Conference.html",
     "paper": "MoFo: Empowering Long-term Time Series Forecasting with Periodic Pattern Modeling",
     "venue": "NeurIPS 2025",
     "year": 2025
   },
   "ModernTCN": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/forum?id=vpJMJerXHU",
     "paper": "ModernTCN: A Modern Pure Convolution Structure for General Time Series Analysis",
     "venue": "ICLR 2024",
     "year": 2024
   },
   "MultiPatchFormer": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1038/s41598-024-82417-4",
     "paper": "A multiscale model for multivariate time series forecasting",
     "venue": "Scientific Reports 2025",
     "year": 2025
@@ -626,32 +650,32 @@
   "PHAT": {
     "arxiv": "https://arxiv.org/abs/2602.00654",
     "paper": "PHAT: Modeling Period Heterogeneity for Multivariate Time Series Forecasting",
-    "venue": "arXiv preprint",
+    "venue": "ICLR 2026",
     "year": 2026
   },
   "PM25_GNN": {
-    "arxiv": "https://arxiv.org/abs/2002.12898",
+    "arxiv": "https://doi.org/10.1145/3397536.3422208",
     "paper": "PM2.5-GNN: A Domain Knowledge Enhanced Graph Neural Network For PM2.5 Forecasting",
     "venue": "ACM SIGSPATIAL 2020",
     "year": 2020
   },
   "PMDformer": {
-    "arxiv": null,
-    "paper": "PMDformer: Patch-Mean Decoupling Transformer for Long-term Forecasting",
+    "arxiv": "https://arxiv.org/abs/2606.26549",
+    "paper": "PMDformer: Patch-Mean Decoupling Information Transformer for Long-term Forecasting",
     "venue": "ICLR 2026",
     "year": 2026
   },
   "PULSE": {
-    "arxiv": null,
+    "arxiv": "https://arxiv.org/abs/2605.16793",
     "paper": "Generative Phase Evolution for Non-Stationary Time Series Forecasting",
     "venue": "ICML 2026",
     "year": 2026
   },
   "PWS": {
     "arxiv": null,
-    "paper": null,
-    "venue": "N/A (simple in-repo baseline)",
-    "year": null
+    "paper": "Patch Weighted Sum (ModernTSF baseline)",
+    "venue": "ModernTSF",
+    "year": 2026
   },
   "PaiFilter": {
     "arxiv": "https://arxiv.org/abs/2411.01623",
@@ -666,7 +690,7 @@
     "year": 2025
   },
   "PatchTST": {
-    "arxiv": "https://arxiv.org/abs/2211.14730",
+    "arxiv": "https://openreview.net/forum?id=Jbdc0vTOcol",
     "paper": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers",
     "venue": "ICLR 2023",
     "year": 2023
@@ -684,16 +708,28 @@
     "year": 2026
   },
   "PolynomialRegressionTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1002/9781118625590",
+    "paper": "Applied Regression Analysis",
+    "venue": "Wiley",
+    "year": 1998
   },
   "Pyraformer": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/forum?id=0EXmFzUn5I",
     "paper": "Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting",
     "venue": "ICLR 2022",
     "year": 2022
+  },
+  "QuantileDLinear": {
+    "arxiv": "https://arxiv.org/abs/2205.13504",
+    "paper": "Are Transformers Effective for Time Series Forecasting? (DLinear backbone)",
+    "venue": "AAAI 2023",
+    "year": 2023
+  },
+  "QuantilePatchTST": {
+    "arxiv": "https://arxiv.org/abs/2211.14730",
+    "paper": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers (PatchTST backbone)",
+    "venue": "ICLR 2023",
+    "year": 2023
   },
   "RLinear": {
     "arxiv": "https://arxiv.org/abs/2305.10721",
@@ -702,34 +738,34 @@
     "year": 2023
   },
   "RNNForecasterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1207/s15516709cog1402_1",
+    "paper": "Finding Structure in Time",
+    "venue": "Cognitive Science",
+    "year": 1990
   },
   "RPMixer": {
-    "arxiv": "https://arxiv.org/abs/2402.10487",
+    "arxiv": "https://doi.org/10.1145/3637528.3671881",
     "paper": "RPMixer: Shaking Up Time Series Forecasting with Random Projections for Large Spatial-Temporal Data",
     "venue": "KDD 2024",
     "year": 2024
   },
   "RandomForestTS": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1023/A:1010933404324",
     "paper": "Random Forests",
     "venue": "Machine Learning, 2001",
     "year": 2001
   },
   "Reformer": {
-    "arxiv": "https://arxiv.org/abs/2001.04451",
+    "arxiv": "https://openreview.net/forum?id=rkgNKkHtvB",
     "paper": "Reformer: The Efficient Transformer",
     "venue": "ICLR 2020",
     "year": 2020
   },
   "RidgeRegressionTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://doi.org/10.1080/00401706.1970.10488634",
+    "paper": "Ridge Regression: Biased Estimation for Nonorthogonal Problems",
+    "venue": "Technometrics",
+    "year": 1970
   },
   "S4": {
     "arxiv": "https://arxiv.org/abs/2111.00396",
@@ -750,7 +786,7 @@
     "year": 2025
   },
   "SOFTS": {
-    "arxiv": "https://arxiv.org/abs/2404.14197",
+    "arxiv": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/754612bde73a8b65ad8743f1f6d8ddf6-Abstract-Conference.html",
     "paper": "SOFTS: Efficient Multivariate Time Series Forecasting with Series-Core Fusion",
     "venue": "NeurIPS 2024",
     "year": 2024
@@ -768,7 +804,7 @@
     "year": 2023
   },
   "STDN": {
-    "arxiv": "https://arxiv.org/abs/2502.12213",
+    "arxiv": "https://doi.org/10.1609/aaai.v39i11.33247",
     "paper": "Spatiotemporal-aware Trend-Seasonality Decomposition Network for Traffic Flow Forecasting",
     "venue": "AAAI 2025",
     "year": 2025
@@ -780,7 +816,7 @@
     "year": 2018
   },
   "STGODE": {
-    "arxiv": "https://arxiv.org/abs/2106.12931",
+    "arxiv": "https://doi.org/10.1145/3447548.3467430",
     "paper": "Spatial-Temporal Graph ODE Networks for Traffic Flow Forecasting",
     "venue": "KDD 2021",
     "year": 2021
@@ -792,19 +828,19 @@
     "year": 2022
   },
   "STNorm": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1145/3447548.3467330",
     "paper": "ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting",
     "venue": "KDD 2021",
     "year": 2021
   },
   "STOP": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.mlr.press/v267/ma25s.html",
     "paper": "Robust Spatio-Temporal Centralized Interaction for OOD Learning",
     "venue": "ICML 2025",
     "year": 2025
   },
   "STPGNN": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1609/aaai.v38i8.28707",
     "paper": "Spatio-Temporal Pivotal Graph Neural Networks for Traffic Flow Forecasting",
     "venue": "AAAI 2024",
     "year": 2024
@@ -822,10 +858,10 @@
     "year": 2023
   },
   "SVRForecasterTS": {
-    "arxiv": null,
-    "paper": null,
-    "venue": "N/A (classical baseline)",
-    "year": null
+    "arxiv": "https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html",
+    "paper": "Support Vector Regression Machines",
+    "venue": "Advances in Neural Information Processing Systems 9",
+    "year": 1996
   },
   "SVTime": {
     "arxiv": "https://arxiv.org/abs/2510.09780",
@@ -864,7 +900,7 @@
     "year": 2020
   },
   "Sumba": {
-    "arxiv": null,
+    "arxiv": "https://openreview.net/forum?id=co7DsOwcop",
     "paper": "Structured Matrix Basis for Multivariate Time Series Forecasting with Interpretable Dynamics",
     "venue": "NeurIPS 2024",
     "year": 2024
@@ -918,7 +954,7 @@
     "year": 2026
   },
   "TimeBase": {
-    "arxiv": null,
+    "arxiv": "https://proceedings.mlr.press/v267/huang25az.html",
     "paper": "TimeBase: The Power of Minimalism in Efficient Long-term Time Series Forecasting",
     "venue": "ICML 2025",
     "year": 2025
@@ -930,7 +966,7 @@
     "year": 2025
   },
   "TimeCAP": {
-    "arxiv": null,
+    "arxiv": "https://doi.org/10.1609/aaai.v40i30.39700",
     "paper": "TimeCAP: A Channel-Aware Pre-Training Framework for Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
     "year": 2026
@@ -938,7 +974,7 @@
   "TimeEmb": {
     "arxiv": "https://arxiv.org/abs/2510.00461",
     "paper": "TimeEmb: A Lightweight Static-Dynamic Disentanglement Framework for Time Series Forecasting",
-    "venue": "arXiv preprint",
+    "venue": "NeurIPS 2025",
     "year": 2025
   },
   "TimeFilter": {
@@ -990,7 +1026,7 @@
     "year": 2023
   },
   "Transformer": {
-    "arxiv": "https://arxiv.org/abs/1706.03762",
+    "arxiv": "https://proceedings.neurips.cc/paper/7181-attention-is-all-you-need",
     "paper": "Attention Is All You Need",
     "venue": "NeurIPS 2017",
     "year": 2017

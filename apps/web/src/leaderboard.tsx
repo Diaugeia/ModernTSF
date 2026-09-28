@@ -8,6 +8,7 @@ import { Seg } from "./ui/seg";
 import { datasetRank } from "./lib/datasets";
 import { EvolutionChart } from "./evolution-chart";
 import { DatasetCard } from "./dataset-card";
+import { RollingRounds } from "./rolling-rounds";
 
 // Re-exports for back-compat with existing importers (src/index.ts, etc.).
 export { Seg } from "./ui/seg";
@@ -177,6 +178,10 @@ export function Leaderboard({ data, copy, locale = "en" }: { data: LeaderboardDa
             <DatasetCard key={`${track}/${name}`} track={track} name={name} ds={ds} copy={copy} query={query} locale={locale} />
           ))}
         </div>
+      )}
+
+      {category === "realtime" && copy.rolling && (
+        <RollingRounds data={data.realtime ?? {}} copy={copy.rolling} />
       )}
     </>
   );

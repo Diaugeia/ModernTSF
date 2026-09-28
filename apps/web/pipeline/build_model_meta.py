@@ -43,14 +43,14 @@ def parse_models(moderntsf_root: str) -> dict[str, dict]:
         if not fm:
             continue
         block = fm.group(1)
-        name = _field(block, "model")
+        name = _field(block, "name")
         if not name:
             continue
         year = _field(block, "year")
         entry = {
             "year": int(year) if year and year.isdigit() else None,
             "venue": _field(block, "venue"),
-            "arxiv": _field(block, "arxiv"),
+            "arxiv": _field(block, "paper"),
             "paper": _field(block, "paper_title"),
         }
         meta[name] = entry
