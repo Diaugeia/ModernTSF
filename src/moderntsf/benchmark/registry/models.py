@@ -25,9 +25,16 @@ class ModelArtifact:
             raise ValueError("artifact name, revision, and filename must be non-empty")
         if len(self.sha256) != 64 or any(c not in "0123456789abcdef" for c in self.sha256):
             raise ValueError(f"artifact {self.name!r} needs a lowercase SHA-256 digest")
-        if not self.url.startswith(("https://", "file://")):
-            raise ValueError(f"artifact {self.name!r} URL must use https:// or file://")
-        if self.url.startswith("https://") and self.revision not in self.url:
+        if not self.url.startswith(("hf://", "https://", "file://")):
+            raise ValueError(f"artifact {self.name!r} URL must use hf://, https://, or file://")
+        if self.url.startswith("hf://"):
+            from moderntsf.hub.uri import parse
+
+            if parse(self.url).revision != self.revision:
+                raise ValueError(
+                    f"artifact {self.name!r} hf:// URI must be pinned to its revision"
+                )
+        elif self.url.startswith("https://") and self.revision not in self.url:
             raise ValueError(
                 f"artifact {self.name!r} URL must contain its pinned revision"
             )

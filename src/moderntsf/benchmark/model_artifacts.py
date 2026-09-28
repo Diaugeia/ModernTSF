@@ -2,36 +2,16 @@
 
 from __future__ import annotations
 
-import hashlib
-import os
 from pathlib import Path
-import shutil
-import tempfile
-from urllib.request import urlopen
 
 from moderntsf.benchmark.registry.models import ModelArtifact, ModelSpec
-
-
-def default_cache_root() -> Path:
-    """Return the model artifact cache without creating it."""
-    override = os.environ.get("MODERNTSF_CACHE")
-    if override:
-        return Path(override).expanduser().resolve()
-    return Path.home() / ".cache" / "moderntsf"
+from moderntsf.hub.fetch import default_cache_root, download, sha256_file
 
 
 def artifact_path(spec: ModelSpec, artifact: ModelArtifact, cache_root: Path) -> Path:
     """Return a traversal-safe cache path for one pinned artifact."""
     revision = "".join(c if c.isalnum() or c in "._-" else "_" for c in artifact.revision)
     return cache_root / "models" / spec.module.rsplit(".", 1)[-1] / revision / artifact.filename
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def artifact_status(spec: ModelSpec, cache_root: Path | None = None) -> list[dict[str, object]]:
@@ -86,27 +66,13 @@ def fetch_artifact(
     artifact: ModelArtifact,
     cache_root: Path | None = None,
 ) -> Path:
-    """Download one explicitly requested artifact and atomically verify it."""
+    """Download one explicitly requested artifact and atomically verify it.
+
+    ``hf://`` URIs resolve to their pinned Hugging Face download URL.
+    """
     root = cache_root or default_cache_root()
     destination = artifact_path(spec, artifact, root)
-    if destination.is_file() and sha256_file(destination) == artifact.sha256:
-        return destination
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{artifact.filename}.", suffix=".part", dir=destination.parent
-    )
-    os.close(descriptor)
-    temporary = Path(temporary_name)
     try:
-        with urlopen(artifact.url, timeout=60) as source, temporary.open("wb") as target:
-            shutil.copyfileobj(source, target)
-        actual = sha256_file(temporary)
-        if actual != artifact.sha256:
-            raise ValueError(
-                f"artifact {artifact.name!r} checksum mismatch: "
-                f"expected {artifact.sha256}, got {actual}"
-            )
-        temporary.replace(destination)
-    finally:
-        temporary.unlink(missing_ok=True)
-    return destination
+        return download(artifact.url, destination, artifact.sha256)
+    except ValueError as exc:
+        raise ValueError(f"artifact {artifact.name!r} {exc}") from exc

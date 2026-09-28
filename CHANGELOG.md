@@ -3,6 +3,31 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
+## [Unreleased]
+
+One installable package, one repository, one address for published assets.
+
+### Added
+
+- `apps/web/`: the ModernTSF Leaderboard (formerly TSEval) with its history,
+  submission pipeline and `submissions/`; CI validates submissions on PRs.
+- `moderntsf.hub` and `tsf hub {pack,push,list,pull}`: pinned `hf://` URIs,
+  SHA-256 verified downloads, and safetensors weights bundles
+  (`<dataset>/<model>/<run_id>/`) for Hugging Face model repositories.
+- `ModelArtifact` accepts pinned `hf://` URIs.
+- `tsf init` scaffolds a standalone project; run configs can extend installed
+  catalog presets through `moderntsf://` paths.
+- `hub` optional dependency group (`huggingface_hub`, `safetensors`).
+
+### Changed
+
+- **Breaking:** all runtime packages moved under `moderntsf`
+  (`moderntsf.benchmark`, `.data`, `.models`, `.tsf_core`, `.assets`); the
+  wheel no longer installs generic top-level `benchmark`/`data`/`models`
+  packages. Sources now live in `src/moderntsf/`.
+- `tsf submit` points contributors at `apps/web/submissions/` in this repository.
+- Pytest collects only `tests/`; `experiments/` is a local-only workspace.
+
 ## [0.8.0] — 2026-09-04
 
 Composable execution services that augment the current Agent while keeping

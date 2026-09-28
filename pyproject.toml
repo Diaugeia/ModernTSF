@@ -42,6 +42,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Publish and load checkpoints on the Hugging Face Hub (moderntsf.hub).
+hub = ["huggingface_hub>=0.25", "safetensors>=0.4"]
 tensorboard = ["tensorboard>=2.18"]
 wandb = ["wandb>=0.19"]
 

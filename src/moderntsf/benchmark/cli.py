@@ -28,6 +28,10 @@ Execution:
     storage          inspect capacity and preview managed checkpoint cleanup
     usage            reserve and settle external token/USD spending
 
+Project and publishing:
+    init             scaffold a standalone project on the installed package
+    hub              pack, push, list, or pull weights on the Hugging Face Hub
+
 Records and integration:
     research         manage lightweight research rounds
     submit           package a run into a Submission Report
@@ -105,6 +109,14 @@ def main(argv: list[str] | None = None) -> int:
         return research_command(rest)
     if command == "schema-export":
         return schema_export_command(rest)
+    if command == "init":
+        from moderntsf.scaffold import main as init_main
+
+        return init_main(rest)
+    if command == "hub":
+        from moderntsf.benchmark.commands.hub import hub_command
+
+        return hub_command(rest)
 
     passthrough_commands = {
         "inspect": "inspect_config.py",

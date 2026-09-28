@@ -16,6 +16,8 @@ from moderntsf.benchmark.config.schema.root import RootConfig
 from moderntsf.benchmark.registry.datasets import DATASET_REGISTRY, register_dataset_by_name
 from moderntsf.benchmark.registry.models import MODEL_CATALOG
 
+PACKAGE_SCHEME = "moderntsf://"
+
 
 def validate_task_compatibility(mode: str, dataset_spec, model_spec) -> None:
     """Reject a run whose data layout is unsupported by either endpoint."""
@@ -121,7 +123,13 @@ def _resolve_extends_list(extends: str | Iterable[str], base_dir: str) -> dict:
     merged: dict[str, Any] = {}
     for rel_path in extends_list:
         file_path = rel_path
-        if not os.path.isabs(rel_path):
+        if rel_path.startswith(PACKAGE_SCHEME):
+            # Resolve against the checkout or the installed package's assets,
+            # so standalone projects inherit catalog configs without copying.
+            from moderntsf.tsf_core.paths import repository_root
+
+            file_path = str(repository_root() / rel_path[len(PACKAGE_SCHEME):])
+        elif not os.path.isabs(rel_path):
             file_path = os.path.join(base_dir, rel_path)
         absolute = os.path.realpath(file_path)
         stack = _EXTENDS_STACK.get()
