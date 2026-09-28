@@ -42,6 +42,8 @@ Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch
 ## Current model consumers
 
 - [`gateformer`](../../gateformer/README.md)
+- [`lsinet`](../../lsinet/README.md)
+- [`semixer`](../../semixer/README.md)
 - [`sensorformer`](../../sensorformer/README.md)
 - [`srsnet`](../../srsnet/README.md)
 - [`timeexpert`](../../timeexpert/README.md)

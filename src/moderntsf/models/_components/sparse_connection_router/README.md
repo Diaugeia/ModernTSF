@@ -1,26 +1,27 @@
 ---
-name: "positional_encoding"
+name: "sparse_connection_router"
 kind: "component"
-module: "moderntsf.models._components.positional_encoding"
-summary: "Patch-transformer positional encodings."
+module: "moderntsf.models._components.sparse_connection_router"
+summary: "Shared, input-independent sparse connection routing over discrete positions."
 ---
 
-# positional_encoding
+# sparse_connection_router
 
 ## Purpose
 
-Patch-transformer positional encodings.
+Shared, input-independent sparse connection routing over discrete positions.
 
-Position-table construction for patch-based sequence encoders.
+Shared, input-independent sparse connection routing over discrete positions.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `SharedSparseConnectionRouter(num_positions: int, dim: int, heads: int=1, density: float=0.15, memory_dim: int | None=None, gumbel_scale: float=1.0)`
+  Learn a shared 0/1 connection matrix over ``num_positions`` positions.
 
 ```python
-import moderntsf.models._components.positional_encoding
+from moderntsf.models._components.sparse_connection_router import SharedSparseConnectionRouter
 ```
 
 ## Input and output contract
@@ -33,17 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `positional_encoding` in the consuming model's `components`
+implementation, then declare `sparse_connection_router` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `encoding`, `patch`, `position`, `transformer`.
+Retrieval terms: `adjacency`, `bernoulli`, `gumbel-softmax`, `interaction`, `shared`, `sparse`, `top-k`.
 
 ## Current model consumers
 
-- [`canet`](../../canet/README.md)
-- [`gateformer`](../../gateformer/README.md)
 - [`lsinet`](../../lsinet/README.md)
-- [`semixer`](../../semixer/README.md)
 
 ## Semantic boundary
 

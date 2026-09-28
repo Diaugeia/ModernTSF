@@ -315,6 +315,13 @@
       "subject_sha256": "771a9efe47edaa9a11ebd41c4430bd6a0810f2fe6bea88a36c46fcb9d9d1e468",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "Dualformer": {
+      "evidence": "verification/evidence/Dualformer.json",
+      "sha256": "0c81020d2b3e3c5f4ecebfacdb41906154a8082d00230d63acd325a0926df3cb",
+      "status": "passed",
+      "subject_sha256": "b162aee1d00cdde3137b63c90fec4c9f49e13a386bb27da802ab8f3c1067d549",
+      "verified_at": "2026-09-28T20:48:35.025137Z"
+    },
     "DynamicTMoE": {
       "evidence": "verification/evidence/DynamicTMoE.json",
       "sha256": "3b40cf78991b34422bc4f2b7c6bce1edf2ee61f1ec9a1dc2d6d6a94ec7d099e1",
@@ -573,6 +580,13 @@
       "status": "passed",
       "subject_sha256": "9960a1935408d0df1931c6c05ef24e057c2280f09754ae89e4386b737dc5d5a4",
       "verified_at": "2026-09-28T18:37:08.769655Z"
+    },
+    "LSINet": {
+      "evidence": "verification/evidence/LSINet.json",
+      "sha256": "bea4432a654d8175a7e4d92cbd7c451c0b07ab3f73df6b3ae4c6a4eae66c5156",
+      "status": "passed",
+      "subject_sha256": "3fc6f2b9191911ec8ff4016444ccf2503a73702051cb9753cfd0a68d6eb3170e",
+      "verified_at": "2026-09-28T20:48:35.025137Z"
     },
     "LSTM": {
       "evidence": "verification/evidence/LSTM.json",
@@ -952,12 +966,26 @@
       "subject_sha256": "ce51fabf6eb0f0d6eabdaff10177c3b3fdcedd961168f31cf582a63f1d4686f7",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "SDMixer": {
+      "evidence": "verification/evidence/SDMixer.json",
+      "sha256": "98d91c2bca3274528370462287b0b405925c4bab45d5a3dafd7094ea4a7f5352",
+      "status": "passed",
+      "subject_sha256": "f0d7437077a1996f1b634ec93196f0324dd553298eba03f70138dc35f6a5077c",
+      "verified_at": "2026-09-28T20:48:35.025137Z"
+    },
     "SEMPO": {
       "evidence": "verification/evidence/SEMPO.json",
       "sha256": "f837daf2d61f35be86cbee492c7435384540494c8b821e0d5bd326a933f00414",
       "status": "passed",
       "subject_sha256": "0f982454f74c6dabe052e84736fa12bbf35d5e5bd361cce01423d34ebd76bb7a",
       "verified_at": "2026-09-28T18:37:08.769655Z"
+    },
+    "SEMixer": {
+      "evidence": "verification/evidence/SEMixer.json",
+      "sha256": "abcd09969d465866ca12550a6450a772f586880c4e9e665984c7f2d4e7b5d201",
+      "status": "passed",
+      "subject_sha256": "bf6e85c2a0f33d069efcbb325cf1f586d7701d85c6da4af408e0f6c19062055a",
+      "verified_at": "2026-09-28T20:48:35.025137Z"
     },
     "SOFTS": {
       "evidence": "verification/evidence/SOFTS.json",

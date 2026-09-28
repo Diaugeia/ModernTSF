@@ -146,6 +146,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("dwt", "haar", "sub-series", "wavelet"),
         ),
         ComponentSpec(
+            "harmonic_energy_gate",
+            "moderntsf.models._components.harmonic_energy_gate",
+            "Per-channel harmonic-to-total spectral energy ratio for dual-branch gating.",
+            ("HarmonicEnergyGate",),
+            ("energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting"),
+        ),
+        ComponentSpec(
             "mixer_block",
             "moderntsf.models._components.mixer_block",
             "Pre-normalized residual time mixing then residual feature mixing (TSMixer basic block).",
@@ -194,6 +201,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             "Value projection plus normalized six-column raw-calendar embedding.",
             ("RawCalendarEmbedding", "ForecastEmbedding"),
             ("calendar", "covariate", "embedding", "forecast", "value"),
+        ),
+        ComponentSpec(
+            "frequency_band_sampler",
+            "moderntsf.models._components.frequency_band_sampler",
+            "Depth-indexed contiguous frequency-band selection over an FFT axis.",
+            ("HierarchicalFrequencySampler",),
+            ("band", "depth", "fft", "frequency", "hierarchical", "sampling", "spectral"),
         ),
         ComponentSpec(
             "gaussian_parameter_head",
@@ -263,6 +277,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("monotone", "non-crossing", "probabilistic", "quantile"),
         ),
         ComponentSpec("revin", "moderntsf.models._components.revin", "Reversible instance normalization.", ("RevIN",), ("denormalization", "instance", "normalization", "reversible")),
+        ComponentSpec(
+            "sparse_connection_router",
+            "moderntsf.models._components.sparse_connection_router",
+            "Shared, input-independent sparse connection routing over discrete positions.",
+            ("SharedSparseConnectionRouter",),
+            ("adjacency", "bernoulli", "gumbel-softmax", "interaction", "shared", "sparse", "top-k"),
+        ),
         ComponentSpec("self_attention_family", "moderntsf.models._components.self_attention_family", "Shared full and probabilistic attention layers.", keywords=("attention", "full", "probabilistic")),
         ComponentSpec(
             "soft_tree",

@@ -57,11 +57,11 @@ class BlockModelRuntime(importlib.abc.MetaPathFinder):
 sys.meta_path.insert(0, BlockModelRuntime())
 from moderntsf.benchmark.cli import main
 from moderntsf.benchmark.registry.models import MODEL_CATALOG
-assert len(MODEL_CATALOG.names()) == 190
+assert len(MODEL_CATALOG.names()) == 194
 output = io.StringIO()
 with redirect_stdout(output):
     assert main(["model", "list", "--json"]) == 0
-assert len(json.loads(output.getvalue())) == 190
+assert len(json.loads(output.getvalue())) == 194
 """
         result = subprocess.run(
             [sys.executable, "-c", script],

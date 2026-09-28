@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "model": "SDMixer",
+  "status": "passed",
+  "verified_at": "2026-09-28T20:48:35.025137Z",
+  "subject_sha256": "f0d7437077a1996f1b634ec93196f0324dd553298eba03f70138dc35f6a5077c",
+  "paper": {
+    "title": "SDMixer: Sparse Dual-Mixer for Time Series Forecasting",
+    "venue": "arXiv preprint",
+    "year": 2026,
+    "url": "https://arxiv.org/abs/2602.23581"
+  },
+  "codebase": {
+    "url": "https://github.com/SDMixer/SDMixer",
+    "revision": "c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a",
+    "license": "NOASSERTION"
+  },
+  "checks": {
+    "paper_structure": {
+      "status": "passed",
+      "evidence": [
+        "tests/test_sdmixer_forecaster.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "structure_count": 0
+      }
+    },
+    "equations": {
+      "status": "passed",
+      "evidence": [
+        "tests/test_sdmixer_forecaster.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "structure_count": 0
+      }
+    },
+    "construction": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "forward": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "backward": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "finite_outputs": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "active_parameter_gradients": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "state_dict_round_trip": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "cpu": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "batch_size_boundary": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "sequence_length_boundary": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "input_contract": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model SDMixer"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "reference_comparison": {
+      "status": "passed",
+      "evidence": [
+        "https://github.com/SDMixer/SDMixer/blob/c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a/models/SDMixer.py",
+        "https://github.com/SDMixer/SDMixer/blob/c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a/layers/RevIN.py",
+        "tests/test_sdmixer_forecaster.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "inspected_files": 2
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.14",
+    "framework": "torch 2.6.0",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "torch": "2.6.0"
+    },
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "device": "cpu",
+    "dtype": "float32",
+    "deterministic": {
+      "num_threads": 1,
+      "seed": 104729
+    }
+  },
+  "commands": [
+    "uv run tsf verify model SDMixer",
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_sdmixer_forecaster.py"
+  ]
+}

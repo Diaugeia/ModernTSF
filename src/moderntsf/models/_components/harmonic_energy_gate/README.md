@@ -1,26 +1,27 @@
 ---
-name: "self_attention_family"
+name: "harmonic_energy_gate"
 kind: "component"
-module: "moderntsf.models._components.self_attention_family"
-summary: "Shared full and probabilistic attention layers."
+module: "moderntsf.models._components.harmonic_energy_gate"
+summary: "Per-channel harmonic-to-total spectral energy ratio for dual-branch gating."
 ---
 
-# self_attention_family
+# harmonic_energy_gate
 
 ## Purpose
 
-Shared full and probabilistic attention layers.
+Per-channel harmonic-to-total spectral energy ratio for dual-branch gating.
 
-Attention layers used by transformer-style models.
+Per-channel harmonic-to-total spectral energy ratio for dual-branch gating.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `HarmonicEnergyGate(num_harmonics: int=3, low_freq_guard: int=3)`
+  Return each channel's harmonic-energy share of its total spectral energy.
 
 ```python
-import moderntsf.models._components.self_attention_family
+from moderntsf.models._components.harmonic_energy_gate import HarmonicEnergyGate
 ```
 
 ## Input and output contract
@@ -33,16 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `self_attention_family` in the consuming model's `components`
+implementation, then declare `harmonic_energy_gate` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `attention`, `full`, `probabilistic`.
+Retrieval terms: `energy`, `fusion`, `gate`, `harmonic`, `periodicity`, `spectral`, `weighting`.
 
 ## Current model consumers
 
 - [`dualformer`](../../dualformer/README.md)
-- [`informer`](../../informer/README.md)
-- [`transformer`](../../transformer/README.md)
 
 ## Semantic boundary
 

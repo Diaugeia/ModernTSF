@@ -40,6 +40,7 @@ Retrieval terms: `attention`, `decoder`, `encoder`, `transformer`.
 
 ## Current model consumers
 
+- [`dualformer`](../../dualformer/README.md)
 - [`informer`](../../informer/README.md)
 - [`transformer`](../../transformer/README.md)
 

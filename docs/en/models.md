@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 190 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 194 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -50,6 +50,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `DSFormer` | [`configs/models/DSFormer.toml`](../../configs/models/DSFormer.toml) | time-series | [README](../../src/moderntsf/models/dsformer/README.md) |
 | `DSTAGNN` | [`configs/models/DSTAGNN.toml`](../../configs/models/DSTAGNN.toml) | spatiotemporal | [README](../../src/moderntsf/models/dstagnn/README.md) |
 | `DTAF` | [`configs/models/DTAF.toml`](../../configs/models/DTAF.toml) | time-series | [README](../../src/moderntsf/models/dtaf/README.md) |
+| `Dualformer` | [`configs/models/Dualformer.toml`](../../configs/models/Dualformer.toml) | time-series | [README](../../src/moderntsf/models/dualformer/README.md) |
 | `DUET` | [`configs/models/DUET.toml`](../../configs/models/DUET.toml) | time-series | [README](../../src/moderntsf/models/duet/README.md) |
 | `DynamicTMoE` | [`configs/models/DynamicTMoE.toml`](../../configs/models/DynamicTMoE.toml) | time-series | [README](../../src/moderntsf/models/dynamic_tmoe/README.md) |
 | `ElasticNetTS` | [`configs/models/ElasticNetTS.toml`](../../configs/models/ElasticNetTS.toml) | time-series | [README](../../src/moderntsf/models/elastic_net_ts/README.md) |
@@ -94,6 +95,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `LightGBMTS` | [`configs/models/LightGBMTS.toml`](../../configs/models/LightGBMTS.toml) | time-series | [README](../../src/moderntsf/models/lightgbm_ts/README.md) |
 | `LightTS` | [`configs/models/LightTS.toml`](../../configs/models/LightTS.toml) | time-series | [README](../../src/moderntsf/models/lightts/README.md) |
 | `Linear` | [`configs/models/Linear.toml`](../../configs/models/Linear.toml) | time-series | [README](../../src/moderntsf/models/linear/README.md) |
+| `LSINet` | [`configs/models/LSINet.toml`](../../configs/models/LSINet.toml) | time-series | [README](../../src/moderntsf/models/lsinet/README.md) |
 | `LSTM` | [`configs/models/LSTM.toml`](../../configs/models/LSTM.toml) | spatiotemporal | [README](../../src/moderntsf/models/lstm/README.md) |
 | `LSTMForecasterTS` | [`configs/models/LSTMForecasterTS.toml`](../../configs/models/LSTMForecasterTS.toml) | time-series | [README](../../src/moderntsf/models/lstm_forecaster_ts/README.md) |
 | `MAFS` | [`configs/models/MAFS.toml`](../../configs/models/MAFS.toml) | time-series | [README](../../src/moderntsf/models/mafs/README.md) |
@@ -144,7 +146,9 @@ Every entry is maintained as a local implementation; verification status is deri
 | `S4` | [`configs/models/S4.toml`](../../configs/models/S4.toml) | time-series | [README](../../src/moderntsf/models/s4/README.md) |
 | `S_Mamba` | [`configs/models/S_Mamba.toml`](../../configs/models/S_Mamba.toml) | time-series | [README](../../src/moderntsf/models/s_mamba/README.md) |
 | `SCINet` | [`configs/models/SCINet.toml`](../../configs/models/SCINet.toml) | time-series | [README](../../src/moderntsf/models/scinet/README.md) |
+| `SDMixer` | [`configs/models/SDMixer.toml`](../../configs/models/SDMixer.toml) | time-series | [README](../../src/moderntsf/models/sdmixer/README.md) |
 | `SegRNN` | [`configs/models/SegRNN.toml`](../../configs/models/SegRNN.toml) | time-series | [README](../../src/moderntsf/models/segrnn/README.md) |
+| `SEMixer` | [`configs/models/SEMixer.toml`](../../configs/models/SEMixer.toml) | time-series | [README](../../src/moderntsf/models/semixer/README.md) |
 | `SEMPO` | [`configs/models/SEMPO.toml`](../../configs/models/SEMPO.toml) | time-series | [README](../../src/moderntsf/models/sempo/README.md) |
 | `Sensorformer` | [`configs/models/Sensorformer.toml`](../../configs/models/Sensorformer.toml) | time-series | [README](../../src/moderntsf/models/sensorformer/README.md) |
 | `SOFTS` | [`configs/models/SOFTS.toml`](../../configs/models/SOFTS.toml) | time-series | [README](../../src/moderntsf/models/softs/README.md) |

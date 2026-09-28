@@ -1,26 +1,27 @@
 ---
-name: "self_attention_family"
+name: "frequency_band_sampler"
 kind: "component"
-module: "moderntsf.models._components.self_attention_family"
-summary: "Shared full and probabilistic attention layers."
+module: "moderntsf.models._components.frequency_band_sampler"
+summary: "Depth-indexed contiguous frequency-band selection over an FFT axis."
 ---
 
-# self_attention_family
+# frequency_band_sampler
 
 ## Purpose
 
-Shared full and probabilistic attention layers.
+Depth-indexed contiguous frequency-band selection over an FFT axis.
 
-Attention layers used by transformer-style models.
+Depth-indexed contiguous frequency-band selection over an FFT axis.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `HierarchicalFrequencySampler(num_layers: int, alpha: float=1.0)`
+  Assign a depth-indexed contiguous frequency band out of ``num_layers``.
 
 ```python
-import moderntsf.models._components.self_attention_family
+from moderntsf.models._components.frequency_band_sampler import HierarchicalFrequencySampler
 ```
 
 ## Input and output contract
@@ -33,16 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `self_attention_family` in the consuming model's `components`
+implementation, then declare `frequency_band_sampler` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `attention`, `full`, `probabilistic`.
+Retrieval terms: `band`, `depth`, `fft`, `frequency`, `hierarchical`, `sampling`, `spectral`.
 
 ## Current model consumers
 
 - [`dualformer`](../../dualformer/README.md)
-- [`informer`](../../informer/README.md)
-- [`transformer`](../../transformer/README.md)
 
 ## Semantic boundary
 

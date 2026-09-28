@@ -44,6 +44,7 @@ Retrieval terms: `calendar`, `covariate`, `embedding`, `forecast`, `value`.
 ## Current model consumers
 
 - [`autoformer`](../../autoformer/README.md)
+- [`dualformer`](../../dualformer/README.md)
 - [`fedformer`](../../fedformer/README.md)
 
 ## Semantic boundary
