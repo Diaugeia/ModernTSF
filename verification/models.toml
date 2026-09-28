@@ -896,6 +896,11 @@ test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_sources = ['https://github.com/NX-AI/tirex/blob/2226da4c9fa298ff34ad5af05369851674d622e5/src/tirex/models/tirex.py', 'https://github.com/NX-AI/tirex/blob/2226da4c9fa298ff34ad5af05369851674d622e5/src/tirex/models/slstm/block.py']
 
+[models.TQNet]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+
 [models.Transformer]
 profile = 'local-attention-forecasters'
 test = 'tests/test_local_attention_forecasters.py::LocalAttentionForecasterTests::test_transformer_uses_full_attention_in_all_three_roles'
@@ -936,3 +941,19 @@ test = 'tests/test_tree_baselines.py'
 profile = 'standard'
 test = 'tests/test_xpatch_structure.py'
 reference_test = 'tests/test_xpatch_structure.py'
+[models.CANet]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_sources = ['https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/canet.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/canet_layer.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/asb.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/nsan.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/icb.py']
+
+[models.Gateformer]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_sources = ['https://github.com/nyuolab/Gateformer/blob/298fd10db4af8ddab67e9d0044481279a2b11241/models/Gateformer.py', 'https://github.com/nyuolab/Gateformer/blob/298fd10db4af8ddab67e9d0044481279a2b11241/layers/Embed.py']
+
+[models.TimePro]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'

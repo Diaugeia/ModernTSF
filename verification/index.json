@@ -119,6 +119,13 @@
       "subject_sha256": "ffe557d45ec5fe5b1b820b7386bfe87f480b3e422754d1538fa7a3cf25c85ebd",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "CANet": {
+      "evidence": "verification/evidence/CANet.json",
+      "sha256": "0b51ca92c84f596cf605026850e6da0f4b8d4c934d8d1b8a39b0ea03552656c4",
+      "status": "passed",
+      "subject_sha256": "3caed36523c184b247328e3568beb87d82065fcbf7897217c208afd393ec33b6",
+      "verified_at": "2026-09-28T20:34:12.212100Z"
+    },
     "CARD": {
       "evidence": "verification/evidence/CARD.json",
       "sha256": "67beba4d20ba12976f7b76af7b0bcda5d46a2de87aea3b967cc82e5f3a45d4c8",
@@ -426,6 +433,13 @@
       "status": "passed",
       "subject_sha256": "c2e266c7848ca62c2c490659049aebe237d4bf1ccd06d26a8fcbbda1411bd777",
       "verified_at": "2026-09-28T20:23:04.800519Z"
+    },
+    "Gateformer": {
+      "evidence": "verification/evidence/Gateformer.json",
+      "sha256": "5d05eeb585741f1769a3a63fbdad2b0f3a191fac675358ef8aa1b29f72087dd6",
+      "status": "passed",
+      "subject_sha256": "8e3eb7f8655749c2ba8d50560aaac6ef71fc4ff492e01eb8d3725732f5fc9b80",
+      "verified_at": "2026-09-28T20:34:12.212100Z"
     },
     "GaussianMLP": {
       "evidence": "verification/evidence/GaussianMLP.json",
@@ -1071,6 +1085,13 @@
       "subject_sha256": "97e4994ddd4c18b6119a82d1e46789685d2a2542721c8ef15049a9c45059e08c",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "TQNet": {
+      "evidence": "verification/evidence/TQNet.json",
+      "sha256": "01db47f56c2d2d7ac71567ab00d068519c62501491d9dd0dafeaae4b31e02c68",
+      "status": "passed",
+      "subject_sha256": "783f790af91f67d6cd9270913316926d1b4af749e179ddeffbe83be1bc29d5e4",
+      "verified_at": "2026-09-28T20:34:12.212100Z"
+    },
     "TSMixer": {
       "evidence": "verification/evidence/TSMixer.json",
       "sha256": "082911453b6df4e14f646614c13d19b3f41bed1f9320c3a5ad01ec0b15e4d42c",
@@ -1182,6 +1203,13 @@
       "status": "passed",
       "subject_sha256": "3ecaca65ae3cba04c7993878cd4d6ea470e4a871b681ee6a6a3c58194e92ded8",
       "verified_at": "2026-09-28T18:37:08.769655Z"
+    },
+    "TimePro": {
+      "evidence": "verification/evidence/TimePro.json",
+      "sha256": "1d01f4a870505c3347b26c7810b9cc4e5d0229047c7648b0e4782e3d4c1310e2",
+      "status": "passed",
+      "subject_sha256": "d4d011ae448cbec1798718b13355cc884ae58a028cd8869c6de83dbf8e09a072",
+      "verified_at": "2026-09-28T20:34:12.212100Z"
     },
     "TimeXer": {
       "evidence": "verification/evidence/TimeXer.json",

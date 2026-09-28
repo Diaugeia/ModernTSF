@@ -339,4 +339,8 @@ MODEL_CATALOG = ModelCatalog({
     'RPMixer': 'moderntsf.models.rpmixer.spec',
     'MGSFformer': 'moderntsf.models.mgsfformer.spec',
     'CATS': 'moderntsf.models.cats.spec',
+    "TQNet": "moderntsf.models.tqnet.spec",
+    "Gateformer": "moderntsf.models.gateformer.spec",
+    "TimePro": "moderntsf.models.timepro.spec",
+    "CANet": "moderntsf.models.canet.spec",
 })

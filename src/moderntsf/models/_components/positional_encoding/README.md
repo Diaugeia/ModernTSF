@@ -40,7 +40,8 @@ Retrieval terms: `encoding`, `patch`, `position`, `transformer`.
 
 ## Current model consumers
 
-- No model currently declares this component directly.
+- [`canet`](../../canet/README.md)
+- [`gateformer`](../../gateformer/README.md)
 
 ## Semantic boundary
 

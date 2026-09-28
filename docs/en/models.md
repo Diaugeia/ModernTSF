@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 178 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 182 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -23,6 +23,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `BigST` | [`configs/models/BigST.toml`](../../configs/models/BigST.toml) | spatiotemporal | [README](../../src/moderntsf/models/bigst/README.md) |
 | `BiMamba` | [`configs/models/BiMamba.toml`](../../configs/models/BiMamba.toml) | time-series | [README](../../src/moderntsf/models/bimamba/README.md) |
 | `BiST` | [`configs/models/BiST.toml`](../../configs/models/BiST.toml) | spatiotemporal | [README](../../src/moderntsf/models/bist/README.md) |
+| `CANet` | [`configs/models/CANet.toml`](../../configs/models/CANet.toml) | time-series | [README](../../src/moderntsf/models/canet/README.md) |
 | `CARD` | [`configs/models/CARD.toml`](../../configs/models/CARD.toml) | time-series | [README](../../src/moderntsf/models/card/README.md) |
 | `CatBoostTS` | [`configs/models/CatBoostTS.toml`](../../configs/models/CatBoostTS.toml) | time-series | [README](../../src/moderntsf/models/catboost_ts/README.md) |
 | `CATS` | [`configs/models/CATS.toml`](../../configs/models/CATS.toml) | time-series | [README](../../src/moderntsf/models/cats/README.md) |
@@ -61,6 +62,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `FreTS` | [`configs/models/FreTS.toml`](../../configs/models/FreTS.toml) | time-series | [README](../../src/moderntsf/models/frets/README.md) |
 | `FTP` | [`configs/models/FTP.toml`](../../configs/models/FTP.toml) | time-series | [README](../../src/moderntsf/models/ftp/README.md) |
 | `GAGNN` | [`configs/models/GAGNN.toml`](../../configs/models/GAGNN.toml) | covariate | [README](../../src/moderntsf/models/gagnn/README.md) |
+| `Gateformer` | [`configs/models/Gateformer.toml`](../../configs/models/Gateformer.toml) | time-series | [README](../../src/moderntsf/models/gateformer/README.md) |
 | `GaussianMLP` | [`configs/models/GaussianMLP.toml`](../../configs/models/GaussianMLP.toml) | distribution-output, time-series | [README](../../src/moderntsf/models/gaussian_mlp/README.md) |
 | `GaussianProcessTS` | [`configs/models/GaussianProcessTS.toml`](../../configs/models/GaussianProcessTS.toml) | time-series | [README](../../src/moderntsf/models/gaussian_process_ts/README.md) |
 | `GCLSTM` | [`configs/models/GCLSTM.toml`](../../configs/models/GCLSTM.toml) | covariate, spatiotemporal | [README](../../src/moderntsf/models/gclstm/README.md) |
@@ -173,9 +175,11 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TimeMosaic` | [`configs/models/TimeMosaic.toml`](../../configs/models/TimeMosaic.toml) | time-series | [README](../../src/moderntsf/models/timemosaic/README.md) |
 | `TimeO1` | [`configs/models/TimeO1.toml`](../../configs/models/TimeO1.toml) | time-series | [README](../../src/moderntsf/models/timeo1/README.md) |
 | `TimePerceiver` | [`configs/models/TimePerceiver.toml`](../../configs/models/TimePerceiver.toml) | time-series | [README](../../src/moderntsf/models/timeperceiver/README.md) |
+| `TimePro` | [`configs/models/TimePro.toml`](../../configs/models/TimePro.toml) | time-series | [README](../../src/moderntsf/models/timepro/README.md) |
 | `TimesNet` | [`configs/models/TimesNet.toml`](../../configs/models/TimesNet.toml) | time-series | [README](../../src/moderntsf/models/timesnet/README.md) |
 | `TimeXer` | [`configs/models/TimeXer.toml`](../../configs/models/TimeXer.toml) | time-series | [README](../../src/moderntsf/models/timexer/README.md) |
 | `TiRex` | [`configs/models/TiRex.toml`](../../configs/models/TiRex.toml) | quantile-output, time-series | [README](../../src/moderntsf/models/tirex/README.md) |
+| `TQNet` | [`configs/models/TQNet.toml`](../../configs/models/TQNet.toml) | time-series | [README](../../src/moderntsf/models/tqnet/README.md) |
 | `Transformer` | [`configs/models/Transformer.toml`](../../configs/models/Transformer.toml) | time-series | [README](../../src/moderntsf/models/transformer/README.md) |
 | `TSMixer` | [`configs/models/TSMixer.toml`](../../configs/models/TSMixer.toml) | time-series | [README](../../src/moderntsf/models/tsmixer/README.md) |
 | `TSRAG` | [`configs/models/TSRAG.toml`](../../configs/models/TSRAG.toml) | time-series | [README](../../src/moderntsf/models/tsrag/README.md) |

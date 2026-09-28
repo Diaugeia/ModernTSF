@@ -1,27 +1,27 @@
 ---
-name: "flatten_forecast_head"
+name: "gated_fusion"
 kind: "component"
-module: "moderntsf.models._components.flatten_forecast_head"
-summary: "Shared or channel-wise linear forecast head over two flattened feature axes."
+module: "moderntsf.models._components.gated_fusion"
+summary: "Learnable sigmoid gate that convexly blends two equal-shaped embeddings."
 ---
 
-# flatten_forecast_head
+# gated_fusion
 
 ## Purpose
 
-Shared or channel-wise linear forecast head over two flattened feature axes.
+Learnable sigmoid gate that convexly blends two equal-shaped embeddings.
 
-Linear forecasting head for flattened feature and patch axes.
+Learnable sigmoid gate that convexly blends two equal-shaped embeddings.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- `FlattenForecastHead(individual: bool, n_vars: int, nf: int, target_window: int, head_dropout: float=0.0)`
-  Map ``(B, C, D, P)``-like inputs to ``(B, C, horizon)``.
+- `GatedFusion(dim: int)`
+  Blend two same-shaped embeddings with a learned per-position gate.
 
 ```python
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
+from moderntsf.models._components.gated_fusion import GatedFusion
 ```
 
 ## Input and output contract
@@ -34,15 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `flatten_forecast_head` in the consuming model's `components`
+implementation, then declare `gated_fusion` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`.
+Retrieval terms: `fusion`, `gate`, `gated`, `mixture`, `sigmoid`.
 
 ## Current model consumers
 
 - [`gateformer`](../../gateformer/README.md)
-- [`srsnet`](../../srsnet/README.md)
 
 ## Semantic boundary
 

@@ -1,27 +1,27 @@
 ---
-name: "flatten_forecast_head"
+name: "periodic_query_bank"
 kind: "component"
-module: "moderntsf.models._components.flatten_forecast_head"
-summary: "Shared or channel-wise linear forecast head over two flattened feature axes."
+module: "moderntsf.models._components.periodic_query_bank"
+summary: "Learnable per-phase vector table gathered into phase-aligned windows."
 ---
 
-# flatten_forecast_head
+# periodic_query_bank
 
 ## Purpose
 
-Shared or channel-wise linear forecast head over two flattened feature axes.
+Learnable per-phase vector table gathered into phase-aligned windows.
 
-Linear forecasting head for flattened feature and patch axes.
+A learnable table of per-phase vectors gathered into phase-aligned windows.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- `FlattenForecastHead(individual: bool, n_vars: int, nf: int, target_window: int, head_dropout: float=0.0)`
-  Map ``(B, C, D, P)``-like inputs to ``(B, C, horizon)``.
+- `PeriodicQueryBank(period: int, channels: int)`
+  One learnable vector per phase of a fixed period, indexed by offset.
 
 ```python
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
+from moderntsf.models._components.periodic_query_bank import PeriodicQueryBank
 ```
 
 ## Input and output contract
@@ -34,15 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `flatten_forecast_head` in the consuming model's `components`
+implementation, then declare `periodic_query_bank` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`.
+Retrieval terms: `cycle`, `gather`, `period`, `phase`, `query`.
 
 ## Current model consumers
 
-- [`gateformer`](../../gateformer/README.md)
-- [`srsnet`](../../srsnet/README.md)
+- [`tqnet`](../../tqnet/README.md)
 
 ## Semantic boundary
 

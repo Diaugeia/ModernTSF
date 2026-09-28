@@ -103,6 +103,7 @@ Retrieval terms: `denormalization`, `instance`, `normalization`, `reversible`.
 - [`timemosaic`](../../timemosaic/README.md)
 - [`timeperceiver`](../../timeperceiver/README.md)
 - [`timexer`](../../timexer/README.md)
+- [`tqnet`](../../tqnet/README.md)
 - [`tsrag`](../../tsrag/README.md)
 - [`umixer`](../../umixer/README.md)
 - [`wavenet`](../../wavenet/README.md)

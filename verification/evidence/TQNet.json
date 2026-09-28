@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "model": "TQNet",
+  "status": "passed",
+  "verified_at": "2026-09-28T20:34:12.212100Z",
+  "subject_sha256": "783f790af91f67d6cd9270913316926d1b4af749e179ddeffbe83be1bc29d5e4",
+  "paper": {
+    "title": "Temporal Query Network for Efficient Multivariate Time Series Forecasting",
+    "venue": "ICML 2025",
+    "year": 2025,
+    "url": "https://arxiv.org/abs/2505.12917"
+  },
+  "codebase": {
+    "url": "https://github.com/ACAT-SCUT/TQNet",
+    "revision": "15e19cb23483ed52398566c4baa959168cfffa57",
+    "license": "Apache-2.0"
+  },
+  "checks": {
+    "paper_structure": {
+      "status": "passed",
+      "evidence": [
+        "tests/test_2025_query_gate_hyperstate_forecasters.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "structure_count": 0
+      }
+    },
+    "equations": {
+      "status": "passed",
+      "evidence": [
+        "tests/test_2025_query_gate_hyperstate_forecasters.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "structure_count": 0
+      }
+    },
+    "construction": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "forward": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "backward": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "finite_outputs": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "active_parameter_gradients": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "state_dict_round_trip": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "cpu": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "batch_size_boundary": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "sequence_length_boundary": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "input_contract": {
+      "status": "passed",
+      "evidence": [
+        "uv run tsf verify model TQNet"
+      ],
+      "metrics": {
+        "device": "cpu"
+      }
+    },
+    "reference_comparison": {
+      "status": "passed",
+      "evidence": [
+        "https://github.com/ACAT-SCUT/TQNet@15e19cb23483ed52398566c4baa959168cfffa57",
+        "tests/test_2025_query_gate_hyperstate_forecasters.py"
+      ],
+      "metrics": {
+        "profile": "standard",
+        "inspected_files": 1
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.14",
+    "framework": "torch 2.6.0",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "torch": "2.6.0"
+    },
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "device": "cpu",
+    "dtype": "float32",
+    "deterministic": {
+      "num_threads": 1,
+      "seed": 104729
+    }
+  },
+  "commands": [
+    "uv run tsf verify model TQNet",
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
+  ]
+}

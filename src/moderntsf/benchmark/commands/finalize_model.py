@@ -79,7 +79,7 @@ def _preflight(name: str) -> tuple[Path, str]:
     if unknown:
         raise ValueError(f"unknown declared components: {', '.join(sorted(unknown))}")
     imported_components = components_used_by(package)
-    if declared_components != imported_components:
+    if declared_components != set(imported_components):
         raise ValueError(
             "component declaration/import mismatch: "
             f"declared={sorted(declared_components)}, imported={sorted(imported_components)}"

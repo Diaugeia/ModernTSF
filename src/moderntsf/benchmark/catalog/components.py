@@ -90,6 +90,13 @@ COMPONENT_CATALOG = ComponentCatalog(
     (
         ComponentSpec("adj_norm", "moderntsf.models._components.adj_norm", "Dense adjacency normalization.", keywords=("adjacency", "graph", "laplacian", "normalization")),
         ComponentSpec(
+            "adain_style_norm",
+            "moderntsf.models._components.adain_style_norm",
+            "Adaptive instance normalization rescaling features to externally supplied statistics.",
+            ("AdaptiveInstanceNorm1d",),
+            ("adain", "adaptive", "non-stationary", "normalization", "style"),
+        ),
+        ComponentSpec(
             "adaptive_node_embedding_adjacency",
             "moderntsf.models._components.adaptive_node_embedding_adjacency",
             "Learnable node-embedding adaptive adjacency: softmax(relu(E1 @ E2^T)).",
@@ -167,6 +174,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("GaussianParameterHead",),
             ("distribution", "gaussian", "location", "probabilistic", "scale"),
         ),
+        ComponentSpec(
+            "gated_fusion",
+            "moderntsf.models._components.gated_fusion",
+            "Learnable sigmoid gate that convexly blends two equal-shaped embeddings.",
+            ("GatedFusion",),
+            ("fusion", "gate", "gated", "mixture", "sigmoid"),
+        ),
         ComponentSpec("graph_utils", "moderntsf.models._components.graph_utils", "Graph supports, Laplacians, and Chebyshev bases.", keywords=("adjacency", "chebyshev", "graph", "laplacian", "support")),
         ComponentSpec(
             "graph_spectral",
@@ -192,6 +206,13 @@ COMPONENT_CATALOG = ComponentCatalog(
         ),
         ComponentSpec("masking", "moderntsf.models._components.masking", "Attention mask construction.", keywords=("attention", "causal", "mask")),
         ComponentSpec(
+            "hyper_state_scan",
+            "moderntsf.models._components.hyper_state_scan",
+            "Kernel-free scalar-state selective scan and a 2-D grid state mixer.",
+            ("diagonal_selective_scan", "GridStateMixer"),
+            ("grid", "hyper-state", "mamba", "scan", "ssm", "state-space"),
+        ),
+        ComponentSpec(
             "patchtst",
             "moderntsf.models._components.patchtst",
             "Patch extraction, time-series Transformer encoding, and PatchTST backbone.",
@@ -199,6 +220,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("backbone", "channel-independent", "patch", "transformer"),
         ),
         ComponentSpec("positional_encoding", "moderntsf.models._components.positional_encoding", "Patch-transformer positional encodings.", keywords=("encoding", "patch", "position", "transformer")),
+        ComponentSpec(
+            "periodic_query_bank",
+            "moderntsf.models._components.periodic_query_bank",
+            "Learnable per-phase vector table gathered into phase-aligned windows.",
+            ("PeriodicQueryBank",),
+            ("cycle", "gather", "period", "phase", "query"),
+        ),
         ComponentSpec(
             "quantile_head",
             "moderntsf.models._components.quantile_head",

@@ -1,27 +1,27 @@
 ---
-name: "flatten_forecast_head"
+name: "adain_style_norm"
 kind: "component"
-module: "moderntsf.models._components.flatten_forecast_head"
-summary: "Shared or channel-wise linear forecast head over two flattened feature axes."
+module: "moderntsf.models._components.adain_style_norm"
+summary: "Adaptive instance normalization rescaling features to externally supplied statistics."
 ---
 
-# flatten_forecast_head
+# adain_style_norm
 
 ## Purpose
 
-Shared or channel-wise linear forecast head over two flattened feature axes.
+Adaptive instance normalization rescaling features to externally supplied statistics.
 
-Linear forecasting head for flattened feature and patch axes.
+Adaptive instance normalization: rescale features to external statistics.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- `FlattenForecastHead(individual: bool, n_vars: int, nf: int, target_window: int, head_dropout: float=0.0)`
-  Map ``(B, C, D, P)``-like inputs to ``(B, C, horizon)``.
+- `AdaptiveInstanceNorm1d(eps: float=1e-05)`
+  Normalize over the sequence axis, then rescale to given statistics.
 
 ```python
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
+from moderntsf.models._components.adain_style_norm import AdaptiveInstanceNorm1d
 ```
 
 ## Input and output contract
@@ -34,15 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `flatten_forecast_head` in the consuming model's `components`
+implementation, then declare `adain_style_norm` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`.
+Retrieval terms: `adain`, `adaptive`, `non-stationary`, `normalization`, `style`.
 
 ## Current model consumers
 
-- [`gateformer`](../../gateformer/README.md)
-- [`srsnet`](../../srsnet/README.md)
+- [`canet`](../../canet/README.md)
 
 ## Semantic boundary
 
