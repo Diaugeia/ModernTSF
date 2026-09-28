@@ -133,6 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     replay.add_argument("--weeks", type=int, default=12)
     replay.add_argument("--models", nargs="*", default=[])
     replay.add_argument("--out", type=Path, default=None)
+    replay.add_argument("--set", action="append", default=[], metavar="SECTION.KEY=VALUE")
     args = parser.parse_args(argv)
 
     try:
@@ -213,7 +214,8 @@ def main(argv: list[str] | None = None) -> int:
             from moderntsf.realtime.replay import replay as run_replay
 
             summary = run_replay(get_track(args.track), PanelStore(args.track), end=pd.Timestamp(args.end),
-                                 weeks=args.weeks, models=args.models)
+                                 weeks=args.weeks, models=args.models,
+                                 overrides=_parse_overrides(args.set))
             text = json.dumps(summary, indent=2)
             if args.out:
                 args.out.write_text(text + "\n", encoding="utf-8")

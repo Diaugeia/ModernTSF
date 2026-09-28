@@ -1,7 +1,8 @@
 # Contributing to ModernTSF
 
 Thanks for helping grow the benchmark! This guide covers the common contributions:
-adding a model, adding a dataset, and reporting issues.
+proposing or adding a model, submitting results, forecasting real-time rounds,
+adding a dataset, and reporting issues.
 
 ## Branching & releases
 
@@ -35,6 +36,24 @@ CPU/macOS installs. The backend is selected via `UV_TORCH_BACKEND`.
 Open an issue from the templates — **Submit a new model**, **Report a bug**, or
 **Ask for a feature**. The forms require the context we need (repro config,
 environment, official-source license, …); issues without it may be closed.
+
+## Proposing a method (no code required)
+
+Open a **Submit a new model** issue with the paper link. When a maintainer adds
+the `intake-approved` label, the `paper-intake` workflow has a coding agent
+implement the paper as a catalog model, re-runs the verification battery
+independently, and opens a pull request for review. The same workflow scans the
+literature weekly.
+
+## Submitting results and real-time forecasts
+
+- **Benchmark results:** add a `submission.json` under `apps/web/submissions/`
+  as described in [`apps/web/SUBMITTING.md`](apps/web/SUBMITTING.md). CI
+  validates it against the TSF-Core contract.
+- **Real-time rounds:** add `forecasts/<YourModel>.json` to an open round under
+  `apps/web/submissions/realtime/<track>/rounds/<round_id>/` before its
+  deadline; CI rejects pull requests last updated after the deadline. See
+  [`docs/en/realtime.md`](docs/en/realtime.md).
 
 ## Adding a model
 

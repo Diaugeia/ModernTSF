@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modern-tsf"
-version = "0.8.0"
+version = "1.0.0rc1"
 description = "ModernTSF — Agent-first time-series forecasting with TOML configs and flat model/component catalogs."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -44,6 +44,8 @@ dependencies = [
 [project.optional-dependencies]
 # Publish and load checkpoints on the Hugging Face Hub (moderntsf.hub).
 hub = ["huggingface_hub>=0.25", "safetensors>=0.4"]
+# Live data sources for the rolling real-time tracks (moderntsf.realtime).
+realtime = ["akshare", "requests", "pyarrow", "huggingface_hub>=0.25"]
 tensorboard = ["tensorboard>=2.18"]
 wandb = ["wandb>=0.19"]
 

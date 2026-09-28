@@ -3,9 +3,11 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
-## [Unreleased]
+## [1.0.0rc1] — Unreleased
 
-One installable package, one repository, one address for published assets.
+A fully automated, continuously updated forecasting platform: one installable
+package, one repository, one address for published assets, and rolling
+real-time evaluation.
 
 ### Added
 
@@ -18,6 +20,18 @@ One installable package, one repository, one address for published assets.
 - `tsf init` scaffolds a standalone project; run configs can extend installed
   catalog presets through `moderntsf://` paths.
 - `hub` optional dependency group (`huggingface_hub`, `safetensors`).
+- Rolling real-time evaluation (`moderntsf.realtime`, `tsf realtime`): versioned
+  append-only panels mirrored to the Hub, weekly rounds opened before their
+  targets, baseline and catalog-model forecasts, scoring with frozen
+  normalization, Kendall-tau rank stability, and historical replay. Tracks:
+  `stock_hs300` (AKShare log returns), `traffic_pems_sb` (PeMS District 8,
+  bootstrapped from UltraTraffic_CL), `air_openaq_cn` (OpenAQ PM2.5).
+- TSF-Core `RoundSpec`, `ForecastSubmission`, `RoundScore` contracts and one
+  shared leaderboard implementation (`tsf_core.leaderboard`).
+- Workflows: `realtime-weekly` (CPU cron), `paper-intake` (Codex literature scan
+  and implementation with independent verification; community requests through
+  the new-model issue form), real-time forecast checks in `web-validate`.
+- `realtime` optional dependency group (`akshare`, `requests`, `pyarrow`).
 
 ### Changed
 
@@ -27,6 +41,9 @@ One installable package, one repository, one address for published assets.
   packages. Sources now live in `src/moderntsf/`.
 - `tsf submit` points contributors at `apps/web/submissions/` in this repository.
 - Pytest collects only `tests/`; `experiments/` is a local-only workspace.
+- The site pipeline validates with the TSF-Core pydantic contracts; its
+  hand-written `contract.schema.json` and the duplicate aggregator are removed.
+- `build_model_meta.py` reads the current model-card fields.
 
 ## [0.8.0] — 2026-09-04
 
