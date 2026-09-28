@@ -44,6 +44,7 @@ Retrieval terms: `adjacency`, `chebyshev`, `graph`, `laplacian`, `support`.
 - [`dcrnn`](../../dcrnn/README.md)
 - [`dfdgcn`](../../dfdgcn/README.md)
 - [`gwnet`](../../gwnet/README.md)
+- [`st_ssdl`](../../st_ssdl/README.md)
 
 ## Semantic boundary
 

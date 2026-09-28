@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STDN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "e2c5bc405c8445db692e89e300e482953d9d0e93bf6d6be4c785fa7143e73c66",
+  "verified_at": "2026-09-28T21:00:04.812765Z",
+  "subject_sha256": "f7a544ca5e3310d6fe703c37e8e754d65bcb2eafc4a67ce6173955aa79a8f875",
   "paper": {
     "title": "Spatiotemporal-aware Trend-Seasonality Decomposition Network for Traffic Flow Forecasting",
     "venue": "AAAI 2025",

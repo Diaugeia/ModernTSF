@@ -265,6 +265,13 @@ structure = ['temporal convolution embedding', 'frequency attention', 'exponenti
 profile = 'standard'
 test = 'tests/test_classical_forecasters.py'
 
+[models.Extralonger]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/Extralonger.py', 'https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/config.yaml', 'https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/train.py']
+structure = ['node-axis-compressed temporal attention route', 'time-axis-compressed spatial route with global-local adjacency-blended attention', 'mixed temporal-then-transposed-attention route', 'fixed-weight three-route fusion']
+
 [models.ExtraTreesTS]
 profile = 'standard'
 test = 'tests/test_tree_baselines.py'
@@ -670,6 +677,13 @@ profile = 'standard'
 test = 'tests/test_probabilistic_attention_forecasters.py'
 reference_test = 'tests/test_probabilistic_attention_forecasters.py'
 
+[models.RAGC]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/models/RAGC.py', 'https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/main.py']
+structure = ['per-node lookback embedding', 'stochastic-shared-embedding-regularized node embedding', 'time-of-day and day-of-week embeddings', 'efficient-cosine-operator adaptive graph convolution blocks with residual-difference skip accumulation']
+
 [models.RandomForestTS]
 profile = 'standard'
 test = 'tests/test_tree_baselines.py'
@@ -765,6 +779,13 @@ structure = ['within-period aggregation', 'cross-period downsampling', 'shared s
 profile = 'standard'
 test = 'tests/test_temporal_structure_forecasters.py'
 reference_test = 'tests/test_temporal_structure_forecasters.py'
+
+[models.ST-SSDL]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/STSSDL.py', 'https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/train_STSSDL.py', 'https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/utils.py']
+structure = ['Chebyshev graph-conv GRU encoder', 'learnable prototype memory with attention retrieval and top-2 nearest-prototype lookup', 'data-driven decoding graph from the prototype-augmented state', 'autoregressive graph-conv GRU decoder']
 
 [models.STAEformer]
 profile = 'local-graph'
@@ -970,6 +991,13 @@ reference_sources = ['https://github.com/UConn-DSIS/TS-RAG/blob/73ac807789d2e61b
 profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
 reference_test = 'tests/test_recent_forecasters_c.py'
+
+[models.VisiFold]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/PlanckChang/VisiFold/blob/cc035f7e803ca793b132bec3a834e8e2b39a9f99/model/VisiFold.py', 'https://github.com/PlanckChang/VisiFold/blob/cc035f7e803ca793b132bec3a834e8e2b39a9f99/model/config.yaml']
+structure = ['temporal folding graph (per-node history folded into one token)', 'time-of-day/day-of-week and adaptive node embeddings', 'node-visibility masking', 'shuffle and subgraph grouping', 'self-attention over subgraphs', 'ungroup and unshuffle']
 
 [models.WaveNet]
 profile = 'standard'

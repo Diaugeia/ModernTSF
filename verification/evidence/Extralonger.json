@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "model": "D2STGNN",
+  "model": "Extralonger",
   "status": "passed",
-  "verified_at": "2026-09-28T21:00:04.812765Z",
-  "subject_sha256": "670a6d03352751d8241e9c3a70603ee5fc53ab84262e5fd4831bba28de9361d4",
+  "verified_at": "2026-09-28T20:57:54.079169Z",
+  "subject_sha256": "f2c78c86b0fdd54b384f8bf974a1ca747075d9206b0a49e6f98f16c032f4b606",
   "paper": {
-    "title": "Decoupled Dynamic Spatial-Temporal Graph Neural Network for Traffic Forecasting",
-    "venue": "VLDB 2022",
-    "year": 2022,
-    "url": "https://www.vldb.org/pvldb/vol15/p2733-shao.pdf"
+    "title": "Extralonger: Toward a Unified Perspective of Spatial-Temporal Factors for Extra-Long-Term Traffic Forecasting",
+    "venue": "NeurIPS 2024 Workshop",
+    "year": 2024,
+    "url": "https://arxiv.org/abs/2411.00844"
   },
   "codebase": {
-    "url": "https://github.com/GestaltCogTeam/BasicTS",
-    "revision": "79641b1c75246ab2d8c53bb52f2ac72588be0cdc",
-    "license": "Apache-2.0"
+    "url": "https://github.com/ZhuoLinLi-shu/Extralonger",
+    "revision": "4adb3ec1f0d0a844e9726273a225e640802417cd",
+    "license": "MIT"
   },
   "checks": {
     "paper_structure": {
@@ -39,7 +39,7 @@
     "construction": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -48,7 +48,7 @@
     "forward": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -57,7 +57,7 @@
     "backward": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -66,7 +66,7 @@
     "finite_outputs": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -75,7 +75,7 @@
     "active_parameter_gradients": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -84,7 +84,7 @@
     "state_dict_round_trip": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -93,7 +93,7 @@
     "cpu": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -102,7 +102,7 @@
     "batch_size_boundary": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -111,7 +111,7 @@
     "sequence_length_boundary": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -120,7 +120,7 @@
     "input_contract": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model Extralonger"
       ],
       "metrics": {
         "device": "cpu"
@@ -129,12 +129,14 @@
     "reference_comparison": {
       "status": "passed",
       "evidence": [
-        "https://github.com/GestaltCogTeam/BasicTS@79641b1c75246ab2d8c53bb52f2ac72588be0cdc",
+        "https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/Extralonger.py",
+        "https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/config.yaml",
+        "https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/train.py",
         "tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
       ],
       "metrics": {
         "profile": "local-graph",
-        "inspected_files": 1
+        "inspected_files": 3
       }
     }
   },
@@ -154,7 +156,7 @@
     }
   },
   "commands": [
-    "uv run tsf verify model D2STGNN",
+    "uv run tsf verify model Extralonger",
     "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "model": "D2STGNN",
+  "model": "RAGC",
   "status": "passed",
-  "verified_at": "2026-09-28T21:00:04.812765Z",
-  "subject_sha256": "670a6d03352751d8241e9c3a70603ee5fc53ab84262e5fd4831bba28de9361d4",
+  "verified_at": "2026-09-28T20:57:54.079169Z",
+  "subject_sha256": "ea18da9477cbf359f9a58ea20afaf4751fe6a01e821a7eeb071fbc03bdf3ad53",
   "paper": {
-    "title": "Decoupled Dynamic Spatial-Temporal Graph Neural Network for Traffic Forecasting",
-    "venue": "VLDB 2022",
-    "year": 2022,
-    "url": "https://www.vldb.org/pvldb/vol15/p2733-shao.pdf"
+    "title": "Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution",
+    "venue": "arXiv",
+    "year": 2025,
+    "url": "https://arxiv.org/abs/2506.07179"
   },
   "codebase": {
-    "url": "https://github.com/GestaltCogTeam/BasicTS",
-    "revision": "79641b1c75246ab2d8c53bb52f2ac72588be0cdc",
-    "license": "Apache-2.0"
+    "url": "https://github.com/wkq-wukaiqi/RAGC",
+    "revision": "ee9cbb112b31ca704971a6b1d1c8ffdce6412b95",
+    "license": "Unlicensed (no LICENSE file in official repo; all rights reserved by default)"
   },
   "checks": {
     "paper_structure": {
@@ -39,7 +39,7 @@
     "construction": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -48,7 +48,7 @@
     "forward": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -57,7 +57,7 @@
     "backward": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -66,7 +66,7 @@
     "finite_outputs": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -75,7 +75,7 @@
     "active_parameter_gradients": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -84,7 +84,7 @@
     "state_dict_round_trip": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -93,7 +93,7 @@
     "cpu": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -102,7 +102,7 @@
     "batch_size_boundary": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -111,7 +111,7 @@
     "sequence_length_boundary": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -120,7 +120,7 @@
     "input_contract": {
       "status": "passed",
       "evidence": [
-        "uv run tsf verify model D2STGNN"
+        "uv run tsf verify model RAGC"
       ],
       "metrics": {
         "device": "cpu"
@@ -129,12 +129,13 @@
     "reference_comparison": {
       "status": "passed",
       "evidence": [
-        "https://github.com/GestaltCogTeam/BasicTS@79641b1c75246ab2d8c53bb52f2ac72588be0cdc",
+        "https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/models/RAGC.py",
+        "https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/main.py",
         "tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
       ],
       "metrics": {
         "profile": "local-graph",
-        "inspected_files": 1
+        "inspected_files": 2
       }
     }
   },
@@ -154,7 +155,7 @@
     }
   },
   "commands": [
-    "uv run tsf verify model D2STGNN",
+    "uv run tsf verify model RAGC",
     "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

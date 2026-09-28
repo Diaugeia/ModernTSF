@@ -118,6 +118,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("channel-wise", "forecast", "individual", "linear", "projection"),
         ),
         ComponentSpec(
+            "deviation_memory",
+            "moderntsf.models._components.deviation_memory",
+            "Learnable prototype memory bank with attention retrieval and a deviation score between representations.",
+            ("PrototypeMemory", "PrototypeRetrieval", "deviation_score"),
+            ("contrastive", "deviation", "memory", "prototype", "retrieval", "self-supervised"),
+        ),
+        ComponentSpec(
             "energy_frequency_pooling",
             "moderntsf.models._components.energy_frequency_pooling",
             "Energy-weighted stochastic pooling of a complex spectrum across a token axis.",
@@ -137,6 +144,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             "Two-stage cross-patch attention that compresses patches into summaries before broadcasting.",
             ("GlobalPatchCompressionAttention",),
             ("attention", "compression", "cross-patch", "global", "patch", "sensor", "transformer"),
+        ),
+        ComponentSpec(
+            "graph_masked_attention",
+            "moderntsf.models._components.graph_masked_attention",
+            "Multi-head attention blending global dense scores with local adjacency-masked scores.",
+            ("GlobalLocalGraphAttention",),
+            ("adjacency", "attention", "global", "graph", "local", "mask", "spatial"),
         ),
         ComponentSpec(
             "haar_dwt1d",
@@ -255,6 +269,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("grid", "hyper-state", "mamba", "scan", "ssm", "state-space"),
         ),
         ComponentSpec(
+            "node_visibility",
+            "moderntsf.models._components.node_visibility",
+            "Node-level masking and subgraph grouping for scalable node-set attention.",
+            ("random_mask_tokens", "shuffle_tokens", "unshuffle_tokens", "group_into_subgraphs", "ungroup_subgraphs"),
+            ("graph", "grouping", "masking", "node", "sampling", "subgraph", "visibility"),
+        ),
+        ComponentSpec(
             "patchtst",
             "moderntsf.models._components.patchtst",
             "Patch extraction, time-series Transformer encoding, and PatchTST backbone.",
@@ -275,6 +296,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             "Input-conditioned monotone quantile head with non-crossing outputs.",
             ("QuantileHead", "validate_quantile_levels", "DEFAULT_QUANTILE_LEVELS"),
             ("monotone", "non-crossing", "probabilistic", "quantile"),
+        ),
+        ComponentSpec(
+            "regularized_adaptive_graph_conv",
+            "moderntsf.models._components.regularized_adaptive_graph_conv",
+            "Stochastic embedding row-swap regularization plus a linear-complexity, node-embedding adaptive graph convolution (efficient cosine operator).",
+            ("StochasticSharedEmbedding", "EfficientCosineGraphConv"),
+            ("adaptive", "adjacency", "cosine", "embedding", "graph", "linear-complexity", "node", "regularization", "stochastic"),
         ),
         ComponentSpec("revin", "moderntsf.models._components.revin", "Reversible instance normalization.", ("RevIN",), ("denormalization", "instance", "normalization", "reversible")),
         ComponentSpec(

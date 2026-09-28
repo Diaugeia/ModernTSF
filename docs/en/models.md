@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 194 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 198 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -56,6 +56,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `ElasticNetTS` | [`configs/models/ElasticNetTS.toml`](../../configs/models/ElasticNetTS.toml) | time-series | [README](../../src/moderntsf/models/elastic_net_ts/README.md) |
 | `ETSformer` | [`configs/models/ETSformer.toml`](../../configs/models/ETSformer.toml) | time-series | [README](../../src/moderntsf/models/etsformer/README.md) |
 | `ExpSmoothingTS` | [`configs/models/ExpSmoothingTS.toml`](../../configs/models/ExpSmoothingTS.toml) | time-series | [README](../../src/moderntsf/models/exp_smoothing_ts/README.md) |
+| `Extralonger` | [`configs/models/Extralonger.toml`](../../configs/models/Extralonger.toml) | spatiotemporal | [README](../../src/moderntsf/models/extralonger/README.md) |
 | `ExtraTreesTS` | [`configs/models/ExtraTreesTS.toml`](../../configs/models/ExtraTreesTS.toml) | time-series | [README](../../src/moderntsf/models/extra_trees_ts/README.md) |
 | `FEDformer` | [`configs/models/FEDformer.toml`](../../configs/models/FEDformer.toml) | time-series | [README](../../src/moderntsf/models/fedformer/README.md) |
 | `FeTS` | [`configs/models/FeTS.toml`](../../configs/models/FeTS.toml) | time-series | [README](../../src/moderntsf/models/fets/README.md) |
@@ -136,6 +137,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Pyraformer` | [`configs/models/Pyraformer.toml`](../../configs/models/Pyraformer.toml) | time-series | [README](../../src/moderntsf/models/pyraformer/README.md) |
 | `QuantileDLinear` | [`configs/models/QuantileDLinear.toml`](../../configs/models/QuantileDLinear.toml) | quantile-output, time-series | [README](../../src/moderntsf/models/quantile_dlinear/README.md) |
 | `QuantilePatchTST` | [`configs/models/QuantilePatchTST.toml`](../../configs/models/QuantilePatchTST.toml) | quantile-output, time-series | [README](../../src/moderntsf/models/quantile_patchtst/README.md) |
+| `RAGC` | [`configs/models/RAGC.toml`](../../configs/models/RAGC.toml) | spatiotemporal | [README](../../src/moderntsf/models/ragc/README.md) |
 | `RandomForestTS` | [`configs/models/RandomForestTS.toml`](../../configs/models/RandomForestTS.toml) | time-series | [README](../../src/moderntsf/models/random_forest_ts/README.md) |
 | `ReFocus` | [`configs/models/ReFocus.toml`](../../configs/models/ReFocus.toml) | time-series | [README](../../src/moderntsf/models/refocus/README.md) |
 | `Reformer` | [`configs/models/Reformer.toml`](../../configs/models/Reformer.toml) | time-series | [README](../../src/moderntsf/models/reformer/README.md) |
@@ -155,6 +157,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Sonnet` | [`configs/models/Sonnet.toml`](../../configs/models/Sonnet.toml) | time-series | [README](../../src/moderntsf/models/sonnet/README.md) |
 | `SparseTSF` | [`configs/models/SparseTSF.toml`](../../configs/models/SparseTSF.toml) | time-series | [README](../../src/moderntsf/models/sparsetsf/README.md) |
 | `SRSNet` | [`configs/models/SRSNet.toml`](../../configs/models/SRSNet.toml) | time-series | [README](../../src/moderntsf/models/srsnet/README.md) |
+| `ST-SSDL` | [`configs/models/ST-SSDL.toml`](../../configs/models/ST-SSDL.toml) | spatiotemporal | [README](../../src/moderntsf/models/st_ssdl/README.md) |
 | `STAEformer` | [`configs/models/STAEformer.toml`](../../configs/models/STAEformer.toml) | spatiotemporal | [README](../../src/moderntsf/models/staeformer/README.md) |
 | `STDN` | [`configs/models/STDN.toml`](../../configs/models/STDN.toml) | spatiotemporal | [README](../../src/moderntsf/models/stdn/README.md) |
 | `StemGNN` | [`configs/models/StemGNN.toml`](../../configs/models/StemGNN.toml) | spatiotemporal | [README](../../src/moderntsf/models/stemgnn/README.md) |
@@ -195,6 +198,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TSMixer` | [`configs/models/TSMixer.toml`](../../configs/models/TSMixer.toml) | time-series | [README](../../src/moderntsf/models/tsmixer/README.md) |
 | `TSRAG` | [`configs/models/TSRAG.toml`](../../configs/models/TSRAG.toml) | time-series | [README](../../src/moderntsf/models/tsrag/README.md) |
 | `UMixer` | [`configs/models/UMixer.toml`](../../configs/models/UMixer.toml) | time-series | [README](../../src/moderntsf/models/umixer/README.md) |
+| `VisiFold` | [`configs/models/VisiFold.toml`](../../configs/models/VisiFold.toml) | spatiotemporal | [README](../../src/moderntsf/models/visifold/README.md) |
 | `WaveNet` | [`configs/models/WaveNet.toml`](../../configs/models/WaveNet.toml) | time-series | [README](../../src/moderntsf/models/wavenet/README.md) |
 | `WDformer` | [`configs/models/WDformer.toml`](../../configs/models/WDformer.toml) | time-series | [README](../../src/moderntsf/models/wdformer/README.md) |
 | `WPMixer` | [`configs/models/WPMixer.toml`](../../configs/models/WPMixer.toml) | time-series | [README](../../src/moderntsf/models/wpmixer/README.md) |

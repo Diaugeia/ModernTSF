@@ -54,6 +54,7 @@ Retrieval terms: `calendar`, `covariate`, `spatiotemporal`, `timestamp`.
 - [`deepair`](../../deepair/README.md)
 - [`dfdgcn`](../../dfdgcn/README.md)
 - [`dgcrn`](../../dgcrn/README.md)
+- [`extralonger`](../../extralonger/README.md)
 - [`gagnn`](../../gagnn/README.md)
 - [`gclstm`](../../gclstm/README.md)
 - [`gts`](../../gts/README.md)
@@ -65,6 +66,8 @@ Retrieval terms: `calendar`, `covariate`, `spatiotemporal`, `timestamp`.
 - [`mtgnn`](../../mtgnn/README.md)
 - [`pcdcnet`](../../pcdcnet/README.md)
 - [`pm25gnn`](../../pm25gnn/README.md)
+- [`ragc`](../../ragc/README.md)
+- [`st_ssdl`](../../st_ssdl/README.md)
 - [`staeformer`](../../staeformer/README.md)
 - [`stdn`](../../stdn/README.md)
 - [`stgcn`](../../stgcn/README.md)
@@ -74,6 +77,7 @@ Retrieval terms: `calendar`, `covariate`, `spatiotemporal`, `timestamp`.
 - [`stop`](../../stop/README.md)
 - [`sttn`](../../sttn/README.md)
 - [`stwave`](../../stwave/README.md)
+- [`visifold`](../../visifold/README.md)
 
 ## Semantic boundary
 

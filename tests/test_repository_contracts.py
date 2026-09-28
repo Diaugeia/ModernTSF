@@ -210,13 +210,13 @@ class RepositoryContractTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 self.assertEqual(cli_main([resource, "audit"]), 0)
-            self.assertIn("43 components" if resource == "component" else "89/89", output.getvalue())
+            self.assertIn("47 components" if resource == "component" else "89/89", output.getvalue())
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["model", "list", "--json"]), 0)
         records = json.loads(output.getvalue())
-        self.assertEqual(len(records), 194)
+        self.assertEqual(len(records), 198)
         self.assertTrue(all(record["summary"] for record in records))
 
         output = io.StringIO()
@@ -268,13 +268,13 @@ class RepositoryContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["model", "audit", "--summary"]), 0)
         audit = json.loads(output.getvalue())
-        self.assertEqual(audit["models"], 194)
+        self.assertEqual(audit["models"], 198)
         self.assertNotIn("implementation", audit)
         self.assertNotIn("failed_by_implementation", audit)
         self.assertEqual(audit["failed"], 0)
         self.assertEqual(audit["blockers"], {})
-        self.assertEqual(audit["verification"], {"passed": 194})
-        self.assertEqual(sum(audit["verification"].values()), 194)
+        self.assertEqual(audit["verification"], {"passed": 198})
+        self.assertEqual(sum(audit["verification"].values()), 198)
         self.assertEqual(
             audit["complete_codebase"],
             sum(record["codebase"] is not None for record in model_records(Path(__file__).resolve().parents[1])),
@@ -299,7 +299,7 @@ class RepositoryContractTests(unittest.TestCase):
     def test_model_cards_are_the_only_descriptive_metadata_source(self) -> None:
         root = Path(__file__).resolve().parents[1]
         records = model_records(root)
-        self.assertEqual(len(records), 194)
+        self.assertEqual(len(records), 198)
         self.assertTrue(all("implementation" not in record for record in records))
         self.assertTrue(
             all(
@@ -340,7 +340,7 @@ class RepositoryContractTests(unittest.TestCase):
             for card in (root / "src" / "moderntsf" / "models").glob("*/README.md")
             if not card.parent.name.startswith("_")
         )
-        self.assertEqual(len(cards), 194)
+        self.assertEqual(len(cards), 198)
         self.assertEqual(REQUIRED_SECTIONS[0], "Method overview")
         self.assertEqual(
             [problem for card in cards for problem in audit_model_card_body(card)],
@@ -351,11 +351,11 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/moderntsf/models/_foundation/README.md").is_file())
-        self.assertEqual(len(COMPONENT_CATALOG.names()), 43)
+        self.assertEqual(len(COMPONENT_CATALOG.names()), 47)
         self.assertEqual(len(dataset_records(root)), 89)
         self.assertEqual(
             len(list((root / "src/moderntsf/models/_components").glob("*/README.md"))),
-            43,
+            47,
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
