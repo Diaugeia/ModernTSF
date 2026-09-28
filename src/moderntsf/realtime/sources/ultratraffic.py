@@ -1,8 +1,10 @@
-"""UltraTraffic_CL archive: yearly hourly-flow panels per PeMS region (2003-2023).
+"""Bootstrap a traffic track from the local UltraTraffic parquet store.
 
-Each ``<region>/<short>_Static/<year>.csv`` has a ``date`` column followed by
-one column per station id. The bootstrap keeps the station set of the most
-recent year, so the live PeMS increments extend exactly the same channels.
+The store (``dataset/ultratraffic``, built by
+:mod:`moderntsf.data.prepare.ultratraffic`) is the same one the static
+``ultratraffic_*`` datasets read, so a track's history and the static presets
+share one loader. The bootstrap keeps the station set of the most recent year,
+so live PeMS increments extend exactly the same channels.
 """
 
 from __future__ import annotations
@@ -12,30 +14,17 @@ from pathlib import Path
 
 import pandas as pd
 
+from moderntsf.data.ultratraffic_store import load_panel
 from moderntsf.realtime.tracks import TrackSpec
 
 
-def _region_dir(track: TrackSpec) -> Path:
-    env = track.bootstrap.get("root_env", "ULTRATRAFFIC_ROOT")
-    root = os.environ.get(env)
-    if not root:
-        raise RuntimeError(f"set {env} to the extracted UltraTraffic_CL directory")
-    region = track.bootstrap["region"]
-    short = region.split("_", 1)[1]
-    return Path(root) / region / f"{short}_{track.bootstrap.get('variant', 'Static')}"
-
-
 def load(track: TrackSpec) -> pd.DataFrame:
-    directory = _region_dir(track)
-    years = sorted(int(p.stem) for p in directory.glob("[0-9][0-9][0-9][0-9].csv"))
-    first = int(track.bootstrap.get("first_year", years[0]))
-    years = [y for y in years if y >= first]
-    if not years:
-        raise FileNotFoundError(f"no yearly panels under {directory}")
-    latest = pd.read_csv(directory / f"{years[-1]}.csv", nrows=0).columns[1:]
-    frames = []
-    for year in years:
-        frame = pd.read_csv(directory / f"{year}.csv", index_col="date", parse_dates=True)
-        frame.columns = [str(c) for c in frame.columns]
-        frames.append(frame.reindex(columns=[str(c) for c in latest]))
-    return pd.concat(frames).sort_index()
+    root = Path(os.environ.get(track.bootstrap.get("root_env", "ULTRATRAFFIC_ROOT"), "dataset/ultratraffic"))
+    region = track.bootstrap["region"]
+    available = sorted(int(p.stem) for p in (root / region / "static").glob("[0-9][0-9][0-9][0-9].parquet"))
+    if not available:
+        raise FileNotFoundError(f"no UltraTraffic store for {region} under {root}; run "
+                                "`python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip`")
+    first = int(track.bootstrap.get("first_year", available[0]))
+    years = [y for y in available if y >= first]
+    return load_panel(str(root), region, years, "static", "last")

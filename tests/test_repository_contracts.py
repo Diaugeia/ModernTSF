@@ -194,7 +194,7 @@ class RepositoryContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["dataset", "list", "--json"]), 0)
         datasets = json.loads(output.getvalue())
-        self.assertEqual(len(datasets), 80)
+        self.assertEqual(len(datasets), 89)
         self.assertTrue(all(record["card"].endswith("/README.md") for record in datasets))
 
         output = io.StringIO()
@@ -210,7 +210,7 @@ class RepositoryContractTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 self.assertEqual(cli_main([resource, "audit"]), 0)
-            self.assertIn("24 components" if resource == "component" else "80/80", output.getvalue())
+            self.assertIn("24 components" if resource == "component" else "89/89", output.getvalue())
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
@@ -352,14 +352,14 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/moderntsf/models/_foundation/README.md").is_file())
         self.assertEqual(len(COMPONENT_CATALOG.names()), 24)
-        self.assertEqual(len(dataset_records(root)), 80)
+        self.assertEqual(len(dataset_records(root)), 89)
         self.assertEqual(
             len(list((root / "src/moderntsf/models/_components").glob("*/README.md"))),
             24,
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
-            80,
+            89,
         )
 
     def test_agent_assets_are_canonical(self) -> None:

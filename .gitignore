@@ -37,3 +37,6 @@ experiments/**
 
 # Local scratch
 tmp/
+
+# Agent worktrees
+.claude/worktrees/

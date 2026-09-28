@@ -118,6 +118,8 @@ DATASET_NAME_MAP = {
     # CauAir spatiotemporal / air-quality datasets (index-windowed .npz).
     "cauair_st": "moderntsf.data.datasets.cauair",
     "cauair_ts": "moderntsf.data.datasets.cauair",
+    "ultratraffic_st": "moderntsf.data.datasets.ultratraffic",
+    "ultratraffic_ts": "moderntsf.data.datasets.ultratraffic",
     # Synthetic node-structured dataset for spatiotemporal-mode smoke tests.
     "synthetic_st": "moderntsf.data.datasets.synthetic_st",
 }

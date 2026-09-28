@@ -16,7 +16,7 @@ on:
     inputs:
       tracks:
         description: "Space-separated track ids"
-        default: "stock_hs300 traffic_pems_sb air_openaq_cn"
+        default: "stock_hs300 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn"
 
 permissions:
   contents: write
@@ -46,7 +46,7 @@ jobs:
       - name: Run the weekly cycle
         run: |
           status=0
-          for track in ${{ inputs.tracks || 'stock_hs300 traffic_pems_sb air_openaq_cn' }}; do
+          for track in ${{ inputs.tracks || 'stock_hs300 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn' }}; do
             echo "::group::$track"
             python -m moderntsf.realtime weekly --track "$track" --pull --push || status=$?
             echo "::endgroup::"

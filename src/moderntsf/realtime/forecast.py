@@ -20,6 +20,7 @@ import subprocess
 import numpy as np
 import pandas as pd
 
+from moderntsf.data.calendar import node_calendar
 from moderntsf.realtime.store import PanelStore
 from moderntsf.realtime.tracks import TrackSpec
 from moderntsf.tsf_core.realtime import ForecastSubmission, RoundSpec
@@ -47,10 +48,7 @@ def export_bundle(spec: RoundSpec, store: PanelStore, track: TrackSpec, director
     lead = len(future)
     index = grid.append(future)
     values = np.concatenate([history.to_numpy(np.float32), np.zeros((lead, len(spec.channels)), np.float32)])
-    tod = ((index.hour * 60 + index.minute) / (24 * 60)).to_numpy(np.float32)
-    dow = (index.dayofweek / 7.0).to_numpy(np.float32)
-    n = len(spec.channels)
-    data = np.stack([values, np.repeat(tod[:, None], n, 1), np.repeat(dow[:, None], n, 1)], axis=-1)
+    data = np.concatenate([values[..., None], node_calendar(index, len(spec.channels))], axis=-1)
     hist_len = len(grid)
     mean = np.array([history.to_numpy().mean(), 0.0, 0.0], np.float32)
     std = np.array([history.to_numpy().std() or 1.0, 1.0, 1.0], np.float32)
