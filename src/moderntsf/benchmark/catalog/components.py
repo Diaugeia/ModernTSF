@@ -222,6 +222,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("EdgePaddedMovingAverage", "SeriesDecomposition"),
             ("decomposition", "moving-average", "residual", "smoothing", "trend"),
         ),
+        ComponentSpec(
+            "topk_expert_router",
+            "moderntsf.models._components.topk_expert_router",
+            "Two-layer gating MLP with optional trainable noise and floor-blended top-k expert sparsification.",
+            ("GatingMLP", "topk_dense_mix"),
+            ("expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k"),
+        ),
         ComponentSpec("transformer_encdec", "moderntsf.models._components.transformer_encdec", "Shared Transformer encoder and decoder blocks.", keywords=("attention", "decoder", "encoder", "transformer")),
         ComponentSpec("tst_transformer", "moderntsf.models._components.tst_transformer", "Time-series Transformer encoder blocks.", keywords=("attention", "encoder", "time-series", "transformer")),
     )

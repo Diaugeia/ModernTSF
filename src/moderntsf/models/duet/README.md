@@ -49,9 +49,22 @@ Clean-room implementation: confirmed.
 
 Clean-room structure map: distributional router; trend/seasonal temporal experts; top-k mixture with trainable residual; Mahalanobis attention bias; channel encoder; direct horizon head. No source code or checkpoint is reused.
 
+The gating MLP and the top-k sparsification with floor-renormalization were
+extracted into the shared `topk_expert_router` component; the distributional
+(mean/std) feature construction, Mahalanobis attention bias, and channel
+encoder remain model-local paper-specific logic.
+
+The per-expert moving average stays model-local rather than routed through
+`series_decomposition.EdgePaddedMovingAverage`: that component validates
+`kernel_size` as strictly odd, and BiST relies on that validation to reject
+misconfigured even kernel sizes. DUET's local helper additionally accepts
+even kernels via asymmetric padding, so extending the shared component to
+match it would silently change BiST's error contract.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
+- [`topk_expert_router`](../_components/topk_expert_router/README.md)
 
 ## Configuration constraints
 
@@ -76,6 +89,18 @@ Default config: `configs/models/DUET.toml`; model specification: `spec.py`; impl
 Clean-room implementation: confirmed.
 
 Clean-room structure map: distributional router; trend/seasonal temporal experts; top-k mixture with trainable residual; Mahalanobis attention bias; channel encoder; direct horizon head. No source code or checkpoint is reused.
+
+The gating MLP and the top-k sparsification with floor-renormalization were
+extracted into the shared `topk_expert_router` component; the distributional
+(mean/std) feature construction, Mahalanobis attention bias, and channel
+encoder remain model-local paper-specific logic.
+
+The per-expert moving average stays model-local rather than routed through
+`series_decomposition.EdgePaddedMovingAverage`: that component validates
+`kernel_size` as strictly odd, and BiST relies on that validation to reject
+misconfigured even kernel sizes. DUET's local helper additionally accepts
+even kernels via asymmetric padding, so extending the shared component to
+match it would silently change BiST's error contract.
 
 ## Citation
 

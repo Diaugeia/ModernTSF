@@ -15,6 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from moderntsf.models._components.revin import RevIN
+from moderntsf.models._components.topk_expert_router import topk_dense_mix
 
 
 class _IdentityExpert(nn.Module):
@@ -213,14 +214,11 @@ class Model(nn.Module):
         drift_activation = (drift - F.softplus(self.drift_threshold)).sigmoid()
         logits[..., -1] = logits[..., -1] + self.drift_bias * drift_activation[:, None]
         soft = logits.softmax(-1)
-        indices = logits.topk(self.top_k, dim=-1).indices
-        hard = torch.zeros_like(soft).scatter(-1, indices, 1.0)
-        concentrated = soft * hard
         # A disclosed gradient floor keeps every fixed expert trainable; the
         # dynamic paper implementation instead creates/prunes experts outside
         # inference and can use exact sparse dispatch.
-        weights = concentrated + self.routing_floor * soft
-        return weights / weights.sum(-1, keepdim=True), drift
+        weights = topk_dense_mix(soft, self.top_k, self.routing_floor)
+        return weights, drift
 
     def channel_relation(self, x: torch.Tensor) -> torch.Tensor:
         centered = x - x.mean(1, keepdim=True)

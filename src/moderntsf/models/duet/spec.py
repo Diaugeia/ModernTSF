@@ -13,4 +13,4 @@ class ModelParameterConfig(BaseModel):
         return self
 def build_model(cfg,params): return Model(cfg.task.seq_len,cfg.task.pred_len,features=cfg.task.features,**params)
 SPEC=ModelSpec(name="DUET",module="moderntsf.models.duet",model_class=Model,factory=build_model,params_schema=ModelParameterConfig,
- config_path="configs/models/DUET.toml",model_card="src/moderntsf/models/duet/README.md",capabilities=frozenset(["time-series"]),components=("revin",),contract_task={"seq_len":96,"pred_len":96,"label_len":0})
+ config_path="configs/models/DUET.toml",model_card="src/moderntsf/models/duet/README.md",capabilities=frozenset(["time-series"]),components=("revin","topk_expert_router"),contract_task={"seq_len":96,"pred_len":96,"label_len":0})

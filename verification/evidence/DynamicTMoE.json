@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DynamicTMoE",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "a929b30e25c3daabf2b398b4f6b5162e67ee5c7b5713467334ae40bf6be292c8",
+  "verified_at": "2026-09-28T20:27:53.677316Z",
+  "subject_sha256": "3cbabba7566e4cbed385b3938b83487891cca7e06266245de746d4143bd7d296",
   "paper": {
     "title": "Dynamic TMoE: A Drift-Aware Dynamic Mixture of Experts Framework for Non-Stationary Time Series Forecasting",
     "venue": "ICML 2026",

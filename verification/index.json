@@ -261,10 +261,10 @@
     },
     "DUET": {
       "evidence": "verification/evidence/DUET.json",
-      "sha256": "2ebd88385b577adef8291043f56a1cb04f059b90eede90d93111359cc0e7ff60",
+      "sha256": "d930f1ed3a01a6ee374aa1a38c12767507fa1cf196ec4b2f0b4221d557d5d3d8",
       "status": "passed",
-      "subject_sha256": "4d85d80eb3aab661188ca9d644f46cb4f42e032aeee5a4c89bb21d594a43b042",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "e828772a064502cc7e3f914a4086bda588d5d71fe575aefe49cb18845f7c98ee",
+      "verified_at": "2026-09-28T20:27:53.677316Z"
     },
     "DecisionTreeTS": {
       "evidence": "verification/evidence/DecisionTreeTS.json",
@@ -296,10 +296,10 @@
     },
     "DynamicTMoE": {
       "evidence": "verification/evidence/DynamicTMoE.json",
-      "sha256": "f39e828af10f76ab179f953663b7d93580b2252b36f772064a9550ff5e91a95d",
+      "sha256": "3b40cf78991b34422bc4f2b7c6bce1edf2ee61f1ec9a1dc2d6d6a94ec7d099e1",
       "status": "passed",
-      "subject_sha256": "a929b30e25c3daabf2b398b4f6b5162e67ee5c7b5713467334ae40bf6be292c8",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "3cbabba7566e4cbed385b3938b83487891cca7e06266245de746d4143bd7d296",
+      "verified_at": "2026-09-28T20:27:53.677316Z"
     },
     "ETSformer": {
       "evidence": "verification/evidence/ETSformer.json",
@@ -597,10 +597,10 @@
     },
     "MAGE": {
       "evidence": "verification/evidence/MAGE.json",
-      "sha256": "622a9fdd7242887784d3d510e273d907780557deab42e2567a43f1d842d972f0",
+      "sha256": "5d14aabea03d0f0bd73ea2961763a8635a17b8b86d7c0391308eda9ff768b7dc",
       "status": "passed",
-      "subject_sha256": "d164d2e47ef8b32a4956b00107cb3b1a5ba06ea00137fe9a245b14d4314d8cc0",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "912acec3ae0c3196a2207446be8d2677a8b740ada1a951eed9fd9b0207db0a67",
+      "verified_at": "2026-09-28T20:27:53.677316Z"
     },
     "MGSFformer": {
       "evidence": "verification/evidence/MGSFformer.json",
@@ -996,10 +996,10 @@
     },
     "STWave": {
       "evidence": "verification/evidence/STWave.json",
-      "sha256": "0dab8624bd374c50135636155033eb1c43a4be35e3b27876f6d7111b1a90d025",
+      "sha256": "c8474a578cad813871a61bf65c41b74354f89d6c0d48cb44f051f7bd379e501b",
       "status": "passed",
-      "subject_sha256": "4585b8255ed2a59d6eaff4322719b53849ee97b6db6a7243704a40f97796557c",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "5fc4a57a6e2b27d6f08d9e686da430957bdbc8a3d6d82dceeee1bd8de5c5244c",
+      "verified_at": "2026-09-28T20:27:53.677316Z"
     },
     "SVRForecasterTS": {
       "evidence": "verification/evidence/SVRForecasterTS.json",

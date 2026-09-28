@@ -50,6 +50,13 @@ copied. The structure map covers factorised graph kernels, sparse balanced
 routing, and three recurrent depths. Calendar prompting is reduced and the
 training expert-count objective is omitted.
 
+`MixtureGraphBlock`'s gate was compared against the `topk_expert_router`
+component: it selects top-k on raw logits then applies a masked softmax
+(sums to one only over selected experts) and blends 5%/95% with the
+batch/node-mean dense softmax, which is a different routing formula from the
+floor-renormalized `topk_dense_mix` used by DUET and DynamicTMoE. It stays
+model-local rather than forcing a flag-driven shared abstraction.
+
 ## Shared components
 
 - [`marks`](../_components/marks/README.md)
@@ -84,6 +91,13 @@ Clean-room implementation: confirmed. The reference-only source code was not
 copied. The structure map covers factorised graph kernels, sparse balanced
 routing, and three recurrent depths. Calendar prompting is reduced and the
 training expert-count objective is omitted.
+
+`MixtureGraphBlock`'s gate was compared against the `topk_expert_router`
+component: it selects top-k on raw logits then applies a masked softmax
+(sums to one only over selected experts) and blends 5%/95% with the
+batch/node-mean dense softmax, which is a different routing formula from the
+floor-renormalized `topk_dense_mix` used by DUET and DynamicTMoE. It stays
+model-local rather than forcing a flag-driven shared abstraction.
 
 ## Citation
 

@@ -42,6 +42,6 @@ SPEC = ModelSpec(
     config_path="configs/models/DynamicTMoE.toml",
     model_card="src/moderntsf/models/dynamic_tmoe/README.md",
     capabilities=frozenset(["time-series"]),
-        components=("revin",),
+        components=("revin", "topk_expert_router"),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
 )

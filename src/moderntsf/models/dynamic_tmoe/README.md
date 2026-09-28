@@ -57,9 +57,16 @@ This compact entry uses a fixed five-expert pool, learnable repository, and a
 small routing floor to preserve gradients. Evidence is in
 `../../../verification/evidence/DynamicTMoE.json`.
 
+The top-k concentration step (zero non-selected experts, blend back a routing
+floor, renormalize) is the same formula DUET's post-router mixing used, so it
+was extracted into the shared `topk_expert_router` component
+(`topk_dense_mix`). The GRU/anomaly-memory feature pipeline that produces the
+routing logits is paper-specific and remains model-local.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
+- [`topk_expert_router`](../_components/topk_expert_router/README.md)
 
 ## Configuration constraints
 
@@ -89,6 +96,12 @@ the anomaly gallery; `forward` deliberately does none of those stateful actions.
 This compact entry uses a fixed five-expert pool, learnable repository, and a
 small routing floor to preserve gradients. Evidence is in
 `../../../verification/evidence/DynamicTMoE.json`.
+
+The top-k concentration step (zero non-selected experts, blend back a routing
+floor, renormalize) is the same formula DUET's post-router mixing used, so it
+was extracted into the shared `topk_expert_router` component
+(`topk_dense_mix`). The GRU/anomaly-memory feature pipeline that produces the
+routing logits is paper-specific and remains model-local.
 
 ## In ModernTSF
 Default config: `configs/models/DynamicTMoE.toml`; model specification: `spec.py`; local implementation: `model.py`.

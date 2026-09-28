@@ -53,6 +53,13 @@ spectral graph positions, query sampling, and adaptive low/high fusion. It uses
 a Haar basis and omits the paper's auxiliary low-frequency loss and published
 dataset preprocessing.
 
+`wavelet_disentangle` stays model-local: no cataloged DWT component exists
+yet, `wpmixer`'s generic multi-level orthogonal filter bank is owned by a
+different in-flight extraction batch, and STWave's fixed single-level
+same-length Haar reconstruction (redundant upsample-to-original-length, not a
+half-length subband split) is not provably reducible to that generic
+contract without risking a conflicting or premature abstraction.
+
 ## Shared components
 
 - [`marks`](../_components/marks/README.md)
@@ -84,6 +91,13 @@ BasicTS source. It retains temporal wavelet disentanglement, dual encoders,
 spectral graph positions, query sampling, and adaptive low/high fusion. It uses
 a Haar basis and omits the paper's auxiliary low-frequency loss and published
 dataset preprocessing.
+
+`wavelet_disentangle` stays model-local: no cataloged DWT component exists
+yet, `wpmixer`'s generic multi-level orthogonal filter bank is owned by a
+different in-flight extraction batch, and STWave's fixed single-level
+same-length Haar reconstruction (redundant upsample-to-original-length, not a
+half-length subband split) is not provably reducible to that generic
+contract without risking a conflicting or premature abstraction.
 
 ## Citation
 
