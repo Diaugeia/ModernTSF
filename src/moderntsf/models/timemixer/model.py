@@ -7,19 +7,26 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from moderntsf.models._components.revin import RevIN
+from moderntsf.models._components.series_decomposition import EdgePaddedMovingAverage
 
 
 class MovingAverageDecomposition(nn.Module):
+    """Residual/trend split via the shared edge-padded moving average.
+
+    Equivalent to replicate-padding the series by ``(kernel_size - 1) // 2``
+    on both sides and average-pooling with stride 1; identical to
+    ``moderntsf.models._components.series_decomposition.EdgePaddedMovingAverage``.
+    """
+
     def __init__(self, kernel_size: int) -> None:
         super().__init__()
         if kernel_size < 1 or kernel_size % 2 == 0:
             raise ValueError("moving_avg must be a positive odd integer")
         self.kernel_size = kernel_size
+        self._moving_average = EdgePaddedMovingAverage(kernel_size, stride=1)
 
     def forward(self, values: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        pad = (self.kernel_size - 1) // 2
-        padded = F.pad(values.transpose(1, 2), (pad, pad), mode="replicate")
-        trend = F.avg_pool1d(padded, self.kernel_size, stride=1).transpose(1, 2)
+        trend = self._moving_average(values)
         return values - trend, trend
 
 

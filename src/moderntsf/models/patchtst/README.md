@@ -53,6 +53,19 @@ are `[B, target_window, enc_in]`; marks/decoder inputs are accepted and ignored.
 Self-supervised pretraining, transfer learning, residual-attention accumulation,
 and checkpoint or published-metric reference comparison are not included.
 
+**Component-extraction note.** This model does not consume the cataloged
+`patchtst.PatchTSTBackbone` (used by `quantile_patchtst`). The two diverge
+materially: the backbone's `"zeros"` positional-encoding mode draws
+`uniform_(-0.02, 0.02)` noise while this model's `"zeros"` mode is a literal
+zero tensor; the backbone's encoder is `tst_transformer.TSTEncoder`
+(`nn.TransformerEncoder`/`nn.TransformerEncoderLayer`, fused in-projection
+attention) while this model uses a bespoke `PatchEncoderLayer`; and the
+backbone's `FlattenForecastHead` applies dropout after the linear head while
+this model applies `head_dropout` before it. Migrating would change both
+parameter initialization and `state_dict()` keys, so per the rule that keeps
+checkpoint-loading attribute names, this model stays on its own local
+backbone.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
@@ -87,6 +100,19 @@ patch tokens to the horizon. Inputs are `[B, context_window, enc_in]`; outputs
 are `[B, target_window, enc_in]`; marks/decoder inputs are accepted and ignored.
 Self-supervised pretraining, transfer learning, residual-attention accumulation,
 and checkpoint or published-metric reference comparison are not included.
+
+**Component-extraction note.** This model does not consume the cataloged
+`patchtst.PatchTSTBackbone` (used by `quantile_patchtst`). The two diverge
+materially: the backbone's `"zeros"` positional-encoding mode draws
+`uniform_(-0.02, 0.02)` noise while this model's `"zeros"` mode is a literal
+zero tensor; the backbone's encoder is `tst_transformer.TSTEncoder`
+(`nn.TransformerEncoder`/`nn.TransformerEncoderLayer`, fused in-projection
+attention) while this model uses a bespoke `PatchEncoderLayer`; and the
+backbone's `FlattenForecastHead` applies dropout after the linear head while
+this model applies `head_dropout` before it. Migrating would change both
+parameter initialization and `state_dict()` keys, so per the rule that keeps
+checkpoint-loading attribute names, this model stays on its own local
+backbone.
 
 ## Citation
 

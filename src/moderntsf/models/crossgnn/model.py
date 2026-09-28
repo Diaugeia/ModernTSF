@@ -8,6 +8,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from moderntsf.models._components.last_value_center import center_on_last_value, restore_last_value
+
 
 def dominant_periods(values: torch.Tensor, count: int) -> list[int]:
     """AMSI Eqs. 1--3: batch/global FFT amplitudes to integer periods."""
@@ -190,8 +192,10 @@ class Model(nn.Module):
             raise ValueError(
                 f"x_enc must have shape (batch, {self.seq_len}, {self.channels})"
             )
-        baseline = x_enc[:, -1:, :].detach() if self.anti_ood else 0.0
-        centered = x_enc - baseline
+        if self.anti_ood:
+            centered, baseline = center_on_last_value(x_enc)
+        else:
+            centered, baseline = x_enc, 0.0
         multiscale, periods, lengths = self.amsi(centered)
         hidden = self.expansion(multiscale.unsqueeze(-1))
         for layer in self.layers:
@@ -202,4 +206,4 @@ class Model(nn.Module):
             collapsed, size=self.seq_len, mode="linear", align_corners=False
         )
         forecast = self.temporal_head(collapsed).transpose(1, 2)
-        return forecast + baseline
+        return restore_last_value(forecast, baseline)

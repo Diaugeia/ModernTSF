@@ -51,6 +51,7 @@ Retrieval terms: `decomposition`, `moving-average`, `residual`, `smoothing`, `tr
 - [`moderntcn`](../../moderntcn/README.md)
 - [`stop`](../../stop/README.md)
 - [`symtime`](../../symtime/README.md)
+- [`timemixer`](../../timemixer/README.md)
 
 ## Semantic boundary
 

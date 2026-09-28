@@ -49,7 +49,7 @@ in [`spec.py`](spec.py), the implementation lives in
 
 ## Shared components
 
-No cataloged shared component is imported; the architecture remains model-local.
+- [`last_value_center`](../_components/last_value_center/README.md)
 
 ## Configuration constraints
 

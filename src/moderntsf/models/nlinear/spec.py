@@ -30,6 +30,6 @@ SPEC = ModelSpec(
     model_card='src/moderntsf/models/nlinear/README.md',
     smoke_config=None,
     capabilities=frozenset(['time-series']),
-    components=('channel_wise_linear',),
+    components=('channel_wise_linear', 'last_value_center'),
     contract_task={'seq_len': 96, 'pred_len': 96, 'label_len': 0},
 )

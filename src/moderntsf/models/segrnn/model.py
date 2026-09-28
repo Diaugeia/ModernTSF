@@ -8,6 +8,8 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+from moderntsf.models._components.last_value_center import center_on_last_value, restore_last_value
+
 
 class Model(nn.Module):
     """Encode history segments recurrently and decode future segments in parallel."""
@@ -41,8 +43,7 @@ class Model(nn.Module):
         del x_mark_enc, x_dec, x_mark_dec
         if x_enc.shape[1:] != (self.seq_len, self.enc_in):
             raise ValueError("x_enc does not match configured time/channel dimensions")
-        level = x_enc[:, -1:, :].detach()
-        centered = x_enc - level
+        centered, level = center_on_last_value(x_enc)
         batch = centered.shape[0]
         padding = self.history_segments * self.seg_len - self.seq_len
         history = centered.transpose(1, 2)
@@ -59,4 +60,4 @@ class Model(nn.Module):
         decoded, _ = self.recurrent(decoder_input, initial.contiguous())
         future = self.segment_decoder(self.dropout(decoded[:, 0]))
         future = future.reshape(batch, self.enc_in, self.future_segments * self.seg_len)
-        return future[..., : self.pred_len].transpose(1, 2) + level
+        return restore_last_value(future[..., : self.pred_len].transpose(1, 2), level)

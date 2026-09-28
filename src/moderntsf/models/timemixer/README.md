@@ -57,6 +57,7 @@ and non-forecast branches, official recipes, checkpoint reference comparison, an
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
+- [`series_decomposition`](../_components/series_decomposition/README.md)
 
 ## Configuration constraints
 

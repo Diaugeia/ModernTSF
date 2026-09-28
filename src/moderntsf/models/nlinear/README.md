@@ -50,6 +50,7 @@ in [`spec.py`](spec.py), the implementation lives in
 ## Shared components
 
 - [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
+- [`last_value_center`](../_components/last_value_center/README.md)
 
 ## Configuration constraints
 

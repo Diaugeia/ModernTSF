@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CATS",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "774169f6399b6e26cd46ee6f8d87ad49b86988eacad6d830b3e17eb9453234ec",
+  "verified_at": "2026-09-28T20:19:03.651031Z",
+  "subject_sha256": "81547fc65af195e69cd1b858cf5abaab4d98e1a413ba5b2b705faeeb852286a4",
   "paper": {
     "title": "Are Self-Attentions Effective for Time Series Forecasting?",
     "venue": "NeurIPS 2024",

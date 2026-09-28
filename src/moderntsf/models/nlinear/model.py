@@ -6,6 +6,7 @@ import torch
 from torch import nn
 
 from moderntsf.models._components.channel_wise_linear import ChannelWiseLinear
+from moderntsf.models._components.last_value_center import center_on_last_value, restore_last_value
 
 
 class Model(nn.Module):
@@ -30,7 +31,6 @@ class Model(nn.Module):
         del x_mark_enc, x_dec, x_mark_dec
         if x_enc.shape[1:] != (self.seq_len, self.c_in):
             raise ValueError("x_enc does not match configured time/channel dimensions")
-        level = x_enc[:, -1:, :].detach()
-        centered = x_enc - level
+        centered, level = center_on_last_value(x_enc)
         forecast = self.projection(centered.transpose(1, 2)).transpose(1, 2)
-        return forecast + level
+        return restore_last_value(forecast, level)

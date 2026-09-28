@@ -36,7 +36,7 @@ SPEC = ModelSpec(
     name="CrossGNN", module="moderntsf.models.crossgnn", model_class=Model, factory=build_model,
     params_schema=ModelParameterConfig, config_path="configs/models/CrossGNN.toml",
     model_card="src/moderntsf/models/crossgnn/README.md", smoke_config=None,
-    capabilities=frozenset(["time-series"]), components=(),
+    capabilities=frozenset(["time-series"]), components=("last_value_center",),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
     contract_seeds=(0, 18, 24),
 )

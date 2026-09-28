@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SegRNN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "4e13ada21a0238e600d5a631e31c2f8b2790e42a829f6ed9f9bab74cd1b90991",
+  "verified_at": "2026-09-28T20:19:03.651031Z",
+  "subject_sha256": "11ed16d8b8bb0f4d71315dd52d35c6669d6b363a3c015be35a796882f308b432",
   "paper": {
     "title": "SegRNN: Segment Recurrent Neural Network for Long-Term Time Series Forecasting",
     "venue": "arXiv preprint",

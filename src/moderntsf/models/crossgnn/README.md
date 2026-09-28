@@ -59,7 +59,7 @@ external adjacency, checkpoint reference comparison, and published metrics are n
 
 ## Shared components
 
-No cataloged shared component is imported; the architecture remains model-local.
+- [`last_value_center`](../_components/last_value_center/README.md)
 
 ## Configuration constraints
 

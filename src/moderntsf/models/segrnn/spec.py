@@ -32,6 +32,6 @@ SPEC = ModelSpec(
     model_card='src/moderntsf/models/segrnn/README.md',
     smoke_config=None,
     capabilities=frozenset(['time-series']),
-    components=(),
+    components=('last_value_center',),
     contract_task={'seq_len': 96, 'pred_len': 96, 'label_len': 0},
 )

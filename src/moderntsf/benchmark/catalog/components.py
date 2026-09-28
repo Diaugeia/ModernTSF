@@ -154,6 +154,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("scaled_laplacian", "chebyshev_polynomials", "chebyshev_supports"),
             ("adjacency", "chebyshev", "degenerate", "graph", "laplacian", "spectral"),
         ),
+        ComponentSpec(
+            "last_value_center",
+            "moderntsf.models._components.last_value_center",
+            "Detached last-observed-timestep centering and restoration for BLC histories.",
+            ("center_on_last_value", "restore_last_value"),
+            ("centering", "detach", "last-value", "level", "residual"),
+        ),
         ComponentSpec("marks", "moderntsf.models._components.marks", "Canonical temporal-mark and spatiotemporal input adapters.", keywords=("calendar", "covariate", "spatiotemporal", "timestamp")),
         ComponentSpec(
             "mamba",

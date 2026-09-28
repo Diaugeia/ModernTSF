@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "NLinear",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "2d50d6eac5ad571a8b41a62283fb0164b30d297697caf1b0370311ff3ade13a8",
+  "verified_at": "2026-09-28T20:19:03.651031Z",
+  "subject_sha256": "1da8e907b323666002ccdf9d942417ff3fb2eb278f90f57408da361c67db9df2",
   "paper": {
     "title": "Are Transformers Effective for Time Series Forecasting?",
     "venue": "AAAI 2023",

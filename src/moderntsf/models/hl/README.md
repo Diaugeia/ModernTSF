@@ -49,6 +49,12 @@ in [`spec.py`](spec.py), the implementation lives in
 covered by deterministic equation and boundary tests. No reference source was
 copied and there is no paper/checkpoint reference comparison claim.
 
+**Component-extraction note.** HL's forecast is exactly the detached last
+observed step broadcast across the horizon; there is no forecasting head
+between a subtract and an add, so the `last_value_center` contract (center
+before a head, restore after) does not apply and the persistence formula
+stays model-local.
+
 ## Shared components
 
 No cataloged shared component is imported; the architecture remains model-local.
@@ -77,6 +83,12 @@ clean-room implementation: `model.py`.
 **Clean-room implementation: confirmed.** The exact persistence formula is
 covered by deterministic equation and boundary tests. No reference source was
 copied and there is no paper/checkpoint reference comparison claim.
+
+**Component-extraction note.** HL's forecast is exactly the detached last
+observed step broadcast across the horizon; there is no forecasting head
+between a subtract and an add, so the `last_value_center` contract (center
+before a head, restore after) does not apply and the persistence formula
+stays model-local.
 
 ## Citation
 

@@ -47,6 +47,6 @@ SPEC = ModelSpec(
     model_card="src/moderntsf/models/timemixer/README.md",
     smoke_config=None,
     capabilities=frozenset(["time-series"]),
-    components=("revin",),
+    components=("revin", "series_decomposition"),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
 )

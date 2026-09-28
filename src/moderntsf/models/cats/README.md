@@ -52,6 +52,12 @@ parameters across horizons, and applies the paper's query-adaptive stochastic
 mask to the attention residual during training. The external repository is
 reference-only; no source file was copied or adapted.
 
+**Component-extraction note.** CATS centers on `x_enc[:, -1:, :]` without
+`.detach()`, unlike the `last_value_center` component (used by NLinear,
+SegRNN, CrossGNN), so gradients flow through the additive level term back
+into the encoder; this differs from the component's fixed detach contract
+and the centering therefore stays model-local.
+
 ## Shared components
 
 No cataloged shared component is imported; the architecture remains model-local.
@@ -82,6 +88,12 @@ uses cross-attention without self-attention, shares embedding/attention/output
 parameters across horizons, and applies the paper's query-adaptive stochastic
 mask to the attention residual during training. The external repository is
 reference-only; no source file was copied or adapted.
+
+**Component-extraction note.** CATS centers on `x_enc[:, -1:, :]` without
+`.detach()`, unlike the `last_value_center` component (used by NLinear,
+SegRNN, CrossGNN), so gradients flow through the additive level term back
+into the encoder; this differs from the component's fixed detach contract
+and the centering therefore stays model-local.
 
 ## Citation
 
