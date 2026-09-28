@@ -11,6 +11,12 @@ label. Consult that repository at the recorded revision for its complete license
 and notices. A model card with `codebase: null` has no identified official
 codebase.
 
+Some official repositories publish no license. For those models the pinned
+repository was consulted only as a reference for paper details; the ModernTSF
+implementation is an independent rewrite from the paper under the project
+license, contains no code copied from that repository, and its card records the
+missing license rather than assuming one.
+
 Runtime Python dependencies are declared in `pyproject.toml` and retain their own
 licenses and notices. ModernTSF does not vendor their source. Built wheels contain
 the ModernTSF runtime packages and curated Agent assets, not external model
