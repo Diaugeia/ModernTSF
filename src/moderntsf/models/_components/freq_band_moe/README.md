@@ -1,26 +1,27 @@
 ---
-name: "embed"
+name: "freq_band_moe"
 kind: "component"
-module: "moderntsf.models._components.embed"
-summary: "Value, position, calendar, patch, and inverted embeddings."
+module: "moderntsf.models._components.freq_band_moe"
+summary: "Learned frequency-band decomposition with input-gated mixture-of-experts recombination."
 ---
 
-# embed
+# freq_band_moe
 
 ## Purpose
 
-Value, position, calendar, patch, and inverted embeddings.
+Learned frequency-band decomposition with input-gated mixture-of-experts recombination.
 
-Embedding utilities for time-series models.
+Frequency-band decomposition mixture of experts.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int)`
+  Decompose a series into learned frequency bands and gate their mixture.
 
 ```python
-import moderntsf.models._components.embed
+from moderntsf.models._components.freq_band_moe import FrequencyBandMixtureOfExperts
 ```
 
 ## Input and output contract
@@ -33,16 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `embed` in the consuming model's `components`
+implementation, then declare `freq_band_moe` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `calendar`, `embedding`, `patch`, `position`, `token`.
+Retrieval terms: `band`, `decomposition`, `experts`, `frequency`, `gating`, `mixture`, `rfft`.
 
 ## Current model consumers
 
-- [`informer`](../../informer/README.md)
-- [`sensorformer`](../../sensorformer/README.md)
-- [`transformer`](../../transformer/README.md)
+- [`freqmoe`](../../freqmoe/README.md)
 
 ## Semantic boundary
 

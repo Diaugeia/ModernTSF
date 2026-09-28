@@ -49,6 +49,7 @@ Retrieval terms: `decomposition`, `moving-average`, `residual`, `smoothing`, `tr
 - [`fedformer`](../../fedformer/README.md)
 - [`micn`](../../micn/README.md)
 - [`moderntcn`](../../moderntcn/README.md)
+- [`refocus`](../../refocus/README.md)
 - [`stop`](../../stop/README.md)
 - [`symtime`](../../symtime/README.md)
 - [`timemixer`](../../timemixer/README.md)

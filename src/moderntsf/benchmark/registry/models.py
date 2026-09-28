@@ -161,6 +161,10 @@ class ModelCatalog:
 
 
 MODEL_CATALOG = ModelCatalog({
+    'ReFocus': 'moderntsf.models.refocus.spec',
+    'FreqMoE': 'moderntsf.models.freqmoe.spec',
+    'SWIFT': 'moderntsf.models.swift.spec',
+    'Sensorformer': 'moderntsf.models.sensorformer.spec',
     'BiMamba': 'moderntsf.models.bimamba.spec',
     'WPMixer': 'moderntsf.models.wpmixer.spec',
     'DLinear': 'moderntsf.models.dlinear.spec',

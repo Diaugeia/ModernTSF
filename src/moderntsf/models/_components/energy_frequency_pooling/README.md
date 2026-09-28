@@ -1,26 +1,27 @@
 ---
-name: "embed"
+name: "energy_frequency_pooling"
 kind: "component"
-module: "moderntsf.models._components.embed"
-summary: "Value, position, calendar, patch, and inverted embeddings."
+module: "moderntsf.models._components.energy_frequency_pooling"
+summary: "Energy-weighted stochastic pooling of a complex spectrum across a token axis."
 ---
 
-# embed
+# energy_frequency_pooling
 
 ## Purpose
 
-Value, position, calendar, patch, and inverted embeddings.
+Energy-weighted stochastic pooling of a complex spectrum across a token axis.
 
-Embedding utilities for time-series models.
+Energy-weighted stochastic pooling across a token axis in the frequency domain.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `EnergyBasedFrequencyPooling()`
+  Softmax-energy-weighted pooling of a complex spectrum across tokens.
 
 ```python
-import moderntsf.models._components.embed
+from moderntsf.models._components.energy_frequency_pooling import EnergyBasedFrequencyPooling
 ```
 
 ## Input and output contract
@@ -33,16 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `embed` in the consuming model's `components`
+implementation, then declare `energy_frequency_pooling` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `calendar`, `embedding`, `patch`, `position`, `token`.
+Retrieval terms: `energy`, `frequency`, `key-frequency`, `pooling`, `softmax`, `stochastic`.
 
 ## Current model consumers
 
-- [`informer`](../../informer/README.md)
-- [`sensorformer`](../../sensorformer/README.md)
-- [`transformer`](../../transformer/README.md)
+- [`refocus`](../../refocus/README.md)
 
 ## Semantic boundary
 

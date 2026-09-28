@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 182 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 186 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -59,6 +59,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `FiLM` | [`configs/models/FiLM.toml`](../../configs/models/FiLM.toml) | time-series | [README](../../src/moderntsf/models/film/README.md) |
 | `FITS` | [`configs/models/FITS.toml`](../../configs/models/FITS.toml) | time-series | [README](../../src/moderntsf/models/fits/README.md) |
 | `Fredformer` | [`configs/models/Fredformer.toml`](../../configs/models/Fredformer.toml) | time-series | [README](../../src/moderntsf/models/fredformer/README.md) |
+| `FreqMoE` | [`configs/models/FreqMoE.toml`](../../configs/models/FreqMoE.toml) | time-series | [README](../../src/moderntsf/models/freqmoe/README.md) |
 | `FreTS` | [`configs/models/FreTS.toml`](../../configs/models/FreTS.toml) | time-series | [README](../../src/moderntsf/models/frets/README.md) |
 | `FTP` | [`configs/models/FTP.toml`](../../configs/models/FTP.toml) | time-series | [README](../../src/moderntsf/models/ftp/README.md) |
 | `GAGNN` | [`configs/models/GAGNN.toml`](../../configs/models/GAGNN.toml) | covariate | [README](../../src/moderntsf/models/gagnn/README.md) |
@@ -132,6 +133,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `QuantileDLinear` | [`configs/models/QuantileDLinear.toml`](../../configs/models/QuantileDLinear.toml) | quantile-output, time-series | [README](../../src/moderntsf/models/quantile_dlinear/README.md) |
 | `QuantilePatchTST` | [`configs/models/QuantilePatchTST.toml`](../../configs/models/QuantilePatchTST.toml) | quantile-output, time-series | [README](../../src/moderntsf/models/quantile_patchtst/README.md) |
 | `RandomForestTS` | [`configs/models/RandomForestTS.toml`](../../configs/models/RandomForestTS.toml) | time-series | [README](../../src/moderntsf/models/random_forest_ts/README.md) |
+| `ReFocus` | [`configs/models/ReFocus.toml`](../../configs/models/ReFocus.toml) | time-series | [README](../../src/moderntsf/models/refocus/README.md) |
 | `Reformer` | [`configs/models/Reformer.toml`](../../configs/models/Reformer.toml) | time-series | [README](../../src/moderntsf/models/reformer/README.md) |
 | `RidgeRegressionTS` | [`configs/models/RidgeRegressionTS.toml`](../../configs/models/RidgeRegressionTS.toml) | time-series | [README](../../src/moderntsf/models/ridge_regression_ts/README.md) |
 | `RLinear` | [`configs/models/RLinear.toml`](../../configs/models/RLinear.toml) | time-series | [README](../../src/moderntsf/models/rlinear/README.md) |
@@ -142,6 +144,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `SCINet` | [`configs/models/SCINet.toml`](../../configs/models/SCINet.toml) | time-series | [README](../../src/moderntsf/models/scinet/README.md) |
 | `SegRNN` | [`configs/models/SegRNN.toml`](../../configs/models/SegRNN.toml) | time-series | [README](../../src/moderntsf/models/segrnn/README.md) |
 | `SEMPO` | [`configs/models/SEMPO.toml`](../../configs/models/SEMPO.toml) | time-series | [README](../../src/moderntsf/models/sempo/README.md) |
+| `Sensorformer` | [`configs/models/Sensorformer.toml`](../../configs/models/Sensorformer.toml) | time-series | [README](../../src/moderntsf/models/sensorformer/README.md) |
 | `SOFTS` | [`configs/models/SOFTS.toml`](../../configs/models/SOFTS.toml) | time-series | [README](../../src/moderntsf/models/softs/README.md) |
 | `Sonnet` | [`configs/models/Sonnet.toml`](../../configs/models/Sonnet.toml) | time-series | [README](../../src/moderntsf/models/sonnet/README.md) |
 | `SparseTSF` | [`configs/models/SparseTSF.toml`](../../configs/models/SparseTSF.toml) | time-series | [README](../../src/moderntsf/models/sparsetsf/README.md) |
@@ -160,6 +163,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Sumba` | [`configs/models/Sumba.toml`](../../configs/models/Sumba.toml) | time-series | [README](../../src/moderntsf/models/sumba/README.md) |
 | `SVRForecasterTS` | [`configs/models/SVRForecasterTS.toml`](../../configs/models/SVRForecasterTS.toml) | time-series | [README](../../src/moderntsf/models/svr_forecaster_ts/README.md) |
 | `SVTime` | [`configs/models/SVTime.toml`](../../configs/models/SVTime.toml) | time-series | [README](../../src/moderntsf/models/svtime/README.md) |
+| `SWIFT` | [`configs/models/SWIFT.toml`](../../configs/models/SWIFT.toml) | time-series | [README](../../src/moderntsf/models/swift/README.md) |
 | `SymTime` | [`configs/models/SymTime.toml`](../../configs/models/SymTime.toml) | time-series | [README](../../src/moderntsf/models/symtime/README.md) |
 | `TCNForecasterTS` | [`configs/models/TCNForecasterTS.toml`](../../configs/models/TCNForecasterTS.toml) | time-series | [README](../../src/moderntsf/models/tcn_forecaster_ts/README.md) |
 | `TexFilter` | [`configs/models/TexFilter.toml`](../../configs/models/TexFilter.toml) | time-series | [README](../../src/moderntsf/models/texfilter/README.md) |

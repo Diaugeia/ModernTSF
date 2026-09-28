@@ -650,6 +650,12 @@ reference_test = 'tests/test_probabilistic_attention_forecasters.py'
 profile = 'standard'
 test = 'tests/test_tree_baselines.py'
 
+[models.ReFocus]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['reversible instance normalization', 'AMEO mid-frequency residual', 'complex-linear frequency embedding', 'energy-based key-frequency picking', 'complex-linear projection']
+
 [models.Reformer]
 profile = 'standard'
 test = 'tests/test_ssm_sequence_forecasters.py'
@@ -957,3 +963,20 @@ reference_sources = ['https://github.com/nyuolab/Gateformer/blob/298fd10db4af8dd
 profile = 'standard'
 test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
 reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+
+[models.FreqMoE]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['learned frequency-band decomposition', 'input-gated mixture-of-experts recombination', 'complex-linear frequency extension', 'complex ReLU/dropout', 'residual multi-block refinement']
+
+[models.SWIFT]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['reversible instance normalization', 'lossless single-level Haar DWT', 'cross-band convolution fusion', 'sub-series linear/MLP mapping', 'inverse Haar DWT']
+
+[models.Sensorformer]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['PatchTST-style patch embedding', 'stage-1 compress-to-sensor cross-attention', 'stage-2 sensor-broadcast cross-attention', 'flatten forecast head']

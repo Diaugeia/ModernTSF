@@ -1,27 +1,27 @@
 ---
-name: "flatten_forecast_head"
+name: "global_patch_compression_attention"
 kind: "component"
-module: "moderntsf.models._components.flatten_forecast_head"
-summary: "Shared or channel-wise linear forecast head over two flattened feature axes."
+module: "moderntsf.models._components.global_patch_compression_attention"
+summary: "Two-stage cross-patch attention that compresses patches into summaries before broadcasting."
 ---
 
-# flatten_forecast_head
+# global_patch_compression_attention
 
 ## Purpose
 
-Shared or channel-wise linear forecast head over two flattened feature axes.
+Two-stage cross-patch attention that compresses patches into summaries before broadcasting.
 
-Linear forecasting head for flattened feature and patch axes.
+Two-stage cross-patch attention with global-patch compression.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- `FlattenForecastHead(individual: bool, n_vars: int, nf: int, target_window: int, head_dropout: float=0.0)`
-  Map ``(B, C, D, P)``-like inputs to ``(B, C, horizon)``.
+- `GlobalPatchCompressionAttention(d_model: int, n_heads: int, d_ff: int, dropout: float=0.0)`
+  Compress each group's patches into one summary, then attend through it.
 
 ```python
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
+from moderntsf.models._components.global_patch_compression_attention import GlobalPatchCompressionAttention
 ```
 
 ## Input and output contract
@@ -34,16 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `flatten_forecast_head` in the consuming model's `components`
+implementation, then declare `global_patch_compression_attention` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`.
+Retrieval terms: `attention`, `compression`, `cross-patch`, `global`, `patch`, `sensor`, `transformer`.
 
 ## Current model consumers
 
-- [`gateformer`](../../gateformer/README.md)
 - [`sensorformer`](../../sensorformer/README.md)
-- [`srsnet`](../../srsnet/README.md)
 
 ## Semantic boundary
 

@@ -385,6 +385,13 @@
       "subject_sha256": "a8a56f18d66452f88d36179a10521a771eb2298d043e6f89f034fd2abdad0e9a",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "FreqMoE": {
+      "evidence": "verification/evidence/FreqMoE.json",
+      "sha256": "d01bf450ab66d39dc01e65f1abaa11bb0841d28609faf8ea7be207af432e87b0",
+      "status": "passed",
+      "subject_sha256": "1fef0f8d4a2040096081e924ec6c20bdef775fb75b457ae5eec930d07d5283c4",
+      "verified_at": "2026-09-28T20:35:39.711713Z"
+    },
     "GAGNN": {
       "evidence": "verification/evidence/GAGNN.json",
       "sha256": "992aaa8972fa14984ccbaa0f04ba7940509953c5fefdbbdc31bcb06acd6fbe2c",
@@ -896,6 +903,13 @@
       "subject_sha256": "53123ea288cddb01bd5a6d58133a4d02196f83125bfc869c895bad9cbc06aae2",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "ReFocus": {
+      "evidence": "verification/evidence/ReFocus.json",
+      "sha256": "a266eb6e8c4aec76ccb62987b03ee9a6c9f606324ed31ae97d16d37138b66b5b",
+      "status": "passed",
+      "subject_sha256": "1681c0aeb1ca5eb9582ac0af05546d11195e05dafb17a3b70a1de4c62c75c182",
+      "verified_at": "2026-09-28T20:35:39.711713Z"
+    },
     "Reformer": {
       "evidence": "verification/evidence/Reformer.json",
       "sha256": "e958a00a39dd85bbddbf301b2bf33dc324a5a9092d24b3519c66b6f4e6340a3b",
@@ -1029,6 +1043,13 @@
       "subject_sha256": "b87f954835889ba1aa5bbc80e5421b4df51cbd4531fec4a67576f4c621379285",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "SWIFT": {
+      "evidence": "verification/evidence/SWIFT.json",
+      "sha256": "1bbdfac8e377de27ea80f2b083417f8cbf35f8dfaf352eb5e19e8e3be6f4af39",
+      "status": "passed",
+      "subject_sha256": "d040385a2c164237bd690c33d11cca8c0fb8bc78d33daf4fbce03b9786747e47",
+      "verified_at": "2026-09-28T20:35:39.711713Z"
+    },
     "S_Mamba": {
       "evidence": "verification/evidence/S_Mamba.json",
       "sha256": "cd9fb8385309fbecacfec54554c32d301d8fe4f27d22883d8930189fb978c515",
@@ -1042,6 +1063,13 @@
       "status": "passed",
       "subject_sha256": "11ed16d8b8bb0f4d71315dd52d35c6669d6b363a3c015be35a796882f308b432",
       "verified_at": "2026-09-28T20:19:03.651031Z"
+    },
+    "Sensorformer": {
+      "evidence": "verification/evidence/Sensorformer.json",
+      "sha256": "a6c4c3c8ddeb08835c346a822c329b45b96bb68584c334f1e1306dea11743903",
+      "status": "passed",
+      "subject_sha256": "5e5e143501b06d961162f32dc35c8d36eb416f93c31a3b032909c84d30dc17ef",
+      "verified_at": "2026-09-28T20:35:39.711713Z"
     },
     "Sonnet": {
       "evidence": "verification/evidence/Sonnet.json",

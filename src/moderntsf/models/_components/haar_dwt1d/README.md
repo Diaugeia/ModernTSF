@@ -1,26 +1,29 @@
 ---
-name: "embed"
+name: "haar_dwt1d"
 kind: "component"
-module: "moderntsf.models._components.embed"
-summary: "Value, position, calendar, patch, and inverted embeddings."
+module: "moderntsf.models._components.haar_dwt1d"
+summary: "Lossless single-level Haar discrete wavelet transform and its inverse."
 ---
 
-# embed
+# haar_dwt1d
 
 ## Purpose
 
-Value, position, calendar, patch, and inverted embeddings.
+Lossless single-level Haar discrete wavelet transform and its inverse.
 
-Embedding utilities for time-series models.
+Lossless single-level Haar discrete wavelet transform along the last axis.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `HaarDWT1D()`
+  Forward single-level Haar DWT along the last axis.
+- `HaarIDWT1D()`
+  Inverse single-level Haar DWT along the last axis.
 
 ```python
-import moderntsf.models._components.embed
+from moderntsf.models._components.haar_dwt1d import HaarDWT1D, HaarIDWT1D
 ```
 
 ## Input and output contract
@@ -33,16 +36,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `embed` in the consuming model's `components`
+implementation, then declare `haar_dwt1d` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `calendar`, `embedding`, `patch`, `position`, `token`.
+Retrieval terms: `dwt`, `haar`, `sub-series`, `wavelet`.
 
 ## Current model consumers
 
-- [`informer`](../../informer/README.md)
-- [`sensorformer`](../../sensorformer/README.md)
-- [`transformer`](../../transformer/README.md)
+- [`swift`](../../swift/README.md)
 
 ## Semantic boundary
 
