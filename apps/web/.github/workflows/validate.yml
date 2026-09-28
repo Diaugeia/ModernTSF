@@ -1,0 +1,22 @@
+name: Validate submissions
+
+on:
+  pull_request:
+    paths:
+      - "submissions/**"
+      - "pipeline/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet jsonschema
+      - name: Validate contract + ModernTSF binding
+        run: python3 pipeline/validate.py

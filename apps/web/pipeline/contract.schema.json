@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TSF-Core submission contract",
+  "description": "Schema for submissions/**/submission.json. Two shapes are accepted: a manifest-wrapped bundle (records[]) and a flat single record (model + results). Both are produced by a ModernTSF run and bound to it (see validate.py).",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": { "type": "string" }
+  },
+  "anyOf": [
+    {
+      "title": "manifest-wrapped bundle",
+      "required": ["records"],
+      "properties": {
+        "records": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/record" } }
+      }
+    },
+    {
+      "title": "flat single record",
+      "required": ["model", "results"],
+      "$ref": "#/definitions/record"
+    }
+  ],
+  "definitions": {
+    "record": {
+      "type": "object",
+      "required": ["model", "results"],
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "dataset_id": { "type": "string" },
+        "track": { "type": "string" },
+        "results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["metrics"],
+            "properties": {
+              "horizon": { "type": ["number", "string"] },
+              "metrics": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
