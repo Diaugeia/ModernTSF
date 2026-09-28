@@ -8,6 +8,10 @@ adding a dataset, and reporting issues.
 
 - **`dev` is the integration branch — open your PRs against `dev`, not `main`.**
   New models, datasets, bug fixes, and features all land on `dev` first.
+- **During the 1.0 release-candidate phase, `dev` is the RC line.** It carries
+  `1.0.0rcN` builds; each RC is tagged `v1.0.0rcN` on `dev`, and `main` moves
+  only when a candidate is promoted to `v1.0.0`. Fixes for an RC land on `dev`
+  through pull requests like any other change.
 - **`main` is release-only and versioned.** It is protected (a PR is required to
   merge, the `schema-check` status check must pass, force-pushes and deletion are
   blocked). `main` normally advances only by promoting `dev` → `main`, and

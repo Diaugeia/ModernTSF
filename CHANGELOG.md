@@ -3,7 +3,7 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
-## [1.0.0rc1] — Unreleased
+## [1.0.0rc1] — 2026-09-28 (release candidate)
 
 A fully automated, continuously updated forecasting platform: one installable
 package, one repository, one address for published assets, and rolling
