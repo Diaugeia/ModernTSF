@@ -6,6 +6,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from moderntsf.models._components.adaptive_node_embedding_adjacency import (
+    adaptive_node_embedding_adjacency,
+)
 from moderntsf.models._components.marks import normalized_time_features, to_spatiotemporal
 
 
@@ -21,7 +24,7 @@ class MetaGraphConvolution(nn.Module):
         nn.init.zeros_(self.bias_bank)
 
     def forward(self, x: torch.Tensor, meta: torch.Tensor) -> torch.Tensor:
-        graph = torch.softmax(torch.relu(meta @ meta.transpose(-1, -2)), dim=-1)
+        graph = adaptive_node_embedding_adjacency(meta)
         identity = torch.eye(meta.shape[1], device=x.device, dtype=x.dtype).expand(x.shape[0], -1, -1)
         basis = [identity]
         if self.order > 1:

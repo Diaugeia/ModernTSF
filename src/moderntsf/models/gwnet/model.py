@@ -5,9 +5,12 @@ from __future__ import annotations
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
+from moderntsf.models._components.adaptive_node_embedding_adjacency import (
+    adaptive_node_embedding_adjacency,
+)
 from moderntsf.models._components.diffusion_conv import DiffusionConv2d
+from moderntsf.models._components.gated_dilated_conv import gated_dilated_conv
 from moderntsf.models._components.graph_utils import adj_to_supports
 from moderntsf.models._components.marks import to_spatiotemporal
 
@@ -17,7 +20,6 @@ class WaveNetGraphLayer(nn.Module):
 
     def __init__(self, channels: int, skip: int, kernel: int, dilation: int, dropout: float) -> None:
         super().__init__()
-        self.left_padding = dilation * (kernel - 1)
         self.filter = nn.Conv2d(channels, channels, (1, kernel), dilation=(1, dilation))
         self.gate = nn.Conv2d(channels, channels, (1, kernel), dilation=(1, dilation))
         self.diffusion = DiffusionConv2d(channels, channels, dropout, support_len=3, order=2)
@@ -26,8 +28,7 @@ class WaveNetGraphLayer(nn.Module):
         self.norm = nn.BatchNorm2d(channels)
 
     def forward(self, x: torch.Tensor, supports: list[torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
-        padded = F.pad(x, (self.left_padding, 0, 0, 0))
-        gated = torch.tanh(self.filter(padded)) * torch.sigmoid(self.gate(padded))
+        gated = gated_dilated_conv(x, self.filter, self.gate)
         mixed = self.diffusion(gated, supports)
         hidden = self.norm(self.residual(mixed) + x)
         return hidden, self.skip(hidden)
@@ -63,7 +64,7 @@ class Model(nn.Module):
         nn.init.xavier_uniform_(self.target_nodes)
 
     def graph_supports(self) -> list[torch.Tensor]:
-        adaptive = torch.softmax(torch.relu(self.source_nodes @ self.target_nodes), dim=-1)
+        adaptive = adaptive_node_embedding_adjacency(self.source_nodes, self.target_nodes)
         return [self.forward_support, self.reverse_support, adaptive]
 
     def forward(

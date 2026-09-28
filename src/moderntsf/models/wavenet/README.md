@@ -52,6 +52,7 @@ and no audio-likelihood or metric reference comparison is claimed.
 
 ## Shared components
 
+- [`gated_dilated_conv`](../_components/gated_dilated_conv/README.md)
 - [`revin`](../_components/revin/README.md)
 
 ## Configuration constraints

@@ -44,6 +44,6 @@ SPEC = ModelSpec(
     model_card='src/moderntsf/models/gwnet/README.md',
     smoke_config=None,
     capabilities=frozenset(['spatiotemporal']),
-    components=('diffusion_conv', 'graph_utils', 'marks'),
+    components=('adaptive_node_embedding_adjacency', 'diffusion_conv', 'gated_dilated_conv', 'graph_utils', 'marks'),
     contract_task={'seq_len': 12, 'pred_len': 12, 'label_len': 0},
 )

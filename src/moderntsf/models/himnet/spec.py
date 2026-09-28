@@ -48,6 +48,6 @@ SPEC = ModelSpec(
     model_card='src/moderntsf/models/himnet/README.md',
     smoke_config=None,
     capabilities=frozenset(['spatiotemporal']),
-    components=('marks',),
+    components=('adaptive_node_embedding_adjacency', 'marks'),
     contract_task={'seq_len': 12, 'pred_len': 12, 'label_len': 0},
 )

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "WaveNet",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "9ae9dca5021b0ae0cdfb5fc1759a1e83e3215710169e73a882bd0da80d8921f5",
+  "verified_at": "2026-09-28T20:23:04.800519Z",
+  "subject_sha256": "7a8ae25bd1637c1dfc2ee420b4f866f7e5df26cfc77a8531b83504991cebbacc",
   "paper": {
     "title": "WaveNet: A Generative Model for Raw Audio",
     "venue": "arXiv preprint",

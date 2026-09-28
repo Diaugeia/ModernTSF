@@ -90,6 +90,13 @@ COMPONENT_CATALOG = ComponentCatalog(
     (
         ComponentSpec("adj_norm", "moderntsf.models._components.adj_norm", "Dense adjacency normalization.", keywords=("adjacency", "graph", "laplacian", "normalization")),
         ComponentSpec(
+            "adaptive_node_embedding_adjacency",
+            "moderntsf.models._components.adaptive_node_embedding_adjacency",
+            "Learnable node-embedding adaptive adjacency: softmax(relu(E1 @ E2^T)).",
+            ("adaptive_node_embedding_adjacency",),
+            ("adaptive", "adjacency", "embedding", "graph", "node", "softmax"),
+        ),
+        ComponentSpec(
             "channel_alignment",
             "moderntsf.models._components.channel_alignment",
             "Slice or zero-pad the trailing feature axis to a requested width.",
@@ -125,6 +132,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("diffusion", "graph", "graph-wavenet", "support", "spatiotemporal"),
         ),
         ComponentSpec("embed", "moderntsf.models._components.embed", "Value, position, calendar, patch, and inverted embeddings.", keywords=("calendar", "embedding", "patch", "position", "token")),
+        ComponentSpec(
+            "gated_dilated_conv",
+            "moderntsf.models._components.gated_dilated_conv",
+            "Causal dilated padding plus the WaveNet gated activation unit.",
+            ("causal_pad", "gated_dilated_conv"),
+            ("causal", "dilated", "gate", "gated-activation", "wavenet"),
+        ),
         ComponentSpec(
             "dominant_periods",
             "moderntsf.models._components.dominant_periods",

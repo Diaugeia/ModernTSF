@@ -49,7 +49,9 @@ ModernTSF rewrites Graph WaveNet locally after reviewing the paper and pinned of
 
 ## Shared components
 
+- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
 - [`diffusion_conv`](../_components/diffusion_conv/README.md)
+- [`gated_dilated_conv`](../_components/gated_dilated_conv/README.md)
 - [`graph_utils`](../_components/graph_utils/README.md)
 - [`marks`](../_components/marks/README.md)
 

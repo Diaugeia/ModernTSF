@@ -49,6 +49,7 @@ ModernTSF rewrites AGCRN locally after reviewing the paper and pinned official c
 
 ## Shared components
 
+- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
 - [`marks`](../_components/marks/README.md)
 
 ## Configuration constraints

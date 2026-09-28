@@ -53,6 +53,8 @@ in [`spec.py`](spec.py), the implementation lives in
 
 ## Shared components
 
+- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
+- [`gated_dilated_conv`](../_components/gated_dilated_conv/README.md)
 - [`graph_utils`](../_components/graph_utils/README.md)
 - [`marks`](../_components/marks/README.md)
 

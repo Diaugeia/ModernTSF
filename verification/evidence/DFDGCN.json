@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DFDGCN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "e0979bed9f5b1fe2cf6810e84f65028d0f55053f7172d9311175c19e47ee87d4",
+  "verified_at": "2026-09-28T20:23:04.800519Z",
+  "subject_sha256": "b7a5023e38d4bd34afcf1721834d2e9c02a768cd191b648e75559f64bcd446b3",
   "paper": {
     "title": "Dynamic Frequency Domain Graph Convolutional Network for Traffic Forecasting",
     "venue": "ICASSP 2024",

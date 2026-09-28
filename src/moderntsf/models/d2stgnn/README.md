@@ -49,6 +49,7 @@ ModernTSF rewrites D2STGNN locally after reviewing the paper and pinned official
 
 ## Shared components
 
+- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
 - [`graph_utils`](../_components/graph_utils/README.md)
 - [`marks`](../_components/marks/README.md)
 

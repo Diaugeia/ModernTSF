@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MTGNN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "101f93a9a1c71bc475a6b3893b6249189a018a9f696d96d2f41956f8b886f5df",
+  "verified_at": "2026-09-28T20:23:04.800519Z",
+  "subject_sha256": "08bfcbe87d8944ed2b38bab6cac032d7359fa66e1a9eaf653c25ae7348d4a141",
   "paper": {
     "title": "Connecting the Dots: Multivariate Time Series Forecasting with Graph Neural Networks",
     "venue": "KDD 2020",

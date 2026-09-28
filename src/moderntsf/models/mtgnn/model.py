@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import torch
 from torch import nn
-import torch.nn.functional as F
+from moderntsf.models._components.gated_dilated_conv import gated_dilated_conv
 from moderntsf.models._components.marks import to_spatiotemporal
 
 
@@ -38,9 +38,8 @@ class MTGNNLayer(nn.Module):
         self.forward_graph, self.backward_graph = MixHop(graph_width, depth, alpha), MixHop(graph_width, depth, alpha)
         self.residual, self.norm, self.dropout = nn.Linear(graph_width, width), nn.LayerNorm(width), nn.Dropout(dropout)
     def forward(self, x: torch.Tensor, graph: torch.Tensor) -> torch.Tensor:
-        channels, pad = x.permute(0,3,2,1), 2*self.dilation
-        padded = F.pad(channels, (pad,0,0,0))
-        temporal = (torch.tanh(self.filter(padded))*torch.sigmoid(self.gate(padded))).permute(0,3,2,1)
+        channels = x.permute(0,3,2,1)
+        temporal = gated_dilated_conv(channels, self.filter, self.gate).permute(0,3,2,1)
         spatial = self.forward_graph(temporal, graph)+self.backward_graph(temporal, graph.T)
         return self.norm(x+self.dropout(self.residual(spatial)))
 

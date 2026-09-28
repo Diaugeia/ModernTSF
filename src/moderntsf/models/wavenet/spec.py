@@ -37,6 +37,6 @@ SPEC = ModelSpec(
     model_card='src/moderntsf/models/wavenet/README.md',
     smoke_config=None,
     capabilities=frozenset(['time-series']),
-    components=('revin',),
+    components=('gated_dilated_conv', 'revin'),
     contract_task={'seq_len': 96, 'pred_len': 96, 'label_len': 0},
 )

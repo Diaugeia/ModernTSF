@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import torch
 from torch import nn
-from torch.nn import functional as F
 
+from moderntsf.models._components.gated_dilated_conv import gated_dilated_conv
 from moderntsf.models._components.revin import RevIN
 
 
@@ -33,9 +33,7 @@ class GatedCausalLayer(nn.Module):
         self.skip = nn.Conv1d(dilation_width, skip_width, 1)
 
     def forward(self, values: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        padding = self.dilation * (self.kernel_size - 1)
-        causal = F.pad(values, (padding, 0))
-        gated = torch.tanh(self.filter(causal)) * torch.sigmoid(self.gate(causal))
+        gated = gated_dilated_conv(values, self.filter, self.gate)
         return values + self.residual(gated), self.skip(gated)
 
 

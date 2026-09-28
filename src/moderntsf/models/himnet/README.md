@@ -49,6 +49,7 @@ ModernTSF rewrites HimNet locally after reviewing the paper and pinned official 
 
 ## Shared components
 
+- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
 - [`marks`](../_components/marks/README.md)
 
 ## Configuration constraints

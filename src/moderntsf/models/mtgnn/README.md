@@ -57,6 +57,7 @@ training/data protocol or published metrics.
 
 ## Shared components
 
+- [`gated_dilated_conv`](../_components/gated_dilated_conv/README.md)
 - [`marks`](../_components/marks/README.md)
 
 ## Configuration constraints

@@ -6,6 +6,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from moderntsf.models._components.adaptive_node_embedding_adjacency import (
+    adaptive_node_embedding_adjacency,
+)
 from moderntsf.models._components.graph_utils import adj_to_supports
 from moderntsf.models._components.marks import to_spatiotemporal
 
@@ -114,7 +117,7 @@ class Model(nn.Module):
         features = torch.cat((data[..., : self.input_dim], self.tod_embedding(tod), self.dow_embedding(dow)), -1)
         residual = self.input_projection(features)
         dynamic = self.graph(residual)
-        adaptive = torch.softmax(torch.relu(self.adaptive_source @ self.adaptive_target), -1)
+        adaptive = adaptive_node_embedding_adjacency(self.adaptive_source, self.adaptive_target)
         graphs = [self.forward_support, self.reverse_support, adaptive, dynamic]
         forecasts = []
         for layer in self.layers:

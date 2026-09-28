@@ -6,11 +6,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from moderntsf.models._components.adaptive_node_embedding_adjacency import (
+    adaptive_node_embedding_adjacency,
+)
 from moderntsf.models._components.marks import to_spatiotemporal
 
 
 def _adaptive_basis(nodes: torch.Tensor, order: int) -> torch.Tensor:
-    adjacency = torch.softmax(torch.relu(nodes @ nodes.transpose(0, 1)), dim=-1)
+    adjacency = adaptive_node_embedding_adjacency(nodes)
     basis = [torch.eye(nodes.shape[0], device=nodes.device, dtype=nodes.dtype)]
     if order > 1:
         basis.append(adjacency)

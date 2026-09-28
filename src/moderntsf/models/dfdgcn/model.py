@@ -5,8 +5,11 @@ from __future__ import annotations
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
+from moderntsf.models._components.adaptive_node_embedding_adjacency import (
+    adaptive_node_embedding_adjacency,
+)
+from moderntsf.models._components.gated_dilated_conv import gated_dilated_conv
 from moderntsf.models._components.graph_utils import adj_to_supports
 from moderntsf.models._components.marks import to_spatiotemporal
 
@@ -96,14 +99,12 @@ class Model(nn.Module):
             raise ValueError(f"DFDGCN expects (B, {self.seq_len}, {self.num_nodes}) values")
         data = to_spatiotemporal(x_enc, x_mark_enc)[..., :3]
         hidden = self.input_projection(data.permute(0, 3, 2, 1))
-        adaptive = torch.softmax(torch.relu(self.adaptive_source @ self.adaptive_target), dim=-1)
+        adaptive = adaptive_node_embedding_adjacency(self.adaptive_source, self.adaptive_target)
         dynamic = self.frequency_graph(x_enc)
         graphs = [self.forward_support, self.reverse_support, adaptive, dynamic]
         skips = None
         for filter_layer, gate_layer, graph_layer, skip_layer in zip(self.filters, self.gates, self.graph_layers, self.skip_layers):
-            dilation = filter_layer.dilation[1]
-            pad = dilation * (filter_layer.kernel_size[1] - 1)
-            gated = torch.tanh(filter_layer(F.pad(hidden, (pad, 0, 0, 0)))) * torch.sigmoid(gate_layer(F.pad(hidden, (pad, 0, 0, 0))))
+            gated = gated_dilated_conv(hidden, filter_layer, gate_layer)
             hidden = hidden + self.dropout(graph_layer(gated, graphs))
             skips = skip_layer(hidden) if skips is None else skips + skip_layer(hidden)
         assert skips is not None
