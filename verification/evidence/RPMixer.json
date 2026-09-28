@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RPMixer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "3ddb41a446cce13ec39163ef6c7f87fb8094bf151437a571bb1acb225a51ef68",
+  "verified_at": "2026-09-28T20:19:34.220676Z",
+  "subject_sha256": "bba3ddaa389ff4a87f7be2ff46d1b903cdfd20d810c546ef633fc57fca93c60c",
   "paper": {
     "title": "RPMixer: Shaking Up Time Series Forecasting with Random Projections for Large Spatial-Temporal Data",
     "venue": "KDD 2024",

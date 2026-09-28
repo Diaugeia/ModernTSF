@@ -104,6 +104,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("channel-wise", "forecast", "individual", "linear", "projection"),
         ),
         ComponentSpec(
+            "mixer_block",
+            "moderntsf.models._components.mixer_block",
+            "Pre-normalized residual time mixing then residual feature mixing (TSMixer basic block).",
+            ("MixerBlock",),
+            ("feature", "gelu", "layernorm", "mixer", "residual", "time"),
+        ),
+        ComponentSpec(
             "dlinear",
             "moderntsf.models._components.dlinear",
             "Moving-average decomposition and channel-wise linear forecasting backbone.",

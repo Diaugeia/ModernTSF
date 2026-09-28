@@ -53,6 +53,8 @@ Local implementation: confirmed.
 
 Local implementation confirmed from paper equations (3), (6), and (8); the unlicensed reference repository was inspected at the pinned revision; no external source code was copied. The default uses equidistant interleaved temporal subsequences, independent temporal MLPs, a low-rank channel bottleneck, residual composition, RevIN, and a direct history-to-horizon projection. Attention/random-matrix variants and SVD/NMF refinement are omitted; GELU, pre-LayerNorm, and the compact forecast-only runtime are disclosed local choices rather than benchmark-reference comparison claims.
 
+Component audit (`mixer_block`): `FactorizedMixerBlock` normalizes over the channel axis only (not the joint `(seq_len, channels)` shape), mixes through the subsequence-grouped `TemporalSubsequenceMixer` (Eq. 6) instead of a single dense time projection, and uses a low-rank `ChannelInteraction` bottleneck (Eq. 8) instead of the hidden-width feature MLP; it is not the same operator and stays model-local.
+
 ## Shared components
 
 - [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
@@ -85,6 +87,8 @@ ModernTSF; no external source file is copied.
 Local implementation: confirmed.
 
 Local implementation confirmed from paper equations (3), (6), and (8); the unlicensed reference repository was inspected at the pinned revision; no external source code was copied. The default uses equidistant interleaved temporal subsequences, independent temporal MLPs, a low-rank channel bottleneck, residual composition, RevIN, and a direct history-to-horizon projection. Attention/random-matrix variants and SVD/NMF refinement are omitted; GELU, pre-LayerNorm, and the compact forecast-only runtime are disclosed local choices rather than benchmark-reference comparison claims.
+
+Component audit (`mixer_block`): `FactorizedMixerBlock` normalizes over the channel axis only (not the joint `(seq_len, channels)` shape), mixes through the subsequence-grouped `TemporalSubsequenceMixer` (Eq. 6) instead of a single dense time projection, and uses a low-rank `ChannelInteraction` bottleneck (Eq. 8) instead of the hidden-width feature MLP; it is not the same operator and stays model-local.
 
 ## Citation
 

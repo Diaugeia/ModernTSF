@@ -47,6 +47,8 @@ in [`spec.py`](spec.py), the implementation lives in
 
 Clean-room implementation: confirmed. LEP and HDE were independently designed from the paper description; reference-only repository source was not copied. The explicit center/width sampler is a disclosed local choice.
 
+Component audit (`mixer_block`): each `AxisMixer` in `HierarchicalDependencyBlock` is a single pre-norm residual MLP applied independently per axis (local time, patch, variable, channel), not the paired time-then-feature mixing of `mixer_block`; it stays model-local.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
@@ -72,6 +74,8 @@ Default config: `configs/models/HDMixer.toml`; model specification: `spec.py`; i
 ## Source and verification
 
 Clean-room implementation: confirmed. LEP and HDE were independently designed from the paper description; reference-only repository source was not copied. The explicit center/width sampler is a disclosed local choice.
+
+Component audit (`mixer_block`): each `AxisMixer` in `HierarchicalDependencyBlock` is a single pre-norm residual MLP applied independently per axis (local time, patch, variable, channel), not the paired time-then-feature mixing of `mixer_block`; it stays model-local.
 
 ## Citation
 

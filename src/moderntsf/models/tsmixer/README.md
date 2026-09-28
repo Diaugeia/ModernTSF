@@ -52,6 +52,7 @@ Clean-room implementation confirmed from paper Appendix B.3.1--B.3.2; the refere
 ## Shared components
 
 - [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
+- [`mixer_block`](../_components/mixer_block/README.md)
 
 ## Configuration constraints
 

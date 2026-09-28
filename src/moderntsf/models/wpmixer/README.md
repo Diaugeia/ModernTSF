@@ -47,6 +47,8 @@ in [`spec.py`](spec.py), the implementation lives in
 
 Clean-room implementation: confirmed. The implementation was derived independently from the paper's orthogonal multi-resolution analysis, per-resolution patching, token/feature MLP mixing, and learned resolution fusion; reference source code was not copied or reused. Fixed mathematical Haar/db1/db2 analysis filters are local, and branch forecasts are fused directly rather than reconstructed by an external inverse-wavelet package.
 
+Component audit (`mixer_block`): `ResolutionMixer`'s token/feature mixer normalizes the residual sum after each MLP (post-norm) instead of normalizing the input before it (pre-norm), and its patch-unfold-plus-embedding step has no counterpart in `mixer_block`; it stays model-local.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
@@ -72,6 +74,8 @@ Default config: `configs/models/WPMixer.toml`; model specification: `spec.py`; i
 ## Source and verification
 
 Clean-room implementation: confirmed. The implementation was derived independently from the paper's orthogonal multi-resolution analysis, per-resolution patching, token/feature MLP mixing, and learned resolution fusion; reference source code was not copied or reused. Fixed mathematical Haar/db1/db2 analysis filters are local, and branch forecasts are fused directly rather than reconstructed by an external inverse-wavelet package.
+
+Component audit (`mixer_block`): `ResolutionMixer`'s token/feature mixer normalizes the residual sum after each MLP (post-norm) instead of normalizing the input before it (pre-norm), and its patch-unfold-plus-embedding step has no counterpart in `mixer_block`; it stays model-local.
 
 ## Citation
 

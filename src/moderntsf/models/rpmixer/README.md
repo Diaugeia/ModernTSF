@@ -53,6 +53,8 @@ Local implementation: confirmed.
 
 Local implementation confirmed from paper equations (1)--(6); the unlicensed CauAir reference was inspected at the pinned revision; no external source code was copied, and its former `_official reference.py` derivative has been removed. Each block uses pre-activation complex FFT-domain temporal projection, a distinct frozen random node projection, learned spatial reconstruction, and exact identity residual paths before a shared horizon decoder. The local runtime uses only observed node values, deliberately ignores graph adjacency and timestamp marks as the paper's graph-free formulation permits, and does not reproduce extra feature construction, MAE training, or benchmark hyperparameters.
 
+Component audit (`mixer_block`): `RPMixerBlock` mixes through a complex FFT-domain linear map and a fixed random node projection with no `LayerNorm` at all (Eqs. 1--6), unlike `mixer_block`'s pre-normalized time/feature MLPs; it stays model-local. The horizon decoder already reuses the cataloged `channel_wise_linear`.
+
 ## Shared components
 
 - [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
@@ -84,6 +86,8 @@ ModernTSF; no external source file is copied.
 Local implementation: confirmed.
 
 Local implementation confirmed from paper equations (1)--(6); the unlicensed CauAir reference was inspected at the pinned revision; no external source code was copied, and its former `_official reference.py` derivative has been removed. Each block uses pre-activation complex FFT-domain temporal projection, a distinct frozen random node projection, learned spatial reconstruction, and exact identity residual paths before a shared horizon decoder. The local runtime uses only observed node values, deliberately ignores graph adjacency and timestamp marks as the paper's graph-free formulation permits, and does not reproduce extra feature construction, MAE training, or benchmark hyperparameters.
+
+Component audit (`mixer_block`): `RPMixerBlock` mixes through a complex FFT-domain linear map and a fixed random node projection with no `LayerNorm` at all (Eqs. 1--6), unlike `mixer_block`'s pre-normalized time/feature MLPs; it stays model-local. The horizon decoder already reuses the cataloged `channel_wise_linear`.
 
 ## Citation
 

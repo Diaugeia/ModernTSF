@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "HDMixer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "08f37b95d5f1b416a27e147bbce2b66e45a46aebe7d79317e4f61826e1b2def4",
+  "verified_at": "2026-09-28T20:19:34.220676Z",
+  "subject_sha256": "cb16d37297b108a7bc10fd692834a84b02b8f07a1ccacacd9d1e9dbfca6ec491",
   "paper": {
     "title": "HDMixer: Hierarchical Dependency with Extendable Patch for Multivariate Time Series Forecasting",
     "venue": "AAAI 2024",

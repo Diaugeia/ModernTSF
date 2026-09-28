@@ -47,6 +47,8 @@ in [`spec.py`](spec.py), the implementation lives in
 
 Clean-room implementation: confirmed. The implementation was derived independently from the paper's separate patch/feature mixers, U-shaped down/up path with skip fusion, and spectral stationarity correction; source from the unlicensed reference repository was not copied or reused. Correction is applied to latent patch autocorrelation energy before the direct forecast head.
 
+Component audit (`mixer_block`): `AxisMixer` applies its patch/feature MLPs to the raw residual stream and normalizes the sum afterward (post-norm), while `mixer_block` normalizes before each MLP and adds the residual without a further norm (pre-norm); the mixing order differs, so this stays model-local.
+
 ## Shared components
 
 - [`revin`](../_components/revin/README.md)
@@ -72,6 +74,8 @@ Default config: `configs/models/UMixer.toml`; model specification: `spec.py`; im
 ## Verification
 
 Clean-room implementation: confirmed. The implementation was derived independently from the paper's separate patch/feature mixers, U-shaped down/up path with skip fusion, and spectral stationarity correction; source from the unlicensed reference repository was not copied or reused. Correction is applied to latent patch autocorrelation energy before the direct forecast head.
+
+Component audit (`mixer_block`): `AxisMixer` applies its patch/feature MLPs to the raw residual stream and normalizes the sum afterward (post-norm), while `mixer_block` normalizes before each MLP and adds the residual without a further norm (pre-norm); the mixing order differs, so this stays model-local.
 
 ## Citation
 

@@ -457,10 +457,10 @@
     },
     "HDMixer": {
       "evidence": "verification/evidence/HDMixer.json",
-      "sha256": "115fb684416488515b33296f4f586f1da4c5dd74e6e1eca09eead71b3bf2bce5",
+      "sha256": "9cc22421da17128e44250fb98b26e882e9e3d0fc7925a64a3c8974be6763cd73",
       "status": "passed",
-      "subject_sha256": "08f37b95d5f1b416a27e147bbce2b66e45a46aebe7d79317e4f61826e1b2def4",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "cb16d37297b108a7bc10fd692834a84b02b8f07a1ccacacd9d1e9dbfca6ec491",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "HL": {
       "evidence": "verification/evidence/HL.json",
@@ -653,10 +653,10 @@
     },
     "MTSMixer": {
       "evidence": "verification/evidence/MTSMixer.json",
-      "sha256": "245098e7f6dec62eae595f05598c16b7650cfbf887071599e2765b1001766bc1",
+      "sha256": "1db5dca53c85fd4843494f345cc6996b70e80a7b9c8eb90ecfcd43ac11617dda",
       "status": "passed",
-      "subject_sha256": "d275c26d741efa9aebcbef04b91d01f4b8e1859dce3844ff6bb71e2820d06b8a",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "38eb2f5d7ce32168449e6e2bd4b3e5c339059cdbf56340dcee0cacad96e46672",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "MambaSimple": {
       "evidence": "verification/evidence/MambaSimple.json",
@@ -800,10 +800,10 @@
     },
     "PatchMLP": {
       "evidence": "verification/evidence/PatchMLP.json",
-      "sha256": "aeaa7cf3662a02ddd095b0e170df50c061c5be6c2c721ccf112be42058457f25",
+      "sha256": "64d6bc553b8c6a486090d7edddf6d3130b8255cc8954a2c56a3bbd8338632de6",
       "status": "passed",
-      "subject_sha256": "36ff7a53744efe8a0c1b548ee722aaa5288eade82bbcf791ec5e1ee404e78800",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "686f670571b52c664594daf668195366e38a79ca72cffe8317fbcadc7734e7d0",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "PatchTST": {
       "evidence": "verification/evidence/PatchTST.json",
@@ -870,10 +870,10 @@
     },
     "RPMixer": {
       "evidence": "verification/evidence/RPMixer.json",
-      "sha256": "889c678e8d7bb0baaf8340732fcdc7dabb0ba1ea041cb395c4175beb0639ff60",
+      "sha256": "9255412b9b8a753422d6e3e1fe634934e8621f0f2884f37465c7e7d3b99d7f9e",
       "status": "passed",
-      "subject_sha256": "3ddb41a446cce13ec39163ef6c7f87fb8094bf151437a571bb1acb225a51ef68",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "bba3ddaa389ff4a87f7be2ff46d1b903cdfd20d810c546ef633fc57fca93c60c",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "RandomForestTS": {
       "evidence": "verification/evidence/RandomForestTS.json",
@@ -1073,10 +1073,10 @@
     },
     "TSMixer": {
       "evidence": "verification/evidence/TSMixer.json",
-      "sha256": "55f5fa4f24d0358238e8ae3aae463e593f3b23dc6388e5ed4f991adbf1e9d42d",
+      "sha256": "082911453b6df4e14f646614c13d19b3f41bed1f9320c3a5ad01ec0b15e4d42c",
       "status": "passed",
-      "subject_sha256": "77c56a3b9b224932892eb3854401fe7dfeb84de54b2c8e47835eeaf52ad1aa54",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "87e4dabc44ec38ce832038114f0eb6e2b8448c90905c42c7043f3d4b48c01455",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "TSRAG": {
       "evidence": "verification/evidence/TSRAG.json",
@@ -1206,17 +1206,17 @@
     },
     "UMixer": {
       "evidence": "verification/evidence/UMixer.json",
-      "sha256": "5bc59b8453662f856d49522b0d0d5d86e844e8c593f4487959374a22980793d8",
+      "sha256": "a56372f7e8dc3c0b1141e0cba14bbb62203f2fd58dc88ea9609bc4a68a2e0a05",
       "status": "passed",
-      "subject_sha256": "81f10b66be71c71aa88c5ad0bacd638881842157f02dcf393706f0ccf6db73de",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "3e12f95335271ee53d7d8f320d16a70b1885c88e0d5a2e4e4b3bfcac49eb9e59",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "WPMixer": {
       "evidence": "verification/evidence/WPMixer.json",
-      "sha256": "d5c35fdc03bd607308a81cfe6d55faa02e57b2738b7f87364149250aec3b26bb",
+      "sha256": "a473eb02953e6ee07c82ba471ed0d3c389cec2c75068d914e5afb87450adc8c4",
       "status": "passed",
-      "subject_sha256": "e262e4bf4007c8323411eecc7b0357cec585412bd200639047a1f1fde62b01fd",
-      "verified_at": "2026-09-28T18:37:08.769655Z"
+      "subject_sha256": "f3750941cc65b7825942d83e059986fe71e484a3c0ed5d68ef262064750b5f05",
+      "verified_at": "2026-09-28T20:19:34.220676Z"
     },
     "WaveNet": {
       "evidence": "verification/evidence/WaveNet.json",

@@ -2,35 +2,10 @@
 
 from __future__ import annotations
 
-import torch
 import torch.nn as nn
 
 from moderntsf.models._components.channel_wise_linear import ChannelWiseLinear
-
-
-class MixerBlock(nn.Module):
-    """Paper time mixing followed by feature mixing, both residual."""
-
-    def __init__(self, seq_len: int, channels: int, hidden: int, dropout: float) -> None:
-        super().__init__()
-        normalized_shape = (seq_len, channels)
-        self.time_norm = nn.LayerNorm(normalized_shape)
-        self.feature_norm = nn.LayerNorm(normalized_shape)
-        self.time_projection = nn.Linear(seq_len, seq_len)
-        self.feature_in = nn.Linear(channels, hidden)
-        self.feature_out = nn.Linear(hidden, channels)
-        self.activation = nn.GELU()
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        time_input = self.time_norm(x).transpose(1, 2)
-        time_delta = self.dropout(self.activation(self.time_projection(time_input)))
-        x = x + time_delta.transpose(1, 2)
-        feature_input = self.feature_norm(x)
-        feature_delta = self.feature_out(
-            self.dropout(self.activation(self.feature_in(feature_input)))
-        )
-        return x + self.dropout(feature_delta)
+from moderntsf.models._components.mixer_block import MixerBlock
 
 
 class Model(nn.Module):
