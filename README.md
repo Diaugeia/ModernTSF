@@ -8,7 +8,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Models: 178](https://img.shields.io/badge/models-178-orange.svg)](docs/en/models.md)
-[![Real-time tracks: 3](https://img.shields.io/badge/real--time%20tracks-3-purple.svg)](docs/en/realtime.md)
+[![Real-time tracks: 6](https://img.shields.io/badge/real--time%20tracks-6-purple.svg)](docs/en/realtime.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Every forecasting method, one interface, one protocol, evaluated on the data
@@ -42,7 +42,7 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
 | 🧩 **Code & interface** | 178 methods as peers in one flat catalog, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
-| 🗃️ **Data** | 80 static presets across `time_series`, `spatiotemporal`, and `covariate` settings, plus rolling real-time tracks (stocks, traffic, air quality) |
+| 🗃️ **Data** | 89 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
 | ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
@@ -98,7 +98,7 @@ no model, including ours, can have seen its evaluation data.
 | Track | Data | Setting | Horizon |
 | --- | --- | --- | --- |
 | `stock_hs300` | CSI-300 constituents, daily log returns (AKShare) | time series | 5 trading days |
-| `traffic_pems_sb` | Caltrans PeMS District 8, hourly flow at 1,105 stations | spatiotemporal | 24 h |
+| `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS Districts 4, 7, 3, 8: hourly flow at 2,472 / 1,926 / 801 / 1,105 stations | spatiotemporal | 24 h |
 | `air_openaq_cn` | OpenAQ hourly PM2.5, government monitors in China | spatiotemporal | 24 h |
 
 ```bash

@@ -201,6 +201,24 @@ conversion/download operations; inspect their `--help` before writing. Scaling
 must fit training data only, split boundaries must be stable, and graph/covariate
 loaders must declare compatible task modes.
 
+### PeMS traffic (UltraTraffic)
+
+The UltraTraffic archive (hourly total flow per Caltrans PeMS station, four
+districts, 2003–2023) is converted once into a local parquet store:
+
+```bash
+python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
+```
+
+`ultratraffic_st` (spatiotemporal, with calendar covariates) and
+`ultratraffic_ts` (stations as channels) read the store; presets
+`ultratraffic_{ba,la,sac,sb}_{st,ts}` load 2023 for Districts 4, 7, 3, and 8.
+Parameters select `years`, the station policy across years (`last` or
+`intersection`), and the continual-learning splits `cl_common` / `cl_added`
+(stations retained from, or new relative to, the previous year; see
+`ultratraffic_sb_cl`). The same store bootstraps the `traffic_pems_*`
+real-time tracks.
+
 ## Experiments
 
 A run TOML composes base, dataset, and model presets. Keep scientific choices in

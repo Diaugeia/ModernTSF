@@ -14,7 +14,7 @@ Tracks are declared in `configs/realtime/<id>.toml`:
 | Track | Source | Bootstrap history | Frequency · horizon |
 | --- | --- | --- | --- |
 | `stock_hs300` | AKShare, forward-adjusted closes → daily log returns | AKShare, from 2019-01-02 | trading days · 5 |
-| `traffic_pems_sb` | Caltrans PeMS clearinghouse `station_5min`, summed to hourly flow | UltraTraffic_CL static panels (2019–2023) | hourly · 24 |
+| `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS clearinghouse `station_5min` (Districts 4, 7, 3, 8), summed to hourly flow | UltraTraffic store (2019–2023) | hourly · 24 |
 | `air_openaq_cn` | OpenAQ v3 hourly averages, PM2.5 | API backfill (365 days) | hourly · 24 |
 
 Credentials are read from the environment and never written to disk:
