@@ -8,6 +8,8 @@ fetcher pulls only the requested range per symbol and pauses between symbols.
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 import time
 
 import numpy as np
@@ -70,11 +72,23 @@ def daily_close(symbol: str, start: pd.Timestamp, end: pd.Timestamp, adjust: str
     raise RuntimeError(f"could not fetch {symbol}: {last_error}")
 
 
+def _cache_dir(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp) -> Path:
+    """Per-request cache so an interrupted fetch resumes instead of restarting."""
+    root = Path(os.environ.get("MODERNTSF_REALTIME_ROOT", "dataset/realtime"))
+    return root / "_cache" / track.id / f"{start:%Y%m%d}-{end:%Y%m%d}"
+
+
 def fetch(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp, channels: list[str] | None) -> pd.DataFrame:
     symbols = channels or constituents()
     adjust = track.source.get("adjust", "qfq")
+    cache = _cache_dir(track, start, end)
+    cache.mkdir(parents=True, exist_ok=True)
     series = {}
     for number, symbol in enumerate(symbols, start=1):
+        path = cache / f"{symbol}.parquet"
+        if path.is_file():  # already fetched by an earlier, interrupted run
+            series[symbol] = pd.read_parquet(path)["value"]
+            continue
         if number % 25 == 0:
             print(f"  fetched {number}/{len(symbols)} symbols", flush=True)
         # one extra week so the first requested day has a previous close
@@ -83,5 +97,6 @@ def fetch(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp, channels: li
             if track.source.get("transform", "log_return") == "log_return":
                 close = np.log(close).diff()
             series[symbol] = close.loc[start:end]
+            series[symbol].to_frame("value").to_parquet(path)
         time.sleep(float(track.source.get("pause_seconds", 0.5)))
     return pd.DataFrame(series).sort_index()
