@@ -12,7 +12,7 @@ It is kept as a separate static file so the HF-regenerated ``leaderboard.json``
 stays untouched.
 
 Usage:
-    python pipeline/build_model_meta.py /path/to/ModernTSF
+    python pipeline/build_model_meta.py            # defaults to this monorepo's root
     python pipeline/build_model_meta.py /path/to/ModernTSF --out data/model-meta.json
 """
 
@@ -59,7 +59,12 @@ def parse_models(moderntsf_root: str) -> dict[str, dict]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("moderntsf", help="Path to a ModernTSF checkout")
+    ap.add_argument(
+        "moderntsf",
+        nargs="?",
+        default=os.path.join(os.path.dirname(__file__), "..", "..", ".."),
+        help="Path to a ModernTSF checkout (default: the enclosing monorepo)",
+    )
     ap.add_argument(
         "--out",
         default=os.path.join(os.path.dirname(__file__), "..", "data", "model-meta.json"),

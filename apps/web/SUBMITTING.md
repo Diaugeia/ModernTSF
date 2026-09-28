@@ -1,4 +1,4 @@
-# Submitting data to the TSEval leaderboard
+# Submitting data to the ModernTSF Leaderboard
 
 The leaderboard at **[tseval.diaugeia.ai](https://tseval.diaugeia.ai)** is an open board
 you can check: every row is rebuilt from the submission evidence under

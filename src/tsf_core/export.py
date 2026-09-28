@@ -1,6 +1,6 @@
 """Export the TSF-Core pydantic models to JSON Schema.
 
-The generated ``schema/*.json`` files are the *only* contract TSEval consumes —
+The generated ``schema/*.json`` files are the *only* contract ModernTSF Leaderboard consumes —
 it never imports this package's Python. Export is deterministic (sorted keys,
 stable ``$id`` / version injection) so the committed files diff cleanly and a
 ``--check`` CI gate can reject "changed the model, forgot to re-export".

@@ -2,7 +2,7 @@
 
 Each ModernTSF run writes one ``record.json`` next to its CSV outputs. Unlike
 ``performance.csv`` (positional, shared-header), this is self-describing and
-schema-validated, so ``tsf submit`` and the TSEval leaderboard can ingest a run
+schema-validated, so ``tsf submit`` and the ModernTSF Leaderboard can ingest a run
 with zero column-alignment guesswork. Contract or write failures fail the run;
 an invalid record is never persisted as if it were a valid experiment artifact.
 """

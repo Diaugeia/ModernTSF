@@ -1,4 +1,4 @@
-# Stock CSI-300 — the first TSEval RealTime dataset.
+# Stock CSI-300 — the first ModernTSF Leaderboard RealTime dataset.
 #
 # Same flat-channel forecasting loader as cauair_ts (each constituent's series
 # is a channel); what makes this a distinct, correctly-labelled benchmark is:

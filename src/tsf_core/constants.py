@@ -11,7 +11,7 @@ key translation:
 
 TSF-Core depends only on ``pydantic`` + the Python standard library. It must
 never import ``benchmark`` / ``data`` / ``models`` / ``torch`` / ``numpy`` /
-``datasets`` — that boundary is what lets TSEval consume the exported JSON
+``datasets`` — that boundary is what lets ModernTSF Leaderboard consume the exported JSON
 Schema without pulling the ML stack.
 """
 
@@ -46,7 +46,7 @@ METRIC_NAMES: tuple[str, ...] = (
 # Profile fields — must match parse_profile_report()'s prefix_map targets in
 # src/benchmark/evaluation/profile.py. The two ``*_params`` are integers; the
 # rest are kept as unit-bearing strings (faithful to the raw report) and are
-# only structured into {value, unit} downstream if/when TSEval needs to sort on
+# only structured into {value, unit} downstream if/when ModernTSF Leaderboard needs to sort on
 # them.
 PROFILE_FIELDS: tuple[str, ...] = (
     "total_params",

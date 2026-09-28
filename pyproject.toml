@@ -65,6 +65,7 @@ tsf_core = ["schema/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["tests"]
 
 # PyTorch backend (CPU/CUDA) is resolved at install time by uv via
 # UV_TORCH_BACKEND (auto|cpu|cu118|cu121|cu124|cu126|cu128). No explicit

@@ -1,4 +1,4 @@
-// Shape of data/leaderboard.json (produced by the TSEval build pipeline).
+// Shape of data/leaderboard.json (produced by the ModernTSF Leaderboard build pipeline).
 import type { ModelType } from "./model-types";
 
 export interface LeaderRow {

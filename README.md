@@ -112,6 +112,18 @@ exact command options stay in CLI help:
 
 ---
 
+## 🗂️ Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `src/` | The installable framework (`pip install modern-tsf`, CLI `tsf`) |
+| `configs/`, `catalog/`, `verification/` | Experiment configs, dataset catalog, model verification evidence |
+| `tests/` | Test suite |
+| `apps/web/` | ModernTSF Leaderboard — static site, submission pipeline, and `submissions/` |
+| `experiments/` | Local research workspace; only `*/scripts/` is tracked |
+
+---
+
 ## 📜 License
 
 ModernTSF is released under the [MIT License](LICENSE) — open by default, free to

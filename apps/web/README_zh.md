@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📊 TSEval
+# 📊 ModernTSF Leaderboard
 
 **开放、可复现的时间序列预测榜单**
 
@@ -18,11 +18,11 @@
 
 ---
 
-## 🧭 TSEval 是什么
+## 🧭 ModernTSF Leaderboard 是什么
 
-TSEval 是 [ModernTSF](https://github.com/Diaugeia/ModernTSF) 的公开记分牌:**ModernTSF 是实验
-发生的地方,TSEval 是实验被公开展示的地方。** 大多数预测数字是没法核验的——论文报告它、榜单
-抄过去、没人重跑。TSEval 反过来:每一行都是**一份你能打开的提交**(结果 + 智能体轨迹 + 可读报告),
+ModernTSF Leaderboard 是 [ModernTSF](https://github.com/Diaugeia/ModernTSF) 的公开记分牌:**ModernTSF 是实验
+发生的地方,ModernTSF Leaderboard 是实验被公开展示的地方。** 大多数预测数字是没法核验的——论文报告它、榜单
+抄过去、没人重跑。ModernTSF Leaderboard 反过来:每一行都是**一份你能打开的提交**(结果 + 智能体轨迹 + 可读报告),
 因此榜单可比、可审计、可复现。它是证据的一个函数,而不是谁手填的一张表。
 
 本仓库是**唯一真源**——网站、每一份 `submission.json`、以及把提交变成榜单的构建管线。

@@ -1,9 +1,9 @@
-"""TSF-Core — the contract layer shared by ModernTSF (producer) and TSEval (consumer).
+"""TSF-Core — the contract layer shared by ModernTSF (producer) and ModernTSF Leaderboard (consumer).
 
 This is a dependency-light pydantic package (pydantic + stdlib only). It defines
 the three contract models — :class:`DatasetSpec`, :class:`RunRecord`,
 :class:`SubmissionReport` — and exports them to JSON Schema, which is the *only*
-artifact TSEval reads. Do not import ``benchmark`` / ``data`` / ``models`` /
+artifact ModernTSF Leaderboard reads. Do not import ``benchmark`` / ``data`` / ``models`` /
 ``torch`` / ``numpy`` / ``datasets`` from here: that boundary is what keeps the
 consumer side free of the ML stack.
 """

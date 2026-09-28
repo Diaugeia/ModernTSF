@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📊 TSEval
+# 📊 ModernTSF Leaderboard
 
 **Open, reproducible time-series forecasting leaderboard**
 
@@ -19,12 +19,12 @@ ranked transparently across tracks, datasets, and horizons.
 
 ---
 
-## 🧭 What is TSEval
+## 🧭 What is ModernTSF Leaderboard
 
-TSEval is the public scoreboard for [ModernTSF](https://github.com/Diaugeia/ModernTSF):
-**ModernTSF is where experiments run; TSEval is where they're shown, in the open.**
+ModernTSF Leaderboard is the public scoreboard for [ModernTSF](https://github.com/Diaugeia/ModernTSF):
+**ModernTSF is where experiments run; ModernTSF Leaderboard is where they're shown, in the open.**
 Most forecasting numbers are impossible to check — a paper reports them, a leaderboard
-reprints them, nobody re-runs them. TSEval works the other way around: every row is a
+reprints them, nobody re-runs them. ModernTSF Leaderboard works the other way around: every row is a
 committed **submission you can open** — the result, the agent's trajectory, and a
 readable report — so the board stays comparable, auditable, and reproducible. It's a
 function of the evidence, not a table someone pasted in.

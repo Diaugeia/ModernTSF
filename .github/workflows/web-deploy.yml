@@ -1,8 +1,11 @@
-name: Deploy
+name: web-deploy
 
+# Builds apps/web (ModernTSF Leaderboard) and deploys it. The deploy targets
+# (Cloudflare Pages project `tseval`, HF Space `Diaugeia/TSEval`) are unchanged
+# from the former TSEval repo. Manual-only until the deploy secrets are
+# configured on this repository; re-enable the push trigger afterwards:
+#   push: { branches: [main], paths: ["apps/web/**"] }
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +18,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
 
