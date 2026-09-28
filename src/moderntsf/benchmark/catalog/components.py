@@ -287,5 +287,26 @@ COMPONENT_CATALOG = ComponentCatalog(
         ),
         ComponentSpec("transformer_encdec", "moderntsf.models._components.transformer_encdec", "Shared Transformer encoder and decoder blocks.", keywords=("attention", "decoder", "encoder", "transformer")),
         ComponentSpec("tst_transformer", "moderntsf.models._components.tst_transformer", "Time-series Transformer encoder blocks.", keywords=("attention", "encoder", "time-series", "transformer")),
+        ComponentSpec(
+            "wavelet",
+            "moderntsf.models._components.wavelet",
+            "Fixed-filter decimated and a-trous (undecimated) discrete wavelet transforms for BCL tensors.",
+            ("DecimatedWaveletTransform", "UndecimatedWaveletTransform", "available_wavelets"),
+            ("dwt", "haar", "multi-resolution", "subband", "undecimated", "wavelet"),
+        ),
+        ComponentSpec(
+            "topk_expert_attention",
+            "moderntsf.models._components.topk_expert_attention",
+            "Differentiable top-k local expert self-attention with an optional shared global expert.",
+            ("TopKExpertAttention",),
+            ("attention", "expert", "mixture-of-experts", "routing", "top-k"),
+        ),
+        ComponentSpec(
+            "differential_attention",
+            "moderntsf.models._components.differential_attention",
+            "Differential self-attention: the RMS-renormalized difference of two softmax attention maps.",
+            ("DifferentialAttention",),
+            ("attention", "differential", "noise-cancelling", "rmsnorm"),
+        ),
     )
 )

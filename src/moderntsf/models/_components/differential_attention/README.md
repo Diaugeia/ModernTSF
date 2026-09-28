@@ -1,26 +1,27 @@
 ---
-name: "embed"
+name: "differential_attention"
 kind: "component"
-module: "moderntsf.models._components.embed"
-summary: "Value, position, calendar, patch, and inverted embeddings."
+module: "moderntsf.models._components.differential_attention"
+summary: "Differential self-attention: the RMS-renormalized difference of two softmax attention maps."
 ---
 
-# embed
+# differential_attention
 
 ## Purpose
 
-Value, position, calendar, patch, and inverted embeddings.
+Differential self-attention: the RMS-renormalized difference of two softmax attention maps.
 
-Embedding utilities for time-series models.
+Differential self-attention.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- Import the module and use its documented functions/classes.
+- `DifferentialAttention(d_model: int, num_heads: int, lambda_init: float=0.8, attention_dropout: float=0.0)`
+  Full (non-causal) differential self-attention.
 
 ```python
-import moderntsf.models._components.embed
+from moderntsf.models._components.differential_attention import DifferentialAttention
 ```
 
 ## Input and output contract
@@ -33,17 +34,14 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `embed` in the consuming model's `components`
+implementation, then declare `differential_attention` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `calendar`, `embedding`, `patch`, `position`, `token`.
+Retrieval terms: `attention`, `differential`, `noise-cancelling`, `rmsnorm`.
 
 ## Current model consumers
 
-- [`informer`](../../informer/README.md)
-- [`sensorformer`](../../sensorformer/README.md)
-- [`timeexpert`](../../timeexpert/README.md)
-- [`transformer`](../../transformer/README.md)
+- [`wdformer`](../../wdformer/README.md)
 
 ## Semantic boundary
 

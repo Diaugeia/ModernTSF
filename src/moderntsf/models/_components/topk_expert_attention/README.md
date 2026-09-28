@@ -1,27 +1,27 @@
 ---
-name: "flatten_forecast_head"
+name: "topk_expert_attention"
 kind: "component"
-module: "moderntsf.models._components.flatten_forecast_head"
-summary: "Shared or channel-wise linear forecast head over two flattened feature axes."
+module: "moderntsf.models._components.topk_expert_attention"
+summary: "Differentiable top-k local expert self-attention with an optional shared global expert."
 ---
 
-# flatten_forecast_head
+# topk_expert_attention
 
 ## Purpose
 
-Shared or channel-wise linear forecast head over two flattened feature axes.
+Differentiable top-k local expert self-attention with an optional shared global expert.
 
-Linear forecasting head for flattened feature and patch axes.
+Differentiable top-k local expert self-attention.
 
 Implementation: [`__init__.py`](__init__.py)
 
 ## Public API
 
-- `FlattenForecastHead(individual: bool, n_vars: int, nf: int, target_window: int, head_dropout: float=0.0)`
-  Map ``(B, C, D, P)``-like inputs to ``(B, C, horizon)``.
+- `TopKExpertAttention(dim: int, num_heads: int=8, topk: int=4, shared: bool=False, qk_dim: int | None=None, dropout: float=0.0)`
+  Adaptive local self-attention over the top-``topk`` scoring positions.
 
 ```python
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
+from moderntsf.models._components.topk_expert_attention import TopKExpertAttention
 ```
 
 ## Input and output contract
@@ -34,16 +34,13 @@ sufficient.
 ## Composition guidance
 
 Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `flatten_forecast_head` in the consuming model's `components`
+implementation, then declare `topk_expert_attention` in the consuming model's `components`
 tuple. The repository audit checks that declaration against actual imports.
 
-Retrieval terms: `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`.
+Retrieval terms: `attention`, `expert`, `mixture-of-experts`, `routing`, `top-k`.
 
 ## Current model consumers
 
-- [`gateformer`](../../gateformer/README.md)
-- [`sensorformer`](../../sensorformer/README.md)
-- [`srsnet`](../../srsnet/README.md)
 - [`timeexpert`](../../timeexpert/README.md)
 
 ## Semantic boundary

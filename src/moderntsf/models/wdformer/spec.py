@@ -1,0 +1,51 @@
+"""Runtime specification for WDformer."""
+
+from moderntsf.benchmark.registry.models import ModelSpec
+from moderntsf.models.wdformer.model import Model
+
+"""Validated parameters for WDformer."""
+
+from pydantic import BaseModel, ConfigDict
+
+
+class ModelParameterConfig(BaseModel):
+    """Parameters supplied through ``model.params``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enc_in: int
+    d_model: int = 128
+    n_heads: int = 8
+    e_layers: int = 2
+    d_ff: int = 256
+    dropout: float = 0.1
+    wave_size: int = 3
+
+
+def build_model(cfg, params):
+    return Model(
+        seq_len=cfg.task.seq_len,
+        pred_len=cfg.task.pred_len,
+        enc_in=params["enc_in"],
+        d_model=params.get("d_model", 128),
+        n_heads=params.get("n_heads", 8),
+        e_layers=params.get("e_layers", 2),
+        d_ff=params.get("d_ff", 256),
+        dropout=params.get("dropout", 0.1),
+        wave_size=params.get("wave_size", 3),
+    )
+
+
+SPEC = ModelSpec(
+    name="WDformer",
+    module="moderntsf.models.wdformer",
+    model_class=Model,
+    factory=build_model,
+    params_schema=ModelParameterConfig,
+    config_path="configs/models/WDformer.toml",
+    model_card="src/moderntsf/models/wdformer/README.md",
+    smoke_config="configs/runs/smoke_wdformer.toml",
+    capabilities=frozenset({'time-series'}),
+    components=('differential_attention', 'wavelet'),
+    contract_task={"seq_len": 96, "pred_len": 12, "label_len": 0},
+)

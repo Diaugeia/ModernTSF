@@ -72,6 +72,12 @@ reference_test = 'tests/test_transformer_patch_forecasters_a.py'
 profile = 'standard'
 test = 'tests/test_classical_forecasters.py'
 
+[models.AWEMixer]
+profile = 'standard'
+test = 'tests/test_awemixer_structure.py'
+reference_test = 'tests/test_awemixer_structure.py'
+reference_sources = ['https://github.com/hit636/AWEMixer/blob/8e660f93c2535e6eb64ba47647babf21f3dbacfa/models/AWEMixer.py']
+
 [models.BayesianRidgeTS]
 profile = 'standard'
 test = 'tests/test_statistical_baselines.py'
@@ -205,6 +211,12 @@ profile = 'compact-local'
 test = 'tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_dlinear_is_seasonal_plus_trend_forecasting'
 reference_test = 'tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_dlinear_is_seasonal_plus_trend_forecasting'
 structure = ['moving-average decomposition', 'seasonal temporal projection', 'trend temporal projection', 'additive forecast']
+
+[models.DPWMixer]
+profile = 'standard'
+test = 'tests/test_dpwmixer_structure.py'
+reference_test = 'tests/test_dpwmixer_structure.py'
+reference_sources = ['https://github.com/hit636/DPWMixer/blob/0a787be2aeba845914bd4ea88428a1ddb982abad/models/DPWMixer.py']
 
 [models.DSFormer]
 profile = 'standard'
@@ -853,6 +865,12 @@ profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
 reference_test = 'tests/test_recent_forecasters_c.py'
 
+[models.TimeExpert]
+profile = 'standard'
+test = 'tests/test_timeexpert_structure.py'
+reference_test = 'tests/test_timeexpert_structure.py'
+reference_sources = ['https://github.com/xwmaxwma/TimeExpert/blob/f53b5220f22767a91040aaa04679c2eb9b2eb9c5/model/TimeExpert.py']
+
 [models.TimeFilter]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
@@ -933,6 +951,12 @@ reference_test = 'tests/test_recent_forecasters_c.py'
 profile = 'standard'
 test = 'tests/test_sequence_baselines.py'
 reference_test = 'tests/test_sequence_baselines.py'
+
+[models.WDformer]
+profile = 'standard'
+test = 'tests/test_wdformer_structure.py'
+reference_test = 'tests/test_wdformer_structure.py'
+reference_sources = ['https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/model/WDformer.py', 'https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/layers/SelfAttention_Family.py', 'https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/layers/Embed.py']
 
 [models.WPMixer]
 profile = 'standard'

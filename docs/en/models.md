@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 186 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 190 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -19,6 +19,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Aurora` | [`configs/models/Aurora.toml`](../../configs/models/Aurora.toml) | dense-modality-context, time-series | [README](../../src/moderntsf/models/aurora/README.md) |
 | `Autoformer` | [`configs/models/Autoformer.toml`](../../configs/models/Autoformer.toml) | time-series | [README](../../src/moderntsf/models/autoformer/README.md) |
 | `AutoRegressiveTS` | [`configs/models/AutoRegressiveTS.toml`](../../configs/models/AutoRegressiveTS.toml) | time-series | [README](../../src/moderntsf/models/autoregressive_ts/README.md) |
+| `AWEMixer` | [`configs/models/AWEMixer.toml`](../../configs/models/AWEMixer.toml) | time-series | [README](../../src/moderntsf/models/awemixer/README.md) |
 | `BayesianRidgeTS` | [`configs/models/BayesianRidgeTS.toml`](../../configs/models/BayesianRidgeTS.toml) | time-series | [README](../../src/moderntsf/models/bayesian_ridge_ts/README.md) |
 | `BigST` | [`configs/models/BigST.toml`](../../configs/models/BigST.toml) | spatiotemporal | [README](../../src/moderntsf/models/bigst/README.md) |
 | `BiMamba` | [`configs/models/BiMamba.toml`](../../configs/models/BiMamba.toml) | time-series | [README](../../src/moderntsf/models/bimamba/README.md) |
@@ -45,6 +46,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `DGCRN` | [`configs/models/DGCRN.toml`](../../configs/models/DGCRN.toml) | spatiotemporal | [README](../../src/moderntsf/models/dgcrn/README.md) |
 | `DistDF` | [`configs/models/DistDF.toml`](../../configs/models/DistDF.toml) | time-series | [README](../../src/moderntsf/models/distdf/README.md) |
 | `DLinear` | [`configs/models/DLinear.toml`](../../configs/models/DLinear.toml) | time-series | [README](../../src/moderntsf/models/dlinear/README.md) |
+| `DPWMixer` | [`configs/models/DPWMixer.toml`](../../configs/models/DPWMixer.toml) | time-series | [README](../../src/moderntsf/models/dpwmixer/README.md) |
 | `DSFormer` | [`configs/models/DSFormer.toml`](../../configs/models/DSFormer.toml) | time-series | [README](../../src/moderntsf/models/dsformer/README.md) |
 | `DSTAGNN` | [`configs/models/DSTAGNN.toml`](../../configs/models/DSTAGNN.toml) | spatiotemporal | [README](../../src/moderntsf/models/dstagnn/README.md) |
 | `DTAF` | [`configs/models/DTAF.toml`](../../configs/models/DTAF.toml) | time-series | [README](../../src/moderntsf/models/dtaf/README.md) |
@@ -173,6 +175,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TimeBridge` | [`configs/models/TimeBridge.toml`](../../configs/models/TimeBridge.toml) | time-series | [README](../../src/moderntsf/models/timebridge/README.md) |
 | `TimeCAP` | [`configs/models/TimeCAP.toml`](../../configs/models/TimeCAP.toml) | time-series | [README](../../src/moderntsf/models/timecap/README.md) |
 | `TimeEmb` | [`configs/models/TimeEmb.toml`](../../configs/models/TimeEmb.toml) | time-series | [README](../../src/moderntsf/models/timeemb/README.md) |
+| `TimeExpert` | [`configs/models/TimeExpert.toml`](../../configs/models/TimeExpert.toml) | time-series | [README](../../src/moderntsf/models/timeexpert/README.md) |
 | `TimeFilter` | [`configs/models/TimeFilter.toml`](../../configs/models/TimeFilter.toml) | time-series | [README](../../src/moderntsf/models/timefilter/README.md) |
 | `TimeKAN` | [`configs/models/TimeKAN.toml`](../../configs/models/TimeKAN.toml) | time-series | [README](../../src/moderntsf/models/timekan/README.md) |
 | `TimeMixer` | [`configs/models/TimeMixer.toml`](../../configs/models/TimeMixer.toml) | time-series | [README](../../src/moderntsf/models/timemixer/README.md) |
@@ -189,6 +192,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TSRAG` | [`configs/models/TSRAG.toml`](../../configs/models/TSRAG.toml) | time-series | [README](../../src/moderntsf/models/tsrag/README.md) |
 | `UMixer` | [`configs/models/UMixer.toml`](../../configs/models/UMixer.toml) | time-series | [README](../../src/moderntsf/models/umixer/README.md) |
 | `WaveNet` | [`configs/models/WaveNet.toml`](../../configs/models/WaveNet.toml) | time-series | [README](../../src/moderntsf/models/wavenet/README.md) |
+| `WDformer` | [`configs/models/WDformer.toml`](../../configs/models/WDformer.toml) | time-series | [README](../../src/moderntsf/models/wdformer/README.md) |
 | `WPMixer` | [`configs/models/WPMixer.toml`](../../configs/models/WPMixer.toml) | time-series | [README](../../src/moderntsf/models/wpmixer/README.md) |
 | `XGBoostTS` | [`configs/models/XGBoostTS.toml`](../../configs/models/XGBoostTS.toml) | time-series | [README](../../src/moderntsf/models/xgboost_ts/README.md) |
 | `xPatch` | [`configs/models/xPatch.toml`](../../configs/models/xPatch.toml) | time-series | [README](../../src/moderntsf/models/xpatch/README.md) |
