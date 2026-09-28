@@ -5,17 +5,17 @@ name: smoke-affected
 # stays a nightly/manual job per AGENTS.md). Detects the affected models from
 # the PR diff; falls back to a small representative set (one point model +
 # the probabilistic models with smoke coverage) when the changed files can't
-# be mapped to a specific smoke config, e.g. a src/benchmark/ runner change
+# be mapped to a specific smoke config, e.g. a src/moderntsf/benchmark/ runner change
 # touches all models at once.
 
 on:
   pull_request:
     paths:
-      - "src/models/**"
-      - "src/models/_components/**"
-      - "src/benchmark/**"
-      - "src/data/**"
-      - "src/tsf_core/**"
+      - "src/moderntsf/models/**"
+      - "src/moderntsf/models/_components/**"
+      - "src/moderntsf/benchmark/**"
+      - "src/moderntsf/data/**"
+      - "src/moderntsf/tsf_core/**"
       - "tests/**"
       - "configs/runs/smoke_*.toml"
 
@@ -39,10 +39,10 @@ jobs:
           fallback="configs/runs/smoke_crib.toml configs/runs/smoke_quantile_dlinear.toml configs/runs/smoke_gaussian_mlp.toml"
 
           configs=""
-          if echo "$changed" | grep -Eq '^src/benchmark/|^src/models/_components/|^src/data/|^src/tsf_core/|^tests/'; then
+          if echo "$changed" | grep -Eq '^src/moderntsf/benchmark/|^src/moderntsf/models/_components/|^src/moderntsf/data/|^src/moderntsf/tsf_core/|^tests/'; then
             configs="$fallback"
           else
-            for mod in $(echo "$changed" | grep '^src/models/' | cut -d/ -f3 | sort -u || true); do
+            for mod in $(echo "$changed" | grep '^src/moderntsf/models/' | cut -d/ -f4 | sort -u || true); do
               for f in configs/runs/smoke_${mod}*.toml; do
                 [ -f "$f" ] && configs="$configs $f"
               done
@@ -53,7 +53,7 @@ jobs:
               [ -f "$f" ] && configs="$configs $f"
             done
             configs="$(echo "$configs" | xargs -n1 2>/dev/null | sort -u | xargs || true)"
-            if [ -z "$configs" ] && echo "$changed" | grep -q '^src/models/'; then
+            if [ -z "$configs" ] && echo "$changed" | grep -q '^src/moderntsf/models/'; then
               # Changed model(s) have no dedicated smoke config yet — fall
               # back rather than silently running nothing.
               configs="$fallback"

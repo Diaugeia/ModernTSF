@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LatentTSF",
   "status": "passed",
-  "verified_at": "2026-09-04T20:49:26.720148Z",
-  "subject_sha256": "f9bd7a0b3ebda4afba7c22db2f8a0df4fa54a66417bd61302ee09efb2df5d1c1",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "111ef03d1fa3987b2f06ee6cc5c2916c5d7b46cac4ee55d934f77f310774826a",
   "paper": {
     "title": "From Observations to States: Latent Time Series Forecasting",
     "venue": "ICML 2026",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model LatentTSF",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_temporal_structure_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_temporal_structure_forecasters.py"
   ]
 }

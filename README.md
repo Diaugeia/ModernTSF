@@ -2,127 +2,162 @@
 
 # 🚀 ModernTSF
 
-**Modern Time Series Forecasting**
+**A fully automated, continuously updated platform for time series forecasting**
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Time Series Forecasting](https://img.shields.io/badge/task-time%20series%20forecasting-blue.svg)](docs/en/models.md)
-[![Models: 178](https://img.shields.io/badge/models-178-orange.svg)](docs/en/models.md)
+[![Models: 198](https://img.shields.io/badge/models-198-orange.svg)](docs/en/models.md)
+[![Real-time tracks: 6](https://img.shields.io/badge/real--time%20tracks-6-purple.svg)](docs/en/realtime.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**Agent Infrastructure for time-series forecasting** — not just another toolkit.
-A unified, reproducible substrate where humans and agents spend their time on the
-*idea*, not the plumbing around it.
-
-🗣️ **Clone the repo, open it in [Codex](https://developers.openai.com/codex), Claude Code, Pi, or DeepSeek Harness, and speak your idea. ModernTSF works out of the box in each.**
+Every forecasting method, one interface, one protocol, evaluated on the data
+we already have **and** on data that did not exist when the method was written.
 
 </div>
 
-> 🧪 **Latest features land on the [`dev`](https://github.com/Diaugeia/ModernTSF/tree/dev) branch first.** `main` is the stable, versioned release line — if you want the newest (pre-release) capabilities, track or install from `dev`.
+> 🧪 **Latest features land on the [`dev`](https://github.com/Diaugeia/ModernTSF/tree/dev) branch first.** `main` is the stable, versioned release line.
 
 ---
 
-## 🧭 What is ModernTSF
+## 🧭 Why ModernTSF
 
-You don't build a car to drive one, mill flour to bake a loaf, or grow your
-own beans for a cup of coffee — you reach for something ready-made. AI
-research needs the same layer: today's agents can write code and run
-experiments, yet most of the effort — human and agent alike — still goes into
-reproducing prior work, validating baselines, debugging environments, and
-writing glue code. ModernTSF is that missing infrastructure layer for
-time-series forecasting. You bring the idea; the substrate handles everything
-around it.
+Forecasting papers multiply every year, yet each one can compare against only a
+few baselines, re-run under its own code and data conventions. Keeping hundreds
+of methods in one benchmark by hand, verifying their code, and re-evaluating them
+on new data no longer scales, and fixed benchmark snapshots cannot show how a
+model holds up as the world moves on.
 
----
-
-## ✨ Highlights
-
-- 🧠 **178 model/method entries, 80 dataset presets** — a flat catalog spanning baselines, neural forecasters, graph models, custom CSVs, traffic graphs, and GIFT-EVAL
-- 🤖 **Agent-ready** — open the repository in Codex, Claude Code, Pi, or DeepSeek Harness and request a complete workflow in plain language
-- 🎛️ **Three data settings** — `time_series`, `spatiotemporal`, and `covariate`, switchable per run
-- 🔁 **Reproducible & auditable** — TOML configs, fixed seeds, profiled outputs, and optional research rounds keep results comparable without burdening one-off runs
-- 🛠️ **One entry point** — `tsf` scaffolds, smoke-tests, sweeps, aggregates, ranks, plots, and reports
+ModernTSF automates that loop. Coding agents read new papers, implement them
+behind one verified interface, and evaluate them under one protocol on static
+datasets and on **rolling real-time tracks** that refresh every week. ModernTSF
+ships no agent of its own: it is the infrastructure (catalog, contracts, data,
+protocols, evidence) that any coding agent operates through declarative skills.
 
 ---
 
-## 🏁 How to use
+## ✨ What is inside
+
+| Module | What it does |
+| --- | --- |
+| 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
+| 🧩 **Code & interface** | 198 methods as peers in one flat catalog, composed from 47 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
+| 🗃️ **Data** | 89 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
+| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery |
+| 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
+
+---
+
+## 🏁 Quick start
+
+**Work in the repository with an agent:**
 
 ```bash
 git clone https://github.com/Diaugeia/ModernTSF.git
 cd ModernTSF
-codex
+codex          # or any other coding agent
 ```
-
-Then just say what you want, in plain language:
 
 ```text
 > Set up the environment for my GPU.
 > Benchmark DLinear, PatchTST and iTransformer on ETTh1 and give me a leaderboard.
-> Here is my CSV of hourly sales — add it as a dataset and find the best model for it.
-> I have an idea: <describe it>. Scaffold a model, implement it, and compare it against strong baselines.
+> Implement the paper at <arXiv URL> as a catalog model and verify it.
+> Forecast this week's traffic round with PatchTST and submit it.
 ```
 
-The Agent owns research planning, code/config editing, diagnosis, interpretation,
-and reporting through its native capabilities. ModernTSF supplies callable
-contracts, evidence, budgets, resource leases, and recoverable execution. Python
-APIs and the optional CLI expose the same services; no extra Agent loop is required.
+**Or install the framework and scaffold your own project:**
 
-The wheel includes read-only model cards, configs, verification
-evidence, components, skills, and task harnesses, so catalog and Agent discovery
-also work after installation. Use a git checkout for commands that add or rewrite
-models, datasets, documentation, or verification evidence.
+```bash
+uv tool install "git+https://github.com/Diaugeia/ModernTSF"   # provides `tsf`
+tsf init my-forecasting-project && cd my-forecasting-project
+tsf inspect --config configs/runs/example.toml
+tsf run configs/runs/example.toml
+```
 
-For direct discovery, the public catalogs are equally lightweight:
+Scaffolded run configs inherit the installed catalog through `moderntsf://`
+paths, so upgrading ModernTSF upgrades their defaults.
+
+**Direct CLI discovery:**
 
 ```bash
 uv run tsf model list --details
-uv run tsf component list
+uv run tsf dataset list
+uv run tsf realtime list
 uv run tsf agent task list
-uv run tsf agent task render autoresearch --set 'question=<your question>'
-uv run tsf agent task start autoresearch --set 'question=<your question>' --json
 ```
 
-`task start` prepares the bounded research round and prompt; it does not dispatch
-another Agent process.
+---
 
-Optional [execution controls](docs/en/execution.md) add environment audits,
-TensorBoard/W&B, resource budgets, GPU scheduling, and epoch-boundary recovery
-without changing the basic run command.
+## 📈 Rolling real-time evaluation
 
-The [workflow guide](docs/en/workflows.md) explains the model interface, shared
-components, offline official Foundation runtimes, data layers, verification, and
-experiments.
+Each week the `realtime-weekly` workflow releases new observations (versioned on
+the Hugging Face Hub), scores the rounds whose target window is now observed, and
+opens a new round. Forecasts must be submitted **before** their targets exist, so
+no model, including ours, can have seen its evaluation data.
 
-Dataset resources have three deliberately separate layers: ignored local files
-live under `dataset/`, executable loaders and schemas live under `src/data/`,
-and readable catalog cards live under `catalog/datasets/`. Code and cards never
-embed local dataset payloads.
+| Track | Data | Setting | Horizon |
+| --- | --- | --- | --- |
+| `stock_hs300` | CSI-300 constituents, daily log returns (AKShare) | time series | 5 trading days |
+| `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS Districts 4, 7, 3, 8: hourly flow at 2,472 / 1,926 / 801 / 1,105 stations | spatiotemporal | 24 h |
+| `air_openaq_cn` | OpenAQ hourly PM2.5, government monitors in China | spatiotemporal | 24 h |
+
+```bash
+uv run tsf realtime forecast --track traffic_pems_sb --model DLinear   # produce a forecast
+uv run tsf realtime replay --track traffic_pems_sb --end 2023-12-25 --weeks 12   # backtest the protocol
+```
+
+See [docs/en/realtime.md](docs/en/realtime.md).
+
+---
+
+## 🤝 Contributing
+
+There are three ways to take part, all reviewed through pull requests:
+
+1. **Propose a method** — open a *Submit a new model* issue. Once a maintainer
+   approves it, the `paper-intake` workflow has a coding agent implement and
+   verify it and opens a pull request.
+2. **Submit results** — add a `submission.json` under `apps/web/submissions/`
+   (see [SUBMITTING.md](apps/web/SUBMITTING.md)); CI validates it against the
+   contract before it can reach the leaderboard.
+3. **Forecast a real-time round** — add `forecasts/<YourModel>.json` to an open
+   round before its deadline.
+
+The literature is also scanned weekly by the `paper-intake` workflow. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for code contributions.
 
 ---
 
 ## 📖 Documentation
 
-The compact workflow reference covers models, data, verification, and experiments;
-exact command options stay in CLI help:
+- [Workflow documentation](docs/en/README.md): models, data, verification, experiments
+- [Projects and the Hub](docs/en/hub.md): `tsf init`, `hf://` assets, weights bundles
+- [Real-time tracks](docs/en/realtime.md): rounds, forecasts, scoring, weekly automation
 
-[Workflow documentation](docs/en/README.md)
+Exact command options stay in `tsf <command> --help`.
 
-> But chances are you'll never need any of this — let the agent do the reading.
+---
+
+## 🗂️ Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `src/moderntsf/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
+| `configs/`, `catalog/`, `verification/` | Experiment and real-time track configs, dataset cards, verification evidence |
+| `apps/web/` | ModernTSF Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
+| `experiments/` | Local research workspace; only `*/scripts/` is tracked |
 
 ---
 
 ## 📜 License
 
-ModernTSF is released under the [MIT License](LICENSE) — open by default, free to
-use, modify, and build upon.
-
-Copyright © 2026 **Diaugeia.AI**.
+ModernTSF is released under the [MIT License](LICENSE). Copyright © 2026 **Diaugeia.AI**.
 
 Ordinary paper architectures are maintained locally under the project license.
-Released pretrained Foundation Models use optional official packages and unchanged
+Released pretrained foundation models use optional official packages and unchanged
 checkpoints through the offline runtime boundary; see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependency attribution.
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Real-time data remain subject to
+their providers' terms (Caltrans PeMS, OpenAQ, exchange data via AKShare).
 
 ---
 

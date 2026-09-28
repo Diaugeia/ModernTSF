@@ -1,8 +1,8 @@
 name: schema-check
 
 # Guards the TSF-Core contract: fails if the committed JSON Schema under
-# src/tsf_core/schema/ is out of sync with the pydantic models (i.e. someone
-# changed a model but forgot to re-run `tsf schema-export`). TSEval consumes
+# src/moderntsf/tsf_core/schema/ is out of sync with the pydantic models (i.e. someone
+# changed a model but forgot to re-run `tsf schema-export`). ModernTSF Leaderboard consumes
 # those *.json files, so they must always match the models.
 
 on:
@@ -23,4 +23,4 @@ jobs:
       # byte-identical to what was committed; bump this when the lock bumps.
       - run: pip install "pydantic==2.12.5"
       - name: Verify TSF-Core JSON Schema is up to date
-        run: PYTHONPATH=src python -m tsf_core --check --out-dir src/tsf_core/schema
+        run: PYTHONPATH=src python -m moderntsf.tsf_core --check --out-dir src/moderntsf/tsf_core/schema

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SRSNet",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "419b153d52e571bbdcbf5f7781ccfcdc73aae5e95a218c8a47d6915f7c08c0dd",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "969c423dfc0b963aea61d7d5d2f0f5e7dfa62f7fcfe02ee567fc139888155c30",
   "paper": {
     "title": "Enhancing Time Series Forecasting through Selective Representation Spaces: A Patch Perspective",
     "venue": "NeurIPS 2025",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model SRSNet",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_temporal_structure_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_temporal_structure_forecasters.py"
   ]
 }

@@ -8,18 +8,18 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from models.aircade.model import DomainKnowledgeAttention, Model as AirCade
-from models.aircade.spec import ModelParameterConfig as AirCadeParameters
-from models.airdualode.model import BoundaryAwareDynamics, Model as AirDualODE
-from models.airdualode.spec import ModelParameterConfig as AirDualODEParameters
-from models.airformer.model import CausalTemporalAttention, Model as AirFormer, default_dartboard
-from models.airformer.spec import ModelParameterConfig as AirFormerParameters
-from models.airphynet.model import Model as AirPhyNet, PhysicsVectorField
-from models.airphynet.spec import ModelParameterConfig as AirPhyNetParameters
-from models.cauair.model import CacheAttention, Model as CauAir
-from models.cauair.spec import ModelParameterConfig as CauAirParameters
-from models.deepair.model import Model as DeepAir, default_spatial_projection
-from models.deepair.spec import ModelParameterConfig as DeepAirParameters
+from moderntsf.models.aircade.model import DomainKnowledgeAttention, Model as AirCade
+from moderntsf.models.aircade.spec import ModelParameterConfig as AirCadeParameters
+from moderntsf.models.airdualode.model import BoundaryAwareDynamics, Model as AirDualODE
+from moderntsf.models.airdualode.spec import ModelParameterConfig as AirDualODEParameters
+from moderntsf.models.airformer.model import CausalTemporalAttention, Model as AirFormer, default_dartboard
+from moderntsf.models.airformer.spec import ModelParameterConfig as AirFormerParameters
+from moderntsf.models.airphynet.model import Model as AirPhyNet, PhysicsVectorField
+from moderntsf.models.airphynet.spec import ModelParameterConfig as AirPhyNetParameters
+from moderntsf.models.cauair.model import CacheAttention, Model as CauAir
+from moderntsf.models.cauair.spec import ModelParameterConfig as CauAirParameters
+from moderntsf.models.deepair.model import Model as DeepAir, default_spatial_projection
+from moderntsf.models.deepair.spec import ModelParameterConfig as DeepAirParameters
 
 
 def marks(batch: int, length: int, *, offset: float = 0.0) -> torch.Tensor:

@@ -36,7 +36,7 @@ Define the smallest paper-neutral API that preserves every consumer's behavior.
 Add or update its `ComponentSpec`, focused unit tests, and explicit model imports.
 Migrate consumers in reviewable groups without flag-driven branches that hide
 material variants. Keep attribution and explanatory comments when moving code.
-Regenerate `src/models/_components/<name>/README.md` with
+Regenerate `src/moderntsf/models/_components/<name>/README.md` with
 `uv run python scripts/generate_resource_cards.py`; do not hand-maintain a
 second component description outside the catalog contract and implementation
 docstrings.

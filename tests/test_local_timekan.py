@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from models.timekan.model import ChebyshevKAN, Model, frequency_upsample
+from moderntsf.models.timekan.model import ChebyshevKAN, Model, frequency_upsample
 
 
 class LocalTimeKANTests(unittest.TestCase):

@@ -1,0 +1,67 @@
+name: web-deploy
+
+# Builds apps/web (ModernTSF Leaderboard) and deploys it. The deploy targets
+# (Cloudflare Pages project `tseval`, HF Space `Diaugeia/TSEval`) are unchanged
+# from the former TSEval repo. Manual-only until the deploy secrets are
+# configured on this repository; re-enable the push trigger afterwards:
+#   push: { branches: [main], paths: ["apps/web/**"] }
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Rebuild leaderboard from submissions
+        run: python3 pipeline/build_leaderboard.py   # validate → aggregate → data/leaderboard.json
+
+      - name: Install & build static site
+        run: |
+          bun install --frozen-lockfile
+          bun run build   # sync:data + next build -> out/
+
+      - name: Deploy to Cloudflare Pages (tseval.diaugeia.ai)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bunx wrangler@latest pages deploy out --project-name tseval --branch main --commit-dirty=true
+
+      - name: Deploy to Hugging Face Space (static)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install --quiet huggingface_hub
+          cp hf-space/README.md out/README.md   # keep the Space's static-SDK config
+          python - <<'PY'
+          import os, time
+          from huggingface_hub import HfApi
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          for attempt in range(5):
+              try:
+                  api.upload_folder(
+                      repo_id="Diaugeia/TSEval", repo_type="space",
+                      folder_path="out", path_in_repo=".",
+                      delete_patterns=["*"],  # mirror out/ exactly (README included above)
+                      commit_message=f"ci: deploy {os.environ.get('GITHUB_SHA','')[:7]}",
+                  )
+                  break
+              except Exception as e:  # transient 429 / rate limits
+                  if attempt == 4:
+                      raise
+                  print(f"HF upload retry {attempt+1} after error: {e}")
+                  time.sleep(30 * (attempt + 1))
+          PY

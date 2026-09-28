@@ -29,15 +29,15 @@ jobs:
           import io
           import json
 
-          from benchmark.cli import main
-          from tsf_core.agent_assets import audit_agent_assets
-          from tsf_core.agent_tasks import audit_tasks
-          from tsf_core.paths import is_packaged_root
+          from moderntsf.benchmark.cli import main
+          from moderntsf.tsf_core.agent_assets import audit_agent_assets
+          from moderntsf.tsf_core.agent_tasks import audit_tasks
+          from moderntsf.tsf_core.paths import is_packaged_root
 
           assert is_packaged_root()
           assert audit_agent_assets() == []
           assert audit_tasks() == []
-          from tsf_core.paths import repository_root
+          from moderntsf.tsf_core.paths import repository_root
           assert not (repository_root() / "src" / "modern_tsf.egg-info").exists()
           output = io.StringIO()
           with contextlib.redirect_stdout(output):

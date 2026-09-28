@@ -1,7 +1,8 @@
 # Contributing to ModernTSF
 
 Thanks for helping grow the benchmark! This guide covers the common contributions:
-adding a model, adding a dataset, and reporting issues.
+proposing or adding a model, submitting results, forecasting real-time rounds,
+adding a dataset, and reporting issues.
 
 ## Branching & releases
 
@@ -36,12 +37,30 @@ Open an issue from the templates — **Submit a new model**, **Report a bug**, o
 **Ask for a feature**. The forms require the context we need (repro config,
 environment, official-source license, …); issues without it may be closed.
 
+## Proposing a method (no code required)
+
+Open a **Submit a new model** issue with the paper link. When a maintainer adds
+the `intake-approved` label, the `paper-intake` workflow has a coding agent
+implement the paper as a catalog model, re-runs the verification battery
+independently, and opens a pull request for review. The same workflow scans the
+literature weekly.
+
+## Submitting results and real-time forecasts
+
+- **Benchmark results:** add a `submission.json` under `apps/web/submissions/`
+  as described in [`apps/web/SUBMITTING.md`](apps/web/SUBMITTING.md). CI
+  validates it against the TSF-Core contract.
+- **Real-time rounds:** add `forecasts/<YourModel>.json` to an open round under
+  `apps/web/submissions/realtime/<track>/rounds/<round_id>/` before its
+  deadline; CI rejects pull requests last updated after the deadline. See
+  [`docs/en/realtime.md`](docs/en/realtime.md).
+
 ## Adding a model
 
 See the [model workflow](docs/en/workflows.md#add-a-model-or-method). In short:
 
 1. Deduplicate and extract the paper; inspect pinned official code when available.
-2. Match defining operations against `src/models/_components/`.
+2. Match defining operations against `src/moderntsf/models/_components/`.
 3. Run `tsf model scaffold` with paper/source facts and component decisions.
 4. Implement locally, complete the card, and declare focused manifest tests.
 5. Run `tsf model add --name <Name>`; atomic admission performs verification and

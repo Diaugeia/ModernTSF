@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "AirFormer",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "f7373dc4d2d267b7271142059ad1e536a8773b049d3362aedd48ef7dde81a3ee",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "a1d5dcdf42a3cf348aab69a4e871bb8bef1c19b53158be4c6f0dfa9dc2181913",
   "paper": {
     "title": "AirFormer: Predicting Nationwide Air Quality in China with Transformers",
     "venue": "AAAI 2023",
@@ -129,7 +129,7 @@
     "reference_comparison": {
       "status": "passed",
       "evidence": [
-        "https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/models/airformer.py",
+        "https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/moderntsf/models/airformer.py",
         "tests/test_air_quality_forecasters.py"
       ],
       "metrics": {
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model AirFormer",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_air_quality_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_air_quality_forecasters.py"
   ]
 }

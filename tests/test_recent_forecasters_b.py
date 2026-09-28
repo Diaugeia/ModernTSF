@@ -8,10 +8,10 @@ import unittest
 
 import torch
 
-from models.fets.model import Model as FeTS
-from models.implicitforecaster.model import Model as ImplicitForecaster
-from models.occamvts.model import Model as OccamVTS
-from models.pmdformer.model import Model as PMDformer
+from moderntsf.models.fets.model import Model as FeTS
+from moderntsf.models.implicitforecaster.model import Model as ImplicitForecaster
+from moderntsf.models.occamvts.model import Model as OccamVTS
+from moderntsf.models.pmdformer.model import Model as PMDformer
 
 
 CASES = {

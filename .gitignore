@@ -25,3 +25,18 @@ configs/exp/
 
 # Harness-local preferences
 .claude/settings.local.json
+
+# Local experiment workspace: only the scripts are published; measurements,
+# cloned comparison repos, and raw server bundles stay on this machine.
+experiments/**
+!experiments/
+!experiments/README.md
+!experiments/*/
+!experiments/*/scripts/
+!experiments/*/scripts/**
+
+# Local scratch
+tmp/
+
+# Agent worktrees
+.claude/worktrees/

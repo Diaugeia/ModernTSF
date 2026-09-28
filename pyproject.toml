@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modern-tsf"
-version = "0.8.0"
+version = "1.0.0rc1"
 description = "ModernTSF — Agent-first time-series forecasting with TOML configs and flat model/component catalogs."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -14,7 +14,7 @@ dependencies = [
     "matplotlib",
     "scikit-learn",
     # Used by the probabilistic metrics (gaussian closed-form CRPS / inverse-CDF
-    # in benchmark.evaluation.metrics). Previously only a transitive dep.
+    # in moderntsf.benchmark.evaluation.metrics). Previously only a transitive dep.
     "scipy",
     "pydantic",
     "packaging>=24",
@@ -37,11 +37,15 @@ dependencies = [
     # LSH self-attention for the Reformer model.
     # Transitively pulls local-attention / axial-positional-embedding / etc.
     "reformer-pytorch",
-    # Wavelet filter banks for the STWave model (src/models/stwave).
+    # Wavelet filter banks for the STWave model (src/moderntsf/models/stwave).
     "pywavelets",
 ]
 
 [project.optional-dependencies]
+# Publish and load checkpoints on the Hugging Face Hub (moderntsf.hub).
+hub = ["huggingface_hub>=0.25", "safetensors>=0.4"]
+# Live data sources for the rolling real-time tracks (moderntsf.realtime).
+realtime = ["akshare", "requests", "pyarrow", "huggingface_hub>=0.25"]
 tensorboard = ["tensorboard>=2.18"]
 wandb = ["wandb>=0.19"]
 
@@ -51,20 +55,21 @@ dev = [
 ]
 
 [project.scripts]
-tsf = "benchmark.cli:main"
+tsf = "moderntsf.benchmark.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["benchmark*", "data*", "models*", "modern_tsf_assets*", "tsf_core*"]
+include = ["moderntsf*"]
 
 [tool.setuptools.package-data]
-tsf_core = ["schema/*.json"]
+"moderntsf.tsf_core" = ["schema/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["tests"]
 
 # PyTorch backend (CPU/CUDA) is resolved at install time by uv via
 # UV_TORCH_BACKEND (auto|cpu|cu118|cu121|cu124|cu126|cu128). No explicit

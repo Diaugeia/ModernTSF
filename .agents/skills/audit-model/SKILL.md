@@ -23,7 +23,7 @@ offline absence fails before construction, and the card does not claim checkpoin
 behavior when verification covers only random initialization.
 
 For a declared inference-only foundation runtime, confirm it uses the official
-loader through `src/models/_foundation/`, performs no implicit download, skips
+loader through `src/moderntsf/models/_foundation/`, performs no implicit download, skips
 training, and records unsupported training/gradient checks as `not-applicable`.
 Do not require an official pretrained network to be rewritten locally.
 

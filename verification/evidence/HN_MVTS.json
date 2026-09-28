@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "HN_MVTS",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "f9e5f63973a57f972653cb22fee64ecd363eb27d9c5b1e7babbe7ae0793ac64c",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "e24f21bb6f87b3691d464089aba1ae4b4f6c0d1c278859d26882483dab15c97b",
   "paper": {
     "title": "HN-MVTS: HyperNetwork-based Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
@@ -130,7 +130,7 @@
       "status": "passed",
       "evidence": [
         "https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/layers.py",
-        "https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/models/dlinear.py",
+        "https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/moderntsf/models/dlinear.py",
         "tests/test_recent_forecasters_a.py"
       ],
       "metrics": {
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model HN_MVTS",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_recent_forecasters_a.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

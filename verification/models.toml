@@ -13,7 +13,7 @@ structure = ['node-adaptive graph convolution', 'adaptive graph GRU', 'learned n
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/AirCade/blob/179067f5b9fbc05f894022809e0b1c83e9f61fd8/src/models/AirCade.py']
+reference_sources = ['https://github.com/PoorOtterBob/AirCade/blob/179067f5b9fbc05f894022809e0b1c83e9f61fd8/src/moderntsf/models/AirCade.py']
 
 [models.AirDualODE]
 profile = 'standard'
@@ -25,7 +25,7 @@ reference_sources = ['https://github.com/decisionintelligence/Air-DualODE/blob/3
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/models/airformer.py']
+reference_sources = ['https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/moderntsf/models/airformer.py']
 
 [models.AirPhyNet]
 profile = 'standard'
@@ -72,6 +72,12 @@ reference_test = 'tests/test_transformer_patch_forecasters_a.py'
 profile = 'standard'
 test = 'tests/test_classical_forecasters.py'
 
+[models.AWEMixer]
+profile = 'standard'
+test = 'tests/test_awemixer_structure.py'
+reference_test = 'tests/test_awemixer_structure.py'
+reference_sources = ['https://github.com/hit636/AWEMixer/blob/8e660f93c2535e6eb64ba47647babf21f3dbacfa/models/AWEMixer.py']
+
 [models.BayesianRidgeTS]
 profile = 'standard'
 test = 'tests/test_statistical_baselines.py'
@@ -110,7 +116,7 @@ structure = ['channel-independent patching', 'future horizon-dependent learned q
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/models/cauair.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/cauair.py']
 
 [models.CMoS]
 profile = 'standard'
@@ -177,7 +183,7 @@ test = 'tests/test_tree_baselines.py'
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/models/deepair.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/deepair.py']
 
 [models.DeepAR]
 profile = 'standard'
@@ -206,6 +212,12 @@ test = 'tests/test_compact_local_implementations.py::CompactLocalEquationTests::
 reference_test = 'tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_dlinear_is_seasonal_plus_trend_forecasting'
 structure = ['moving-average decomposition', 'seasonal temporal projection', 'trend temporal projection', 'additive forecast']
 
+[models.DPWMixer]
+profile = 'standard'
+test = 'tests/test_dpwmixer_structure.py'
+reference_test = 'tests/test_dpwmixer_structure.py'
+reference_sources = ['https://github.com/hit636/DPWMixer/blob/0a787be2aeba845914bd4ea88428a1ddb982abad/models/DPWMixer.py']
+
 [models.DSFormer]
 profile = 'standard'
 test = 'tests/test_transformer_patch_forecasters_b.py'
@@ -221,6 +233,12 @@ reference_test = 'tests/test_graph_forecasters_a.py'
 profile = 'standard'
 test = 'tests/test_architecture_forecasters.py'
 reference_test = 'tests/test_architecture_forecasters.py'
+
+[models.Dualformer]
+profile = 'standard'
+test = 'tests/test_dualformer_forecaster.py'
+reference_test = 'tests/test_dualformer_forecaster.py'
+reference_sources = ['https://github.com/Akira-221/Dualformer/blob/ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19/models/dualformer.py', 'https://github.com/Akira-221/Dualformer/blob/ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19/layers/RevIN.py', 'https://github.com/Akira-221/Dualformer/blob/ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19/layers/AutoCorrelation.py']
 
 [models.DUET]
 profile = 'standard'
@@ -246,6 +264,13 @@ structure = ['temporal convolution embedding', 'frequency attention', 'exponenti
 [models.ExpSmoothingTS]
 profile = 'standard'
 test = 'tests/test_classical_forecasters.py'
+
+[models.Extralonger]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/Extralonger.py', 'https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/model/config.yaml', 'https://github.com/ZhuoLinLi-shu/Extralonger/blob/4adb3ec1f0d0a844e9726273a225e640802417cd/train.py']
+structure = ['node-axis-compressed temporal attention route', 'time-axis-compressed spatial route with global-local adjacency-blended attention', 'mixed temporal-then-transposed-attention route', 'fixed-weight three-route fusion']
 
 [models.ExtraTreesTS]
 profile = 'standard'
@@ -370,7 +395,7 @@ reference_sources = ['https://github.com/dantian123121/HMformer/blob/18e014934a7
 profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'
 reference_test = 'tests/test_recent_forecasters_a.py'
-reference_sources = ['https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/layers.py', 'https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/models/dlinear.py']
+reference_sources = ['https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/layers.py', 'https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/moderntsf/models/dlinear.py']
 
 [models.ImplicitForecaster]
 profile = 'standard'
@@ -426,6 +451,12 @@ reference_test = 'tests/test_temporal_structure_forecasters.py'
 [models.LightGBMTS]
 profile = 'standard'
 test = 'tests/test_tree_baselines.py'
+
+[models.LSINet]
+profile = 'standard'
+test = 'tests/test_lsinet_forecaster.py'
+reference_test = 'tests/test_lsinet_forecaster.py'
+reference_sources = ['https://github.com/Meteor-Stars/LSINet/blob/57358db80ce633c5fcd2019ece3c2e39fd4f4074/models/LSINet.py', 'https://github.com/Meteor-Stars/LSINet/blob/57358db80ce633c5fcd2019ece3c2e39fd4f4074/layers/RevIN.py', 'https://github.com/Meteor-Stars/LSINet/blob/57358db80ce633c5fcd2019ece3c2e39fd4f4074/layers/common_layers.py']
 
 [models.LightTS]
 profile = 'standard'
@@ -646,9 +677,22 @@ profile = 'standard'
 test = 'tests/test_probabilistic_attention_forecasters.py'
 reference_test = 'tests/test_probabilistic_attention_forecasters.py'
 
+[models.RAGC]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/models/RAGC.py', 'https://github.com/wkq-wukaiqi/RAGC/blob/ee9cbb112b31ca704971a6b1d1c8ffdce6412b95/main.py']
+structure = ['per-node lookback embedding', 'stochastic-shared-embedding-regularized node embedding', 'time-of-day and day-of-week embeddings', 'efficient-cosine-operator adaptive graph convolution blocks with residual-difference skip accumulation']
+
 [models.RandomForestTS]
 profile = 'standard'
 test = 'tests/test_tree_baselines.py'
+
+[models.ReFocus]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['reversible instance normalization', 'AMEO mid-frequency residual', 'complex-linear frequency embedding', 'energy-based key-frequency picking', 'complex-linear projection']
 
 [models.Reformer]
 profile = 'standard'
@@ -673,7 +717,7 @@ test = 'tests/test_neural_baselines.py'
 profile = 'standard'
 test = 'tests/test_linear_mixer_forecasters.py'
 reference_test = 'tests/test_linear_mixer_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/models/rpmixer.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/rpmixer.py']
 
 [models.S4]
 profile = 'standard'
@@ -690,6 +734,12 @@ profile = 'standard'
 test = 'tests/test_ssm_sequence_forecasters.py'
 reference_test = 'tests/test_ssm_sequence_forecasters.py'
 
+[models.SDMixer]
+profile = 'standard'
+test = 'tests/test_sdmixer_forecaster.py'
+reference_test = 'tests/test_sdmixer_forecaster.py'
+reference_sources = ['https://github.com/SDMixer/SDMixer/blob/c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a/models/SDMixer.py', 'https://github.com/SDMixer/SDMixer/blob/c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a/layers/RevIN.py']
+
 [models.SegRNN]
 profile = 'compact-local'
 test = 'tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_segrnn_parallel_decoder_has_no_cross_segment_recursion'
@@ -701,6 +751,12 @@ profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'
 reference_test = 'tests/test_recent_forecasters_a.py'
 reference_sources = ['https://github.com/mala-lab/SEMPO/blob/59233d113f8e47fc32402ef8f371298a4d71fb21/models/SEMPO.py', 'https://github.com/mala-lab/SEMPO/blob/59233d113f8e47fc32402ef8f371298a4d71fb21/layers/SEMPO_EncDec.py']
+
+[models.SEMixer]
+profile = 'standard'
+test = 'tests/test_semixer_forecaster.py'
+reference_test = 'tests/test_semixer_forecaster.py'
+reference_sources = ['https://github.com/Meteor-Stars/SEMixer/blob/973c619ee4c380791bd70e6f71f6202ec274ce8e/models/SEMixer.py', 'https://github.com/Meteor-Stars/SEMixer/blob/973c619ee4c380791bd70e6f71f6202ec274ce8e/layers/RevIN.py', 'https://github.com/Meteor-Stars/SEMixer/blob/973c619ee4c380791bd70e6f71f6202ec274ce8e/layers/PatchTST_layers.py']
 
 [models.SOFTS]
 profile = 'standard'
@@ -723,6 +779,13 @@ structure = ['within-period aggregation', 'cross-period downsampling', 'shared s
 profile = 'standard'
 test = 'tests/test_temporal_structure_forecasters.py'
 reference_test = 'tests/test_temporal_structure_forecasters.py'
+
+[models.ST-SSDL]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/STSSDL.py', 'https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/train_STSSDL.py', 'https://github.com/Jimmy-7664/ST-SSDL/blob/a98331d3a45a081778f3abb608897902a60e301d/model_STSSDL/utils.py']
+structure = ['Chebyshev graph-conv GRU encoder', 'learnable prototype memory with attention retrieval and top-2 nearest-prototype lookup', 'data-driven decoding graph from the prototype-augmented state', 'autoregressive graph-conv GRU decoder']
 
 [models.STAEformer]
 profile = 'local-graph'
@@ -847,6 +910,12 @@ profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
 reference_test = 'tests/test_recent_forecasters_c.py'
 
+[models.TimeExpert]
+profile = 'standard'
+test = 'tests/test_timeexpert_structure.py'
+reference_test = 'tests/test_timeexpert_structure.py'
+reference_sources = ['https://github.com/xwmaxwma/TimeExpert/blob/f53b5220f22767a91040aaa04679c2eb9b2eb9c5/model/TimeExpert.py']
+
 [models.TimeFilter]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
@@ -896,6 +965,11 @@ test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_sources = ['https://github.com/NX-AI/tirex/blob/2226da4c9fa298ff34ad5af05369851674d622e5/src/tirex/models/tirex.py', 'https://github.com/NX-AI/tirex/blob/2226da4c9fa298ff34ad5af05369851674d622e5/src/tirex/models/slstm/block.py']
 
+[models.TQNet]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+
 [models.Transformer]
 profile = 'local-attention-forecasters'
 test = 'tests/test_local_attention_forecasters.py::LocalAttentionForecasterTests::test_transformer_uses_full_attention_in_all_three_roles'
@@ -918,10 +992,23 @@ profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'
 reference_test = 'tests/test_recent_forecasters_c.py'
 
+[models.VisiFold]
+profile = 'local-graph'
+test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
+reference_sources = ['https://github.com/PlanckChang/VisiFold/blob/cc035f7e803ca793b132bec3a834e8e2b39a9f99/model/VisiFold.py', 'https://github.com/PlanckChang/VisiFold/blob/cc035f7e803ca793b132bec3a834e8e2b39a9f99/model/config.yaml']
+structure = ['temporal folding graph (per-node history folded into one token)', 'time-of-day/day-of-week and adaptive node embeddings', 'node-visibility masking', 'shuffle and subgraph grouping', 'self-attention over subgraphs', 'ungroup and unshuffle']
+
 [models.WaveNet]
 profile = 'standard'
 test = 'tests/test_sequence_baselines.py'
 reference_test = 'tests/test_sequence_baselines.py'
+
+[models.WDformer]
+profile = 'standard'
+test = 'tests/test_wdformer_structure.py'
+reference_test = 'tests/test_wdformer_structure.py'
+reference_sources = ['https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/model/WDformer.py', 'https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/layers/SelfAttention_Family.py', 'https://github.com/xiaowangbc/WDformer/blob/c741e4e428f802df41b8b113ad4a4d5241da4805/layers/Embed.py']
 
 [models.WPMixer]
 profile = 'standard'
@@ -936,3 +1023,36 @@ test = 'tests/test_tree_baselines.py'
 profile = 'standard'
 test = 'tests/test_xpatch_structure.py'
 reference_test = 'tests/test_xpatch_structure.py'
+[models.CANet]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_sources = ['https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/canet.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/canet_layer.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/asb.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/nsan.py', 'https://github.com/mertsonmezer/CANet/blob/8b5d9cbdbf091805de0d22fa57b41173c21df95e/canet/modules/icb.py']
+
+[models.Gateformer]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_sources = ['https://github.com/nyuolab/Gateformer/blob/298fd10db4af8ddab67e9d0044481279a2b11241/models/Gateformer.py', 'https://github.com/nyuolab/Gateformer/blob/298fd10db4af8ddab67e9d0044481279a2b11241/layers/Embed.py']
+
+[models.TimePro]
+profile = 'standard'
+test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+reference_test = 'tests/test_2025_query_gate_hyperstate_forecasters.py'
+
+[models.FreqMoE]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['learned frequency-band decomposition', 'input-gated mixture-of-experts recombination', 'complex-linear frequency extension', 'complex ReLU/dropout', 'residual multi-block refinement']
+
+[models.SWIFT]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+reference_test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['reversible instance normalization', 'lossless single-level Haar DWT', 'cross-band convolution fusion', 'sub-series linear/MLP mapping', 'inverse Haar DWT']
+
+[models.Sensorformer]
+profile = 'standard'
+test = 'tests/test_frequency_wavelet_attention_forecasters.py'
+structure = ['PatchTST-style patch embedding', 'stage-1 compress-to-sensor cross-attention', 'stage-2 sensor-broadcast cross-attention', 'flatten forecast head']

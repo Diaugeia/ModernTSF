@@ -8,12 +8,12 @@ import unittest
 
 import torch
 
-from models.arima_ts.model import Model as ARIMA
-from models.bayesian_ridge_ts.model import Model as BayesianRidge
-from models.elastic_net_ts.model import Model as ElasticNet
-from models.gaussian_process_ts.model import Model as GaussianProcess
-from models.kalman_filter_ts.model import Model as AlphaBeta
-from models.svr_forecaster_ts.model import Model as EpsilonRBF
+from moderntsf.models.arima_ts.model import Model as ARIMA
+from moderntsf.models.bayesian_ridge_ts.model import Model as BayesianRidge
+from moderntsf.models.elastic_net_ts.model import Model as ElasticNet
+from moderntsf.models.gaussian_process_ts.model import Model as GaussianProcess
+from moderntsf.models.kalman_filter_ts.model import Model as AlphaBeta
+from moderntsf.models.svr_forecaster_ts.model import Model as EpsilonRBF
 
 
 CASES = {

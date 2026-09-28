@@ -9,32 +9,32 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from models.autoformer.model import (
+from moderntsf.models.autoformer.model import (
     AutoformerDecoderLayer,
     Model as Autoformer,
     fft_autocorrelation,
 )
-from models._components.series_decomposition import SeriesDecomposition
-from models.autoformer.spec import ModelParameterConfig as AutoformerParameters
-from models.fedformer.model import (
+from moderntsf.models._components.series_decomposition import SeriesDecomposition
+from moderntsf.models.autoformer.spec import ModelParameterConfig as AutoformerParameters
+from moderntsf.models.fedformer.model import (
     FrequencyEnhancedBlock,
     Model as FEDformer,
     selected_modes,
 )
-from models.fedformer.spec import ModelParameterConfig as FEDformerParameters
-from models.itransformer.model import InvertedEmbedding, Model as ITransformer
-from models.itransformer.spec import ModelParameterConfig as ITransformerParameters
-from models.patchtst.model import Model as PatchTST, patchify
-from models.patchtst.spec import ModelParameterConfig as PatchTSTParameters
-from models.timemixer.model import (
+from moderntsf.models.fedformer.spec import ModelParameterConfig as FEDformerParameters
+from moderntsf.models.itransformer.model import InvertedEmbedding, Model as ITransformer
+from moderntsf.models.itransformer.spec import ModelParameterConfig as ITransformerParameters
+from moderntsf.models.patchtst.model import Model as PatchTST, patchify
+from moderntsf.models.patchtst.spec import ModelParameterConfig as PatchTSTParameters
+from moderntsf.models.timemixer.model import (
     DFTDecomposition,
     Model as TimeMixer,
     PastDecomposableMixing,
     multiscale_lengths,
 )
-from models.timemixer.spec import ModelParameterConfig as TimeMixerParameters
-from models.timesnet.model import Model as TimesNet, dominant_periods
-from models.timesnet.spec import ModelParameterConfig as TimesNetParameters
+from moderntsf.models.timemixer.spec import ModelParameterConfig as TimeMixerParameters
+from moderntsf.models.timesnet.model import Model as TimesNet, dominant_periods
+from moderntsf.models.timesnet.spec import ModelParameterConfig as TimesNetParameters
 
 
 def marks(batch: int, length: int) -> torch.Tensor:

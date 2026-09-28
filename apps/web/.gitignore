@@ -1,0 +1,15 @@
+node_modules/
+.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+__pycache__/
+*.pyc
+
+# synced from data/ at dev/build time (sync:data)
+/public/visualization_data.json
+
+# HF snapshot_download metadata
+/submissions/.cache/
+/submissions/.gitattributes

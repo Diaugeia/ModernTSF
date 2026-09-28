@@ -3,6 +3,70 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
+## [1.0.0rc1] — Unreleased
+
+A fully automated, continuously updated forecasting platform: one installable
+package, one repository, one address for published assets, and rolling
+real-time evaluation.
+
+### Added
+
+- `apps/web/`: the ModernTSF Leaderboard (formerly TSEval) with its history,
+  submission pipeline and `submissions/`; CI validates submissions on PRs.
+- `moderntsf.hub` and `tsf hub {pack,push,list,pull}`: pinned `hf://` URIs,
+  SHA-256 verified downloads, and safetensors weights bundles
+  (`<dataset>/<model>/<run_id>/`) for Hugging Face model repositories.
+- `ModelArtifact` accepts pinned `hf://` URIs.
+- `tsf init` scaffolds a standalone project; run configs can extend installed
+  catalog presets through `moderntsf://` paths.
+- `hub` optional dependency group (`huggingface_hub`, `safetensors`).
+- Rolling real-time evaluation (`moderntsf.realtime`, `tsf realtime`): versioned
+  append-only panels mirrored to the Hub, weekly rounds opened before their
+  targets, baseline and catalog-model forecasts, scoring with frozen
+  normalization, Kendall-tau rank stability, and historical replay. Tracks:
+  `stock_hs300` (AKShare log returns), `traffic_pems_sb` (PeMS District 8,
+  bootstrapped from UltraTraffic_CL), `air_openaq_cn` (OpenAQ PM2.5).
+- TSF-Core `RoundSpec`, `ForecastSubmission`, `RoundScore` contracts and one
+  shared leaderboard implementation (`tsf_core.leaderboard`).
+- Workflows: `realtime-weekly` (CPU cron), `paper-intake` (Codex literature scan
+  and implementation with independent verification; community requests through
+  the new-model issue form), real-time forecast checks in `web-validate`.
+- `realtime` optional dependency group (`akshare`, `requests`, `pyarrow`).
+- 20 new methods (178 → 198) added through the paper-to-model workflow:
+  SDMixer, SEMixer, LSINet, Dualformer, DPWMixer, AWEMixer, TimeExpert,
+  WDformer, TQNet, TimePro, Gateformer, CANet, ReFocus, FreqMoE, SWIFT,
+  Sensorformer, VisiFold, Extralonger, ST-SSDL, RAGC.
+- 23 new shared components (24 → 47), extracted from the new methods and from
+  existing models so that methods can be recombined: e.g. `wavelet`,
+  `mixer_block`, `gated_dilated_conv`, `adaptive_node_embedding_adjacency`,
+  `topk_expert_router`, `last_value_center`, `freq_band_moe`,
+  `periodic_query_bank`, `node_visibility`, `deviation_memory`. 26 existing
+  models now consume shared components; equivalence tests pin their state_dict,
+  outputs, and gradients to the pre-refactor behavior.
+- UltraTraffic PeMS datasets (`ultratraffic_st` / `ultratraffic_ts`): hourly flow
+  for Caltrans Districts 3, 4, 7, 8 (2003–2023) with continual-learning splits;
+  9 presets (89 in total) and real-time tracks `traffic_pems_{ba,la,sac,sb}`.
+
+### Changed
+
+- **Breaking:** all runtime packages moved under `moderntsf`
+  (`moderntsf.benchmark`, `.data`, `.models`, `.tsf_core`, `.assets`); the
+  wheel no longer installs generic top-level `benchmark`/`data`/`models`
+  packages. Sources now live in `src/moderntsf/`.
+- `tsf submit` points contributors at `apps/web/submissions/` in this repository.
+- Pytest collects only `tests/`; `experiments/` is a local-only workspace.
+- The site pipeline validates with the TSF-Core pydantic contracts; its
+  hand-written `contract.schema.json` and the duplicate aggregator are removed.
+- `build_model_meta.py` reads the current model-card fields.
+
+### Fixed
+
+- `tsf model add` compared a set of declared components with a tuple of imported
+  ones, so admitting any model that declares components always failed.
+- Scaffold templates (`tsf model scaffold`, `tsf dataset add`) generated imports
+  from the removed top-level packages.
+- Interrupted stock fetches now resume from a per-symbol cache.
+
 ## [0.8.0] — 2026-09-04
 
 Composable execution services that augment the current Agent while keeping

@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from models.gotsf.model import Model as GOTSF
-from models.gtr.model import Model as GTR
-from models.hmformer.model import Model as HMformer
-from models.kronos.model import Model as Kronos
-from models.mafs.model import Model as MAFS
-from models.mmpd.model import Model as MMPD
+from moderntsf.models.gotsf.model import Model as GOTSF
+from moderntsf.models.gtr.model import Model as GTR
+from moderntsf.models.hmformer.model import Model as HMformer
+from moderntsf.models.kronos.model import Model as Kronos
+from moderntsf.models.mafs.model import Model as MAFS
+from moderntsf.models.mmpd.model import Model as MMPD
 
 
 CASES = {

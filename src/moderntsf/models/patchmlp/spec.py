@@ -1,0 +1,53 @@
+"""Model specification for PatchMLP."""
+
+from __future__ import annotations
+
+from moderntsf.benchmark.registry.models import ModelSpec
+from moderntsf.models.patchmlp.model import Model
+
+from pydantic import BaseModel, Field, field_validator
+
+
+class ModelParameterConfig(BaseModel):
+    enc_in: int = Field(gt=0)
+    d_model: int = Field(default=1024, ge=4, multiple_of=4)
+    e_layers: int = Field(default=1, gt=0)
+    use_norm: bool = True
+    moving_avg: int = Field(default=13, gt=0)
+    patch_len: list[int] = Field(default_factory=lambda: [48, 24, 12, 6], min_length=4, max_length=4)
+
+    @field_validator("moving_avg")
+    @classmethod
+    def _odd_moving_average(cls, value: int) -> int:
+        if value % 2 == 0:
+            raise ValueError("moving_avg must be odd")
+        return value
+
+    @field_validator("patch_len")
+    @classmethod
+    def _patch_lengths(cls, values: list[int]) -> list[int]:
+        if any(value < 2 for value in values):
+            raise ValueError("patch lengths must be at least two")
+        return values
+
+
+def build_model(cfg, params):
+    """Construct PatchMLP from a validated run configuration."""
+    return (
+    Model(seq_len=cfg.task.seq_len, pred_len=cfg.task.pred_len, enc_in=params['enc_in'], d_model=params.get('d_model', 1024), e_layers=params.get('e_layers', 1), use_norm=bool(params.get('use_norm', True)), moving_avg=params.get('moving_avg', 13), patch_len=params.get('patch_len'))
+    )
+
+
+SPEC = ModelSpec(
+    name='PatchMLP',
+    module='moderntsf.models.patchmlp',
+    model_class=Model,
+    factory=build_model,
+    params_schema=ModelParameterConfig,
+    config_path='configs/models/PatchMLP.toml',
+    model_card='src/moderntsf/models/patchmlp/README.md',
+    smoke_config=None,
+    capabilities=frozenset(['time-series']),
+    components=(),
+    contract_task={'seq_len': 96, 'pred_len': 96, 'label_len': 0},
+)
