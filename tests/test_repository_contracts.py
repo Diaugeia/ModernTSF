@@ -210,7 +210,7 @@ class RepositoryContractTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 self.assertEqual(cli_main([resource, "audit"]), 0)
-            self.assertIn("24 components" if resource == "component" else "89/89", output.getvalue())
+            self.assertIn("29 components" if resource == "component" else "89/89", output.getvalue())
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
@@ -351,11 +351,11 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/moderntsf/models/_foundation/README.md").is_file())
-        self.assertEqual(len(COMPONENT_CATALOG.names()), 24)
+        self.assertEqual(len(COMPONENT_CATALOG.names()), 29)
         self.assertEqual(len(dataset_records(root)), 89)
         self.assertEqual(
             len(list((root / "src/moderntsf/models/_components").glob("*/README.md"))),
-            24,
+            29,
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
