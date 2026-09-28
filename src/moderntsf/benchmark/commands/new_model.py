@@ -214,7 +214,7 @@ def _model(name: str, params: list[tuple[str, str, str | None]], graph: bool) ->
         suffix = "" if default is None else f" = {_python_literal(kind, default)}"
         extras.append(f"        {field}: {kind}{suffix},")
     extra_text = "\n".join(extras)
-    graph_imports = "import numpy as np\n\nfrom models._components.marks import to_spatiotemporal\n" if graph else ""
+    graph_imports = "import numpy as np\n\nfrom moderntsf.models._components.marks import to_spatiotemporal\n" if graph else ""
     graph_args = '        adj_mx: "np.ndarray | None" = None,\n        cov_dim: int = 2,\n' if graph else ""
     setup = (
         "        if adj_mx is None:\n"
