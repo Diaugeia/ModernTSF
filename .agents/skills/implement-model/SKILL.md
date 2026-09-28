@@ -18,9 +18,9 @@ a locally trained paper architecture, stop this workflow and use
 
 1. Design local modules from the extracted equations and verified implementation
    details. Mark each operation `reuse-existing`, `extract-new`, or `model-local`.
-2. Reuse `src/models/_components/` only after proving mathematical and runtime
+2. Reuse `src/moderntsf/models/_components/` only after proving mathematical and runtime
    equivalence. Keep paper-specific or semantically different blocks local.
-3. Implement inside the flat `src/models/<slug>/` package. Preserve useful paper
+3. Implement inside the flat `src/moderntsf/models/<slug>/` package. Preserve useful paper
    formulas and explanatory comments, but not source-derived code or comments.
    Keep the canonical four-input `forward` signature exact; model-specific
    operations belong in explicitly named methods rather than extra public inputs.

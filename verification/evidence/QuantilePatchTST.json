@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "QuantilePatchTST",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "dc5f0d1329d9d9019970a4acf2509ba4a30e15dd1622e0635cd19f5588a8dea8",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "dcd519be2a1c4489787301aa175a606b35f4de51cdc74b93a113dcf83e61d12a",
   "paper": {
     "title": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers (PatchTST backbone)",
     "venue": "ICLR 2023",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model QuantilePatchTST",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_probabilistic_attention_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_probabilistic_attention_forecasters.py"
   ]
 }

@@ -7,14 +7,14 @@ import unittest
 import numpy as np
 import torch
 
-from models.pathformer.model import Model as Pathformer
-from models.stpgnn.model import Model as STPGNN
-from models.timeemb.model import Model as TimeEmb
-from models.timefilter.model import Model as TimeFilter
-from models.timeperceiver.model import Model as TimePerceiver
-from models.timexer.model import Model as TimeXer
-from models.umixer.model import Model as UMixer
-from models.wpmixer.model import Model as WPMixer
+from moderntsf.models.pathformer.model import Model as Pathformer
+from moderntsf.models.stpgnn.model import Model as STPGNN
+from moderntsf.models.timeemb.model import Model as TimeEmb
+from moderntsf.models.timefilter.model import Model as TimeFilter
+from moderntsf.models.timeperceiver.model import Model as TimePerceiver
+from moderntsf.models.timexer.model import Model as TimeXer
+from moderntsf.models.umixer.model import Model as UMixer
+from moderntsf.models.wpmixer.model import Model as WPMixer
 
 
 def marks(batch=2, steps=12, offset=0):

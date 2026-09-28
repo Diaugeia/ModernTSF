@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TSRAG",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "d9458950421890462af5984a021d09d47c456db820eb067bc233738676ca54f3",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "1fe8d52bb23b457ba2dde4f80709f493dd9de349f8809645f984fbac34b6622b",
   "paper": {
     "title": "TS-RAG: Retrieval-Augmented Generation based Time Series Foundation Models are Stronger Zero-Shot Forecaster",
     "venue": "NeurIPS 2025",
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model TSRAG",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_foundation_retrieval_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
   ]
 }

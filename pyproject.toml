@@ -14,7 +14,7 @@ dependencies = [
     "matplotlib",
     "scikit-learn",
     # Used by the probabilistic metrics (gaussian closed-form CRPS / inverse-CDF
-    # in benchmark.evaluation.metrics). Previously only a transitive dep.
+    # in moderntsf.benchmark.evaluation.metrics). Previously only a transitive dep.
     "scipy",
     "pydantic",
     "packaging>=24",
@@ -37,7 +37,7 @@ dependencies = [
     # LSH self-attention for the Reformer model.
     # Transitively pulls local-attention / axial-positional-embedding / etc.
     "reformer-pytorch",
-    # Wavelet filter banks for the STWave model (src/models/stwave).
+    # Wavelet filter banks for the STWave model (src/moderntsf/models/stwave).
     "pywavelets",
 ]
 
@@ -51,17 +51,17 @@ dev = [
 ]
 
 [project.scripts]
-tsf = "benchmark.cli:main"
+tsf = "moderntsf.benchmark.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["benchmark*", "data*", "models*", "modern_tsf_assets*", "tsf_core*"]
+include = ["moderntsf*"]
 
 [tool.setuptools.package-data]
-tsf_core = ["schema/*.json"]
+"moderntsf.tsf_core" = ["schema/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from models.timebridge.model import IntegratedAttention, Model
+from moderntsf.models.timebridge.model import IntegratedAttention, Model
 
 
 class _Capture(torch.nn.Module):

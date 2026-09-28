@@ -41,6 +41,6 @@ unchanged state is a successful monitoring result.
 ## Integration boundary
 
 The downstream task owns implementation. It must preserve the flat
-`src/models/<lowercase_module_slug>/` layout, use shared components only when
+`src/moderntsf/models/<lowercase_module_slug>/` layout, use shared components only when
 semantics match, and pass the repository's provenance and contract gates. Search
 results alone never establish a local implementation or verification result.

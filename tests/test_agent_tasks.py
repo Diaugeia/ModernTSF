@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from benchmark.cli import main
-from tsf_core.agent_tasks import (
+from moderntsf.benchmark.cli import main
+from moderntsf.tsf_core.agent_tasks import (
     AgentTaskError,
     audit_tasks,
     list_tasks,

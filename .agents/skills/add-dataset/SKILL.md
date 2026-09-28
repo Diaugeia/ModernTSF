@@ -13,7 +13,7 @@ uv run tsf dataset add --name my_data --pattern custom \
   --path ./dataset/my_data/my_data.csv --target OT
 ```
 
-Keep bytes in `dataset/`, loader/schema code in `src/data/`, the runnable preset
+Keep bytes in `dataset/`, loader/schema code in `src/moderntsf/data/`, the runnable preset
 in `configs/datasets/`, and the generated card in `catalog/datasets/`. A preset
 uses one `dataset.path`; only catalog-style datasets such as GIFT-Eval add a
 separate `dataset.id`.

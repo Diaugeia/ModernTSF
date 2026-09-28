@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "FTP",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "a53b096e95c2e26688a0d5a68434f6089435c7ea714164b01c2132da92b50026",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "27e31bd008ed2a92e075cfa11b363ea3ba49139858b3ba7e136004aa1939cb72",
   "paper": {
     "title": "Unifying Channel Independence and Mixing: Multi-Scale Patch Recursion for Global-Local Representation Synergy in Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model FTP",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_special_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_special_forecasters.py"
   ]
 }

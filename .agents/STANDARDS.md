@@ -5,7 +5,7 @@ always-on rules; this file keeps detailed contracts out of the default context.
 
 ## Models
 
-Every model or method is a peer under `src/models/<lowercase_module_slug>/`;
+Every model or method is a peer under `src/moderntsf/models/<lowercase_module_slug>/`;
 there are no architecture categories or separate method hierarchy. Each entry
 owns `model.py`, a checked `README.md` model card, and a `spec.py` limited to its
 factory, parameter schema, config path, and runtime contract.
@@ -17,7 +17,7 @@ correctly shaped output, and pass the unified verification contract.
 
 ## Components
 
-Reusable building blocks live in `src/models/_components/`; they never classify
+Reusable building blocks live in `src/moderntsf/models/_components/`; they never classify
 models. Extract code only when all consumers share mathematical behavior,
 shapes, normalization, masking, residual order, initialization, and output
 structure. Similar names are not evidence of equivalence.
@@ -47,7 +47,7 @@ status, empty code fields, or invented source facts.
 Ordinary paper architectures are maintained as local code. Inspect authoritative
 official code at a pinned revision when available to resolve paper omissions,
 without copying it. A released pretrained foundation model is the narrow exception:
-use its official package and unchanged checkpoint behind `src/models/_foundation/`,
+use its official package and unchanged checkpoint behind `src/moderntsf/models/_foundation/`,
 load offline from an explicit local path, and declare the flat catalog entry
 inference-only. Record source and license facts. A shape-only smoke test is not
 verification, and verification status is computed from evidence rather than
@@ -67,7 +67,7 @@ a classification. Use `tsf verify model`, `stale`, `all --jobs`, and `index`.
 
 ## Data, experiments, and model artifacts
 Local dataset bytes live only in `dataset/`; loaders and schemas live in
-`src/data/`; readable preset cards live in `catalog/datasets/`. Dataset and model
+`src/moderntsf/data/`; readable preset cards live in `catalog/datasets/`. Dataset and model
 task modes are executable contracts checked during config loading. Experiments are
 resolved TOML and immutable evidence under `work_dirs/`; optional execution policy
 never changes scientific settings. Recovery preserves identity and attempt history.
@@ -95,6 +95,6 @@ success criteria, artifacts, and stopping conditions. Use native Agent work and
 public APIs or optional CLI adapters; omit harness-specific paths, assumptions, retired
 aliases, internal script entry points, or copies of human-facing tutorials.
 
-Changed skills must pass `uv run python -m tsf_core.agent_assets` and the standard
+Changed skills must pass `uv run python -m moderntsf.tsf_core.agent_assets` and the standard
 skill frontmatter validator. Test descriptions against positive, indirect,
 incomplete, negative, and edge-case requests.

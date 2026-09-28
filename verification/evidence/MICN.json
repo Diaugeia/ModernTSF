@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MICN",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "4b6bd10efa5d0828251cdb504984fa526a2a11f463368270128dde1a55d365e6",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "e1ec15c502426e3184ec7791502c6a90f65c35fc319add8ecff4a5c462f10ff9",
   "paper": {
     "title": "MICN: Multi-scale Local and Global Context Modeling for Long-term Series Forecasting",
     "venue": "ICLR 2023",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MICN",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_architecture_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_architecture_forecasters.py"
   ]
 }

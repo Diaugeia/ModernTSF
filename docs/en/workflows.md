@@ -4,9 +4,9 @@ ModernTSF has one flat model catalog, one shared-component area, one data
 pipeline, and one verification route. Models and methods are peers.
 
 ```text
-src/models/<slug>/              local model code, spec, and model card
-src/models/_components/<name>/  reusable component code and card
-src/data/                       dataset loaders and parameter schemas
+src/moderntsf/models/<slug>/              local model code, spec, and model card
+src/moderntsf/models/_components/<name>/  reusable component code and card
+src/moderntsf/data/                       dataset loaders and parameter schemas
 dataset/                        local dataset bytes (not packaged)
 catalog/datasets/<preset>/      generated readable dataset cards
 configs/                        composable model, dataset, and run TOML
@@ -105,7 +105,7 @@ Foundation models remain ordinary flat model entries. Pretraining scale is not a
 catalog category. A local architecture without released weights must say so in
 its card and cannot claim zero-shot checkpoint behavior.
 
-Released pretrained models use the thin boundary in `src/models/_foundation/`.
+Released pretrained models use the thin boundary in `src/moderntsf/models/_foundation/`.
 `FoundationModel` converts the canonical `[batch, time, channels]` input to the
 official runtime's series batch and restores point or quantile output axes.
 Chronos and TimesFM have direct adapters; Moirai accepts an official forecast
@@ -122,7 +122,7 @@ experiment rather than through a second registry.
 Weights, tokenizers, or normalization statistics remain explicit runtime facts:
 
 ```python
-from benchmark.registry.models import ModelArtifact
+from moderntsf.benchmark.registry.models import ModelArtifact
 
 artifacts = (ModelArtifact(
     name="weights",
@@ -162,7 +162,7 @@ belong in verification and the model card.
 
 ## Components
 
-Components live only in `src/models/_components/<name>/`. Each directory has an
+Components live only in `src/moderntsf/models/_components/<name>/`. Each directory has an
 implementation, a catalog contract, focused tests, and a generated README card.
 Extract only mathematically and operationally equivalent behavior—matching names
 or tensor rank is insufficient. Validate axes, normalization, masking, residual
@@ -183,7 +183,7 @@ not import implementation code from another named model.
 Data has three non-overlapping layers:
 
 - `dataset/`: local files, downloads, and converted arrays; never code or cards.
-- `src/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
+- `src/moderntsf/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
 - `catalog/datasets/`: one generated README card per runnable dataset preset.
 
 Use an existing CSV preset or create a loader-backed dataset:

@@ -6,18 +6,18 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from models.koopa.model import FourierDynamicsSplit, estimate_operator, Model as Koopa
-from models.koopa.spec import ModelParameterConfig as KoopaParameters
-from models.latenttsf.model import LatentStateAutoencoder, latent_alignment_loss, Model as LatentTSF
-from models.latenttsf.spec import ModelParameterConfig as LatentParameters
-from models.softs.model import SeriesCoreFusion, Model as SOFTS
-from models.softs.spec import ModelParameterConfig as SOFTSParameters
-from models.srsnet.model import SelectivePatching, DynamicReassembly, Model as SRSNet
-from models.srsnet.spec import ModelParameterConfig as SRSParameters
-from models.sumba.model import StructuredMatrixBasis, Model as Sumba
-from models.sumba.spec import ModelParameterConfig as SumbaParameters
-from models.timealign.model import DistributionAlignment, Model as TimeAlign
-from models.timealign.spec import ModelParameterConfig as TimeAlignParameters
+from moderntsf.models.koopa.model import FourierDynamicsSplit, estimate_operator, Model as Koopa
+from moderntsf.models.koopa.spec import ModelParameterConfig as KoopaParameters
+from moderntsf.models.latenttsf.model import LatentStateAutoencoder, latent_alignment_loss, Model as LatentTSF
+from moderntsf.models.latenttsf.spec import ModelParameterConfig as LatentParameters
+from moderntsf.models.softs.model import SeriesCoreFusion, Model as SOFTS
+from moderntsf.models.softs.spec import ModelParameterConfig as SOFTSParameters
+from moderntsf.models.srsnet.model import SelectivePatching, DynamicReassembly, Model as SRSNet
+from moderntsf.models.srsnet.spec import ModelParameterConfig as SRSParameters
+from moderntsf.models.sumba.model import StructuredMatrixBasis, Model as Sumba
+from moderntsf.models.sumba.spec import ModelParameterConfig as SumbaParameters
+from moderntsf.models.timealign.model import DistributionAlignment, Model as TimeAlign
+from moderntsf.models.timealign.spec import ModelParameterConfig as TimeAlignParameters
 
 
 class PaperStructureTests(unittest.TestCase):

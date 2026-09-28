@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 import torch
 
-from models._foundation import (
+from moderntsf.models._foundation import (
     ChronosRuntime,
     FoundationForecast,
     FoundationModel,

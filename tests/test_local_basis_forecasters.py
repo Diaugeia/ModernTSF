@@ -6,8 +6,8 @@ import unittest
 
 import torch
 
-from models.nbeats.model import Model as NBeats, seasonality_basis, trend_basis
-from models.nhits.model import Model as NHiTS
+from moderntsf.models.nbeats.model import Model as NBeats, seasonality_basis, trend_basis
+from moderntsf.models.nhits.model import Model as NHiTS
 
 
 class LocalBasisForecasterTests(unittest.TestCase):

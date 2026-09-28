@@ -95,7 +95,7 @@ components, offline official Foundation runtimes, data layers, verification, and
 experiments.
 
 Dataset resources have three deliberately separate layers: ignored local files
-live under `dataset/`, executable loaders and schemas live under `src/data/`,
+live under `dataset/`, executable loaders and schemas live under `src/moderntsf/data/`,
 and readable catalog cards live under `catalog/datasets/`. Code and cards never
 embed local dataset payloads.
 
@@ -116,7 +116,7 @@ exact command options stay in CLI help:
 
 | Path | Contents |
 | --- | --- |
-| `src/` | The installable framework (`pip install modern-tsf`, CLI `tsf`) |
+| `src/` | The installable framework (`moderntsf` package, CLI `tsf`) |
 | `configs/`, `catalog/`, `verification/` | Experiment configs, dataset catalog, model verification evidence |
 | `tests/` | Test suite |
 | `apps/web/` | ModernTSF Leaderboard — static site, submission pipeline, and `submissions/` |

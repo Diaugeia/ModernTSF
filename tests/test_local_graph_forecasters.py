@@ -8,17 +8,17 @@ import unittest
 import numpy as np
 import torch
 
-from models.agcrn.model import Model as AGCRN
-from models.d2stgnn.model import Model as D2STGNN
-from models.dfdgcn.model import Model as DFDGCN
-from models.gwnet.model import Model as GWNet
-from models.himnet.model import Model as HimNet
-from models.staeformer.model import Model as STAEformer
-from models.stdn.model import Model as STDN
-from models.stemgnn.model import Model as StemGNN
-from models.stgcn.model import Model as STGCN
-from models.stid.model import Model as STID
-from models.stnorm.model import Model as STNorm
+from moderntsf.models.agcrn.model import Model as AGCRN
+from moderntsf.models.d2stgnn.model import Model as D2STGNN
+from moderntsf.models.dfdgcn.model import Model as DFDGCN
+from moderntsf.models.gwnet.model import Model as GWNet
+from moderntsf.models.himnet.model import Model as HimNet
+from moderntsf.models.staeformer.model import Model as STAEformer
+from moderntsf.models.stdn.model import Model as STDN
+from moderntsf.models.stemgnn.model import Model as StemGNN
+from moderntsf.models.stgcn.model import Model as STGCN
+from moderntsf.models.stid.model import Model as STID
+from moderntsf.models.stnorm.model import Model as STNorm
 
 
 def _graph(nodes: int = 4) -> np.ndarray:

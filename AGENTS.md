@@ -7,9 +7,9 @@ Harness use these Agent assets directly. Claude Code uses `CLAUDE.md` and
 `.claude/skills` links to the same files. Never duplicate the instructions.
 
 ## Invariants
-- Preserve the flat `src/models/<model>/` layout. Do not classify models or
+- Preserve the flat `src/moderntsf/models/<model>/` layout. Do not classify models or
   methods into architecture-family directories.
-- Put only proven paper-neutral reuse in `src/models/_components/`; paper-specific
+- Put only proven paper-neutral reuse in `src/moderntsf/models/_components/`; paper-specific
   operations remain model-local. Components never form a model hierarchy.
 - Verify paper and official-code claims before describing an implementation as
   faithful. Pin the inspected revision and record every material difference.

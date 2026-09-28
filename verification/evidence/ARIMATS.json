@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ARIMATS",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "18d782424e0a019bada229a57118ee72f4caf0558525115772803f70fbd8cd56",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "11c5f6b197deada2490d7c0191c8723ada693d71021ac55b5f4c039a38f51ecb",
   "paper": {
     "title": "Time Series Analysis: Forecasting and Control",
     "venue": "Holden-Day (book) / N/A (classical baseline)",
@@ -137,7 +137,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model ARIMATS",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_statistical_baselines.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

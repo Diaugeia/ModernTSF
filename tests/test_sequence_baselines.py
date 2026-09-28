@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from models.bist.model import Model as BiST
-from models.deepar.model import Model as DeepAR
-from models.hl.model import Model as HL
-from models.lightts.model import Model as LightTS
-from models.lstm.model import Model as LSTM
-from models.wavenet.model import GatedCausalLayer, Model as WaveNet
+from moderntsf.models.bist.model import Model as BiST
+from moderntsf.models.deepar.model import Model as DeepAR
+from moderntsf.models.hl.model import Model as HL
+from moderntsf.models.lightts.model import Model as LightTS
+from moderntsf.models.lstm.model import Model as LSTM
+from moderntsf.models.wavenet.model import GatedCausalLayer, Model as WaveNet
 
 
 def raw_marks(batch: int, steps: int, offset: int = 0) -> torch.Tensor:

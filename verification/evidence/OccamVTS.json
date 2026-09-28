@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "OccamVTS",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "e060c0c9800d0195f400110a5093263423c9e5f87e3d9dd24e730049487c6ac2",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "325b395f364f9b3bcd6512533027360afcb0ca984192ce1958799dbabd7b407c",
   "paper": {
     "title": "OccamVTS: Distilling Vision Models to 1% Parameters for Time Series Forecasting",
     "venue": "AAAI 2026",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model OccamVTS",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_recent_forecasters_b.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_b.py"
   ]
 }

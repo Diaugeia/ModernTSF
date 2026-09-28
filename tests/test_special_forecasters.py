@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from models.amrc.model import Model as AMRC
-from models.aurora.model import Model as Aurora
-from models.cosa.model import Model as COSA
-from models.distdf.model import Model as DistDF
-from models.dynamic_tmoe.model import Model as DynamicTMoE
-from models.ftp.model import Model as FTP, _right_padded_patches
+from moderntsf.models.amrc.model import Model as AMRC
+from moderntsf.models.aurora.model import Model as Aurora
+from moderntsf.models.cosa.model import Model as COSA
+from moderntsf.models.distdf.model import Model as DistDF
+from moderntsf.models.dynamic_tmoe.model import Model as DynamicTMoE
+from moderntsf.models.ftp.model import Model as FTP, _right_padded_patches
 
 
 CASES = {

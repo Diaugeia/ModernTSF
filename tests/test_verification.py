@@ -9,15 +9,15 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from benchmark.verification import (
+from moderntsf.benchmark.verification import (
     VerificationEvidence,
     evidence_state,
     load_manifest,
     rebuild_index,
 )
-from benchmark.verification.evidence import file_sha256
-from benchmark.verification_common import verification_subject_sha256
-from benchmark.commands.verification import _load_existing, _materially_changed
+from moderntsf.benchmark.verification.evidence import file_sha256
+from moderntsf.benchmark.verification_common import verification_subject_sha256
+from moderntsf.benchmark.commands.verification import _load_existing, _materially_changed
 
 
 def _check(status: str = "passed") -> dict[str, object]:
@@ -72,7 +72,7 @@ class VerificationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
-        package = self.root / "src/models/example"
+        package = self.root / "src/moderntsf/models/example"
         package.mkdir(parents=True)
         (package / "model.py").write_text("VALUE = 1\n", encoding="utf-8")
         (package / "README.md").write_text("model card\n", encoding="utf-8")
@@ -130,7 +130,7 @@ class VerificationTests(unittest.TestCase):
 
         self._write_evidence(_payload(subject))
         rebuild_index(self.root)
-        (self.root / "src/models/example/model.py").write_text("VALUE = 2\n", encoding="utf-8")
+        (self.root / "src/moderntsf/models/example/model.py").write_text("VALUE = 2\n", encoding="utf-8")
         stale = evidence_state(self.root, "Example", self.fields)
         self.assertEqual((stale.status, stale.current), ("failed", False))
         self.assertIn("stale", stale.detail or "")
@@ -179,13 +179,13 @@ class VerificationTests(unittest.TestCase):
         payload = _payload("a" * 64)
         payload["checks"]["backward"] = _check("not-applicable")
         payload["checks"]["active_parameter_gradients"] = _check("not-applicable")
-        with patch("benchmark.verification.evidence._is_inference_only", return_value=True):
+        with patch("moderntsf.benchmark.verification.evidence._is_inference_only", return_value=True):
             evidence = VerificationEvidence.model_validate(payload)
             self.assertEqual(evidence.status, "passed")
 
         payload["checks"]["forward"] = _check("not-applicable")
         with (
-            patch("benchmark.verification.evidence._is_inference_only", return_value=True),
+            patch("moderntsf.benchmark.verification.evidence._is_inference_only", return_value=True),
             self.assertRaisesRegex(ValueError, "required verification check"),
         ):
             VerificationEvidence.model_validate(payload)
@@ -201,8 +201,8 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(evidence.status, "failed")
 
     def test_repository_manifest_exactly_covers_the_catalog(self) -> None:
-        from benchmark.catalog_metadata import model_records
-        from tsf_core.paths import repository_root
+        from moderntsf.benchmark.catalog_metadata import model_records
+        from moderntsf.tsf_core.paths import repository_root
 
         root = repository_root()
         names = {str(record["name"]) for record in model_records(root)}

@@ -21,7 +21,7 @@ class BuildWithRepositoryAssets(build_py):
         # later wheel.
         shutil.rmtree(self.build_lib, ignore_errors=True)
         super().run()
-        target = Path(self.build_lib) / "modern_tsf_assets"
+        target = Path(self.build_lib) / "moderntsf" / "assets"
         target.mkdir(parents=True, exist_ok=True)
         # ``egg_info`` runs before ``build_py`` and creates ``src/*.egg-info``.
         # It belongs to the distribution metadata, not to the bundled checkout
@@ -49,11 +49,11 @@ class BuildWithRepositoryAssets(build_py):
         # not a second copy of every installed model implementation. Preserve
         # their relative paths so the same torch-free readers work in a checkout
         # and in a wheel.
-        model_assets = ROOT / "src" / "models"
+        model_assets = ROOT / "src" / "moderntsf" / "models"
         for source in model_assets.rglob("*"):
             if not source.is_file() or source.name not in {"README.md", "spec.py"}:
                 continue
-            destination = target / "src" / "models" / source.relative_to(
+            destination = target / "src" / "moderntsf" / "models" / source.relative_to(
                 model_assets
             )
             destination.parent.mkdir(parents=True, exist_ok=True)

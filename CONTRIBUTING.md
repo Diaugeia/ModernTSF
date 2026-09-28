@@ -41,7 +41,7 @@ environment, official-source license, …); issues without it may be closed.
 See the [model workflow](docs/en/workflows.md#add-a-model-or-method). In short:
 
 1. Deduplicate and extract the paper; inspect pinned official code when available.
-2. Match defining operations against `src/models/_components/`.
+2. Match defining operations against `src/moderntsf/models/_components/`.
 3. Run `tsf model scaffold` with paper/source facts and component decisions.
 4. Implement locally, complete the card, and declare focused manifest tests.
 5. Run `tsf model add --name <Name>`; atomic admission performs verification and

@@ -14,11 +14,11 @@ a demonstrated need, or bundle weights in ModernTSF.
    horizons. Treat an architecture-only local model as a different claim.
 2. Check whether the official package can coexist with the main environment. If
    dependencies conflict, keep it in a compatible provider environment and use
-   the same `src/models/_foundation/` boundary; do not relax core dependencies.
+   the same `src/moderntsf/models/_foundation/` boundary; do not relax core dependencies.
 3. Reuse `FoundationModel` and the closest official runtime adapter. Load only
    from an explicit local path with offline mode enabled. Never trigger a network
    request during model construction, verification, or an experiment.
-4. Add one ordinary flat `src/models/<slug>/` entry. Its factory receives verified
+4. Add one ordinary flat `src/moderntsf/models/<slug>/` entry. Its factory receives verified
    local artifacts, declares `inference-only`, and exposes the canonical four-input
    interface. Do not add a provider registry or a foundation category.
 5. Document official behavior, checkpoint facts, cache preparation, preprocessing,

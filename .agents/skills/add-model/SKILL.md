@@ -5,7 +5,7 @@ description: Scaffold and integrate a locally implemented forecasting model afte
 
 # Add a model
 
-Use the flat `src/models/<module>/` layout. Models and methods are peers; do not create family directories.
+Use the flat `src/moderntsf/models/<module>/` layout. Models and methods are peers; do not create family directories.
 
 1. Resolve the public name, lowercase module slug, parameters, input needs, output
    type, paper identity, and official-code facts when available.

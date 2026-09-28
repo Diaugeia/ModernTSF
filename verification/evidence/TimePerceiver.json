@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimePerceiver",
   "status": "passed",
-  "verified_at": "2026-09-04T21:09:40.262870Z",
-  "subject_sha256": "0deba1127884c26a2d7d0899d71db675293f9a8f8fa320922cb8af23716e53b1",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "3ecaca65ae3cba04c7993878cd4d6ea470e4a871b681ee6a6a3c58194e92ded8",
   "paper": {
     "title": "TimePerceiver: An Encoder-Decoder Framework for Generalized Time-Series Forecasting",
     "venue": "NeurIPS 2025",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model TimePerceiver",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_recent_forecasters_c.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_c.py"
   ]
 }

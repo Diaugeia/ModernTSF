@@ -8,12 +8,12 @@ import unittest
 import numpy as np
 import torch
 
-from models.astgcn.model import Model as ASTGCN
-from models.dcrnn.model import Model as DCRNN
-from models.dgcrn.model import Model as DGCRN
-from models.dstagnn.model import Model as DSTAGNN
-from models.gclstm.model import Model as GCLSTM
-from models.gts.model import Model as GTS
+from moderntsf.models.astgcn.model import Model as ASTGCN
+from moderntsf.models.dcrnn.model import Model as DCRNN
+from moderntsf.models.dgcrn.model import Model as DGCRN
+from moderntsf.models.dstagnn.model import Model as DSTAGNN
+from moderntsf.models.gclstm.model import Model as GCLSTM
+from moderntsf.models.gts.model import Model as GTS
 
 
 def raw_marks(batch: int, steps: int, offset: int = 0) -> torch.Tensor:

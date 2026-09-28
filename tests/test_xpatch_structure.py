@@ -8,8 +8,8 @@ import unittest
 import torch
 import torch.nn as nn
 
-from models.xpatch.layers import ExponentialDecomposition
-from models.xpatch.model import Model
+from moderntsf.models.xpatch.layers import ExponentialDecomposition
+from moderntsf.models.xpatch.model import Model
 
 
 class ExponentialDecompositionTests(unittest.TestCase):

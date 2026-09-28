@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "S4",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "e85b9b09f765dbccfbc75227821138ce6731a0016207c78a30642c820a5448b3",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "1ee1362f15cc16e3883715028c520fced6b7d84a63344e8bba99068c154135f2",
   "paper": {
     "title": "Efficiently Modeling Long Sequences with Structured State Spaces",
     "venue": "ICLR 2022",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model S4",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_ssm_sequence_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_ssm_sequence_forecasters.py"
   ]
 }

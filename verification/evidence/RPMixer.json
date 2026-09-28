@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RPMixer",
   "status": "passed",
-  "verified_at": "2026-08-28T22:04:45.099655Z",
-  "subject_sha256": "b569192cb0d1b1a4c7da4a7a91fb6ef4c4c7790dcc9c92b09f2f625a44672746",
+  "verified_at": "2026-09-28T18:37:08.769655Z",
+  "subject_sha256": "3ddb41a446cce13ec39163ef6c7f87fb8094bf151437a571bb1acb225a51ef68",
   "paper": {
     "title": "RPMixer: Shaking Up Time Series Forecasting with Random Projections for Large Spatial-Temporal Data",
     "venue": "KDD 2024",
@@ -129,7 +129,7 @@
     "reference_comparison": {
       "status": "passed",
       "evidence": [
-        "https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/models/rpmixer.py",
+        "https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/rpmixer.py",
         "tests/test_linear_mixer_forecasters.py"
       ],
       "metrics": {
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "platform": "macOS-27.0-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model RPMixer",
-    "/Users/chengao/Downloads/Projects/Diaugeia/Modern_TSF_Project/ModernTSF/.venv/bin/python3 -m pytest -q tests/test_linear_mixer_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_linear_mixer_forecasters.py"
   ]
 }

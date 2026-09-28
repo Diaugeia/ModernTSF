@@ -15,7 +15,7 @@ evidence, and choose the next experiment with native reasoning and tools. A
 rendered task, CLI call, or second Agent is not required to begin this work.
 
 For durable cross-experiment budgets, reuse a supplied round or call
-`benchmark.infra.api.create_round` with the agreed limits. Attach that round to
+`moderntsf.benchmark.infra.api.create_round` with the agreed limits. Attach that round to
 execution so limits are enforced across sweeps. An optional task template can
 supply initial defaults through `prepare_task`; it does not own the research loop.
 Record only material decisions and evidence references in the round. Native plans

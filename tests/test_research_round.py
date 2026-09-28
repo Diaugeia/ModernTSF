@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from benchmark.research_round import (
+from moderntsf.benchmark.research_round import (
     ResearchRoundError,
     add_event,
     claim_run,
@@ -69,7 +69,7 @@ def test_round_lifecycle_preserves_small_structured_memory() -> None:
 
 
 def test_agent_task_start_writes_a_directly_readable_prompt(capsys) -> None:
-    from benchmark.commands.agent_tasks import agent_command
+    from moderntsf.benchmark.commands.agent_tasks import agent_command
 
     code = agent_command(
         [
@@ -96,7 +96,7 @@ def test_agent_task_start_writes_a_directly_readable_prompt(capsys) -> None:
 def test_sweep_association_counts_resolved_runs(monkeypatch) -> None:
     import importlib
 
-    sweep_module = importlib.import_module("benchmark.runner.run_sweep")
+    sweep_module = importlib.import_module("moderntsf.benchmark.runner.run_sweep")
     state = create_round(task="experiment", goal="Count resolved runs", max_runs=1)
     monkeypatch.setenv("MODERNTSF_RESEARCH_ROUND", state["id"])
     loaded = SimpleNamespace(

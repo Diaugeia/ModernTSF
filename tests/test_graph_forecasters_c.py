@@ -4,12 +4,12 @@ import copy
 import unittest
 import numpy as np
 import torch
-from models.mage.model import Model as MAGE
-from models.mgsfformer.model import Model as MGSFformer
-from models.pcdcnet.model import Model as PCDCNet
-from models.stop.model import Model as STOP
-from models.sttn.model import Model as STTN
-from models.stwave.model import Model as STWave, wavelet_disentangle
+from moderntsf.models.mage.model import Model as MAGE
+from moderntsf.models.mgsfformer.model import Model as MGSFformer
+from moderntsf.models.pcdcnet.model import Model as PCDCNet
+from moderntsf.models.stop.model import Model as STOP
+from moderntsf.models.sttn.model import Model as STTN
+from moderntsf.models.stwave.model import Model as STWave, wavelet_disentangle
 
 
 def graph(nodes: int) -> np.ndarray:
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
 class FusionInvarianceTests(unittest.TestCase):
     def test_shared_logit_bias_does_not_change_fusion(self):
-        from models.mgsfformer.model import DynamicFusion
+        from moderntsf.models.mgsfformer.model import DynamicFusion
         torch.manual_seed(47)
         fusion = DynamicFusion(4, 3).double()
         features = [torch.randn(2, 5, 3, 4, dtype=torch.float64) for _ in range(3)]

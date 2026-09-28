@@ -7,14 +7,14 @@ import unittest
 
 import torch
 
-from models._components.soft_tree import SoftDecisionTree, SoftObliviousTree
-from models.catboost_ts.model import Model as CatBoost
-from models.decision_tree_ts.model import Model as DecisionTree
-from models.extra_trees_ts.model import Model as ExtraTrees
-from models.gradient_boosting_ts.model import Model as GradientBoosting
-from models.lightgbm_ts.model import Model as LightGBM
-from models.random_forest_ts.model import Model as RandomForest
-from models.xgboost_ts.model import Model as XGBoost
+from moderntsf.models._components.soft_tree import SoftDecisionTree, SoftObliviousTree
+from moderntsf.models.catboost_ts.model import Model as CatBoost
+from moderntsf.models.decision_tree_ts.model import Model as DecisionTree
+from moderntsf.models.extra_trees_ts.model import Model as ExtraTrees
+from moderntsf.models.gradient_boosting_ts.model import Model as GradientBoosting
+from moderntsf.models.lightgbm_ts.model import Model as LightGBM
+from moderntsf.models.random_forest_ts.model import Model as RandomForest
+from moderntsf.models.xgboost_ts.model import Model as XGBoost
 
 
 CASES = {

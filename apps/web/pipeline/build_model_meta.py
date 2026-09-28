@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build data/model-meta.json from a ModernTSF checkout.
 
-Each model lives at ``<moderntsf>/src/models/<name>/README.md`` with a YAML
+Each model lives at ``<moderntsf>/src/moderntsf/models/<name>/README.md`` with a YAML
 front matter block carrying ``model`` / ``year`` / ``venue`` / ``arxiv`` /
 ``paper_title``. We harvest those into a flat ``{model: {...}}`` map keyed by
 the canonical model name (the ``model:`` field), which matches the model names
@@ -36,7 +36,7 @@ def _field(front_matter: str, key: str) -> str | None:
 
 def parse_models(moderntsf_root: str) -> dict[str, dict]:
     meta: dict[str, dict] = {}
-    pattern = os.path.join(moderntsf_root, "src", "models", "*", "README.md")
+    pattern = os.path.join(moderntsf_root, "src", "moderntsf", "models", "*", "README.md")
     for readme in sorted(glob.glob(pattern)):
         text = open(readme, encoding="utf-8", errors="ignore").read()
         fm = re.match(r"^---\n(.*?)\n---", text, re.S)
@@ -74,7 +74,7 @@ def main() -> int:
 
     meta = parse_models(args.moderntsf)
     if not meta:
-        print(f"No models found under {args.moderntsf}/src/models/*/README.md", file=sys.stderr)
+        print(f"No models found under {args.moderntsf}/src/moderntsf/models/*/README.md", file=sys.stderr)
         return 1
 
     out = os.path.abspath(args.out)
