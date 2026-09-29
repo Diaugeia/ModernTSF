@@ -207,7 +207,7 @@ The UltraTraffic archive (hourly total flow per Caltrans PeMS station, four
 districts, 2003–2023) is converted once into a local parquet store:
 
 ```bash
-python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
+uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
 ```
 
 `ultratraffic_st` (spatiotemporal, with calendar covariates) and

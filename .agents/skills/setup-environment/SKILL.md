@@ -1,21 +1,38 @@
 ---
 name: setup-environment
-description: Install, repair, or verify the ModernTSF Python environment and PyTorch backend. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes.
+description: Install, repair, or verify the ModernTSF Python environment and PyTorch backend, including the optional hub and realtime extras. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes.
 ---
 
 # Set up the environment
 
-Run `bash scripts/detect_hardware.sh`, then:
+Produce a working, reproducible environment and report what was selected.
+
+## Inputs
+
+- The machine's hardware and the features needed (core, `hub` for weights
+  bundles, `realtime` for live data sources, trackers only when requested).
+
+## Steps
 
 ```bash
-UV_TORCH_BACKEND=auto uv sync --python 3.12
+bash scripts/detect_hardware.sh
+UV_TORCH_BACKEND=auto uv sync --python 3.12            # add --extra hub --extra realtime as needed
 uv run tsf env audit --json
 uv run tsf --help
 uv run tsf repo audit
 ```
 
-Use an explicit backend only when auto-detection is wrong or reproducibility requires it. Do not change dependency pins to mask a driver mismatch. Report Python and torch versions, selected backend, accelerator visibility, and lockfile changes.
+Use an explicit backend (`cpu`, `cu121`, ...) only when auto-detection is wrong or
+reproducibility requires it. For a specific experiment, check readiness with
+`uv run tsf env audit --config <run.toml> --json`; the audit reports facts and never
+changes the environment.
 
-For a specific experiment, use `tsf env audit --config <run.toml> --json` to
-check execution readiness. Audit reports facts and failures; it never installs or
-changes the environment. Optional trackers are installed only when requested.
+## Success
+
+- Python and torch versions, the selected backend, accelerator visibility, the
+  installed extras, and any lockfile change are reported.
+
+## Stop and hand off
+
+- Do not change dependency pins to mask a driver mismatch; report it.
+- Environment-caused run failures go to `diagnose-experiment`.

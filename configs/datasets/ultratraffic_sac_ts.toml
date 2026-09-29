@@ -1,5 +1,5 @@
 # UltraTraffic PeMS District 3, hourly total flow per station (2023).
-# Build the local store once: python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip
+# Build the local store once: uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip
 [dataset]
 name = "ultratraffic_ts"
 alias = "ultratraffic_sac_ts"

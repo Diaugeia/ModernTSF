@@ -1,35 +1,50 @@
 ---
 name: run-experiment
-description: Preview and run one or more ModernTSF experiment or sweep configurations. Use for training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
+description: Preview and run one or more ModernTSF experiment or sweep configurations, in the repository or in a standalone project created with tsf init. Use for training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
 ---
 
 # Run experiments
 
-The Agent owns the design and interpretation. Use the library for config
-validation, execution, budgets and recovery; do not reimplement these guarantees
-with ad hoc subprocesses or manually edited manifests. Call Python APIs when
-available; CLI examples below are equivalent optional adapters.
+Execute validated configs and report their artifacts. The Agent owns design and
+interpretation; the library owns validation, execution, budgets, and recovery, so
+do not reimplement them with ad hoc subprocesses or edited manifests. Python APIs
+and the CLI below are equivalent.
 
-Preview before launch:
+## Inputs
 
-```bash
-uv run tsf run configs/runs/<run>.toml --dry-run --json
-uv run tsf run configs/runs/<run>.toml [--round <round-id>]
-```
+- Resolved run configs (from `design-experiment` or the user) and the resource
+  intent: jobs, GPUs, and an optional research round.
+- For a standalone project, scaffold it with `uv run tsf init <dir>`; its run
+  configs extend installed presets through `moderntsf://configs/...` and write to
+  the project's own `work_dirs/`.
 
-Associate a run with a research round when one was supplied; do not create a
-round for a one-off run unless the task asks for persistent research context.
-Use `--jobs N` for independent configs and `--gpus 0,1` only after checking memory and device intent. Keep sweeps in TOML. Before long runs, verify data, output location, seeds, horizons, strategy, and profiling. Report successful/failed configs and `work_dirs/` artifacts; do not silently restart or overwrite costly runs.
+## Steps
 
-Route failed, unstable, or suspect runs to `diagnose-experiment`. Route compatible,
-complete outputs to `analyze-results`; execution itself does not establish a fair
-comparison.
+1. Preview, then launch:
 
-For GIFT-Eval, inspect `uv run tsf dataset gift-download --help`, obtain only the
-requested data, and preview `configs/runs/gift_eval_sweep.toml` before launch.
-Record dataset versions, horizons, model compatibility, compute budget, and the
-missing-series policy; incomplete cells must remain visible during analysis.
+   ```bash
+   uv run tsf run configs/runs/<run>.toml --dry-run --json
+   uv run tsf run configs/runs/<run>.toml [--round <round-id>] [--jobs N] [--gpus 0,1]
+   ```
 
-For optional budgets, GPU queueing, tracking, cancellation, or interrupted-run
-recovery, read [execution controls](references/execution.md). Do not load advanced
-controls for an ordinary one-off experiment.
+   Attach a round only when one was supplied or the task needs persistent
+   research context. Use `--gpus` only after checking memory and device intent.
+2. Before long runs, verify data, output location, seeds, horizons, evaluation
+   strategy, and profiling. Keep sweeps in TOML.
+3. For GIFT-Eval, read `uv run tsf dataset gift-download --help`, fetch only the
+   requested data, and preview `configs/runs/gift_eval_sweep.toml`; record dataset
+   versions, horizons, model compatibility, budget, and the missing-series policy.
+4. For budgets, GPU queueing, tracking, cancellation, or interrupted-run recovery,
+   read [execution controls](references/execution.md); ordinary one-off runs do
+   not need them.
+
+## Success
+
+- Every config reported as succeeded or failed, with its `work_dirs/` artifacts.
+
+## Stop and hand off
+
+- Never silently restart or overwrite a costly run.
+- Failed, unstable, or suspect runs go to `diagnose-experiment`; complete,
+  compatible outputs go to `analyze-results`. Execution alone does not establish
+  a fair comparison.

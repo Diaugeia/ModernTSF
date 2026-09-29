@@ -17,7 +17,7 @@ Layout written under ``--out`` (default ``dataset/ultratraffic``)::
 The archive's ``PEMS_NC`` directory is byte-identical to ``PEMS_SAC`` (both are
 Caltrans District 3); it is recorded as a duplicate and skipped.
 
-    python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip
+    uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip
 """
 
 from __future__ import annotations
@@ -86,7 +86,7 @@ def convert(archive: Path, out: Path, regions: list[str] | None = None) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(prog="tsf dataset convert-ultratraffic", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--archive", type=Path, required=True, help="TrafficCL.zip or UltraTraffic_CL.zip")
     parser.add_argument("--out", type=Path, default=Path("dataset") / "ultratraffic")
     parser.add_argument("--regions", nargs="*", help="subset of " + ", ".join(REGIONS))

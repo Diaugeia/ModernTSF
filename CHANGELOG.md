@@ -59,6 +59,15 @@ real-time evaluation.
   hand-written `contract.schema.json` and the duplicate aggregator are removed.
 - `build_model_meta.py` reads the current model-card fields.
 
+- Agent skills: 24 (new `forecast-realtime-round`, `publish-weights`); every
+  skill now follows one structure (Inputs, Steps, Success, Stop and hand off),
+  covers real-time rounds, hub weights, standalone projects, and UltraTraffic, and
+  uses public commands only. New public commands `tsf repo cards` and
+  `tsf dataset convert-ultratraffic` replace internal script entry points.
+- Component policy: paper-neutral building blocks with a standalone contract may
+  be extracted even with a single consumer, so automated research can recombine
+  them; behavior-preserving extraction is checked against pre-change fixtures.
+
 ### Fixed
 
 - `tsf model add` compared a set of declared components with a tuple of imported

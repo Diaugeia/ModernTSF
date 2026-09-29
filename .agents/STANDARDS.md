@@ -17,21 +17,20 @@ correctly shaped output, and pass the unified verification contract.
 
 ## Components
 
-Reusable building blocks live in `src/moderntsf/models/_components/`; they never classify
-models. Extract code only when all consumers share mathematical behavior,
-shapes, normalization, masking, residual order, initialization, and output
-structure. Similar names are not evidence of equivalence.
+Reusable building blocks live in `src/moderntsf/models/_components/`; they never
+classify models. Every new model maps its defining operations to
+`reuse-existing`, `extract-new`, or `model-local` first. Reuse a component only
+when mathematics, shapes, normalization, masking, residual order, initialization,
+and outputs match; similar names are not evidence. Extract a new one when two or
+more consumers match exactly, or when it is a paper-neutral building block with a
+standalone contract (transform, attention variant, router, normalization) that
+automated research can recombine; paper-specific glue stays local.
 
-Every new model maps its defining operations to `reuse-existing`, `extract-new`,
-or `model-local` before implementation. Reuse a cataloged component whenever its
-semantic and runtime contract matches. Only extract a new component when no
-existing contract fits and multiple real consumers remain.
-
-Every extraction needs focused unit tests and affected-model contract tests.
-Material variants remain local and explicitly named. Named model packages must
-not import implementation code from peer models; proven shared code moves into
-a cataloged component with a generated README card. Avoid catch-all utility
-modules and flag-driven base classes that conceal paper-specific behavior.
+Each extraction needs unit tests and affected-model contract tests; extraction
+from an existing model preserves state-dict keys, outputs, and gradients against
+fixtures captured beforehand. Material variants stay local and named. Models never
+import peer-model code; shared code moves into a component with a generated card.
+Avoid catch-all utilities and flag-driven base classes that hide paper behavior.
 
 ## Model cards and sources
 Each model `README.md` is the descriptive source of truth. Its front matter is a

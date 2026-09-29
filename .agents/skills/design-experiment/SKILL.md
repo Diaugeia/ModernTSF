@@ -5,23 +5,40 @@ description: Design a reproducible ModernTSF experiment before execution. Use fo
 
 # Design an experiment
 
-Design directly in the current Agent using native reasoning, file editing and
-presentation tools. No task renderer or design command is required. Use the
-library loader/preflight for scientific contracts; CLI inspection is optional.
+Turn a research question into validated run configs and a design table, without
+spending compute. Design in the current Agent with native tools; no task renderer
+or design command is required.
 
-State the research question and falsifiable comparison first. Resolve the target task mode, datasets and splits, representative horizons, primary and secondary metrics, strong baselines, controlled variables, seeds, resource budget, and failure or stopping criteria. Separate required comparisons from optional scale-up runs.
+## Inputs
 
-Encode shared settings through config inheritance and use `[sweep]` only for intended experimental axes. Keep ablations one-factor-at-a-time unless interactions are the question. Match preprocessing, training budget, evaluation strategy, and metric direction across compared models; disclose unavoidable capability differences.
+- The research question and any fixed constraints (datasets, models, budget).
 
-Prefer a short run file that extends `base.toml`, one dataset preset, and one model
-preset. Override only the scientific variables under `experiment`, `task`,
-`training`, `model.params`, and `evaluation`; the loader rejects unknown structural
-keys and each registry entry validates its own params.
+## Steps
 
-Verify the resolved matrix, run count, and parameter variation through the config loader and preflight API; `uv run tsf inspect --config <run.toml>` is one optional inspection adapter. Deliver the config paths plus a compact design table covering hypothesis, control, treatment, datasets, horizons, metrics, seeds, estimated runs, and acceptance criteria. Do not launch costly runs unless requested.
+1. State the question and a falsifiable comparison first.
+2. Resolve task mode, datasets and splits, representative horizons, primary and
+   secondary metrics, strong baselines, controlled variables, seeds, resource
+   budget, and failure or stopping criteria. Separate required comparisons from
+   optional scale-up runs.
+3. Encode shared settings by inheritance: a short run file that extends
+   `base.toml`, one dataset preset, and one model preset (or `moderntsf://configs/...`
+   in a standalone project). Override only scientific variables under
+   `experiment`, `task`, `training`, `model.params`, and `evaluation`; use
+   `[sweep]` only for intended axes. The loader rejects unknown structural keys.
+4. Keep ablations one factor at a time unless interactions are the question.
+   Match preprocessing, training budget, evaluation strategy, and metric direction
+   across models; disclose unavoidable capability differences.
+5. Verify the resolved matrix, run count, and parameter variation through the
+   config loader and preflight API (`uv run tsf inspect --config <run.toml>` is
+   one optional adapter).
 
-Once execution is authorized, hand the resolved configs and resource budget to
-`run-experiment`; do not duplicate execution instructions here.
+## Success
 
-When the objective is to match a published table rather than test a new question,
-use `reproduce-paper-results` for protocol alignment and claim handling.
+- Config paths plus a compact table: hypothesis, control, treatment, datasets,
+  horizons, metrics, seeds, estimated runs, and acceptance criteria.
+
+## Stop and hand off
+
+- Do not launch costly runs unless requested; hand configs and budget to
+  `run-experiment` once execution is authorized.
+- Matching a published table belongs to `reproduce-paper-results`.

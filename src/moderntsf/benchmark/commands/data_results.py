@@ -27,7 +27,7 @@ def dataset_command(args: list[str]) -> int:
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
             "usage: tsf dataset {add,list,show,search,audit,prepare,inspect,plot,"
-            "convert-traffic,gift-download} [args...]"
+            "convert-traffic,convert-ultratraffic,gift-download} [args...]"
         )
         return 0
     action, rest = args[0], args[1:]
@@ -101,6 +101,10 @@ def dataset_command(args: list[str]) -> int:
         "convert-traffic": "convert_traffic.py",
         "gift-download": "gift_eval_download.py",
     }
+    if action == "convert-ultratraffic":
+        from moderntsf.data.prepare.ultratraffic import main as convert_ultratraffic
+
+        return convert_ultratraffic(rest)
     script = scripts.get(action)
     if script is None:
         print(f"unknown dataset action: {action!r}", file=sys.stderr)

@@ -21,7 +21,7 @@ def load_panel(root: str, region: str, years: list[int], variant: str, stations:
         if not os.path.isfile(path):
             raise FileNotFoundError(
                 f"{path} is missing; build the store with "
-                "`python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip`")
+                "`uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip`")
         frames.append(pd.read_parquet(path))
     if stations == "intersection":
         columns = sorted(set.intersection(*(set(f.columns) for f in frames)))

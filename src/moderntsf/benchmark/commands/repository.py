@@ -8,18 +8,37 @@ import sys
 from moderntsf.benchmark.command_runtime import passthrough
 
 
+def regenerate_cards(args: list[str]) -> int:
+    """Rewrite every generated card and index from the catalogs (checkout only)."""
+    if args:
+        print("tsf repo cards takes no arguments", file=sys.stderr)
+        return 2
+    from moderntsf.benchmark.resource_cards import write_resource_cards
+    from moderntsf.tsf_core.paths import require_checkout
+
+    try:
+        root = require_checkout("tsf repo cards")
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    count = write_resource_cards(root)
+    print(f"Generated {count} component and dataset cards")
+    return passthrough("check_docs.py", ["--write"])
+
+
 def repository_command(args: list[str]) -> int:
     """Audit static repository contracts and optionally execute all model contracts."""
+    usage = "usage: tsf repo {audit,doctor,cards} [--forward | --backward | --strict]"
     if not args or args[0] in {"-h", "--help", "help"}:
-        print("usage: tsf repo {audit,doctor} [--forward | --backward | --strict]")
+        print(usage)
+        print("  cards  regenerate component/dataset cards and the model documentation index")
         return 0
     action, rest = args[0], args[1:]
-    if action not in {"audit", "doctor"}:
-        print(
-            "usage: tsf repo {audit,doctor} [--forward | --backward | --strict]",
-            file=sys.stderr,
-        )
+    if action not in {"audit", "doctor", "cards"}:
+        print(usage, file=sys.stderr)
         return 2
+    if action == "cards":
+        return regenerate_cards(rest)
     if action == "audit" and rest:
         print("tsf repo audit takes no arguments", file=sys.stderr)
         return 2

@@ -24,7 +24,7 @@ def load(track: TrackSpec) -> pd.DataFrame:
     available = sorted(int(p.stem) for p in (root / region / "static").glob("[0-9][0-9][0-9][0-9].parquet"))
     if not available:
         raise FileNotFoundError(f"no UltraTraffic store for {region} under {root}; run "
-                                "`python -m moderntsf.data.prepare.ultratraffic --archive TrafficCL.zip`")
+                                "`uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip`")
     first = int(track.bootstrap.get("first_year", available[0]))
     years = [y for y in available if y >= first]
     return load_panel(str(root), region, years, "static", "last")

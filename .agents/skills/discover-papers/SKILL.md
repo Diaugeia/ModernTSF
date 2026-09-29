@@ -5,42 +5,41 @@ description: Discover, deduplicate, rank, and optionally dispatch review tasks f
 
 # Discover forecasting papers
 
-This skill is a research-intake harness. It finds candidates and creates bounded,
-reviewable work items; it does not treat search relevance as permission or evidence
-to add an implementation.
+Find new forecasting methods, deduplicate them against the catalog, and return a
+ranked, source-linked queue. Search relevance is never permission or evidence to
+add an implementation. Read [references/intake.md](references/intake.md) before
+scanning or dispatching.
 
-Read [references/intake.md](references/intake.md) before scanning or dispatching.
+## Inputs
 
-## Scan
+- A time window and optional focus (task, architecture, data regime).
+- The deduplication baseline: `uv run tsf model list --json` (paper URLs, titles,
+  public names from the model cards).
 
-1. Run `uv run tsf model list --json` and use model-card paper URLs, titles, and
-   public names as the deduplication baseline.
-2. Search both arXiv and Hugging Face Papers. Cover the query lattice in the
-   reference instead of relying on one broad phrase. Prefer source metadata and
-   primary paper/project pages over search snippets.
-3. Normalize arXiv identifiers and titles, collapse cross-source duplicates, and
-   reject papers that do not actually forecast future time-series values.
-4. Rank candidates by task relevance, novelty relative to the flat catalog,
-   authoritative code availability, license clarity, recency, and implementability.
-5. Return a concise candidate brief for each retained paper. Clearly distinguish
-   facts from inference; discovery does not claim implementation or verification.
+## Steps
 
-## Dispatch
+1. Search both arXiv and Hugging Face Papers across the query lattice in the
+   reference rather than one broad phrase; prefer source metadata and primary
+   paper or project pages over snippets.
+2. Normalize arXiv identifiers and titles, collapse cross-source duplicates, and
+   reject papers that do not forecast future time-series values (evaluation-only,
+   explanation, or out-of-scope tasks such as irregular series).
+3. Rank by task relevance, novelty against the flat catalog, authoritative code
+   availability, recency, and implementability. A missing official license does
+   not disqualify a paper; record it so the implementation is an independent rewrite.
+4. Write one brief per retained paper, separating verified facts from inference.
 
-Dispatch only when the user or the recurring-task prompt explicitly requests it.
-Create at most three independent tasks in one run, one paper per task. Include the
-candidate brief, primary URLs, deduplication result, expected deliverable, and the
-instruction to use `add-model` only after paper, source, license, and runtime inputs
-are resolved. Do not ask a dispatched task to merge, publish, or modify external
-systems.
+## Success
 
-Without dispatch authorization, report the ranked queue in the current task. If no
-candidate clears the threshold, report that the scan completed with no dispatch;
-unchanged state is a successful monitoring result.
+- A ranked queue with primary URLs, deduplication results, and code facts; an
+  empty queue with the scan recorded is a successful monitoring result.
 
-## Integration boundary
+## Stop and hand off
 
-The downstream task owns implementation. It must preserve the flat
-`src/moderntsf/models/<lowercase_module_slug>/` layout, use shared components only when
-semantics match, and pass the repository's provenance and contract gates. Search
-results alone never establish a local implementation or verification result.
+- Dispatch only when the user or recurring prompt explicitly asks: at most three
+  independent tasks per run, one paper each, carrying the brief, URLs,
+  deduplication result, deliverable, and the instruction to use `add-model` after
+  paper, source, and runtime inputs are resolved. Dispatched tasks never merge,
+  publish, or modify external systems.
+- Implementation belongs to the downstream `paper-to-model` task or
+  `expand-model-catalog`; search results never establish a local implementation.

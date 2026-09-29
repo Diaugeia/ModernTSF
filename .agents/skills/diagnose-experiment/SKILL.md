@@ -5,25 +5,40 @@ description: Diagnose a failed, unstable, or invalid ModernTSF experiment. Use f
 
 # Diagnose an experiment
 
-The Agent reads evidence and determines the root cause with native inspection
-and debugging tools. Scheduler labels such as OOM are signals, not a diagnosis.
-Use library state/audit/recovery APIs where their guarantees matter; CLI examples
-are optional adapters and do not replace investigation.
+Find the earliest supported root cause of a bad run. Scheduler labels such as OOM
+are signals, not a diagnosis; use library state, audit, and recovery APIs where
+their guarantees matter.
 
-Preserve the failing config, command, environment, logs, and artifacts before changing anything. Reproduce with the smallest equivalent config and classify the failure as environment, data, shape/contract, model, optimization, resource, evaluation, or output bookkeeping.
+## Inputs
 
-When the run belongs to a research round, read its complete log and append the
-supported failure classification or decision there. Do not paste the full log
-into the event stream or create a separate diagnostic ledger.
+- The failing config, command, environment, logs, and artifacts; preserve them
+  all before changing anything.
 
-For managed runs, inspect `tsf run status <directory> --json` and its attempt log
-first. Use `tsf env audit --config <run.toml> --json` for environment failures.
-A supported continuation uses `tsf run resume <directory>` after checking that
-configuration, code, and data still match; scientific changes require a new run.
+## Steps
 
-Inspect the resolved matrix with `uv run tsf inspect`, compare the model's smoke case, and verify dataset splits, tensor shapes, loss/output pairing, metric direction, seeds, device placement, checkpoints, and finite values. For OOM or instability, change one resource or optimization variable at a time; do not silently lower the scientific workload and call it equivalent.
+1. For managed runs, read `uv run tsf run status <directory> --json` and its attempt
+   log first; for environment failures run `uv run tsf env audit --config <run.toml> --json`.
+2. Reproduce with the smallest equivalent config and classify the failure:
+   environment, data, shape/contract, model, optimization, resource, evaluation,
+   or output bookkeeping.
+3. Inspect the resolved matrix (`uv run tsf inspect --config <run.toml>`), the
+   model's smoke case, dataset splits, tensor shapes, loss/output pairing, metric
+   direction, seeds, device placement, checkpoints, and finite values.
+4. For OOM or instability, change one resource or optimization variable at a time;
+   never lower the scientific workload and call it equivalent.
+5. When the run belongs to a research round, append the supported classification
+   or decision to it; do not paste the full log or keep a separate ledger.
 
-Report the earliest supported root cause, minimal reproduction, evidence, affected runs, and whether existing results are invalid. Apply a fix only when requested, then rerun the minimal reproduction and the affected contract or smoke check. Never overwrite costly artifacts or restart a broad sweep without authorization.
+## Success
 
-Return repaired runs to `run-experiment` only for the affected scope. Send valid,
-comparable completed outputs to `analyze-results`.
+- Root cause, minimal reproduction, evidence, affected runs, and whether existing
+  results are invalid.
+
+## Stop and hand off
+
+- Apply a fix only when requested, then rerun the minimal reproduction and the
+  affected contract or smoke check.
+- A supported continuation uses `uv run tsf run resume <directory>` after checking
+  config, code, and data still match; scientific changes need a new run.
+- Never overwrite costly artifacts or restart a broad sweep without authorization.
+  Return repaired runs to `run-experiment`; valid outputs to `analyze-results`.
