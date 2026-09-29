@@ -1,7 +1,7 @@
 """Unified access to published ModernTSF assets on the Hugging Face Hub.
 
 Every remote asset — pretrained foundation weights, trained checkpoints,
-datasets — is addressed by one pinned URI form::
+benchmark and real-time datasets — is addressed by one pinned URI form::
 
     hf://[datasets/|spaces/]<owner>/<repo>@<revision>/<path>
 
@@ -11,22 +11,28 @@ checkpoints need ``modern-tsf[hub]``.
 
 from moderntsf.hub.bundle import bundle_path, find_run, load_manifest, load_state_dict, pack
 from moderntsf.hub.fetch import default_cache_root, fetch, resolve_url
-from moderntsf.hub.publish import DEFAULT_WEIGHTS_REPO, list_bundles, push
+from moderntsf.hub.datasets import DEFAULT_STATIC_REPO, available_presets, fetch_preset, publish_presets
+from moderntsf.hub.publish import DEFAULT_WEIGHTS_REPO, init_repositories, list_bundles, push
 from moderntsf.hub.uri import HubURI, is_hub_uri, parse
 
 __all__ = [
+    "DEFAULT_STATIC_REPO",
     "DEFAULT_WEIGHTS_REPO",
-    "HubURI",
+    "available_presets",
     "bundle_path",
     "default_cache_root",
     "fetch",
+    "fetch_preset",
     "find_run",
+    "HubURI",
+    "init_repositories",
     "is_hub_uri",
     "list_bundles",
     "load_manifest",
     "load_state_dict",
     "pack",
     "parse",
+    "publish_presets",
     "push",
     "resolve_url",
 ]

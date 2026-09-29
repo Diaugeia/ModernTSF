@@ -1,6 +1,6 @@
 ---
 name: prepare-dataset
-description: Convert or normalize existing time-series files into ModernTSF-ready data. Use for windowing CSV data, producing NPZ splits, converting traffic bundles, building the UltraTraffic PeMS store, or downloading GIFT-Eval data; not for registering a new loader.
+description: Fetch published preset data or convert existing time-series files into ModernTSF-ready data. Use for downloading pinned benchmark files, windowing CSV data, producing NPZ splits, converting traffic bundles, building the UltraTraffic PeMS store, or downloading GIFT-Eval data; not for registering a new loader.
 ---
 
 # Prepare a dataset
@@ -15,8 +15,15 @@ source.
 
 ## Steps
 
-1. Inspect the source layout and the destination before writing.
-2. Choose the converter:
+1. If the preset is published, download it instead of converting anything:
+
+   ```bash
+   uv run tsf dataset download --list
+   uv run tsf dataset download <preset>      # verified against configs/hub/datasets.json
+   ```
+
+2. Otherwise inspect the source layout and the destination before writing, then
+   choose the converter:
 
    ```bash
    # window a CSV (use --input-dir for pre-split CSVs)
@@ -33,6 +40,8 @@ source.
    file equals the static one and a duplicated region is skipped) and records row,
    station, and missing-value counts plus source hashes in `manifest.json`.
 3. Verify every split, shape, window, and the train-only scaling policy.
+4. Publishing local files (`uv run tsf dataset publish <preset>`) is a maintainer
+   action that needs explicit authorization and redistributable source terms.
 
 ## Success
 

@@ -4,9 +4,9 @@
 
 **Open, reproducible time-series forecasting leaderboard**
 
-[![Live](https://img.shields.io/badge/live-tseval.diaugeia.ai-8c6f24.svg)](https://tseval.diaugeia.ai)
-[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/TSEval-yellow.svg)](https://huggingface.co/spaces/Diaugeia/TSEval)
-[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-TSEval--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/TSEval-Static)
+[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
+[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/ModernTSF-yellow.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
+[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-ModernTSF--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static)
 [![Next.js](https://img.shields.io/badge/Next.js-static%20export-black.svg?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -52,9 +52,9 @@ one that tells you when the problem is genuinely hard.
 
 ## 🔗 Live & data
 
-- 🌐 **Site:** [tseval.diaugeia.ai](https://tseval.diaugeia.ai) · mirror: [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/TSEval)
-- 📦 **Datasets** (on Hugging Face): [`Diaugeia/TSEval-Static`](https://huggingface.co/datasets/Diaugeia/TSEval-Static) — benchmark sets (ETT, electricity, solar, traffic, weather, …)
-- 🧠 **Weights (optional):** [`Diaugeia/TSEval-Weights`](https://huggingface.co/datasets/Diaugeia/TSEval-Weights) — a public, *optional* reproducibility archive of trained checkpoints. A submission carries no weights and never needs a `.pth` to rank.
+- 🌐 **Site:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/ModernTSF) (auto-deployed on every push to `main`)
+- 📦 **Datasets** (on Hugging Face): [`Diaugeia/ModernTSF-Static`](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static) — benchmark sets (ETT, electricity, solar, traffic, weather, …)
+- 🧠 **Weights (optional):** [`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights) — a public, *optional* reproducibility archive of trained checkpoints. A submission carries no weights and never needs a `.pth` to rank.
 
 ---
 
@@ -100,12 +100,11 @@ different `seed` — the row reports the **mean**, `n_runs`, and `<metric>_std`.
 
 ```
 push main
-  └─ .github/workflows/deploy.yml
+  └─ .github/workflows/web-deploy.yml
        ├ python3 pipeline/build_leaderboard.py   validate → aggregate submissions/ → data/leaderboard.json
        ├ bun run build                           Next static export → out/
-       └ deploy the SAME out/ to two static targets:
-            ├─► Cloudflare Pages           →  tseval.diaugeia.ai   (primary)
-            └─► Hugging Face Space (static) →  TSEval space         (mirror)
+       └ deploy out/ to the Hugging Face Space (static) → Diaugeia/ModernTSF
+         (legacy Space Diaugeia/TSEval serves a redirect to it)
 ```
 
 - `pipeline/validate.py` — TSF-Core contract schema + ModernTSF-binding check.

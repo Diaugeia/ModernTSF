@@ -4,8 +4,11 @@
     tsf hub push <run_id|record.json> [--repo OWNER/NAME] [--public] [--create]
     tsf hub list [--repo OWNER/NAME] [--revision REV] [--dataset D] [--model M]
     tsf hub pull <hf://...bundle-dir> [--json]
+    tsf hub init [--owner OWNER] [--private] [--migrate-legacy] [--dry-run]
 
-Publishing is always explicit: ``push`` uploads only the run it is given.
+Publishing is always explicit: ``push`` uploads only the run it is given, and
+``init`` creates the published repositories (static data, real-time panels,
+weights, leaderboard Space) with their cards.
 """
 
 from __future__ import annotations
@@ -48,6 +51,12 @@ def hub_command(argv: list[str]) -> int:
     pull = sub.add_parser("pull", help="download and verify one bundle")
     pull.add_argument("uri")
     pull.add_argument("--json", action="store_true")
+    init = sub.add_parser("init", help="create the published repositories and their cards")
+    init.add_argument("--owner", default="Diaugeia")
+    init.add_argument("--private", action="store_true")
+    init.add_argument("--migrate-legacy", action="store_true",
+                      help="rename existing TSEval repositories instead of creating new ones")
+    init.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
     try:
@@ -62,6 +71,11 @@ def hub_command(argv: list[str]) -> int:
                 uri = hub.push(Path(tmp), manifest["path"], args.repo,
                                private=not args.public, create=args.create)
             print(f"Published: {uri}")
+            return 0
+        if args.action == "init":
+            for name in hub.init_repositories(args.owner, private=args.private,
+                                              migrate=args.migrate_legacy, dry_run=args.dry_run):
+                print(("would " if args.dry_run else "ready ") + name)
             return 0
         if args.action == "list":
             for path in hub.list_bundles(args.repo, args.revision, args.dataset, args.model):

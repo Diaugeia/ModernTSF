@@ -1,0 +1,26 @@
+name: hub-check
+
+# Weekly: confirm every file pinned in configs/hub/datasets.json still resolves
+# on the Hugging Face Hub with its recorded size (no download).
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths: ["configs/hub/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check pinned dataset files
+        run: |
+          pip install --quiet "pydantic==2.12.5"
+          PYTHONPATH=src python -m moderntsf.benchmark.cli dataset download --check

@@ -42,6 +42,41 @@ The revision is mandatory, so a URI always names the same bytes. Model
 (default `~/.cache/moderntsf`). `HF_TOKEN` is sent only to the Hugging Face
 endpoint, so private repositories work; `HF_ENDPOINT` overrides the endpoint.
 
+## Published repositories
+
+| Repository | Type | Contents |
+| --- | --- | --- |
+| `Diaugeia/ModernTSF-Static` | dataset | files behind the dataset presets, laid out as `dataset/` |
+| `Diaugeia/ModernTSF-RealTime` | dataset | append-only real-time track panels, one commit per release |
+| `Diaugeia/ModernTSF-Weights` | model | trained weights bundles |
+| `Diaugeia/ModernTSF` | space | the static leaderboard site |
+
+Maintainers create them, with their cards, through
+`uv run tsf hub init [--migrate-legacy]`; `--migrate-legacy` renames the former
+TSEval repositories so their old addresses redirect.
+
+## Benchmark data
+
+`configs/hub/datasets.json` pins every published data file by commit and
+SHA-256. Presets download into the local `dataset/` root, verified:
+
+```bash
+uv run tsf dataset download --list          # presets with published files
+uv run tsf dataset download etth1 weather   # or --all
+uv run tsf dataset download --check         # every pinned file still resolves
+```
+
+UltraTraffic presets fetch only their region, variant, and years. Maintainers
+publish local files, which updates the manifest to commit with the change:
+
+```bash
+uv run tsf dataset publish etth1 etth2 [--create]
+uv run tsf dataset publish --path ultratraffic      # a whole store, every year
+```
+
+Each dataset keeps its source license; publish only data whose terms allow
+redistribution.
+
 ## Weights bundles
 
 A finished run is published as one bundle directory at

@@ -1,6 +1,6 @@
 # Submitting data to the ModernTSF Leaderboard
 
-The leaderboard at **[tseval.diaugeia.ai](https://tseval.diaugeia.ai)** is an open board
+The leaderboard at **[the ModernTSF Space](https://huggingface.co/spaces/Diaugeia/ModernTSF)** is an open board
 you can check: every row is rebuilt from the submission evidence under
 [`submissions/`](submissions/) in this repo — the single source of truth. To add or
 update results you commit submission files and push — CI validates, aggregates, and
@@ -128,5 +128,5 @@ Ranking is per `(track, dataset, horizon)` by **MSE** (lower is better). Weights
 **not** part of a submission and are never required to get on the board — a row earns
 its place with its result, trajectory, and report. If you *want* bit-level
 reproducibility, you may optionally archive your trained weights in the public
-[`Diaugeia/TSEval-Weights`](https://huggingface.co/datasets/Diaugeia/TSEval-Weights)
+[`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights)
 dataset, but that is an invitation, not a gate.

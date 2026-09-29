@@ -17,6 +17,17 @@ real-time evaluation.
   SHA-256 verified downloads, and safetensors weights bundles
   (`<dataset>/<model>/<run_id>/`) for Hugging Face model repositories.
 - `ModelArtifact` accepts pinned `hf://` URIs.
+- `tsf dataset download|publish` and `configs/hub/datasets.json`: benchmark data
+  files pinned by commit and SHA-256 in `Diaugeia/ModernTSF-Static`; UltraTraffic
+  presets fetch only their region, variant, and years.
+- `tsf hub init [--migrate-legacy]` creates the published repositories (static
+  data, real-time panels, weights, leaderboard Space) and their cards, renaming
+  the former TSEval repositories so old addresses redirect;
+  `tsf realtime publish` mirrors an existing track store.
+- Workflows: `web-deploy` deploys the site to the `Diaugeia/ModernTSF` Space on
+  every push to the deploy branch (Cloudflare optional); `release` builds, creates
+  the GitHub release, and publishes to PyPI through Trusted Publishing on `v*`
+  tags; `hub-check` verifies pinned data files weekly.
 - `tsf init` scaffolds a standalone project; run configs can extend installed
   catalog presets through `moderntsf://` paths.
 - `hub` optional dependency group (`huggingface_hub`, `safetensors`).

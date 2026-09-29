@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 import re
 import sys
 
@@ -27,7 +28,7 @@ def dataset_command(args: list[str]) -> int:
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
             "usage: tsf dataset {add,list,show,search,audit,prepare,inspect,plot,"
-            "convert-traffic,convert-ultratraffic,gift-download} [args...]"
+            "convert-traffic,convert-ultratraffic,download,publish,gift-download} [args...]"
         )
         return 0
     action, rest = args[0], args[1:]
@@ -101,6 +102,8 @@ def dataset_command(args: list[str]) -> int:
         "convert-traffic": "convert_traffic.py",
         "gift-download": "gift_eval_download.py",
     }
+    if action in {"download", "publish"}:
+        return _hub_dataset_command(action, rest)
     if action == "convert-ultratraffic":
         from moderntsf.data.prepare.ultratraffic import main as convert_ultratraffic
 
@@ -110,6 +113,63 @@ def dataset_command(args: list[str]) -> int:
         print(f"unknown dataset action: {action!r}", file=sys.stderr)
         return 2
     return passthrough(script, rest)
+
+
+def _hub_dataset_command(action: str, rest: list[str]) -> int:
+    """Download published preset files, or publish local ones (maintainers)."""
+    from moderntsf import hub
+
+    parser = argparse.ArgumentParser(prog=f"tsf dataset {action}")
+    parser.add_argument("presets", nargs="*")
+    parser.add_argument("--root", type=Path, default=Path("dataset"),
+                        help="local dataset root (default: ./dataset)")
+    if action == "download":
+        parser.add_argument("--all", action="store_true", help="every published preset")
+        parser.add_argument("--list", action="store_true", help="list published presets")
+        parser.add_argument("--check", action="store_true",
+                            help="check that every pinned file still resolves (no download)")
+    else:
+        parser.add_argument("--repo", default=hub.DEFAULT_STATIC_REPO)
+        parser.add_argument("--create", action="store_true", help="create the repo if missing")
+        parser.add_argument("--private", action="store_true", help="create the repo as private")
+        parser.add_argument("--path", action="append", default=[], dest="paths",
+                            help="also publish a whole subtree of the root (repeatable)")
+    parsed = parser.parse_args(rest)
+    try:
+        if action == "publish":
+            if not parsed.presets and not parsed.paths:
+                parser.error("name presets or --path subtrees to publish")
+            revisions = hub.publish_presets(parsed.presets, parsed.root, parsed.repo,
+                                            paths=tuple(parsed.paths), create=parsed.create, private=parsed.private,
+                                            root=ROOT)
+            for preset, revision in revisions.items():
+                print(f"{preset}\t{revision}")
+            print("Updated configs/hub/datasets.json; commit it with the release.")
+            return 0
+        if parsed.check:
+            from moderntsf.hub.datasets import check_manifest, load_manifest
+
+            issues = check_manifest(ROOT)
+            for issue in issues:
+                print(f"ERROR: {issue}")
+            total = len(load_manifest(ROOT)["files"])
+            print(f"Pinned dataset files: {total - len(issues)}/{total} reachable")
+            return 1 if issues else 0
+        published = hub.available_presets(ROOT)
+        if parsed.list:
+            for preset in published:
+                print(preset)
+            return 0
+        presets = published if parsed.all else parsed.presets
+        if not presets:
+            parser.error("name presets, or pass --all or --list")
+        for preset in presets:
+            files = hub.fetch_preset(preset, parsed.root, ROOT)
+            print(f"{preset}\t{len(files)} file(s) verified under {parsed.root}")
+        return 0
+    except (FileNotFoundError, RuntimeError, ValueError, OSError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
 
 def result_command(args: list[str]) -> int:

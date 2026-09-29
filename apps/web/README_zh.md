@@ -4,9 +4,9 @@
 
 **开放、可复现的时间序列预测榜单**
 
-[![Live](https://img.shields.io/badge/live-tseval.diaugeia.ai-8c6f24.svg)](https://tseval.diaugeia.ai)
-[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/TSEval-yellow.svg)](https://huggingface.co/spaces/Diaugeia/TSEval)
-[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-TSEval--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/TSEval-Static)
+[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
+[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/ModernTSF-yellow.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
+[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-ModernTSF--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static)
 [![Next.js](https://img.shields.io/badge/Next.js-static%20export-black.svg?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -46,9 +46,9 @@ ModernTSF Leaderboard 是 [ModernTSF](https://github.com/Diaugeia/ModernTSF) 的
 
 ## 🔗 在线与数据
 
-- 🌐 **网站:** [tseval.diaugeia.ai](https://tseval.diaugeia.ai) · 镜像:[Hugging Face Space](https://huggingface.co/spaces/Diaugeia/TSEval)
-- 📦 **数据集**(在 Hugging Face):[`Diaugeia/TSEval-Static`](https://huggingface.co/datasets/Diaugeia/TSEval-Static) —— 基准数据集(ETT、electricity、solar、traffic、weather…)
-- 🧠 **权重(可选):** [`Diaugeia/TSEval-Weights`](https://huggingface.co/datasets/Diaugeia/TSEval-Weights) —— 一个公开、*可选*的可复现归档(训练好的 checkpoint)。提交本身不含权重,上榜从不需要 `.pth`。
+- 🌐 **网站:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/ModernTSF)(每次推送到 `main` 自动部署)
+- 📦 **数据集**(在 Hugging Face):[`Diaugeia/ModernTSF-Static`](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static) —— 基准数据集(ETT、electricity、solar、traffic、weather…)
+- 🧠 **权重(可选):** [`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights) —— 一个公开、*可选*的可复现归档(训练好的 checkpoint)。提交本身不含权重,上榜从不需要 `.pth`。
 
 ---
 
@@ -93,12 +93,12 @@ git add submissions/…/submission.json && git push  # CI:校验 → 聚合 → 
 
 ```
 push main
-  └─ .github/workflows/deploy.yml
+  └─ .github/workflows/web-deploy.yml
        ├ python3 pipeline/build_leaderboard.py   校验 → 聚合 submissions/ → data/leaderboard.json
        ├ bun run build                           Next 静态导出 → out/
-       └ 同一份 out/ 部署到两个静态目标:
-            ├─► Cloudflare Pages           →  tseval.diaugeia.ai   (主)
-            └─► Hugging Face Space (static) →  TSEval space         (镜像)
+       └ out/ 部署到:
+            └─► Hugging Face Space (static) →  Diaugeia/ModernTSF
+                (旧 Space Diaugeia/TSEval 自动跳转到这里)
 ```
 
 - `pipeline/validate.py` —— TSF-Core 合约 schema + ModernTSF 绑定校验。

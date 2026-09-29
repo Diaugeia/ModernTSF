@@ -5,7 +5,7 @@
 #   alias = "stock_hs300"  -> records / run_ids / leaderboard use this id
 #   track = "realtime"     -> filed under the RealTime leaderboard track
 #
-# Data: Diaugeia/TSEval-RealTime (stock_hs300/). Place the prepared panel under
+# Data: Diaugeia/ModernTSF-RealTime (stock_hs300/). Place the prepared panel under
 # `path` before running (see that dataset's README). Reference protocol:
 # seq_len 20 trading days -> pred_len 5.
 [dataset]

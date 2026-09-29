@@ -70,6 +70,7 @@ codex          # or any other coding agent
 ```bash
 uv tool install "git+https://github.com/Diaugeia/ModernTSF"   # provides `tsf`
 tsf init my-forecasting-project && cd my-forecasting-project
+tsf dataset download etth1          # pinned, checksum-verified from the Hub
 tsf inspect --config configs/runs/example.toml
 tsf run configs/runs/example.toml
 ```

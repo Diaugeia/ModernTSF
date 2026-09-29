@@ -23,11 +23,13 @@ jobs:
       - name: Verify installed catalog and Agent resources
         run: |
           python -m pip install --no-deps wheelhouse/*.whl
+          export EXPECTED_MODELS="$(ls src/moderntsf/models/*/spec.py | wc -l)"
           cd "$RUNNER_TEMP"
           python - <<'PY'
           import contextlib
           import io
           import json
+          import os
 
           from moderntsf.benchmark.cli import main
           from moderntsf.tsf_core.agent_assets import audit_agent_assets
@@ -42,11 +44,12 @@ jobs:
           output = io.StringIO()
           with contextlib.redirect_stdout(output):
               assert main(["model", "list", "--json"]) == 0
-          assert len(json.loads(output.getvalue())) == 178
+          expected = int(os.environ["EXPECTED_MODELS"])
+          assert len(json.loads(output.getvalue())) == expected
           output = io.StringIO()
           with contextlib.redirect_stdout(output):
               assert main(["model", "audit", "--summary"]) == 0
           summary = json.loads(output.getvalue())
-          assert summary["passed"] == 178 and summary["failed"] == 0
+          assert summary["passed"] == expected and summary["failed"] == 0
           PY
           test "$(tsf agent task validate)" = "Agent tasks OK: 9 templates"

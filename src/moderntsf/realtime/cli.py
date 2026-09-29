@@ -3,6 +3,7 @@
     tsf realtime list
     tsf realtime bootstrap --track T [--push]
     tsf realtime update    --track T [--pull] [--push]
+    tsf realtime publish   --track T [--repo OWNER/NAME]
     tsf realtime open      --track T [--now ISO]
     tsf realtime baselines --track T [--round R]
     tsf realtime forecast  --track T --model M [--round R] [--set section.key=value ...]
@@ -102,9 +103,11 @@ def main(argv: list[str] | None = None) -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("list")
-    for name in ("bootstrap", "update", "open", "baselines", "forecast", "score"):
+    for name in ("bootstrap", "update", "publish", "open", "baselines", "forecast", "score"):
         p = sub.add_parser(name)
         p.add_argument("--track", required=True)
+        if name == "publish":
+            p.add_argument("--repo", default="Diaugeia/ModernTSF-RealTime")
         if name in {"bootstrap", "update"}:
             p.add_argument("--push", action="store_true")
             p.add_argument("--repo", default="Diaugeia/ModernTSF-RealTime")
@@ -153,6 +156,14 @@ def main(argv: list[str] | None = None) -> int:
                 from moderntsf.realtime.publish import push_release
 
                 print("hub revision:", push_release(store, args.repo, create=True))
+            return 0
+        if args.action == "publish":
+            from moderntsf.realtime.publish import push_release
+
+            store = PanelStore(args.track)
+            if not store.exists:
+                raise RuntimeError(f"no local store for {args.track!r}; run `tsf realtime bootstrap` first")
+            print("hub revision:", push_release(store, args.repo, create=True))
             return 0
         if args.action == "update":
             _update(args.track, args.pull, args.push, args.repo)

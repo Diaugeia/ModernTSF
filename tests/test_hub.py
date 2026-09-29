@@ -23,15 +23,15 @@ REV = "0123abcd"
 def test_parse_round_trips_every_repo_type() -> None:
     for text, repo_type in (
         (f"hf://{REPO}@{REV}/weather/DLinear/run/model.safetensors", "model"),
-        (f"hf://datasets/Diaugeia/TSEval-Static@main/ett/ETTh1.csv", "dataset"),
-        (f"hf://spaces/Diaugeia/TSEval@v1/index.html", "space"),
+        (f"hf://datasets/Diaugeia/ModernTSF-Static@main/ett/ETTh1.csv", "dataset"),
+        (f"hf://spaces/Diaugeia/ModernTSF@v1/index.html", "space"),
     ):
         uri = hub.parse(text)
         assert uri.repo_type == repo_type
         assert str(uri) == text
-    uri = hub.parse(f"hf://datasets/Diaugeia/TSEval-Static@main/ett/ETTh1.csv")
+    uri = hub.parse(f"hf://datasets/Diaugeia/ModernTSF-Static@main/ett/ETTh1.csv")
     assert uri.resolve_url() == (
-        "https://huggingface.co/datasets/Diaugeia/TSEval-Static/resolve/main/ett/ETTh1.csv"
+        "https://huggingface.co/datasets/Diaugeia/ModernTSF-Static/resolve/main/ett/ETTh1.csv"
     )
 
 

@@ -186,6 +186,14 @@ Data has three non-overlapping layers:
 - `src/moderntsf/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
 - `catalog/datasets/`: one generated README card per runnable dataset preset.
 
+Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
+(see [the Hub page](hub.md#benchmark-data)):
+
+```bash
+uv run tsf dataset download --list
+uv run tsf dataset download etth1
+```
+
 Use an existing CSV preset or create a loader-backed dataset:
 
 ```bash
@@ -207,6 +215,7 @@ The UltraTraffic archive (hourly total flow per Caltrans PeMS station, four
 districts, 2003–2023) is converted once into a local parquet store:
 
 ```bash
+uv run tsf dataset download ultratraffic_ba_st                  # published slice, or
 uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
 ```
 

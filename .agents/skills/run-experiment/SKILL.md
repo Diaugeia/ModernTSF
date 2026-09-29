@@ -29,7 +29,8 @@ and the CLI below are equivalent.
 
    Attach a round only when one was supplied or the task needs persistent
    research context. Use `--gpus` only after checking memory and device intent.
-2. Before long runs, verify data, output location, seeds, horizons, evaluation
+2. Before long runs, verify data (fetch missing published presets with
+   `uv run tsf dataset download <preset>`), output location, seeds, horizons, evaluation
    strategy, and profiling. Keep sweeps in TOML.
 3. For GIFT-Eval, read `uv run tsf dataset gift-download --help`, fetch only the
    requested data, and preview `configs/runs/gift_eval_sweep.toml`; record dataset
