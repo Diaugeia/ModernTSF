@@ -19,6 +19,7 @@ from pathlib import Path
 import sys
 import tempfile
 
+from moderntsf.hub.uri import DEFAULT_OWNER
 from moderntsf.tsf_core.paths import working_root
 
 
@@ -52,7 +53,7 @@ def hub_command(argv: list[str]) -> int:
     pull.add_argument("uri")
     pull.add_argument("--json", action="store_true")
     init = sub.add_parser("init", help="create the published repositories and their cards")
-    init.add_argument("--owner", default="Diaugeia")
+    init.add_argument("--owner", default=DEFAULT_OWNER)
     init.add_argument("--private", action="store_true")
     init.add_argument("--migrate-legacy", action="store_true",
                       help="rename existing TSEval repositories instead of creating new ones")

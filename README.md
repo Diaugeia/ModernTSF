@@ -99,6 +99,7 @@ no model, including ours, can have seen its evaluation data.
 | Track | Data | Setting | Horizon |
 | --- | --- | --- | --- |
 | `stock_hs300` | CSI-300 constituents, daily log returns (AKShare) | time series | 5 trading days |
+| `stock_nasdaq100` | NASDAQ-100 constituents, daily log returns (Sina via AKShare, Nasdaq fallback) | time series | 5 trading days |
 | `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS Districts 4, 7, 3, 8: hourly flow at 2,472 / 1,926 / 801 / 1,105 stations | spatiotemporal | 24 h |
 | `air_openaq_cn` | OpenAQ hourly PM2.5, government monitors in China | spatiotemporal | 24 h |
 

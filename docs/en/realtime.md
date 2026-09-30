@@ -14,12 +14,16 @@ Tracks are declared in `configs/realtime/<id>.toml`:
 | Track | Source | Bootstrap history | Frequency · horizon |
 | --- | --- | --- | --- |
 | `stock_hs300` | AKShare, forward-adjusted closes → daily log returns | AKShare, from 2019-01-02 | trading days · 5 |
+| `stock_nasdaq100` | Sina (via AKShare) forward-adjusted closes, Nasdaq API fallback → daily log returns | source, from 2019-01-02 | trading days · 5 |
 | `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS clearinghouse `station_5min` (Districts 4, 7, 3, 8), summed to hourly flow | UltraTraffic store (2019–2023) | hourly · 24 |
 | `air_openaq_cn` | OpenAQ v3 hourly averages, PM2.5 | API backfill (365 days) | hourly · 24 |
 
 Credentials are read from the environment and never written to disk:
 `PEMS_USER` / `PEMS_PASSWORD` (free PeMS account) and `OPENAQ_API_KEY` (free
-OpenAQ key). The stock track needs no key.
+OpenAQ key). The stock tracks need no key. The NASDAQ-100 fallback closes are
+split- but not dividend-adjusted, so a day served by it can differ from the
+primary source by the dividend yield. Stock fetches cache each symbol under
+`dataset/realtime/_cache/`, so an interrupted bootstrap resumes.
 
 ## Data releases
 
@@ -27,7 +31,7 @@ Each track has an append-only panel store (`dataset/realtime/<track>/`,
 parquet by year plus a manifest). An update only adds new timestamps or fills
 cells that were missing, never rewrites observed history, and records a release
 with a content hash. Releases are mirrored to the Hugging Face dataset
-`Diaugeia/ModernTSF-RealTime`, one commit per release, so every round can be
+`Diaugeia/ModernTSF-RealTime` (owner overridable with `MODERNTSF_HUB_OWNER`), one commit per release, so every round can be
 reproduced from a pinned revision.
 
 ## Rounds

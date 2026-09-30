@@ -29,6 +29,8 @@ def fetch(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp, channels: li
     kind = track.source.get("kind")
     if kind == "akshare_csi300":
         from .akshare_csi300 import fetch as run
+    elif kind == "nasdaq100":
+        from .nasdaq100 import fetch as run
     elif kind == "pems":
         from .pems import fetch as run
     elif kind == "openaq":

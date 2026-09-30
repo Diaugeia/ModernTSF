@@ -1,7 +1,8 @@
 name: web-deploy
 
 # Builds apps/web (ModernTSF Leaderboard) and deploys the static export to the
-# Hugging Face Space `Diaugeia/ModernTSF` on every push that touches the site or
+# Hugging Face Space `<HUB_OWNER>/ModernTSF` (variable HUB_OWNER, default
+# Diaugeia) on every push that touches the site or
 # its data (including merged real-time rounds) on the deploy branch: the
 # repository variable DEPLOY_BRANCH, default `main` (set it to `dev` during an RC).
 #
@@ -26,7 +27,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.ref_name == (vars.DEPLOY_BRANCH || 'main')
     runs-on: ubuntu-latest
     env:
-      SPACE_ID: Diaugeia/ModernTSF
+      SPACE_ID: ${{ vars.HUB_OWNER || 'Diaugeia' }}/ModernTSF
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -15,9 +15,10 @@ from pathlib import Path
 import tomllib
 
 from moderntsf.hub.fetch import download, sha256_file
+from moderntsf.hub.uri import default_repo
 from moderntsf.tsf_core.paths import is_packaged_root, repository_root
 
-DEFAULT_STATIC_REPO = "Diaugeia/ModernTSF-Static"
+DEFAULT_STATIC_REPO = default_repo("ModernTSF-Static")
 MANIFEST_RELATIVE = Path("configs") / "hub" / "datasets.json"
 _DATASET_PREFIX = "./dataset/"
 

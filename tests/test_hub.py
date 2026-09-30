@@ -150,3 +150,17 @@ def test_init_project_scaffolds_and_inherits_package_configs(tmp_path: Path) -> 
     merged = _resolve_extends(tomllib.loads(run.read_text()), str(run.parent))
     assert merged["dataset"]["name"] == "ETTh1"
     assert merged["experiment"]["description"] == "proj: DLinear on ETTh1"
+
+
+def test_hub_owner_comes_from_the_environment(monkeypatch) -> None:
+    import importlib
+
+    from moderntsf.hub import uri
+
+    monkeypatch.setenv("MODERNTSF_HUB_OWNER", "someone")
+    try:
+        assert importlib.reload(uri).default_repo("ModernTSF-Static") == "someone/ModernTSF-Static"
+    finally:
+        monkeypatch.delenv("MODERNTSF_HUB_OWNER")
+        importlib.reload(uri)
+    assert uri.default_repo("ModernTSF-Static") == "Diaugeia/ModernTSF-Static"

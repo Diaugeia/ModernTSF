@@ -5,9 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from moderntsf.hub.fetch import sha256_file
+from moderntsf.hub.uri import default_repo
 from moderntsf.realtime.store import PanelStore
 
-DEFAULT_DATASET_REPO = "Diaugeia/ModernTSF-RealTime"
+DEFAULT_DATASET_REPO = default_repo("ModernTSF-RealTime")
 
 
 def _api():

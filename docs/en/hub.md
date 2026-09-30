@@ -51,7 +51,8 @@ endpoint, so private repositories work; `HF_ENDPOINT` overrides the endpoint.
 | `Diaugeia/ModernTSF-Weights` | model | trained weights bundles |
 | `Diaugeia/ModernTSF` | space | the static leaderboard site |
 
-Maintainers create them, with their cards, through
+A fork or personal mirror sets `MODERNTSF_HUB_OWNER` to publish under another
+namespace instead of passing `--repo` to every command. Maintainers create them, with their cards, through
 `uv run tsf hub init [--migrate-legacy]`; `--migrate-legacy` renames the former
 TSEval repositories so their old addresses redirect.
 

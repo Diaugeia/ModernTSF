@@ -26,6 +26,7 @@ import sys
 
 import pandas as pd
 
+from moderntsf.hub.uri import default_repo
 from moderntsf.realtime import rounds as R
 from moderntsf.realtime.store import PanelStore
 from moderntsf.realtime.tracks import get_track, list_tracks
@@ -107,10 +108,10 @@ def main(argv: list[str] | None = None) -> int:
         p = sub.add_parser(name)
         p.add_argument("--track", required=True)
         if name == "publish":
-            p.add_argument("--repo", default="Diaugeia/ModernTSF-RealTime")
+            p.add_argument("--repo", default=default_repo("ModernTSF-RealTime"))
         if name in {"bootstrap", "update"}:
             p.add_argument("--push", action="store_true")
-            p.add_argument("--repo", default="Diaugeia/ModernTSF-RealTime")
+            p.add_argument("--repo", default=default_repo("ModernTSF-RealTime"))
         if name == "update":
             p.add_argument("--pull", action="store_true")
         if name == "open":
@@ -129,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     weekly.add_argument("--track", nargs="+", required=True)
     weekly.add_argument("--pull", action="store_true")
     weekly.add_argument("--push", action="store_true")
-    weekly.add_argument("--repo", default="Diaugeia/ModernTSF-RealTime")
+    weekly.add_argument("--repo", default=default_repo("ModernTSF-RealTime"))
     replay = sub.add_parser("replay", help="backtest the rolling protocol on historical weeks")
     replay.add_argument("--track", required=True)
     replay.add_argument("--end", required=True)

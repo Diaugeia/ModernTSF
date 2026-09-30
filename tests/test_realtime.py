@@ -32,7 +32,8 @@ def _panel(start: str, hours: int, channels: int = 3) -> pd.DataFrame:
 
 def test_shipped_track_configs_load() -> None:
     ids = {track.id for track in list_tracks()}
-    assert {"stock_hs300", "traffic_pems_sb", "air_openaq_cn"} <= ids
+    assert {"stock_hs300", "stock_nasdaq100", "traffic_pems_sb", "air_openaq_cn"} <= ids
+    assert get_track("stock_nasdaq100").source["kind"] == "nasdaq100"
     assert get_track("traffic_pems_sb").tz == "America/Los_Angeles"
 
 
@@ -134,3 +135,69 @@ def test_validate_cli_uses_trusted_arrival_time(tmp_path: Path, monkeypatch) -> 
                                        predictions=[[0.0] * 3] * spec.horizon).model_dump_json())
     assert main(["validate", str(path)]) == 0
     assert main(["validate", str(path), "--received-at", spec.target_timestamps[-1]]) == 1
+
+
+def test_equity_fallback_moves_the_working_vendor_first(monkeypatch) -> None:
+    from moderntsf.realtime.sources import equity
+
+    monkeypatch.setattr(equity.time, "sleep", lambda seconds: None)
+    calls = []
+
+    def blocked(symbol):
+        calls.append("blocked")
+        raise ConnectionError("403")
+
+    def working(symbol):
+        calls.append("working")
+        return pd.Series([1.0])
+
+    providers = [blocked, working]
+    assert equity.with_fallback(providers, "AAPL").tolist() == [1.0]
+    assert providers == [working, blocked]
+    equity.with_fallback(providers, "MSFT")
+    assert calls == ["blocked", "working", "working"]
+    with pytest.raises(RuntimeError, match="could not fetch X"):
+        equity.with_fallback([blocked], "X", attempts=2, label="X")
+
+
+def test_equity_panel_stores_log_returns_and_resumes_from_cache(tmp_path: Path, monkeypatch) -> None:
+    from moderntsf.realtime.sources import equity
+
+    monkeypatch.setenv("MODERNTSF_REALTIME_ROOT", str(tmp_path))
+    monkeypatch.setattr(equity.time, "sleep", lambda seconds: None)
+    track = replace(TRACK, id="toy_stock", freq="B", source={"transform": "log_return"})
+    days = pd.bdate_range("2026-08-24", "2026-09-11")
+    closes = pd.Series(100 * np.exp(0.01 * np.arange(len(days))), index=days)
+    fetched = []
+
+    def daily_close(symbol, lo, hi):
+        fetched.append(symbol)
+        return closes.loc[lo:hi]
+
+    start, end = pd.Timestamp("2026-09-01"), pd.Timestamp("2026-09-11")
+    panel = equity.fetch_panel(track, start, end, ["A", "B"], daily_close)
+    assert list(panel.columns) == ["A", "B"]
+    assert panel.index[0] == start and panel.index[-1] == end
+    np.testing.assert_allclose(panel.to_numpy(), 0.01)  # first day uses the previous close
+    again = equity.fetch_panel(track, start, end, ["A", "B"], daily_close)
+    assert fetched == ["A", "B"]  # second call is served from the resume cache
+    pd.testing.assert_frame_equal(again, panel, check_freq=False)
+
+
+def test_nasdaq_historical_fallback_parses_quoted_closes(monkeypatch) -> None:
+    from moderntsf.realtime.sources import nasdaq100
+
+    rows = [{"date": "09/25/2026", "close": "$1,341.07"}, {"date": "09/24/2026", "close": "$335.92"}]
+    seen = {}
+
+    def fake_get(path, **params):
+        seen["path"] = path
+        return {"tradesTable": {"rows": rows}}
+
+    monkeypatch.setattr(nasdaq100, "_get", fake_get)
+    close = nasdaq100._nasdaq("BRK-B", pd.Timestamp("2026-09-24"), pd.Timestamp("2026-09-25"), "qfq")
+    assert seen["path"] == "quote/BRK.B/historical"
+    assert close.sort_index().tolist() == [335.92, 1341.07]
+    monkeypatch.setattr(nasdaq100, "_get", lambda path, **params: {"data": {"rows": [
+        {"symbol": "brk.b "}, {"symbol": "AAPL"}, {"symbol": "AAPL"}]}})
+    assert nasdaq100.constituents() == ["AAPL", "BRK-B"]

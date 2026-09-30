@@ -9,9 +9,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from moderntsf.hub.bundle import MANIFEST
-from moderntsf.hub.uri import HubURI
+from moderntsf.hub.uri import DEFAULT_OWNER, HubURI, default_repo
 
-DEFAULT_WEIGHTS_REPO = "Diaugeia/ModernTSF-Weights"
+DEFAULT_WEIGHTS_REPO = default_repo("ModernTSF-Weights")
 
 
 def _api():
@@ -61,7 +61,7 @@ def _card(front: dict[str, object], body: str) -> str:
 _SOURCE = "https://github.com/Diaugeia/ModernTSF"
 
 
-def repository_plan(owner: str = "Diaugeia") -> list[dict[str, str]]:
+def repository_plan(owner: str = DEFAULT_OWNER) -> list[dict[str, str]]:
     """Return the published repositories: id, type, and README card."""
     return [
         {"repo_id": f"{owner}/ModernTSF-Static", "repo_type": "dataset", "card": _card(
@@ -112,7 +112,7 @@ LEGACY_NAMES = {"ModernTSF-Static": "TSEval-Static", "ModernTSF-RealTime": "TSEv
                 "ModernTSF": "TSEval"}
 
 
-def init_repositories(owner: str = "Diaugeia", *, private: bool = False,
+def init_repositories(owner: str = DEFAULT_OWNER, *, private: bool = False,
                       migrate: bool = False, dry_run: bool = False) -> list[str]:
     """Create any missing published repositories and write their cards (idempotent).
 

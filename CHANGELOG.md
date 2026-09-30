@@ -3,6 +3,27 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
+## [1.0.0rc2] — 2026-09-30 (release candidate)
+
+### Added
+
+- Real-time track `stock_nasdaq100`: NASDAQ-100 constituents, daily log returns
+  of forward-adjusted closes (Sina through AKShare, Nasdaq API fallback), added to
+  the weekly workflow.
+- `MODERNTSF_HUB_OWNER` sets the namespace of the published Hub repositories
+  (default `Diaugeia`); the weekly workflow reads it from the `HUB_OWNER`
+  repository variable.
+- `paper-intake` can run Codex on Hugging Face Inference Providers
+  (`AGENT_PROVIDER=huggingface`, `HF_INFERENCE_TOKEN`, optional `AGENT_MODEL` and
+  `HF_BILL_TO`) through the local `.github/actions/codex` action; OpenAI stays the
+  default.
+- Package metadata names the author.
+
+### Changed
+
+- Stock sources share one fetch loop (`realtime/sources/equity.py`): vendor
+  fallback with backoff, per-symbol resume cache, and the log-return transform.
+
 ## [1.0.0rc1] — 2026-09-28 (release candidate)
 
 A fully automated, continuously updated forecasting platform: one installable

@@ -11,11 +11,20 @@ commit or tag so the same URI always resolves to the same bytes.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 import re
 from urllib.parse import quote
 
 SCHEME = "hf://"
 DEFAULT_ENDPOINT = "https://huggingface.co"
+# Namespace of the published repositories; a fork or personal mirror sets
+# MODERNTSF_HUB_OWNER instead of passing --repo everywhere.
+DEFAULT_OWNER = os.environ.get("MODERNTSF_HUB_OWNER", "Diaugeia")
+
+
+def default_repo(name: str) -> str:
+    """Return ``<owner>/<name>`` in the configured publishing namespace."""
+    return f"{DEFAULT_OWNER}/{name}"
 _REPO_TYPES = {"datasets": "dataset", "spaces": "space"}
 _NAME = r"[A-Za-z0-9][A-Za-z0-9._-]*"
 _URI = re.compile(

@@ -12,8 +12,13 @@ name: paper-intake
 # (.github/ISSUE_TEMPLATE/new_model.yml) is implemented once a maintainer adds
 # the `intake-approved` label.
 #
-# Authentication (this is a public repository):
-#   * GitHub-hosted runners: set the OPENAI_API_KEY secret.
+# Model backend (repository variable AGENT_PROVIDER, default `openai`):
+#   * huggingface: Codex runs on Hugging Face Inference Providers with the
+#     HF_INFERENCE_TOKEN secret (a fine-grained token with only "Make calls to
+#     Inference Providers"); AGENT_MODEL picks the model, e.g.
+#     `openai/gpt-oss-120b:cheapest` (router picks the cheapest provider).
+#     Optional HF_BILL_TO bills an organization. Billed at provider prices.
+#   * openai, GitHub-hosted runners: set the OPENAI_API_KEY secret.
 #   * ChatGPT-plan usage: register a self-hosted runner whose user is logged in
 #     with `codex login`, and set repository variables CODEX_RUNNER (its label)
 #     and CODEX_HOME (e.g. /home/runner/.codex). OpenAI advises against storing a
@@ -69,14 +74,16 @@ jobs:
           EOF
       - name: Run Codex (read-only scan)
         id: codex
-        uses: openai/codex-action@v1
+        uses: ./.github/actions/codex
         with:
+          provider: ${{ vars.AGENT_PROVIDER || 'openai' }}
+          model: ${{ vars.AGENT_MODEL }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          hf-token: ${{ secrets.HF_INFERENCE_TOKEN }}
+          hf-bill-to: ${{ vars.HF_BILL_TO }}
           codex-home: ${{ vars.CODEX_HOME }}
           prompt-file: .codex-prompt.md
           # Needs network for arXiv / HF Papers; this job never commits anything.
-          sandbox: workspace-write
-          codex-args: --config sandbox_workspace_write.network_access=true
           output-schema: |
             {"type":"object","additionalProperties":false,"required":["candidates"],
              "properties":{"candidates":{"type":"array","items":{"type":"object",
@@ -157,13 +164,15 @@ jobs:
             --set "approval=Repository-local implementation and verification are authorized. Do not push or open pull requests; the workflow does that." \
             > .codex-prompt.md
       - name: Run Codex (implement)
-        uses: openai/codex-action@v1
+        uses: ./.github/actions/codex
         with:
+          provider: ${{ vars.AGENT_PROVIDER || 'openai' }}
+          model: ${{ vars.AGENT_MODEL }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          hf-token: ${{ secrets.HF_INFERENCE_TOKEN }}
+          hf-bill-to: ${{ vars.HF_BILL_TO }}
           codex-home: ${{ vars.CODEX_HOME }}
           prompt-file: .codex-prompt.md
-          sandbox: workspace-write
-          codex-args: --config sandbox_workspace_write.network_access=true
       - name: Independent verification
         env:
           MODEL_NAME: ${{ matrix.candidate.model_name }}
