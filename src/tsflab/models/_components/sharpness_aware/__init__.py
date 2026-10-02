@@ -38,7 +38,11 @@ def sharpness_aware_loss(
     form used by the SAM reference optimizer). ``e`` is detached, so the
     returned loss differentiates to ``grad L(w + e)`` with respect to ``w``
     (first-order SAM, no second derivatives). ``rho == 0`` is a single ordinary
-    pass. Buffers are used unchanged and no parameter is modified in place.
+    pass. No parameter is modified in place. Buffers are shared, not frozen:
+    ``functional_call`` reuses the module's buffers, so a model with BatchNorm
+    running statistics updates them in both the ascent and the descent
+    forward pass (two updates per training step); use ``eval``-mode norms or
+    stateless norms if that matters.
     """
     if rho < 0:
         raise ValueError("rho must be non-negative")

@@ -43,6 +43,8 @@ def diagonal_selective_scan(u: torch.Tensor, delta: torch.Tensor, a: torch.Tenso
         raise ValueError("u, delta, and b must share one (batch, channels, length) shape")
     if a.ndim != 1 or a.shape[0] != u.shape[1]:
         raise ValueError("a must have shape (channels,) matching u's channel axis")
+    if u.shape[-1] == 0:
+        raise ValueError("length must be at least 1; the scan of an empty sequence is undefined")
     decay = torch.exp(delta * a.view(1, -1, 1))
     drive = delta * b * u
     state = torch.zeros_like(u[..., 0])

@@ -7,7 +7,16 @@ from torch import nn
 
 
 class RevIN(nn.Module):
-    """Normalize one sequence instance and later restore its original scale."""
+    """Normalize one sequence instance and later restore its original scale.
+
+    Statistics reduce over every axis between the batch axis 0 and the final
+    feature axis, keeping the feature axis. For ``(batch, time, features)``
+    input that is the time axis. With ``subtract_last=True`` the center is the
+    final step along axis 1; for rank > 3 inputs (extra axes between time and
+    features) that last step is also averaged over the extra axes, so center
+    and scale reduce over the same axes and both have shape
+    ``(batch, 1, ..., 1, features)``. Rank-3 behavior is unchanged.
+    """
 
     def __init__(
         self,
@@ -41,11 +50,13 @@ class RevIN(nn.Module):
         if mode == "norm":
             axes = tuple(range(1, values.ndim - 1))
             mean = values.mean(dim=axes, keepdim=True)
-            center = (
-                values.select(1, values.shape[1] - 1).unsqueeze(1)
-                if self.subtract_last
-                else mean
-            )
+            if self.subtract_last:
+                center = values.select(1, values.shape[1] - 1).unsqueeze(1)
+                extra = tuple(range(2, values.ndim - 1))
+                if extra:
+                    center = center.mean(dim=extra, keepdim=True)
+            else:
+                center = mean
             scale = (
                 values.var(dim=axes, keepdim=True, unbiased=False)
                 .add(self.eps)

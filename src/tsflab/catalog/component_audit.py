@@ -105,7 +105,7 @@ def audit_components() -> list[str]:
                     f"{path.relative_to(ROOT)} imports uncataloged component {name!r}"
                 )
 
-    for name in sorted(catalog_names - used - {"adj_norm"}):
+    for name in sorted(catalog_names - used):
         errors.append(f"component {name!r} has no model or component consumer")
     return errors
 

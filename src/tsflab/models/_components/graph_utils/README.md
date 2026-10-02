@@ -42,7 +42,7 @@ Current consumers: `gwnet`, `dcrnn`, `dfdgcn`, `d2stgnn`, `st_ssdl`, `stdmae`.
 
 ## Interface
 
-Module-level functions (no `__all__`, so the catalog lists no public symbols; no state). All
+Module-level functions (the catalog lists `normalize_adj_mx`, `adj_to_supports`, `cheb_poly`; no state). All
 inputs are cast to float64 numpy internally; outputs are float32.
 
 - `normalize_adj_mx(adj_mx, adj_type, return_type="dense") -> list`: `adj_mx` must be a
@@ -103,10 +103,15 @@ behind the other modes), `diffusion_conv` (consumes `doubletransition` supports)
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `normalize_adj_mx(adj_mx: np.ndarray, adj_type: str, return_type: str='dense')`
+  Return the requested finite adjacency supports.
+- `adj_to_supports(adj_mx: np.ndarray, adj_type: str='doubletransition', device: str | torch.device='cpu')`
+  Convert an adjacency matrix to dense float32 support tensors.
+- `cheb_poly(matrix: np.ndarray, order: int)`
+  Return exactly ``order`` Chebyshev polynomials, beginning with identity.
 
 ```python
-import tsflab.models._components.graph_utils
+from tsflab.models._components.graph_utils import normalize_adj_mx, adj_to_supports, cheb_poly
 ```
 
 ## Retrieval terms

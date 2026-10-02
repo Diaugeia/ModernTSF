@@ -67,10 +67,13 @@ variants that do not store state (use `last_value_center` for those).
   mode; `RuntimeError` when `denorm` precedes any `norm`. All of these checks are
   skipped when `enabled=False`. Constructor: `ValueError` for `num_features < 1`
   or `eps <= 0`.
-- Rank > 3 quirk: the mean and variance reduce over every middle axis, but
-  `subtract_last=True` takes the last step along axis 1 only (shape
-  `[B, 1, ..., C]` by `select(1, -1)`), so for rank > 3 the center is not the last
-  value over all middle axes. Only rank 3 is the documented contract.
+- Rank > 3 semantics: mean, variance, and the `subtract_last=True` center all
+  reduce over the same axes, so both have shape `[B, 1, ..., 1, C]`. For rank > 3
+  the `subtract_last` center is the last step along axis 1 averaged over the extra
+  axes `2..ndim-2`; for rank 3 there are no extra axes and it is exactly
+  `x[:, -1:]` (unchanged from before this fix, which only altered rank > 3). All
+  model consumers pass rank-3 `[B, L, C]` histories, so their behavior is
+  unchanged; `tests/test_component_validation.py` pins the rank-4 shapes.
 - Cached `_center` and `_scale` are plain attributes (not buffers): they are not
   in the state dict, follow whichever instance last called `norm`, and make an
   instance unsafe to share across concurrent forward passes.

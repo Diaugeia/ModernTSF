@@ -7,6 +7,8 @@ import math
 import torch
 from torch import nn
 
+from tsflab.models._components.weight_set_router import mix_weight_sets
+
 
 class FFTExtrapolationConv(nn.Module):
     """Map ``(batch, channels, input_length)`` to a horizon by a long convolution.
@@ -53,8 +55,8 @@ class FFTExtrapolationConv(nn.Module):
             if mixing.shape != (self.num_sets, x.shape[1]):
                 raise ValueError("mixing must have shape (num_sets, channels)")
             mixing = mixing.to(weight.dtype)
-            weight = torch.einsum("sc,sf->cf", mixing, weight)
-            bias = torch.einsum("sc,sf->cf", mixing, bias)
+            weight = mix_weight_sets(weight, mixing)
+            bias = mix_weight_sets(bias, mixing)
         padded = nn.functional.pad(x, (self.guard, self.output_length - 1 + self.guard))
         spectrum = torch.fft.rfft(padded) * weight + bias
         series = torch.fft.irfft(spectrum, n=self.padded_length)

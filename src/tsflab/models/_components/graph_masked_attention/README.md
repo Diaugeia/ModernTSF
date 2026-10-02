@@ -45,8 +45,7 @@ docstring, not evidenced by a second consumer.
 
 - `model_dim` (int >= 1): total width; raises `ValueError` unless divisible by
   `num_heads`. `num_heads` (int >= 1, default 8): head count;
-  `head_dim = model_dim // num_heads`. `num_heads == 0` is not validated and raises
-  `ZeroDivisionError`.
+  `head_dim = model_dim // num_heads`. `num_heads < 1` raises `ValueError`.
 - `forward(query, key, value, adj_mask=None)`: inputs `[..., L, model_dim]` with
   matching leading batch axes (for `extralonger`: `[B, T, N, D]` style layouts where
   the attended axis is second-to-last). Only the last two axes are attended. Heads are

@@ -1,13 +1,17 @@
 """Differential self-attention.
 
 Splits queries and keys into two halves, forms two ordinary softmax attention
-maps from them, and subtracts a learned, per-head convex-combination scalar
+maps from them, and subtracts a learned, per-head scalar
 times the second map from the first before applying the result to values.
 Subtracting a second attention map that has learned to track common-mode
 ("noise") structure cancels attention noise the same way a differential
 amplifier cancels common-mode signal, leaving a sparser, sharper attention
 pattern. The attended output is re-normalized with RMSNorm and rescaled by
 ``(1 - lambda_init)`` so its magnitude matches ordinary single-map attention.
+
+The subtraction weight is ``lambda = exp(q1.k1) - exp(q2.k2) + lambda_init``
+per head. It is unconstrained: nothing keeps it in ``[0, 1]`` or non-negative,
+so it is not a convex combination and may be negative or exceed one.
 """
 
 from __future__ import annotations

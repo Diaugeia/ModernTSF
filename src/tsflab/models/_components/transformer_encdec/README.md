@@ -45,8 +45,7 @@ construction, the generative decoder input, the output projection choice.
   `L -> floor((L+1)/2) + 1` for the circular padding of 2 plus the stride-2 pool.
   Uses `BatchNorm1d`, so it has running statistics buffers.
 - `EncoderLayer(attention, d_model, d_ff=None, dropout=0.1, activation="relu")`:
-  `activation == "relu"` selects ReLU, any other string selects GELU (no
-  validation). `forward(x, attn_mask=None, tau=None, delta=None) -> (x, attn)`; `attn` is the
+  `activation` must be `"relu"` or `"gelu"`, else `ValueError`. `forward(x, attn_mask=None, tau=None, delta=None) -> (x, attn)`; `attn` is the
   attention module's second return value. State-dict keys: `attention.*`,
   `conv1.*`, `conv2.*`, `norm1.*`, `norm2.*`. `dropout` in [0, 1) is not validated.
 - `Encoder(attn_layers, conv_layers=None, norm_layer=None)`:
@@ -57,8 +56,8 @@ construction, the generative decoder input, the output projection choice.
   distilling path `delta` is only given to the first layer; without `conv_layers`
   it is passed to every layer. `attns` has one entry per attention layer and holds
   whatever the attention returns (`None` unless it outputs weights). `conv_layers`
-  must have exactly `len(attn_layers) - 1` entries: more would skip trailing
-  attention layers, fewer would run the last one twice (no validation).
+  must have exactly `len(attn_layers) - 1` entries, else `ValueError` (more would skip
+  trailing attention layers, fewer would run the last one twice).
   State-dict keys: `attn_layers.{i}.*`, `conv_layers.{i}.*`, `norm.*`.
 - `DecoderLayer(self_attention, cross_attention, d_model, d_ff=None, dropout=0.1,
   activation="relu")`: `forward(x, cross, x_mask=None, cross_mask=None, tau=None,
@@ -72,7 +71,7 @@ construction, the generative decoder input, the output projection choice.
 Attention modules must follow `attn(q, k, v, attn_mask=, tau=, delta=) ->
 (out, attn)` over `[B, L, d_model]` (use `AttentionLayer`). Axis and dtype
 follow the inputs; no module is stateful apart from `ConvLayer`'s batch-norm buffers.
-No errors are raised here.
+Errors raised here: `ValueError` for an unsupported `activation` and a wrong `conv_layers` length.
 
 ## Invariants and equivalence evidence
 
@@ -94,8 +93,9 @@ No errors are raised here.
   `len(encoder.conv_layers) == e_layers - 1` for distilling, and that both return
   only the forecast horizon.
 - `tests/test_dualformer_forecaster.py` constructs `dualformer`, which uses `EncoderLayer`.
-- No pre-extraction fixture exists, and the `activation` fallback to GELU, the
-  `delta` routing, and the `conv_layers` length requirement are not tested.
+- No pre-extraction fixture exists, and the `delta` routing is not tested; the
+  `activation` and `conv_layers` `ValueError`s are covered by
+  `tests/test_component_validation.py`.
 
 ## Variants and options
 
@@ -124,10 +124,19 @@ Layer API with conv-FFN and a decoder), `masking` (builds the `attn_mask`/`x_mas
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `ConvLayer(c_in)`
+  No symbol-level description is recorded.
+- `EncoderLayer(attention, d_model, d_ff=None, dropout=0.1, activation='relu')`
+  No symbol-level description is recorded.
+- `Encoder(attn_layers, conv_layers=None, norm_layer=None)`
+  No symbol-level description is recorded.
+- `DecoderLayer(self_attention, cross_attention, d_model, d_ff=None, dropout=0.1, activation='relu')`
+  No symbol-level description is recorded.
+- `Decoder(layers, norm_layer=None, projection=None)`
+  No symbol-level description is recorded.
 
 ```python
-import tsflab.models._components.transformer_encdec
+from tsflab.models._components.transformer_encdec import ConvLayer, EncoderLayer, Encoder, DecoderLayer, Decoder
 ```
 
 ## Retrieval terms

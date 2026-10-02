@@ -100,10 +100,27 @@ six-column marks directly with its own scaling, not the normalized calendar feat
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `TIME_FEATURES`
+  Public module constant.
+- `TSLIB_TIME_FEATURE_DIMS`
+  Public module constant.
+- `tslib_time_feature_dimension(freq: str)`
+  Return the pinned Time-Series-Library ``timeF`` width for ``freq``.
+- `adapt_tslib_marks(marks: torch.Tensor | None, *, embed_type: str, freq: str)`
+  Adapt TSFLab marks to the pinned Time-Series-Library contract.
+- `normalized_time_features(marks: torch.Tensor)`
+  Convert raw integer marks to normalized calendar features.
+- `to_spatiotemporal(values: torch.Tensor, marks: torch.Tensor)`
+  Build a ``(B, T, N, 1 + F)`` spatiotemporal tensor.
+- `to_calendar_spatiotemporal(values: torch.Tensor, marks: torch.Tensor)`
+  Build ``(B, T, N, 1 + 2)`` = ``[value, time_in_day, day_in_week]``.
+- `future_time_features(marks: torch.Tensor, n: int)`
+  Build a ``(B, T, N, F)`` tensor of future covariate features.
+- `coerce_time_length(marks: torch.Tensor, length: int)`
+  Coerce a mark tensor to an exact temporal length.
 
 ```python
-import tsflab.models._components.marks
+from tsflab.models._components.marks import TIME_FEATURES, TSLIB_TIME_FEATURE_DIMS, tslib_time_feature_dimension, adapt_tslib_marks, normalized_time_features, to_spatiotemporal, to_calendar_spatiotemporal, future_time_features, coerce_time_length
 ```
 
 ## Retrieval terms

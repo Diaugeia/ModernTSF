@@ -42,6 +42,8 @@ class GlobalLocalGraphAttention(nn.Module):
 
     def __init__(self, model_dim: int, num_heads: int = 8) -> None:
         super().__init__()
+        if num_heads < 1:
+            raise ValueError(f"num_heads must be at least 1, got {num_heads}")
         if model_dim % num_heads:
             raise ValueError("model_dim must be divisible by num_heads")
         self.model_dim = model_dim

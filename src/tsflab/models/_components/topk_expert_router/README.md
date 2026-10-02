@@ -48,9 +48,7 @@ plain softmax).
 
 `topk_dense_mix(weights, k, floor) -> Tensor`: `weights` is a non-negative dense
 distribution on the last axis (typically softmax output); `1 <= k <= experts`
-(`k > experts` raises `RuntimeError` from `torch.topk`; `k = 0` is not rejected
-and leaves only the floor term, which renormalizes back to the dense weights, or
-0/0 when `floor = 0`); `floor >= 0` and not validated (a `floor` of 0 gives exact
+and `floor >= 0`, else `ValueError` (a `floor` of 0 gives exact
 hard top-k renormalization). Differentiable through the kept values and the floor
 term; the selection is not. Ties follow `torch.topk`. Stateless, same
 dtype/device as input.
@@ -64,7 +62,8 @@ dtype/device as input.
   differs from eval, finite gradients; `topk_dense_mix` rows sum to 1, `floor = 0`
   keeps exactly `k` non-zero renormalized entries, `floor > 0` makes all entries
   positive, dtype is preserved, gradients are finite, `k > experts` raises
-  `RuntimeError`. Seeded outputs are pinned by
+  `RuntimeError`; `tests/test_component_validation.py` checks the `ValueError` for
+  `k` outside `[1, experts]` and negative `floor`. Seeded outputs are pinned by
   `tests/fixtures/components/topk_expert_router_gate.pt` and
   `tests/fixtures/components/topk_expert_router_mix.pt`.
 - `tests/fixtures/duet_pre_refactor.pt` and

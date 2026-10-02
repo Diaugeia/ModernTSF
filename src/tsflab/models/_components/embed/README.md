@@ -64,7 +64,7 @@ All classes are `nn.Module`. Public symbols: `PositionalEmbedding`,
 
 - `embed_type="timeF"` (continuous `Linear` over marks; the default in the Transformer and Informer configs with `freq="h"`), `"fixed"` (frozen sinusoidal), anything else (learned tables).
 - `freq="t"` adds a minute table in `TemporalEmbedding`; `freq` has no other effect.
-- Quirks worth knowing: `PositionalEmbedding` sets `pe.require_grad` (a typo, harmless since it is a buffer); `TokenEmbedding` compares `torch.__version__` as a string; `DataEmbedding_inverted.c_in` is the lookback length.
+- Quirks worth knowing: `DataEmbedding_inverted.c_in` is the lookback length; `TimeFeatureEmbedding` always uses six input columns unless `input_dim` is given (`freq` and `embed_type` are accepted but unused). The dead `require_grad` typo assignments and the string version comparison were removed; state-dict keys are unchanged.
 - `adapt_tslib_marks` in `marks` converts the six-column marks to the five-column categorical layout (or the four-feature hourly `timeF` width); `fredf` calls it before `DataEmbedding`, while `transformer` and `informer` do not.
 
 ## When to use and when not to use

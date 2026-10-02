@@ -60,14 +60,18 @@ define wavelet code locally and do not use this component.
   `filter_len - 2` each side. Haar lengths follow `ceil(L / 2)` per level; longer
   filters give longer subbands (per level `floor((L' + 2*(filter_len - 2) -
   filter_len) / 2) + 1` with `L'` the even padded length: db4 at `L=16` level 1
-  gives 11 samples, not 8; the test pins `[9, 9, 11]` for level 2). It records per-level odd-padding flags in `self._trims`.
-- `reconstruct(coeffs)`: only for two-tap filters (haar/db1), else
+  gives 11 samples, not 8; the test pins `[9, 9, 11]` for level 2). It records per-level odd-padding flags in `self.last_trims`.
+- `reconstruct(coeffs, trims=None)`: only for two-tap filters (haar/db1), else
   `NotImplementedError`; `len(coeffs)` must be `level + 1` (else `ValueError`).
-  It trims by the flags stored from the most recent `decompose` call, so it is
-  stateful: reconstruct a signal only after decomposing one with the same
-  odd/even length pattern on this instance (round trip checked at `L=16` and
-  `L=15`, level 2). Using one instance for different
-  lengths in alternation corrupts the trims; use separate instances (as
+  `trims` (length `level`, else `ValueError`) is the explicit odd-padding flag
+  list; by default it uses `last_trims` from the most recent `decompose` call
+  (all zeros if there was none), so the default is stateful: pass `trims`
+  explicitly (for example a saved `last_trims`) to reconstruct coefficients that
+  did not come from the latest `decompose`. Round trips are checked at `L=16`
+  and `L=15`, level 2, with the default and (in
+  `tests/test_component_validation.py`) with explicit `trims` after the recorded
+  state was overwritten. Alternating different lengths on one instance corrupts
+  the default trims; use separate instances (as
   `wdformer` does for embed and output).
 
 `UndecimatedWaveletTransform(wavelet: str = "db4", level: int = 3)`

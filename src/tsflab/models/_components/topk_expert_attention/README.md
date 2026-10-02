@@ -46,10 +46,9 @@ source for the method; this card makes no claim about official-code details beyo
 -> `[n, m, topk, c]`, selected rows already multiplied by `weight`.
 
 `TopKExpertAttention(dim, num_heads=8, topk=4, shared=False, qk_dim=None, dropout=0.0)`:
-`dim % num_heads == 0` else `ValueError`; `qk_dim` defaults to `dim` (per-head qk width is
-`qk_dim // num_heads`; divisibility is not validated, so a non-divisible `qk_dim` fails later in
-`forward` with a view `RuntimeError`);
-`topk >= 0` (a negative value is not rejected and silently behaves like `topk=0`, dense attention; `topk <= tokens` is required at call time, else `RuntimeError` from `torch.topk`); `dropout` in `[0, 1]` is
+`num_heads >= 1` and `dim % num_heads == 0` else `ValueError`; `qk_dim` defaults to `dim` (per-head qk width is
+`qk_dim // num_heads`; a non-divisible `qk_dim` raises `ValueError`);
+`topk >= 0` (`0` is the dense mode; a negative value raises `ValueError`; `topk <= tokens` is required at call time, else `RuntimeError` from `torch.topk`); `dropout` in `[0, 1]` is
 applied to the attention weights after the softmax over the selected set. `forward(x)`: float `[batch, tokens, dim]`
 -> same shape (dtype and device follow the parameters; no padding or mask). Parameters/state-dict keys: `positional.weight/bias`
 (depthwise conv), `qkv.weight/bias` (`dim -> 2*qk_dim + dim`), `out_proj.weight/bias`;
@@ -71,7 +70,8 @@ re-softmaxed.
   `w * kv[idx]`, `RuntimeError` for `topk > tokens`; attention state-dict keys, output
   shape and dtype, `last_route_weight` shape `[batch*heads, tokens, topk]` with unit sums
   (`None` and no `router` attribute when `topk == 0`), finite input and parameter gradients,
-  and the `dim % num_heads` `ValueError`. Seeded regressions use
+  and the `dim % num_heads` `ValueError`; `tests/test_component_validation.py` checks the
+  `num_heads`, negative `topk` and `qk_dim` `ValueError`s. Seeded regressions use
   `tests/fixtures/components/topk_expert_attention_k0_plain.pt`,
   `tests/fixtures/components/topk_expert_attention_k0_shared.pt`,
   `tests/fixtures/components/topk_expert_attention_k2_plain.pt`,
@@ -114,11 +114,15 @@ per-query), `soft_tree` (other differentiable routing).
 
 Implementation: [`__init__.py`](__init__.py)
 
+- `LocalExpertRouter(qk_dim: int, topk: int, scale: float | None=None)`
+  Score every (query, key) pair and keep the top-``topk`` keys per query.
+- `gather_experts(index: torch.Tensor, weight: torch.Tensor, kv: torch.Tensor)`
+  Gather routed key/value experts and apply their routing weight.
 - `TopKExpertAttention(dim: int, num_heads: int=8, topk: int=4, shared: bool=False, qk_dim: int | None=None, dropout: float=0.0)`
   Adaptive local self-attention over the top-``topk`` scoring positions.
 
 ```python
-from tsflab.models._components.topk_expert_attention import TopKExpertAttention
+from tsflab.models._components.topk_expert_attention import LocalExpertRouter, gather_experts, TopKExpertAttention
 ```
 
 ## Retrieval terms

@@ -45,7 +45,8 @@ Parameters (state-dict keys): `lambda_q1`, `lambda_k1`, `lambda_q2`, `lambda_k2`
 (each `[num_heads, head_dim]`, init `N(0, 0.1^2)`), `rms_scale` (`[2*head_dim]`,
 init 1, shared by all heads). `head_dim`, `num_heads`, `lambda_init`, `scale`
 and `eps` are plain attributes. No other validation (`num_heads >= 1` is not
-checked).
+checked). `lambda` is unconstrained: it is not a convex combination and can be
+negative or larger than one.
 
 `forward(queries, keys, values)`: float tensors with `heads == num_heads`;
 `queries` `[batch, seq, heads, 2*head_dim]`, `keys` and `values`
