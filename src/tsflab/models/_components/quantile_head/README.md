@@ -49,12 +49,14 @@ Public symbols: `QuantileHead`, `validate_quantile_levels`, `DEFAULT_QUANTILE_LE
 
 ## Invariants and equivalence evidence
 
-no fixture. `test_quantile_head_is_monotone_and_differentiable` in
+`test_quantile_head_is_monotone_and_differentiable` in
 `tests/test_repository_contracts.py` checks the `[2, 8, 3, 3]` output shape,
 `output[..., 1:] >= output[..., :-1]`, gradient finiteness, the default median
 level, and rejection of invalid level lists. `tests/test_probabilistic_forecasters.py`
 checks that `mqrnn` equals `quantile_head(local_decoder(...))` and its
 `[2, 3, 2, 9]` output shape.
+
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/quantile_head.pt`.
 
 ## Variants and options
 

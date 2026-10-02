@@ -61,6 +61,7 @@ component.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/series_decomposition.pt`.
 - `test_edge_padded_series_decomposition_matches_reference` in
   `tests/test_repository_contracts.py`: output equals explicit edge padding plus
   `avg_pool1d`, `residual + trend == x`, gradients finite, even kernel

@@ -57,6 +57,7 @@ for regularization (the model currently discards them).
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/sparse_connection_router.pt`.
 - `tests/test_lsinet_forecaster.py`:
   `test_sparse_connection_router_is_input_independent` (two eval calls are identical),
   `test_learned_interaction_matrix_is_binary_and_respects_target_density` (values in

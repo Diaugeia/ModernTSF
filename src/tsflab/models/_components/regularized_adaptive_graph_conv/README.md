@@ -59,6 +59,7 @@ and the auxiliary losses.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/regularized_adaptive_graph_conv.pt` and `stochastic_shared_embedding.pt`.
 - `tests/test_local_graph_forecasters.py`
   (`test_ragc_efficient_cosine_operator_matches_dense_adjacency_matmul`) checks one
   kernelized hop equals the dense `(A x) / (A 1 + 1e-6)` computation at `atol=1e-5`;

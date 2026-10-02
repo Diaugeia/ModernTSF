@@ -63,6 +63,7 @@ re-softmaxed.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/topk_expert_attention_k0_plain.pt`, `tests/fixtures/components/topk_expert_attention_k0_shared.pt`, `tests/fixtures/components/topk_expert_attention_k2_plain.pt`, `tests/fixtures/components/topk_expert_attention_k2_shared.pt`, `tests/fixtures/components/topk_expert_attention_router.pt`.
 - `tests/test_timeexpert_structure.py`: routing weights sum to one with `topk=2,
   shared=True`; `topk=0` falls back to full attention with finite output;
   forward/backward gives finite gradients for every parameter (including

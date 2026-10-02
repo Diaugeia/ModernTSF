@@ -79,12 +79,7 @@ define wavelet code locally and do not use this component.
 - `tests/test_wdformer_structure.py`, `tests/test_dpwmixer_structure.py` (a haar
   decomposition on `[2, 4, 12]`) and `tests/test_awemixer_structure.py` (db2
   level 2) exercise the transforms through their consumers.
-- no fixture and no dedicated unit test: nothing under `tests/` imports
-  `DecimatedWaveletTransform` or `UndecimatedWaveletTransform` directly, and no
-  stored pre-refactor tensors exist; haar reconstruction was only confirmed by
-  an ad hoc CPU check described above.
-- Orthonormality of db2/db4 taps is by construction from the constants; no test
-  verifies them.
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/wavelet.pt`.
 
 ## Variants and options
 

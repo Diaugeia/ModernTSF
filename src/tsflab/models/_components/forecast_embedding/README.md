@@ -45,6 +45,7 @@ Public symbols: `RawCalendarEmbedding`, `ForecastEmbedding`.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/forecast_embedding.pt`.
 no fixture. `test_shared_channel_alignment_and_forecast_embedding_contracts` in
 `tests/test_repository_contracts.py` checks the `[2, 5, 8]` output shape and the
 `ValueError` on a time-axis mismatch. Behavioural identity with the pre-extraction

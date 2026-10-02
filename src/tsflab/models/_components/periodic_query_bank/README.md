@@ -49,6 +49,7 @@ start phase is derived from calendar marks (`_start_phase`: weekday, or
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/periodic_query_bank.pt`.
 - `test_periodic_query_bank_gathers_wrapped_phase_windows` in
   `tests/test_2025_query_gate_hyperstate_forecasters.py` checks shape and
   wrap-around rows for `period=4, channels=2`, phases `[3, 0]`, length 3.

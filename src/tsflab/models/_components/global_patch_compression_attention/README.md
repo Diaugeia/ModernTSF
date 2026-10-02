@@ -52,6 +52,7 @@ is the last patch, patch order within a group matters; `N >= 1` is required.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/global_patch_compression_attention.pt`.
 - `tests/test_frequency_wavelet_attention_forecasters.py`
   (`test_global_patch_compression_attention_shapes_and_last_patch_query`):
   output shape equals input shape and perturbing non-last patches changes the

@@ -56,9 +56,7 @@ and the choice of what the token axis is stay in `refocus`.
 - `test_energy_based_frequency_pooling_picks_the_higher_energy_token` in
   `tests/test_frequency_wavelet_attention_forecasters.py` checks, in eval, that
   both tokens receive the higher-energy token's value.
-- no fixture: no stored pre-refactor tensors exist for this component; the
-  training-time stochastic path is not covered by a dedicated test (only by
-  the `refocus` model tests through the consumer).
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/energy_frequency_pooling.pt`.
 
 ## Variants and options
 

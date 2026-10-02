@@ -44,6 +44,7 @@ their encoders remain model-local.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/gated_fusion.pt`.
 no fixture. `test_gated_fusion_interpolates_between_its_two_inputs` in
 `tests/test_2025_query_gate_hyperstate_forecasters.py` sets the `a` gate bias to 10
 and `Wb` to zero and checks the output approaches `a`. The `gateformer` model tests in

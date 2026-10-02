@@ -55,6 +55,7 @@ output reshape uses the query `seq`). Stateless.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/differential_attention.pt`.
 - `tests/test_wdformer_structure.py`: `wdformer` forward/backward over all
   parameters finite (including `lambda_*` and `rms_scale`), strict state-dict
   round trip, and `attention.attention._lambda()` finite.

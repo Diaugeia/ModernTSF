@@ -68,6 +68,7 @@ concurrent forwards.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/patchtst_end_shared.pt`, `tests/fixtures/components/patchtst_nopad_ind.pt`.
 - `tests/test_repository_contracts.py` pins the dependency closure of `patchtst`
   to `flatten_forecast_head`, `patchtst`, `positional_encoding`, `revin`,
   `tst_transformer`.

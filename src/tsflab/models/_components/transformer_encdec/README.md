@@ -68,13 +68,13 @@ No errors are raised here.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/transformer_encdec_decoder.pt`, `tests/fixtures/components/transformer_encdec_encoder.pt`.
 - `tests/test_local_attention_forecasters.py` asserts the `transformer` and
   `informer` models assemble these layers with the expected attention cores,
   `len(encoder.conv_layers) == e_layers - 1` for Informer distilling, and that
   both models return only the forecast horizon.
 - `tests/test_dualformer_forecaster.py` constructs `EncoderLayer` inside `dualformer`.
-- no fixture: no pre-refactor numeric fixture exists; there is no dedicated
-  unit test for `ConvLayer`, `Decoder`, or `DecoderLayer` beyond those model tests.
+- no pre-refactor fixture exists; `ConvLayer`, `Decoder`, and `DecoderLayer` are covered by the contract test.
 
 ## Variants and options
 

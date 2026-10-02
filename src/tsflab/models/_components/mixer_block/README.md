@@ -47,6 +47,7 @@ The final temporal projection stays in `tsmixer` (via `channel_wise_linear`).
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/mixer_block.pt`.
 `tests/test_component_extraction_mixer.py` freezes a copy of the pre-extraction
 `MixerBlock` and TSMixer `Model` and checks identical `state_dict()` keys and
 shapes, forward output, and gradients from a fixed seed (the file docstring

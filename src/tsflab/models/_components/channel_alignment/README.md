@@ -48,6 +48,7 @@ that consumes the aligned tensor.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/channel_alignment.pt`.
 - `test_shared_channel_alignment_and_forecast_embedding_contracts` in
   `tests/test_repository_contracts.py` checks the slice case, the zero-padded
   case (leading channels preserved, padding is zeros), and the `width=0` error.

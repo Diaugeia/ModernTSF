@@ -64,6 +64,7 @@ created under `no_grad` (Triangular and Local) and is a bool tensor.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/masking.pt`.
 - no fixture and no dedicated test: nothing in `tests` imports this module
   (`tests/test_local_cats.py` only mentions an unrelated "masking probability").
   Behaviour is covered indirectly through `transformer`, `informer` and

@@ -59,6 +59,7 @@ stored as attribute `mlp` (hence the doubled `mlp.mlp` prefix).
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/diffusion_conv.pt`.
 - `tests/test_repository_contracts.py`
   (`test_diffusion_conv_matches_explicit_support_expansion`) checks the output
   against the explicit expansion `[x, S1 x, S1^2 x, S2 x, S2^2 x]` followed by the

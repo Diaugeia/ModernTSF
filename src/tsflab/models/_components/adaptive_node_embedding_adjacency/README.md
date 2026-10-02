@@ -58,6 +58,7 @@ parameters, buffers, or state):
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/adaptive_node_embedding_adjacency.pt`.
 - `tests/test_component_extraction_graph.py` holds frozen verbatim pre-extraction
   copies of `gwnet`, `dfdgcn`, `himnet`, `d2stgnn` and `agcrn` and asserts identical
   state-dict keys and shapes, identical eval outputs (`atol=1e-6`) and identical

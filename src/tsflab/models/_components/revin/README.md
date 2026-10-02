@@ -71,6 +71,7 @@ variants that do not store state (use `last_value_center` for those).
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/revin_10.pt`, `tests/fixtures/components/revin_00.pt`, `tests/fixtures/components/revin_11.pt`.
 - Round trip: `denorm(norm(x)) == x` up to float error for the default,
   `subtract_last=True`, and disabled configurations; checked by
   `test_revin_round_trip` in `tests/test_repository_contracts.py`.
