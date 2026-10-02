@@ -36,11 +36,22 @@ components, artifacts, optional training objective, and runtime fixture.
 Descriptive facts belong in README.
 
 The generic trainer owns batching, the four-input call, configured criterion,
-callbacks, optimization, and validation. A paper-specific full training objective
-must be declared as `ModelSpec.training_objective`; its adapter returns the
-forecast and one finite scalar loss from a single pass. Do not advertise such an
-objective as a capability or leave a `training_loss()` method that the runner does
-not call. Validation and test metrics always use the configured observation loss.
+callbacks, optimization, and validation. By default a model trains on the
+configured criterion plus an optional scalar `aux_loss` regularizer it sets during
+`forward`. A paper-specific training loss is opt-in: declare
+`ModelSpec.training_objective(model, batch, criterion)`, which receives a
+`TrainingBatch` (`x`, `x_mark`, `dec_inp`, `y_mark`, `y`, `target`,
+`batch.forecast(model)`, `batch.align(outputs)`) and the configured criterion, and
+returns `(forecast_or_None, finite_scalar_loss)` from a single pass. It may extend
+the criterion (card slot `loss:mse+local:<name>`) or replace it (`local:<name>`).
+An optional `ModelSpec.training_setup(model, train_loader, *, pred_len, features)`
+runs once before a fresh run to fit training-split state such as a label basis.
+The objective is used only while training; validation, early stopping, and test
+metrics always use `forward` with the configured observation loss. Objectives are
+unsupported with `DataParallel`. Do not advertise one as a capability or leave a
+`training_loss()` method that the runner does not call; a paper objective whose
+inputs the runner cannot supply (for example a second historical window) stays off
+and the model card's Differences says why.
 
 `task.mode` is enforced before execution:
 

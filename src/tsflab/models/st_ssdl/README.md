@@ -19,7 +19,7 @@ composition: ["normalization=none", "decomposition=none", "temporal=local:chebys
 - Encodes the lookback with a Chebyshev graph-convolutional GRU (`ChebGRUCell`) over static adjacency supports from `graph_utils`.
 - Queries a learnable prototype bank (`PrototypeMemory` from `deviation_memory`) with the last hidden state to retrieve a soft expected-pattern vector appended to the decoder state.
 - Builds a data-driven decoding graph from the prototype-augmented state and decodes the horizon autoregressively with a second `ChebGRUCell`, feeding future calendar covariates.
-- The paper's contrastive and deviation losses live in `Model.auxiliary_losses`, which needs a historical reference window and is not called by `forward` or the runner, so training uses the default loss.
+- The paper's contrastive and deviation losses live in `Model.auxiliary_losses`, which needs a historical reference window and is not called by `forward` or the runner, so training uses the default loss (no `training_objective` is declared; the runner cannot supply `x_his`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

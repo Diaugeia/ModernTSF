@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.timefilter.model import Model
 
@@ -27,6 +29,19 @@ def build_model(cfg, params):
     )
 
 
+MOE_LOSS_WEIGHT = 0.05  # alpha in the official training loop
+
+
+def training_objective(model, batch: TrainingBatch, criterion):
+    """Forecast criterion plus the weighted router load-balancing loss."""
+    forecast = batch.forecast(model)
+    loss = criterion(batch.align(forecast), batch.target)
+    moe_loss = model.last_moe_loss
+    if moe_loss is not None:
+        loss = loss + MOE_LOSS_WEIGHT * moe_loss
+    return forecast, loss
+
+
 SPEC = ModelSpec(
     name='TimeFilter',
     module='tsflab.models.timefilter',
@@ -39,4 +54,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(['time-series']),
     components=('revin',),
     contract_task={'seq_len': 96, 'pred_len': 96, 'label_len': 0},
+    training_objective=training_objective,
 )

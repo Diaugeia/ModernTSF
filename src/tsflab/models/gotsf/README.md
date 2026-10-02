@@ -10,7 +10,7 @@ revision: "31b17e55a0cb6f41bfe25230db3f81567efd58f3"
 license: "MIT"
 tagline: "Interval-conditioned experts with membership confidences, reweighted at inference to emphasize a chosen target range."
 tags: ["mlp", "goal-oriented", "channel-independent", "mixture-of-experts"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:interval-conditioned-mlp-encoder", "channel=local:channel-independent-shared-weights", "head=local:interval-regression-and-confidence-heads", "loss=loss:mse"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:interval-conditioned-mlp-encoder", "channel=local:channel-independent-shared-weights", "head=local:interval-regression-and-confidence-heads", "loss=local:interval-soft-boundary-regression-and-membership"]
 ---
 # GOTSF
 
@@ -19,7 +19,7 @@ composition: ["normalization=none", "decomposition=none", "temporal=local:interv
 - Splits the value range into `num_intervals` disjoint bins; each bin's midpoint and half-width condition a shared channel-independent MLP (`history_encoder` plus `interval_encoder`).
 - A regression head and a membership-confidence head produce a forecast and a confidence per interval (`interval_outputs`).
 - `forecast_interval` averages the forecasts of bins intersecting a target interval, weighted by confidence, so the emphasized range can change without retraining; plain `forward` uses all bins.
-- `goal_oriented_loss` trains one bin with an exponential soft-boundary weight (`decay`) plus a membership BCE term; the default runner loss is still `mse` on `forward`.
+- `goal_oriented_loss` trains one bin with an exponential soft-boundary weight (`decay`) plus a membership BCE term; the model's `training_objective` averages it over all bins (replacing the configured criterion while training); validation and test score `forward` with the standard loss.
 
 <!-- model-card:canonical:start -->
 ## Input and output
@@ -52,7 +52,7 @@ uses disjoint interval conditions, the exponential soft-boundary weight,
 membership confidence, and confidence-weighted averaging over intersecting
 bins. The common `forward` call covers the full configured forecasting range;
 applications can call `forecast_interval(..., target_interval=...)` or train a selected interval with
-`goal_oriented_loss`. A latent interval embedding replaces the paper experiment's
+`goal_oriented_loss`. The runner objective averages the per-bin loss over all bins each step (the official trainer samples one random bin per example), using element-wise soft-boundary weights on an L1 term and an unweighted BCE membership term as in the official trainer. A latent interval embedding replaces the paper experiment's
 repeated interval-bound channels. The paper permits multiple host forecasters,
 while this entry intentionally uses a compact channel-independent MLP and does not claim
 the paper's dataset recipes or reported accuracy. The reference-only project
@@ -89,7 +89,7 @@ uses disjoint interval conditions, the exponential soft-boundary weight,
 membership confidence, and confidence-weighted averaging over intersecting
 bins. The common `forward` call covers the full configured forecasting range;
 applications can call `forecast_interval(..., target_interval=...)` or train a selected interval with
-`goal_oriented_loss`. A latent interval embedding replaces the paper experiment's
+`goal_oriented_loss`. The runner objective averages the per-bin loss over all bins each step (the official trainer samples one random bin per example), using element-wise soft-boundary weights on an L1 term and an unweighted BCE membership term as in the official trainer. A latent interval embedding replaces the paper experiment's
 repeated interval-bound channels. The paper permits multiple host forecasters,
 while this entry intentionally uses a compact channel-independent MLP and does not claim
 the paper's dataset recipes or reported accuracy. The reference-only project

@@ -27,8 +27,8 @@ def build_model(cfg, params):
     )
 
 
-def training_objective(model, batch_x, target):
-    forecast, loss, _ = model.training_objective(batch_x, target)
+def training_objective(model, batch, criterion):
+    forecast, loss, _ = model.training_objective(batch.x, batch.target)
     return forecast, loss
 
 

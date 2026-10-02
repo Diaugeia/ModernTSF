@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.mmpd.model import Model
 from pydantic import BaseModel
@@ -35,6 +37,11 @@ def build_model(cfg, params):
     )
 
 
+def training_objective(model, batch: TrainingBatch, criterion):
+    """MMPD Eq. (8): diffusion plus anchor loss replaces the observation loss."""
+    return None, model.diffusion_loss(batch.x, batch.target)
+
+
 SPEC = ModelSpec(
     name="MMPD",
     module="tsflab.models.mmpd",
@@ -47,4 +54,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(["time-series"]),
         components=(),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
+    training_objective=training_objective,
 )

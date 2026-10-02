@@ -10,7 +10,7 @@ revision: "4fb26b02824a144d149964b372da98071fc79687"
 license: "MIT"
 tagline: "Variate-token Transformer agents exchange messages over a learnable topology graph; a voter aggregates forecasts."
 tags: ["transformer", "multi-agent", "channel-mixing", "graph-learning", "ensemble"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:per-agent-variate-token-embedding", "channel=local:variate-token-attention-agents+local:agent-topology-graph-communication", "head=local:voting-aggregation-of-agent-heads", "loss=loss:mse"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:per-agent-variate-token-embedding", "channel=local:variate-token-attention-agents+local:agent-topology-graph-communication", "head=local:voting-aggregation-of-agent-heads", "loss=loss:mse+local:multi-scale-prefix-specialization"]
 ---
 # MAFS
 
@@ -19,7 +19,7 @@ composition: ["normalization=none", "decomposition=none", "temporal=local:per-ag
 - Each of `num_agents` agents embeds every variate's whole window into a token and runs its own `AgentEncoderLayer` stack (attention across variates).
 - After every layer agents exchange messages through a symmetric, self-looped, degree-normalized adjacency built from learnable `edge_logits` masked by a star, ring, chain or fully-connected topology (`normalized_adjacency`).
 - A confidence gate blends each agent's state with its neighbourhood context, and an input-conditioned softmax `voter` weights the agents.
-- The output is a head on the voted representation plus the voted sum of per-agent heads; `specialization_loss` exposes the paper's multi-scale prefix pre-training stage but is not used by the default runner.
+- The output is a head on the voted representation plus the voted sum of per-agent heads; `specialization_loss` is the paper's multi-scale prefix stage; the `training_objective` adds it to the configured criterion.
 
 <!-- model-card:canonical:start -->
 ## Input and output
@@ -51,11 +51,11 @@ This paper-derived rewrite retains iTransformer-style variate-token agents,
 multi-scale specialization targets, layer-wise graph communication (Eq. (4)),
 masked symmetric normalized topology weights (Eq. (5)), confidence blending,
 and an input-conditioned global voter (Eqs. (6)--(7)). Four agents and a star
-topology are the compact defaults. The common runner optimizes the complete
-point forecast end to end; it does not automatically reproduce the paper's
-separate ten-epoch specialization and frozen-agent collaboration stages.
-`specialization_targets` and `specialization_loss` expose the fixed-graph
-homogeneous prefix stage for experiment harnesses. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
+topology are the compact defaults. The runner trains a single stage: the
+training objective sums the configured criterion on the final forecast and the
+fixed-graph homogeneous prefix `specialization_loss`. This is a joint
+multi-task approximation of the paper's separate ten-epoch specialization stage
+followed by frozen-agent collaboration; there is no staged schedule or freezing. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
 is in `../../../verification/evidence/MAFS.json`.
 
 ## Shared components
@@ -87,11 +87,11 @@ This paper-derived rewrite retains iTransformer-style variate-token agents,
 multi-scale specialization targets, layer-wise graph communication (Eq. (4)),
 masked symmetric normalized topology weights (Eq. (5)), confidence blending,
 and an input-conditioned global voter (Eqs. (6)--(7)). Four agents and a star
-topology are the compact defaults. The common runner optimizes the complete
-point forecast end to end; it does not automatically reproduce the paper's
-separate ten-epoch specialization and frozen-agent collaboration stages.
-`specialization_targets` and `specialization_loss` expose the fixed-graph
-homogeneous prefix stage for experiment harnesses. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
+topology are the compact defaults. The runner trains a single stage: the
+training objective sums the configured criterion on the final forecast and the
+fixed-graph homogeneous prefix `specialization_loss`. This is a joint
+multi-task approximation of the paper's separate ten-epoch specialization stage
+followed by frozen-agent collaboration; there is no staged schedule or freezing. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
 is in `../../../verification/evidence/MAFS.json`.
 
 ## In TSFLab

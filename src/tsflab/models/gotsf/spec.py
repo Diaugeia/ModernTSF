@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.gotsf.model import Model
 from pydantic import BaseModel
@@ -33,6 +35,12 @@ def build_model(cfg, params):
     )
 
 
+def training_objective(model, batch: TrainingBatch, criterion):
+    """GOTSF Eqs. (9)--(12) over every interval; the criterion is not used."""
+    forecast, loss = model.goal_oriented_objective(batch.x, batch.target)
+    return forecast, loss
+
+
 SPEC = ModelSpec(
     name="GOTSF",
     module="tsflab.models.gotsf",
@@ -45,4 +53,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(["time-series"]),
         components=(),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
+    training_objective=training_objective,
 )

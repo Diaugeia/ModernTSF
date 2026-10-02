@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GOTSF",
   "status": "passed",
-  "verified_at": "2026-10-02T18:27:39.122140Z",
-  "subject_sha256": "6e336f95cd28bd4bdf1af9eb411ebc9948bc564df79e3a03063f90ccc893208b",
+  "verified_at": "2026-10-02T18:33:37.793840Z",
+  "subject_sha256": "4928534c71b882a263714da3f4765cafefe59db0954d132956dfae3f51b8f309",
   "paper": {
     "title": "Goal-Oriented Time-Series Forecasting: Foundation Framework Design",
     "venue": "AAAI 2026",

@@ -114,31 +114,40 @@ class Model(nn.Module):
         return predictions, confidence
 
     def goal_oriented_loss(
-        self, x: torch.Tensor, target: torch.Tensor, interval_index: int
+        self, x: torch.Tensor, target: torch.Tensor, interval_index: int,
+        outputs: tuple[torch.Tensor, torch.Tensor] | None = None,
     ) -> torch.Tensor:
         """Regression-plus-membership objective corresponding to Eqs. (9)--(12)."""
         if target.shape != (x.shape[0], self.pred_len, self.enc_in):
             raise ValueError("target has the wrong forecasting shape")
-        predictions, confidence = self.interval_outputs(x)
+        predictions, confidence = outputs or self.interval_outputs(x)
         prediction = predictions[:, interval_index]
         membership = (
             (target >= self.interval_bounds[interval_index, 0])
             & (target <= self.interval_bounds[interval_index, 1])
         ).to(target.dtype)
-        weight = self.decay(target, interval_index)
-        sample_weight = weight.flatten(1).prod(-1)
-        regression = (
-            (prediction - target).abs().flatten(1).mean(-1) * sample_weight
-        ).mean()
-        classification_elements = F.binary_cross_entropy(
-            confidence[:, interval_index].clamp(1e-6, 1 - 1e-6),
-            membership,
-            reduction="none",
+        # Official trainer: element-wise decay weights on the L1 regression term
+        # and an unweighted mean BCE on the membership term.
+        regression = ((prediction - target).abs() * self.decay(target, interval_index)).mean()
+        classification = F.binary_cross_entropy(
+            confidence[:, interval_index].clamp(1e-6, 1 - 1e-6), membership
         )
-        classification = (
-            classification_elements.flatten(1).mean(-1) * sample_weight
-        ).mean()
         return regression + self.classification_weight * classification
+
+    def goal_oriented_objective(
+        self, x: torch.Tensor, target: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Training pass: mean per-interval loss and the confidence-weighted forecast."""
+        outputs = self.interval_outputs(x)
+        loss = torch.stack(
+            [
+                self.goal_oriented_loss(x, target, index, outputs)
+                for index in range(self.num_intervals)
+            ]
+        ).mean()
+        predictions, confidence = outputs
+        forecast = (predictions * confidence).sum(1) / confidence.sum(1).clamp_min(1e-6)
+        return forecast, loss
 
     def forecast_interval(
         self,

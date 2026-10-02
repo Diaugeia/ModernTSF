@@ -24,8 +24,8 @@ def build_model(cfg, params):
         individual=params.get("individual",False), ae_train_epochs=params.get("ae_train_epochs",100),
         ae_lr=params.get("ae_lr",5e-4), ae_loss=params.get("ae_loss","MAE"))
 
-def training_objective(model, batch_x, target):
-    forecast, loss, _ = model.training_objective(batch_x, target)
+def training_objective(model, batch, criterion):
+    forecast, loss, _ = model.training_objective(batch.x, batch.target)
     return forecast, loss
 
 SPEC = ModelSpec(name="LatentTSF", module="tsflab.models.latenttsf", model_class=Model,

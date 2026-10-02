@@ -58,7 +58,11 @@ class ModelSpec:
     contract_seeds: tuple[int, ...] = (0,)
     artifacts: tuple[ModelArtifact, ...] = ()
     artifact_factory: Callable | None = None
+    # Opt-in paper objective used only while training; contract in
+    # ``tsflab.benchmark.runner.objective``. ``training_setup`` prepares it once
+    # from the training split (for example fitting a label basis).
     training_objective: Callable | None = None
+    training_setup: Callable | None = None
 
     def __post_init__(self) -> None:
         output_capabilities = self.capabilities & {
@@ -72,6 +76,13 @@ class ModelSpec:
             raise ValueError(f"model {self.name!r} declares duplicate components")
         if self.training_objective is not None and not callable(self.training_objective):
             raise TypeError(f"model {self.name!r} training_objective must be callable")
+        if self.training_setup is not None:
+            if not callable(self.training_setup):
+                raise TypeError(f"model {self.name!r} training_setup must be callable")
+            if self.training_objective is None:
+                raise ValueError(
+                    f"model {self.name!r} declares training_setup without training_objective"
+                )
         if "inference-only" in self.capabilities:
             if "pretraining-stage" in self.capabilities:
                 raise ValueError(

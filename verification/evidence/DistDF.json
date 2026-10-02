@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DistDF",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:31.428230Z",
-  "subject_sha256": "8ea915c31a3272ff41afa562f3b0af3c15eb488ba47b862bda7abf21ed3be362",
+  "verified_at": "2026-10-02T18:33:37.793840Z",
+  "subject_sha256": "cd7be87b41bee62512bfcadc36e696abf8ec7d75e7c5456ea75763e7b29df724",
   "paper": {
     "title": "DistDF: Time-Series Forecasting Needs Joint-Distribution Wasserstein Alignment",
     "venue": "ICLR 2026",

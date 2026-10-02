@@ -18,7 +18,7 @@ composition: ["normalization=none", "decomposition=local:per-variate-svd-label-b
 
 - `fit_projection` computes a per-variate SVD basis from standardized training labels; `transform` projects forecasts and targets onto it.
 - `transformed_alignment_loss` mixes an L1 loss on the top `rank_ratio` components with a squared-error term via `alpha` (the Time-o1 objective).
-- The forecaster is only a runnable carrier (MLP plus linear skip, channel independent); the generic runner trains with MSE and does not call the Time-o1 loss, so experiment code must fit the projection and call it.
+- The forecaster is only a runnable carrier (MLP plus linear skip, channel independent); the model declares a `ModelSpec.training_setup` that fits the per-variate projection on the training labels and a `training_objective` that mixes the transformed-label L1 term with the configured criterion.
 
 <!-- model-card:canonical:start -->
 ## Input and output
@@ -46,7 +46,7 @@ Pinned source inspection: `utils/polynomial.py`, `README.md` were examined at th
 
 Local implementation: confirmed.
 
-Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. Experiment code must fit the projection on training labels and explicitly call `transformed_alignment_loss`; the generic MSE runner does not activate Time-o1 automatically. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
+Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. The runner fits the projection once on the training split (`training_setup`) and trains with `alpha * mean|transformed difference| + (1 - alpha) * criterion(forecast, target)`. Mean reductions and the configured criterion for the temporal term follow the pinned official trainer (`exp_long_term_forecasting.py`, which also precomputes the basis from training data); `transformed_alignment_loss` keeps the paper's summed Eq. (5) as its default. For `MS` targets the basis is fitted for the trailing channel only. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
 
 ## Shared components
 
@@ -73,7 +73,7 @@ Pinned source inspection: `utils/polynomial.py`, `README.md` were examined at th
 
 Local implementation: confirmed.
 
-Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. Experiment code must fit the projection on training labels and explicitly call `transformed_alignment_loss`; the generic MSE runner does not activate Time-o1 automatically. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
+Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. The runner fits the projection once on the training split (`training_setup`) and trains with `alpha * mean|transformed difference| + (1 - alpha) * criterion(forecast, target)`. Mean reductions and the configured criterion for the temporal term follow the pinned official trainer (`exp_long_term_forecasting.py`, which also precomputes the basis from training data); `transformed_alignment_loss` keeps the paper's summed Eq. (5) as its default. For `MS` targets the basis is fitted for the trailing channel only. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
 
 ## In TSFLab
 Default config: `configs/models/TimeO1.toml`; model specification: `spec.py`; clean-room objective/backbone: `model.py`.

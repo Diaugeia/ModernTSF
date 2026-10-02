@@ -47,44 +47,75 @@ class Model(nn.Module):
     @torch.no_grad()
     def fit_projection(self, labels: torch.Tensor) -> torch.Tensor:
         """Fit per-variate right-singular-vector bases from training labels."""
-        if labels.ndim != 3 or labels.shape[1:] != (self.pred_len, self.enc_in):
+        if (
+            labels.ndim != 3
+            or labels.shape[1] != self.pred_len
+            or not 1 <= labels.shape[2] <= self.enc_in
+        ):
             raise ValueError(
-                f"expected labels (N, {self.pred_len}, {self.enc_in}), got {tuple(labels.shape)}"
+                f"expected labels (N, {self.pred_len}, <={self.enc_in}), got {tuple(labels.shape)}"
             )
         centered = labels - labels.mean(dim=1, keepdim=True)
         standardized = centered / torch.sqrt(
             centered.var(dim=1, keepdim=True, unbiased=False) + 1e-5
         )
         bases = []
-        for channel in range(self.enc_in):
+        channels = labels.shape[2]
+        for channel in range(channels):
             _, _, right = torch.linalg.svd(standardized[:, :, channel], full_matrices=True)
             bases.append(right.transpose(0, 1))
-        self.projection.copy_(torch.stack(bases))
+        # Fewer label channels (``MS`` targets) fit the trailing channels.
+        self.projection[-channels:] = torch.stack(bases)
         self.projection_ready.fill_(True)
         return self.projection
 
     def transform(self, values: torch.Tensor) -> torch.Tensor:
         """Project horizon values into descending-significance models._components."""
-        if values.ndim != 3 or values.shape[1:] != (self.pred_len, self.enc_in):
+        if (
+            values.ndim != 3
+            or values.shape[1] != self.pred_len
+            or not 1 <= values.shape[2] <= self.enc_in
+        ):
             raise ValueError(
-                f"expected values (B, {self.pred_len}, {self.enc_in}), got {tuple(values.shape)}"
+                f"expected values (B, {self.pred_len}, <={self.enc_in}), got {tuple(values.shape)}"
             )
-        return torch.einsum("btc,ctk->bkc", values, self.projection)
+        return torch.einsum("btc,ctk->bkc", values, self.projection[-values.shape[2]:])
 
     def transformed_alignment_loss(
-        self, forecast: torch.Tensor, target: torch.Tensor
+        self,
+        forecast: torch.Tensor,
+        target: torch.Tensor,
+        *,
+        reduction: str = "sum",
+        temporal=None,
     ) -> torch.Tensor:
-        """Compute paper Equation (5) using the retained leading models._components."""
+        """Compute paper Equation (5) using the retained leading components.
+
+        ``reduction="sum"`` is the equation as written. ``"mean"`` (used by the
+        runner objective, like the official trainer) averages both terms so the
+        loss scale does not grow with batch size; ``temporal`` then replaces the
+        squared-error term with the configured criterion.
+        """
+        if reduction not in ("sum", "mean"):
+            raise ValueError("reduction must be 'sum' or 'mean'")
         if not bool(self.projection_ready):
             raise RuntimeError("fit_projection must be called on training labels first")
         forecast_components = self.transform(forecast)
         target_components = self.transform(target)
         retained = max(1, round(self.rank_ratio * self.pred_len))
-        transformed = (
+        difference = (
             forecast_components[:, :retained] - target_components[:, :retained]
-        ).abs().sum()
-        temporal = (forecast - target).square().sum()
-        return self.alpha * transformed + (1 - self.alpha) * temporal
+        ).abs()
+        if reduction == "sum":
+            transformed, temporal_loss = difference.sum(), (forecast - target).square().sum()
+        else:
+            transformed = difference.mean()
+            temporal_loss = (
+                temporal(forecast, target)
+                if temporal is not None
+                else (forecast - target).square().mean()
+            )
+        return self.alpha * transformed + (1 - self.alpha) * temporal_loss
 
     def forward(
         self,

@@ -515,6 +515,7 @@ def _run_one(
             checkpoint_cfg=config.training.checkpoint,
             callbacks=callbacks,
             training_objective=spec.training_objective,
+            training_setup=spec.training_setup,
             resume=session.resume,
             tracker=session.tracker,
             checkpoint_every_batches=session.policy.recovery.checkpoint_every_batches,
