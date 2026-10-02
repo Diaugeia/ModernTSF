@@ -49,6 +49,9 @@ class TopKExpertAttention(nn.Module):
     Input/output: ``(batch, tokens, dim)``. A depthwise positional convolution
     is added as a residual before projection, matching the local relative
     position handling used by patch-token forecasting encoders.
+    ``topk=0`` is the dense mode (ordinary softmax attention, no router);
+    ``topk < 0``, ``num_heads < 1`` and a ``qk_dim`` not divisible by
+    ``num_heads`` raise ``ValueError``.
     """
 
     def __init__(
@@ -61,8 +64,14 @@ class TopKExpertAttention(nn.Module):
         dropout: float = 0.0,
     ) -> None:
         super().__init__()
+        if num_heads < 1:
+            raise ValueError(f"num_heads must be at least 1, got {num_heads}")
         if dim % num_heads:
             raise ValueError("dim must be divisible by num_heads")
+        if topk < 0:
+            raise ValueError(f"topk must be non-negative (0 selects dense attention), got {topk}")
+        if (qk_dim or dim) % num_heads:
+            raise ValueError("qk_dim must be divisible by num_heads")
         self.dim = dim
         self.num_heads = num_heads
         self.topk = topk

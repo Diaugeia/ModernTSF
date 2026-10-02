@@ -3,7 +3,7 @@ name: "sharpness_aware"
 kind: "component"
 module: "tsflab.models._components.sharpness_aware"
 summary: "First-order sharpness-aware minimization (SAM/ASAM) as a loss evaluated at adversarially perturbed weights, usable with any optimizer through ModelSpec.training_objective."
-category: "utility"
+category: "objective"
 input: "model nn.Module; loss_fn(run) -> (aux or None, scalar loss); rho float >= 0; adaptive bool; eps float"
 output: "(aux detached or None, scalar loss that differentiates to the SAM gradient)"
 origin: "SAM, Foret et al., ICLR 2021 (Sharpness-Aware Minimization for Efficiently Improving Generalization); adaptive form from ASAM, Kwon et al., ICML 2021"
@@ -57,9 +57,9 @@ public symbol.
   parameters.
 - Raises `ValueError` for negative `rho` and, when `rho > 0`, for a model without
   trainable parameters. No parameters, buffers, or state-dict keys are added; no
-  in-place modification of parameters occurs. Buffers are not perturbed, but a
-  module that updates buffers in `forward` (for example BatchNorm running
-  statistics) updates them in both passes, and stochastic layers such as dropout
+  in-place modification of parameters occurs. Buffers are not perturbed, but they are shared with
+  `functional_call`, so a module that updates buffers in `forward` (for example
+  BatchNorm running statistics) updates them in both the ascent and the descent pass, and stochastic layers such as dropout
   draw independent masks in the two passes.
 
 ## Invariants and equivalence evidence

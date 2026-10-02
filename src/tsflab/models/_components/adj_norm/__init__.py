@@ -5,7 +5,7 @@ normalizations used by spatiotemporal GNNs. The definitions are also used by
 the Apache-2.0 BasicTS ``basicts/utils/adjacent_matrix_norm.py``:
 https://github.com/GestaltCogTeam/BasicTS (Apache-2.0). The math matches the
 published reference definitions; this local implementation operates on dense numpy
-``(N, N)`` arrays and to guard against zero-degree rows.
+``(N, N)`` arrays and guards against zero-degree rows.
 
 All functions accept a dense adjacency ``adj`` of shape ``(N, N)`` and return a
 dense ``(N, N)`` ``float64`` matrix. Zero-degree nodes are handled by treating

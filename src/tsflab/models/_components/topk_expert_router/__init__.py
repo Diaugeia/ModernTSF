@@ -49,8 +49,13 @@ def topk_dense_mix(weights: torch.Tensor, k: int, floor: float) -> torch.Tensor:
     over its last axis. The top-``k`` entries are kept at their dense value,
     every other entry is zeroed, ``floor * weights`` is added back everywhere
     so every expert keeps a live gradient, and the result is renormalized to
-    sum to one over the last axis.
+    sum to one over the last axis. Raises ``ValueError`` unless
+    ``1 <= k <= num_experts`` and ``floor >= 0``.
     """
+    if not 1 <= k <= weights.shape[-1]:
+        raise ValueError(f"k must be in [1, {weights.shape[-1]}] (number of experts), got {k}")
+    if floor < 0:
+        raise ValueError(f"floor must be non-negative, got {floor}")
     top_indices = weights.topk(k, dim=-1).indices
     sparse = torch.zeros_like(weights).scatter(-1, top_indices, weights.gather(-1, top_indices))
     combined = sparse + floor * weights

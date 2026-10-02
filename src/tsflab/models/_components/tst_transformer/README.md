@@ -37,8 +37,7 @@ dropped. Embeddings, patching, and heads stay in the consumer.
 ## Interface
 
 The only public symbol is `TSTEncoder` (the module defines no `__all__` and the
-catalog entry lists no public symbols, so the generated block shows only the module
-import; `_BatchFeatureNorm` and `_activation` are private).
+catalog entry lists `TSTEncoder` as the public symbol; `_BatchFeatureNorm` and `_activation` are private).
 
 `TSTEncoder(d_model, n_heads, *, n_layers=3, d_k=None, d_v=None, d_ff=256,
 activation="gelu", norm="BatchNorm", attn_dropout=0.0, res_dropout=0.0,
@@ -104,10 +103,11 @@ layer stack), `self_attention_family` (swappable attention cores this encoder ca
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `TSTEncoder(d_model: int, n_heads: int, *, n_layers: int=3, d_k: int | None=None, d_v: int | None=None, d_ff: int=256, activation: str | Callable='gelu', norm: str='BatchNorm', attn_dropout: float=0.0, res_dropout: float=0.0, ffn_dropout: float=0.0, proj_dropout: float=0.0, pre_norm: bool=False, **_: object)`
+  Stack batch-first self-attention blocks with an optional final norm.
 
 ```python
-import tsflab.models._components.tst_transformer
+from tsflab.models._components.tst_transformer import TSTEncoder
 ```
 
 ## Retrieval terms

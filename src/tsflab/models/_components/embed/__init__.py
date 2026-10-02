@@ -12,7 +12,6 @@ class PositionalEmbedding(nn.Module):
     def __init__(self, d_model, max_len=5000):
         super().__init__()
         pe = torch.zeros(max_len, d_model).float()
-        pe.require_grad = False
         position = torch.arange(0, max_len).float().unsqueeze(1)
         div_term = (
             torch.arange(0, d_model, 2).float() * -(math.log(10000.0) / d_model)
@@ -29,7 +28,7 @@ class PositionalEmbedding(nn.Module):
 class TokenEmbedding(nn.Module):
     def __init__(self, c_in, d_model):
         super().__init__()
-        padding = 1 if torch.__version__ >= "1.5.0" else 2
+        padding = 1  # circular kernel-3 padding that preserves the sequence length
         self.tokenConv = nn.Conv1d(
             in_channels=c_in,
             out_channels=d_model,
@@ -52,7 +51,6 @@ class FixedEmbedding(nn.Module):
     def __init__(self, c_in, d_model):
         super().__init__()
         w = torch.zeros(c_in, d_model).float()
-        w.require_grad = False
         position = torch.arange(0, c_in).float().unsqueeze(1)
         div_term = (
             torch.arange(0, d_model, 2).float() * -(math.log(10000.0) / d_model)
@@ -97,17 +95,9 @@ class TemporalEmbedding(nn.Module):
 class TimeFeatureEmbedding(nn.Module):
     def __init__(self, d_model, embed_type="timeF", freq="h", input_dim=None):
         super().__init__()
-        freq_map = {
-            "h": 6,
-            "t": 6,
-            "s": 6,
-            "m": 6,
-            "a": 6,
-            "w": 6,
-            "d": 6,
-            "b": 6,
-        }
-        d_inp = input_dim if input_dim is not None else freq_map.get(freq, 6)
+        # Every frequency uses the six-column raw calendar contract; ``freq`` and
+        # ``embed_type`` are accepted for interface compatibility only.
+        d_inp = input_dim if input_dim is not None else 6
         self.embed = nn.Linear(d_inp, d_model, bias=False)
 
     def forward(self, x):

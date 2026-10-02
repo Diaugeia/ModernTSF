@@ -37,9 +37,9 @@ parameters, the `C` read-out, the grid reshape, normalization and bidirectionali
 ## Interface
 
 `diagonal_selective_scan(u, delta, a, b) -> Tensor`: `u`, `delta`, `b` all
-`[batch, channels, length]` with identical shapes and `length >= 1` (an empty length axis fails in the initial-state indexing); `a` is `[channels]` (already
+`[batch, channels, length]` with identical shapes and `length >= 1` (a zero-length axis raises `ValueError`); `a` is `[channels]` (already
 negative, i.e. `-exp(a_log)`). Returns `[batch, channels, length]`; `h[..., t]` is
-the state after position `t`. Raises `ValueError` if `u`, `delta`, `b` shapes differ or
+the state after position `t`. Raises `ValueError` if `u`, `delta`, `b` shapes differ, the length axis is empty, or
 `a` is not 1-D with length `channels`. Pure function; `u`, `delta`, `a`, `b` must share dtype and device; sequential Python loop over
 `length`, differentiable, no parameters.
 

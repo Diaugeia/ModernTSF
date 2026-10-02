@@ -111,10 +111,19 @@ softmax).
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `symmetric_normalized_laplacian(adj)`
+  Symmetric normalized Laplacian ``L = I - D^{-1/2} A D^{-1/2}``.
+- `lambda_rescaled_laplacian(adj, lambda_max: float=2.0)`
+  Scaled Laplacian ``2L / lambda_max - I`` for Chebyshev polynomials.
+- `gcn_norm(adj)`
+  GCN renormalization ``D^{-1/2} (A + I) D^{-1/2}`` (Kipf & Welling).
+- `transition_matrix(adj)`
+  Random-walk transition matrix ``D^{-1} A`` (row-normalized).
+- `reverse_transition_matrix(adj)`
+  Reverse random-walk transition matrix ``(D^{-1} A)`` on ``A^T``.
 
 ```python
-import tsflab.models._components.adj_norm
+from tsflab.models._components.adj_norm import symmetric_normalized_laplacian, lambda_rescaled_laplacian, gcn_norm, transition_matrix, reverse_transition_matrix
 ```
 
 ## Retrieval terms

@@ -94,6 +94,15 @@ class DecimatedWaveletTransform(nn.Module):
     ``pywt.wavedec`` ordering). ``reconstruct`` inverts that mapping exactly
     for two-tap orthonormal filters (``haar``/``db1``); longer filters may be
     decomposed but do not support reconstruction here.
+
+    Odd lengths are replicate-padded by one sample per level, and the inverse
+    must trim that sample again. ``decompose`` records the per-level flags
+    (outermost level first) in ``last_trims``; ``reconstruct`` uses them unless
+    an explicit ``trims`` is passed. Without a prior ``decompose`` and without
+    ``trims`` all flags are zero, which is exact only for coefficients whose
+    original lengths were even at every level. The module is therefore stateful:
+    pass ``trims`` explicitly when reconstructing coefficients that did not come
+    from this module's most recent ``decompose`` call.
     """
 
     def __init__(self, wavelet: str = "haar", level: int = 1) -> None:
@@ -106,7 +115,7 @@ class DecimatedWaveletTransform(nn.Module):
         self.filter_len = low.numel()
         self.level = level
         self.wavelet = wavelet
-        self._trims: list[int] = []
+        self.last_trims: list[int] = []
 
     def _analysis_step(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, int]:
         batch, channels, length = x.shape
@@ -130,7 +139,7 @@ class DecimatedWaveletTransform(nn.Module):
             approx, detail, trimmed = self._analysis_step(approx)
             details.append(detail)
             trims.append(trimmed)
-        self._trims = trims
+        self.last_trims = trims
         return [approx, *reversed(details)]
 
     def _synthesis_step(self, low: torch.Tensor, high: torch.Tensor, trimmed: int) -> torch.Tensor:
@@ -145,8 +154,15 @@ class DecimatedWaveletTransform(nn.Module):
             merged = merged[..., :-1]
         return merged
 
-    def reconstruct(self, coeffs: list[torch.Tensor]) -> torch.Tensor:
-        """Invert :meth:`decompose`; ``coeffs`` must match its output layout."""
+    def reconstruct(
+        self, coeffs: list[torch.Tensor], trims: list[int] | None = None
+    ) -> torch.Tensor:
+        """Invert :meth:`decompose`; ``coeffs`` must match its output layout.
+
+        ``trims`` is the per-level odd-length flag list (outermost level
+        first, length ``level``); default is ``last_trims`` from the most
+        recent ``decompose`` (all zeros if there was none).
+        """
         if self.filter_len != 2:
             raise NotImplementedError(
                 "exact reconstruction is only implemented for two-tap orthonormal "
@@ -154,7 +170,10 @@ class DecimatedWaveletTransform(nn.Module):
             )
         if len(coeffs) != self.level + 1:
             raise ValueError(f"expected {self.level + 1} coefficient tensors, got {len(coeffs)}")
-        trims = self._trims or [0] * self.level
+        if trims is None:
+            trims = self.last_trims or [0] * self.level
+        elif len(trims) != self.level:
+            raise ValueError(f"expected {self.level} trim flags, got {len(trims)}")
         approx = coeffs[0]
         # ``coeffs[1:]`` is innermost-detail-first (as produced by ``decompose``);
         # ``trims`` was recorded outermost-first, so pair them in reverse.

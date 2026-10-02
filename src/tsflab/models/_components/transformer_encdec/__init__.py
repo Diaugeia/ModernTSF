@@ -6,6 +6,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+def _feed_forward_activation(activation):
+    """Return ``F.relu`` or ``F.gelu`` for ``"relu"``/``"gelu"``; reject anything else."""
+    if activation == "relu":
+        return F.relu
+    if activation == "gelu":
+        return F.gelu
+    raise ValueError(f"activation must be 'relu' or 'gelu', got {activation!r}")
+
+
 class ConvLayer(nn.Module):
     def __init__(self, c_in):
         super().__init__()
@@ -39,7 +48,7 @@ class EncoderLayer(nn.Module):
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.relu if activation == "relu" else F.gelu
+        self.activation = _feed_forward_activation(activation)
 
     def forward(self, x, attn_mask=None, tau=None, delta=None):
         new_x, attn = self.attention(
@@ -62,6 +71,14 @@ class EncoderLayer(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, attn_layers, conv_layers=None, norm_layer=None):
         super().__init__()
+        attn_layers = list(attn_layers)
+        if conv_layers is not None:
+            conv_layers = list(conv_layers)
+            if len(conv_layers) != len(attn_layers) - 1:
+                raise ValueError(
+                    "conv_layers must contain exactly len(attn_layers) - 1 distilling "
+                    f"layers, got {len(conv_layers)} for {len(attn_layers)} attention layers"
+                )
         self.attn_layers = nn.ModuleList(attn_layers)
         self.conv_layers = (
             nn.ModuleList(conv_layers) if conv_layers is not None else None
@@ -111,7 +128,7 @@ class DecoderLayer(nn.Module):
         self.norm2 = nn.LayerNorm(d_model)
         self.norm3 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.relu if activation == "relu" else F.gelu
+        self.activation = _feed_forward_activation(activation)
 
     def forward(self, x, cross, x_mask=None, cross_mask=None, tau=None, delta=None):
         x = x + self.dropout(

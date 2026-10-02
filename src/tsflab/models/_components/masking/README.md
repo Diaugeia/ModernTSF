@@ -61,8 +61,8 @@ General notes: plain Python classes (no `__call__`), not `nn.Module`s: no
 parameters, buffers, state-dict keys, or training state. They do not validate
 arguments; the mask is rebuilt on every construction (allocated on CPU, then
 moved to `device`) and exposed read-only through `.mask`. The result is a bool
-tensor and never requires grad. The generated block shows a module-level import
-because the catalog spec lists no public symbols; import the three classes by name.
+tensor and never requires grad. Import the three classes by name
+(`TriangularCausalMask`, `ProbMask`, `LocalMask`; all are cataloged public symbols).
 
 ## Invariants and equivalence evidence
 
@@ -104,10 +104,15 @@ attention in `differential_attention` and the routed attention in
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `TriangularCausalMask(batch_size, length, device='cpu')`
+  No symbol-level description is recorded.
+- `ProbMask(batch_size, num_heads, length, index, scores, device='cpu')`
+  No symbol-level description is recorded.
+- `LocalMask(batch_size, length, series_length, device='cpu')`
+  No symbol-level description is recorded.
 
 ```python
-import tsflab.models._components.masking
+from tsflab.models._components.masking import TriangularCausalMask, ProbMask, LocalMask
 ```
 
 ## Retrieval terms

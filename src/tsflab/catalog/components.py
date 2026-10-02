@@ -88,7 +88,7 @@ class ComponentCatalog:
 
 COMPONENT_CATALOG = ComponentCatalog(
     (
-        ComponentSpec("adj_norm", "tsflab.models._components.adj_norm", "Dense adjacency normalization.", keywords=("adjacency", "graph", "laplacian", "normalization")),
+        ComponentSpec("adj_norm", "tsflab.models._components.adj_norm", "Dense adjacency normalization.", ("symmetric_normalized_laplacian", "lambda_rescaled_laplacian", "gcn_norm", "transition_matrix", "reverse_transition_matrix"), keywords=("adjacency", "graph", "laplacian", "normalization")),
         ComponentSpec(
             "adain_style_norm",
             "tsflab.models._components.adain_style_norm",
@@ -265,7 +265,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("periodic_alibi_bias",),
             ("alibi", "bias", "periodic", "relative-position", "attention"),
         ),
-        ComponentSpec("graph_utils", "tsflab.models._components.graph_utils", "Graph supports, Laplacians, and Chebyshev bases.", keywords=("adjacency", "chebyshev", "graph", "laplacian", "support")),
+        ComponentSpec("graph_utils", "tsflab.models._components.graph_utils", "Graph supports, Laplacians, and Chebyshev bases.", ("normalize_adj_mx", "adj_to_supports", "cheb_poly"), keywords=("adjacency", "chebyshev", "graph", "laplacian", "support")),
         ComponentSpec(
             "graph_spectral",
             "tsflab.models._components.graph_spectral",
@@ -280,7 +280,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("center_on_last_value", "restore_last_value"),
             ("centering", "detach", "last-value", "level", "residual"),
         ),
-        ComponentSpec("marks", "tsflab.models._components.marks", "Canonical temporal-mark and spatiotemporal input adapters.", keywords=("calendar", "covariate", "spatiotemporal", "timestamp")),
+        ComponentSpec("marks", "tsflab.models._components.marks", "Canonical temporal-mark and spatiotemporal input adapters.", ("TIME_FEATURES", "TSLIB_TIME_FEATURE_DIMS", "tslib_time_feature_dimension", "adapt_tslib_marks", "normalized_time_features", "to_spatiotemporal", "to_calendar_spatiotemporal", "future_time_features", "coerce_time_length"), keywords=("calendar", "covariate", "spatiotemporal", "timestamp")),
         ComponentSpec(
             "mamba",
             "tsflab.models._components.mamba",
@@ -295,7 +295,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("sharpness_aware_loss",),
             ("adversarial-weights", "optimizer-agnostic", "sam", "sharpness", "training-objective", "functional-call"),
         ),
-        ComponentSpec("masking", "tsflab.models._components.masking", "Attention mask construction.", keywords=("attention", "causal", "mask")),
+        ComponentSpec("masking", "tsflab.models._components.masking", "Attention mask construction.", ("TriangularCausalMask", "ProbMask", "LocalMask"), keywords=("attention", "causal", "mask")),
         ComponentSpec(
             "hyper_state_scan",
             "tsflab.models._components.hyper_state_scan",
@@ -317,7 +317,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("PatchTSTBackbone",),
             ("backbone", "channel-independent", "patch", "transformer"),
         ),
-        ComponentSpec("positional_encoding", "tsflab.models._components.positional_encoding", "Patch-transformer positional encodings.", keywords=("encoding", "patch", "position", "transformer")),
+        ComponentSpec("positional_encoding", "tsflab.models._components.positional_encoding", "Patch-transformer positional encodings.", ("positional_encoding",), keywords=("encoding", "patch", "position", "transformer")),
         ComponentSpec(
             "periodic_query_bank",
             "tsflab.models._components.periodic_query_bank",
@@ -369,8 +369,8 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("GatingMLP", "topk_dense_mix"),
             ("expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k"),
         ),
-        ComponentSpec("transformer_encdec", "tsflab.models._components.transformer_encdec", "Shared Transformer encoder and decoder blocks.", keywords=("attention", "decoder", "encoder", "transformer")),
-        ComponentSpec("tst_transformer", "tsflab.models._components.tst_transformer", "Time-series Transformer encoder blocks.", keywords=("attention", "encoder", "time-series", "transformer")),
+        ComponentSpec("transformer_encdec", "tsflab.models._components.transformer_encdec", "Shared Transformer encoder and decoder blocks.", ("ConvLayer", "EncoderLayer", "Encoder", "DecoderLayer", "Decoder"), keywords=("attention", "decoder", "encoder", "transformer")),
+        ComponentSpec("tst_transformer", "tsflab.models._components.tst_transformer", "Time-series Transformer encoder blocks.", ("TSTEncoder",), keywords=("attention", "encoder", "time-series", "transformer")),
         ComponentSpec(
             "weight_set_router",
             "tsflab.models._components.weight_set_router",
@@ -389,7 +389,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             "topk_expert_attention",
             "tsflab.models._components.topk_expert_attention",
             "Differentiable top-k local expert self-attention with an optional shared global expert.",
-            ("TopKExpertAttention",),
+            ("LocalExpertRouter", "gather_experts", "TopKExpertAttention"),
             ("attention", "expert", "mixture-of-experts", "routing", "top-k"),
         ),
         ComponentSpec(

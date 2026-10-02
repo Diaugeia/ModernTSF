@@ -62,8 +62,8 @@ def _adj(n: int = 5, seed: int = 0) -> np.ndarray:
     a = rng.random((n, n))
     a[a < 0.5] = 0.0
     np.fill_diagonal(a, 0.0)
-    a[:, 0] = 0.0  # node 0 has zero in-degree; node n-1 row kept nonzero below
-    a[n - 1] = 0.0  # zero-degree row
+    a[:, 0] = 0.0  # column 0 is zero: node 0 has zero in-degree
+    a[n - 1] = 0.0  # row n-1 is zero: node n-1 has zero out-degree
     return a
 
 

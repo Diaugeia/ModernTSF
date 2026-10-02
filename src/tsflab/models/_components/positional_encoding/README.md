@@ -53,8 +53,7 @@ declares it.
 ## Interface
 
 `positional_encoding(kind: str | None, learnable: bool, length: int, width: int)
--> nn.Parameter`. The only public symbol (the generated block shows a
-module-level import because the catalog spec lists no public symbols). Raises
+-> nn.Parameter`. The only public symbol (the catalog lists it as the public symbol). Raises
 `ValueError` if `length < 1` or `width < 1`, or if `kind` is not one of `None`,
 `zero`, `small_uniform`, `zeros`, `small_uniform_2d`, `normal`, `gauss`,
 `uniform`, `sincos`, `lin1d`, `exp1d`, `lin2d`, `exp2d`. Returns a
@@ -113,10 +112,11 @@ no standardization and an even-`d_model` requirement), `periodic_alibi_bias`
 
 Implementation: [`__init__.py`](__init__.py)
 
-- Import the module and use its documented functions/classes.
+- `positional_encoding(kind: str | None, learnable: bool, length: int, width: int)`
+  Create a positional table using the repository's stable public modes.
 
 ```python
-import tsflab.models._components.positional_encoding
+from tsflab.models._components.positional_encoding import positional_encoding
 ```
 
 ## Retrieval terms

@@ -33,6 +33,7 @@ CATEGORIES = (
     "memory",
     "mixer",
     "normalization",
+    "objective",
     "routing",
     "state-space",
     "utility",

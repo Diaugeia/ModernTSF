@@ -55,7 +55,8 @@ implementation detail of the official code, not of the paper.
   (else `ValueError`). With `mixing=None` the layer needs `num_sets == 1` (else
   `ValueError`) and all channels share the weight. With `mixing` of shape
   `[num_sets, channels]` channel `c` uses `sum_s mixing[s, c] * weight[s]` (and
-  the same for the bias); any other shape raises `ValueError`. `mixing` is cast
+  the same for the bias, computed by `weight_set_router.mix_weight_sets`, which
+  has identical semantics to the former inline einsum); any other shape raises `ValueError`. `mixing` is cast
   to complex, and may carry gradients. Returns `[batch, channels, output_length]`
   with the real dtype and device of `x` (float32 or float64; `rfft` support for
   other dtypes is backend dependent).
