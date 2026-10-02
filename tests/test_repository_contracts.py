@@ -359,7 +359,7 @@ class RepositoryContractTests(unittest.TestCase):
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
-            89,
+            89 + 1,  # one card per preset plus the GIFT-Eval family card
         )
 
     def test_agent_assets_are_canonical(self) -> None:

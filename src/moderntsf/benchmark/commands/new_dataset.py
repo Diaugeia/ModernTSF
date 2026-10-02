@@ -199,11 +199,13 @@ def main() -> None:
         print(f"  + {path.relative_to(ROOT)}")
     if args.pattern == "single":
         print(f"  ~ DATASET_NAME_MAP: {status}")
-    print(f"  + catalog/datasets/{name}/README.md")
+    print(f"  + catalog/datasets/{name}/README.md  (curated facts are TODO placeholders)")
     print()
     print("Next steps:")
     if args.pattern == "single":
         print(f"  1. Implement the loader in src/moderntsf/data/datasets/{name}.py (_read_data).")
+    print(f"  - Fill every TODO in catalog/datasets/{name}/README.md with verified facts")
+    print("    (source, license, statistics, protocol); `tsf dataset audit` fails until done.")
     print(f"  - Put the data at {data_path}, then reference the config from a")
     print(f"    run config via `extends = [..., \"../datasets/{name}.toml\", ...]`.")
 

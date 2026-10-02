@@ -15,11 +15,13 @@ def _print(payload: object) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
-def _dataset_record_payload(record: object) -> dict[str, object]:
+def _dataset_record_payload(record: object, facts: dict[str, object] | None = None) -> dict[str, object]:
     from dataclasses import asdict
 
     payload = asdict(record)
     payload["card"] = f"catalog/datasets/{record.name}/README.md"
+    if facts is not None:
+        payload["facts"] = facts  # curated card front matter (level 0/1)
     return payload
 
 
@@ -33,6 +35,7 @@ def dataset_command(args: list[str]) -> int:
         return 0
     action, rest = args[0], args[1:]
     if action in {"list", "show", "search", "audit"}:
+        from moderntsf.benchmark.dataset_cards import dataset_facts, search_text
         from moderntsf.benchmark.resource_cards import audit_resource_cards, dataset_records
 
         records = dataset_records(ROOT)
@@ -54,9 +57,15 @@ def dataset_command(args: list[str]) -> int:
                 return 2
             selected = next((record for record in records if record.name == rest[0]), None)
             if selected is None:
+                family = [record for record in records if record.loader == rest[0] and record.dataset_id]
+                if family:
+                    facts = dataset_facts(ROOT, [rest[0]]).get(rest[0], {})
+                    _print({"name": rest[0], "kind": "dataset-family", "card": f"catalog/datasets/{rest[0]}/README.md",
+                            "facts": facts, "members": [record.name for record in family]})
+                    return 0
                 print(f"Unknown dataset preset {rest[0]!r}", file=sys.stderr)
                 return 2
-            _print(_dataset_record_payload(selected))
+            _print(_dataset_record_payload(selected, dataset_facts(ROOT, [selected.name]).get(selected.name, {})))
             return 0
         if action == "search":
             parser = argparse.ArgumentParser(prog="tsf dataset search")
@@ -68,14 +77,18 @@ def dataset_command(args: list[str]) -> int:
                 parser.error("--limit must be positive")
             terms = set(re.findall(r"[a-z0-9]+", " ".join(parsed.query).casefold()))
             matches = []
+            facts = dataset_facts(ROOT)
             for record in records:
-                text = " ".join(
-                    (record.name, record.alias, record.loader, record.dataset_id or record.path, record.track)
-                ).casefold()
+                text = search_text(record, facts.get(record.name, {}))
                 matched = sorted(term for term in terms if term in text)
+                named = {term for term in terms if term in f"{record.name} {record.alias}".casefold()}
                 if matched:
                     payload = _dataset_record_payload(record)
-                    payload.update(score=len(matched), matched_terms=matched)
+                    card = facts.get(record.name, {})
+                    payload.update(
+                        score=len(matched) + len(named), matched_terms=matched, summary=card.get("summary", ""),
+                        domain=card.get("domain", ""), frequency=card.get("frequency", ""),
+                    )
                     matches.append(payload)
             matches.sort(key=lambda item: (-int(item["score"]), str(item["name"])))
             matches = matches[: parsed.limit]
@@ -83,7 +96,7 @@ def dataset_command(args: list[str]) -> int:
                 _print(matches)
             else:
                 for match in matches:
-                    print(f"{match['name']}\t{match['loader']}\t{match['alias']}")
+                    print(f"{match['name']}\t{match['loader']}\t{match['domain']}\t{match['frequency']}\t{match['summary']}")
             return 0
         if rest:
             print("tsf dataset audit takes no arguments", file=sys.stderr)
@@ -91,7 +104,8 @@ def dataset_command(args: list[str]) -> int:
         failures = [error for error in audit_resource_cards(ROOT) if "dataset" in error]
         for failure in failures:
             print(f"ERROR: {failure}")
-        print(f"Dataset cards: {len(records) - len(failures)}/{len(records)} current")
+        failing = sum(any(f"catalog/datasets/{record.name}/README.md" in item for item in failures) for record in records)
+        print(f"Dataset cards: {len(records) - failing}/{len(records)} complete and current")
         return 1 if failures else 0
 
     scripts = {
