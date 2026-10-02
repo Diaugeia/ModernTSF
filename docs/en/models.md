@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -45,6 +45,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `DeepAR` | [`configs/models/DeepAR.toml`](../../configs/models/DeepAR.toml) | distribution-output, time-series | [README](../../src/tsflab/models/deepar/README.md) |
 | `DFDGCN` | [`configs/models/DFDGCN.toml`](../../configs/models/DFDGCN.toml) | spatiotemporal | [README](../../src/tsflab/models/dfdgcn/README.md) |
 | `DGCRN` | [`configs/models/DGCRN.toml`](../../configs/models/DGCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/dgcrn/README.md) |
+| `DiPELinear` | [`configs/models/DiPELinear.toml`](../../configs/models/DiPELinear.toml) | time-series | [README](../../src/tsflab/models/dipelinear/README.md) |
 | `DistDF` | [`configs/models/DistDF.toml`](../../configs/models/DistDF.toml) | time-series | [README](../../src/tsflab/models/distdf/README.md) |
 | `DLinear` | [`configs/models/DLinear.toml`](../../configs/models/DLinear.toml) | time-series | [README](../../src/tsflab/models/dlinear/README.md) |
 | `DPWMixer` | [`configs/models/DPWMixer.toml`](../../configs/models/DPWMixer.toml) | time-series | [README](../../src/tsflab/models/dpwmixer/README.md) |

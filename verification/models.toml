@@ -207,6 +207,12 @@ profile = 'standard'
 test = 'tests/test_graph_forecasters_a.py'
 reference_test = 'tests/test_graph_forecasters_a.py'
 
+[models.DiPELinear]
+profile = 'standard'
+test = 'tests/test_dipelinear.py'
+reference_test = 'tests/test_dipelinear.py'
+reference_sources = ['https://github.com/wintertee/DiPE-Linear/blob/b26e25015fba2c6a32e1f4eae8d337ccd9fe4067/timeprophet/models/DiPE.py', 'https://github.com/wintertee/DiPE-Linear/blob/b26e25015fba2c6a32e1f4eae8d337ccd9fe4067/timeprophet/utils/callbacks.py']
+
 [models.DistDF]
 profile = 'standard'
 test = 'tests/test_special_forecasters.py'
