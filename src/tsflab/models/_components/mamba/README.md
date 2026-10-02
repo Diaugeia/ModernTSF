@@ -125,7 +125,7 @@ from tsflab.models._components.mamba import RMSNorm, MambaBlock, MambaResidualBl
 
 `mamba`, `mixer`, `rmsnorm`, `ssm`, `state-space`
 
-## Current model consumers (4)
+## Current model consumers (9)
 
-`bimamba`, `composed`, `mambasimple`, `s_mamba`
+`bimamba`, `composed`, `mambasimple`, `mambats`, `mou`, `penguin`, `s_mamba`, `samba`, `timemachine`
 <!-- component-card:generated:end -->

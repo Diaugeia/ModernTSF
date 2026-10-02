@@ -89,7 +89,7 @@ from tsflab.models._components.flatten_forecast_head import FlattenForecastHead
 
 `channel-wise`, `flatten`, `forecast`, `head`, `linear`, `patch`
 
-## Current model consumers (7)
+## Current model consumers (12)
 
-`composed`, `gateformer`, `lsinet`, `semixer`, `sensorformer`, `srsnet`, `timeexpert`
+`composed`, `gateformer`, `lsinet`, `mambats`, `mou`, `patchtsmixer`, `penguin`, `samba`, `semixer`, `sensorformer`, `srsnet`, `timeexpert`
 <!-- component-card:generated:end -->

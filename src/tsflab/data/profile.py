@@ -555,7 +555,7 @@ def render_markdown(profile: Mapping[str, Any], recommendations: Mapping[str, An
         "",
         f"- Source: `{d['source']}`; channels {d['channels']} "
         f"(sampled {d['channels_sampled']} for spectral statistics)",
-        f"- Split lengths: " + ", ".join(f"{k} {v}" for k, v in profile["split"].items())
+        "- Split lengths: " + ", ".join(f"{k} {v}" for k, v in profile["split"].items())
         + f"; frequency {freq.get('label') or 'unknown'}",
         f"- Missing {q['missing_fraction']}, zeros {q['zero_fraction']} "
         f"(channels mostly zero: {q['channels_mostly_zero']}), outliers(5 MAD) {an['outlier_fraction_5mad']}",

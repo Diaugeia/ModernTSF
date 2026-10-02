@@ -101,7 +101,7 @@ from tsflab.models._components.last_value_center import center_on_last_value, re
 
 `centering`, `detach`, `last-value`, `level`, `residual`
 
-## Current model consumers (4)
+## Current model consumers (5)
 
-`composed`, `crossgnn`, `nlinear`, `segrnn`
+`composed`, `crossgnn`, `mtlinear`, `nlinear`, `segrnn`
 <!-- component-card:generated:end -->

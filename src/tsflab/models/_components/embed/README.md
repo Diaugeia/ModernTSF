@@ -96,7 +96,7 @@ import tsflab.models._components.embed
 
 `calendar`, `embedding`, `patch`, `position`, `token`
 
-## Current model consumers (5)
+## Current model consumers (7)
 
-`informer`, `penguin`, `sensorformer`, `timeexpert`, `transformer`
+`fredf`, `gpht`, `informer`, `penguin`, `sensorformer`, `timeexpert`, `transformer`
 <!-- component-card:generated:end -->

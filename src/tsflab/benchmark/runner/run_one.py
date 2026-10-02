@@ -325,8 +325,6 @@ def _write_run_outputs(
         profile_model(
             model=model,
             data_loader=test_loader,
-            checkpoint=session.directory / "checkpoints" / "evaluation.pth" if session.policy.recovery.checkpoint_every_batches else None,
-            checkpoint_every_batches=session.policy.recovery.checkpoint_every_batches,
             device=device,
             label_len=config.task.label_len,
             pred_len=config.task.pred_len,

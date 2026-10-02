@@ -109,7 +109,7 @@ from tsflab.models._components.channel_wise_linear import ChannelWiseLinear
 
 `channel-wise`, `forecast`, `individual`, `linear`, `projection`
 
-## Current model consumers (11)
+## Current model consumers (13)
 
-`composed`, `core`, `cosa`, `cyclenet`, `distdf`, `linear`, `mtsmixer`, `nlinear`, `rlinear`, `rpmixer`, `tsmixer`
+`composed`, `core`, `cosa`, `cyclenet`, `distdf`, `linear`, `mtlinear`, `mtsmixer`, `nlinear`, `rlinear`, `rpmixer`, `samformer`, `tsmixer`
 <!-- component-card:generated:end -->

@@ -1,16 +1,18 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 217 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
 | Name | Preset | Capabilities | Model card |
 |---|---|---|---|
+| `AdaMSHyper` | [`configs/models/AdaMSHyper.toml`](../../configs/models/AdaMSHyper.toml) | time-series | [README](../../src/tsflab/models/adamshyper/README.md) |
 | `AGCRN` | [`configs/models/AGCRN.toml`](../../configs/models/AGCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/agcrn/README.md) |
 | `AirCade` | [`configs/models/AirCade.toml`](../../configs/models/AirCade.toml) | covariate | [README](../../src/tsflab/models/aircade/README.md) |
 | `AirDualODE` | [`configs/models/AirDualODE.toml`](../../configs/models/AirDualODE.toml) | covariate | [README](../../src/tsflab/models/airdualode/README.md) |
 | `AirFormer` | [`configs/models/AirFormer.toml`](../../configs/models/AirFormer.toml) | covariate | [README](../../src/tsflab/models/airformer/README.md) |
 | `AirPhyNet` | [`configs/models/AirPhyNet.toml`](../../configs/models/AirPhyNet.toml) | covariate | [README](../../src/tsflab/models/airphynet/README.md) |
+| `AMD` | [`configs/models/AMD.toml`](../../configs/models/AMD.toml) | time-series | [README](../../src/tsflab/models/amd/README.md) |
 | `Amplifier` | [`configs/models/Amplifier.toml`](../../configs/models/Amplifier.toml) | time-series | [README](../../src/tsflab/models/amplifier/README.md) |
 | `AMRC` | [`configs/models/AMRC.toml`](../../configs/models/AMRC.toml) | time-series | [README](../../src/tsflab/models/amrc/README.md) |
 | `APN` | [`configs/models/APN.toml`](../../configs/models/APN.toml) | time-series | [README](../../src/tsflab/models/apn/README.md) |
@@ -47,6 +49,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `DeepAR` | [`configs/models/DeepAR.toml`](../../configs/models/DeepAR.toml) | distribution-output, time-series | [README](../../src/tsflab/models/deepar/README.md) |
 | `DFDGCN` | [`configs/models/DFDGCN.toml`](../../configs/models/DFDGCN.toml) | spatiotemporal | [README](../../src/tsflab/models/dfdgcn/README.md) |
 | `DGCRN` | [`configs/models/DGCRN.toml`](../../configs/models/DGCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/dgcrn/README.md) |
+| `DiPELinear` | [`configs/models/DiPELinear.toml`](../../configs/models/DiPELinear.toml) | time-series | [README](../../src/tsflab/models/dipelinear/README.md) |
 | `DistDF` | [`configs/models/DistDF.toml`](../../configs/models/DistDF.toml) | time-series | [README](../../src/tsflab/models/distdf/README.md) |
 | `DLinear` | [`configs/models/DLinear.toml`](../../configs/models/DLinear.toml) | time-series | [README](../../src/tsflab/models/dlinear/README.md) |
 | `DPWMixer` | [`configs/models/DPWMixer.toml`](../../configs/models/DPWMixer.toml) | time-series | [README](../../src/tsflab/models/dpwmixer/README.md) |
@@ -65,6 +68,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `FeTS` | [`configs/models/FeTS.toml`](../../configs/models/FeTS.toml) | time-series | [README](../../src/tsflab/models/fets/README.md) |
 | `FiLM` | [`configs/models/FiLM.toml`](../../configs/models/FiLM.toml) | time-series | [README](../../src/tsflab/models/film/README.md) |
 | `FITS` | [`configs/models/FITS.toml`](../../configs/models/FITS.toml) | time-series | [README](../../src/tsflab/models/fits/README.md) |
+| `FreDF` | [`configs/models/FreDF.toml`](../../configs/models/FreDF.toml) | time-series | [README](../../src/tsflab/models/fredf/README.md) |
 | `Fredformer` | [`configs/models/Fredformer.toml`](../../configs/models/Fredformer.toml) | time-series | [README](../../src/tsflab/models/fredformer/README.md) |
 | `FreqMoE` | [`configs/models/FreqMoE.toml`](../../configs/models/FreqMoE.toml) | time-series | [README](../../src/tsflab/models/freqmoe/README.md) |
 | `FreTS` | [`configs/models/FreTS.toml`](../../configs/models/FreTS.toml) | time-series | [README](../../src/tsflab/models/frets/README.md) |
@@ -76,6 +80,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `GCLSTM` | [`configs/models/GCLSTM.toml`](../../configs/models/GCLSTM.toml) | covariate, spatiotemporal | [README](../../src/tsflab/models/gclstm/README.md) |
 | `GlocalIB` | [`configs/models/GlocalIB.toml`](../../configs/models/GlocalIB.toml) | time-series | [README](../../src/tsflab/models/glocalib/README.md) |
 | `GOTSF` | [`configs/models/GOTSF.toml`](../../configs/models/GOTSF.toml) | time-series | [README](../../src/tsflab/models/gotsf/README.md) |
+| `GPHT` | [`configs/models/GPHT.toml`](../../configs/models/GPHT.toml) | time-series | [README](../../src/tsflab/models/gpht/README.md) |
 | `GradientBoostingTS` | [`configs/models/GradientBoostingTS.toml`](../../configs/models/GradientBoostingTS.toml) | time-series | [README](../../src/tsflab/models/gradient_boosting_ts/README.md) |
 | `GRUForecasterTS` | [`configs/models/GRUForecasterTS.toml`](../../configs/models/GRUForecasterTS.toml) | time-series | [README](../../src/tsflab/models/gru_forecaster_ts/README.md) |
 | `GTR` | [`configs/models/GTR.toml`](../../configs/models/GTR.toml) | time-series | [README](../../src/tsflab/models/gtr/README.md) |
@@ -96,6 +101,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Kronos` | [`configs/models/Kronos.toml`](../../configs/models/Kronos.toml) | time-series | [README](../../src/tsflab/models/kronos/README.md) |
 | `LassoRegressionTS` | [`configs/models/LassoRegressionTS.toml`](../../configs/models/LassoRegressionTS.toml) | time-series | [README](../../src/tsflab/models/lasso_regression_ts/README.md) |
 | `LatentTSF` | [`configs/models/LatentTSF.toml`](../../configs/models/LatentTSF.toml) | pretraining-stage, time-series | [README](../../src/tsflab/models/latenttsf/README.md) |
+| `LIFT` | [`configs/models/LIFT.toml`](../../configs/models/LIFT.toml) | time-series | [README](../../src/tsflab/models/lift/README.md) |
 | `LightGBMTS` | [`configs/models/LightGBMTS.toml`](../../configs/models/LightGBMTS.toml) | time-series | [README](../../src/tsflab/models/lightgbm_ts/README.md) |
 | `LightTS` | [`configs/models/LightTS.toml`](../../configs/models/LightTS.toml) | time-series | [README](../../src/tsflab/models/lightts/README.md) |
 | `Linear` | [`configs/models/Linear.toml`](../../configs/models/Linear.toml) | time-series | [README](../../src/tsflab/models/linear/README.md) |
@@ -114,9 +120,11 @@ Every entry is maintained as a local implementation; verification status is deri
 | `MMPD` | [`configs/models/MMPD.toml`](../../configs/models/MMPD.toml) | time-series | [README](../../src/tsflab/models/mmpd/README.md) |
 | `ModernTCN` | [`configs/models/ModernTCN.toml`](../../configs/models/ModernTCN.toml) | time-series | [README](../../src/tsflab/models/moderntcn/README.md) |
 | `MoFo` | [`configs/models/MoFo.toml`](../../configs/models/MoFo.toml) | time-series | [README](../../src/tsflab/models/mofo/README.md) |
+| `MoU` | [`configs/models/MoU.toml`](../../configs/models/MoU.toml) | time-series | [README](../../src/tsflab/models/mou/README.md) |
 | `MQRNN` | [`configs/models/MQRNN.toml`](../../configs/models/MQRNN.toml) | covariate, quantile-output, time-series | [README](../../src/tsflab/models/mqrnn/README.md) |
 | `MSGNet` | [`configs/models/MSGNet.toml`](../../configs/models/MSGNet.toml) | time-series | [README](../../src/tsflab/models/msgnet/README.md) |
 | `MTGNN` | [`configs/models/MTGNN.toml`](../../configs/models/MTGNN.toml) | spatiotemporal | [README](../../src/tsflab/models/mtgnn/README.md) |
+| `MTLinear` | [`configs/models/MTLinear.toml`](../../configs/models/MTLinear.toml) | time-series | [README](../../src/tsflab/models/mtlinear/README.md) |
 | `MTSMixer` | [`configs/models/MTSMixer.toml`](../../configs/models/MTSMixer.toml) | time-series | [README](../../src/tsflab/models/mtsmixer/README.md) |
 | `MultiPatchFormer` | [`configs/models/MultiPatchFormer.toml`](../../configs/models/MultiPatchFormer.toml) | time-series | [README](../../src/tsflab/models/multipatchformer/README.md) |
 | `NBeats` | [`configs/models/NBeats.toml`](../../configs/models/NBeats.toml) | time-series | [README](../../src/tsflab/models/nbeats/README.md) |
@@ -127,10 +135,13 @@ Every entry is maintained as a local implementation; verification status is deri
 | `OLinear` | [`configs/models/OLinear.toml`](../../configs/models/OLinear.toml) | time-series | [README](../../src/tsflab/models/olinear/README.md) |
 | `PaiFilter` | [`configs/models/PaiFilter.toml`](../../configs/models/PaiFilter.toml) | time-series | [README](../../src/tsflab/models/paifilter/README.md) |
 | `PatchMLP` | [`configs/models/PatchMLP.toml`](../../configs/models/PatchMLP.toml) | time-series | [README](../../src/tsflab/models/patchmlp/README.md) |
+| `PatchTSMixer` | [`configs/models/PatchTSMixer.toml`](../../configs/models/PatchTSMixer.toml) | time-series | [README](../../src/tsflab/models/patchtsmixer/README.md) |
 | `PatchTST` | [`configs/models/PatchTST.toml`](../../configs/models/PatchTST.toml) | time-series | [README](../../src/tsflab/models/patchtst/README.md) |
 | `Pathformer` | [`configs/models/Pathformer.toml`](../../configs/models/Pathformer.toml) | time-series | [README](../../src/tsflab/models/pathformer/README.md) |
 | `PAttn` | [`configs/models/PAttn.toml`](../../configs/models/PAttn.toml) | time-series | [README](../../src/tsflab/models/pattn/README.md) |
 | `PCDCNet` | [`configs/models/PCDCNet.toml`](../../configs/models/PCDCNet.toml) | covariate | [README](../../src/tsflab/models/pcdcnet/README.md) |
+| `PENGUIN` | [`configs/models/PENGUIN.toml`](../../configs/models/PENGUIN.toml) | time-series | [README](../../src/tsflab/models/penguin/README.md) |
+| `PGN` | [`configs/models/PGN.toml`](../../configs/models/PGN.toml) | time-series | [README](../../src/tsflab/models/pgn/README.md) |
 | `PhaseFormer` | [`configs/models/PhaseFormer.toml`](../../configs/models/PhaseFormer.toml) | time-series | [README](../../src/tsflab/models/phaseformer/README.md) |
 | `PHAT` | [`configs/models/PHAT.toml`](../../configs/models/PHAT.toml) | time-series | [README](../../src/tsflab/models/phat/README.md) |
 | `PM25_GNN` | [`configs/models/PM25_GNN.toml`](../../configs/models/PM25_GNN.toml) | covariate | [README](../../src/tsflab/models/pm25gnn/README.md) |
@@ -151,6 +162,8 @@ Every entry is maintained as a local implementation; verification status is deri
 | `RPMixer` | [`configs/models/RPMixer.toml`](../../configs/models/RPMixer.toml) | spatiotemporal | [README](../../src/tsflab/models/rpmixer/README.md) |
 | `S4` | [`configs/models/S4.toml`](../../configs/models/S4.toml) | time-series | [README](../../src/tsflab/models/s4/README.md) |
 | `S_Mamba` | [`configs/models/S_Mamba.toml`](../../configs/models/S_Mamba.toml) | time-series | [README](../../src/tsflab/models/s_mamba/README.md) |
+| `SAMBA` | [`configs/models/SAMBA.toml`](../../configs/models/SAMBA.toml) | time-series | [README](../../src/tsflab/models/samba/README.md) |
+| `SAMformer` | [`configs/models/SAMformer.toml`](../../configs/models/SAMformer.toml) | time-series | [README](../../src/tsflab/models/samformer/README.md) |
 | `SCINet` | [`configs/models/SCINet.toml`](../../configs/models/SCINet.toml) | time-series | [README](../../src/tsflab/models/scinet/README.md) |
 | `SDMixer` | [`configs/models/SDMixer.toml`](../../configs/models/SDMixer.toml) | time-series | [README](../../src/tsflab/models/sdmixer/README.md) |
 | `SegRNN` | [`configs/models/SegRNN.toml`](../../configs/models/SegRNN.toml) | time-series | [README](../../src/tsflab/models/segrnn/README.md) |
@@ -190,6 +203,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TimeExpert` | [`configs/models/TimeExpert.toml`](../../configs/models/TimeExpert.toml) | time-series | [README](../../src/tsflab/models/timeexpert/README.md) |
 | `TimeFilter` | [`configs/models/TimeFilter.toml`](../../configs/models/TimeFilter.toml) | time-series | [README](../../src/tsflab/models/timefilter/README.md) |
 | `TimeKAN` | [`configs/models/TimeKAN.toml`](../../configs/models/TimeKAN.toml) | time-series | [README](../../src/tsflab/models/timekan/README.md) |
+| `TimeMachine` | [`configs/models/TimeMachine.toml`](../../configs/models/TimeMachine.toml) | time-series | [README](../../src/tsflab/models/timemachine/README.md) |
 | `TimeMixer` | [`configs/models/TimeMixer.toml`](../../configs/models/TimeMixer.toml) | time-series | [README](../../src/tsflab/models/timemixer/README.md) |
 | `TimeMosaic` | [`configs/models/TimeMosaic.toml`](../../configs/models/TimeMosaic.toml) | time-series | [README](../../src/tsflab/models/timemosaic/README.md) |
 | `TimeO1` | [`configs/models/TimeO1.toml`](../../configs/models/TimeO1.toml) | time-series | [README](../../src/tsflab/models/timeo1/README.md) |

@@ -99,7 +99,7 @@ import tsflab.models._components.marks
 
 `calendar`, `covariate`, `spatiotemporal`, `timestamp`
 
-## Current model consumers (39)
+## Current model consumers (41)
 
-`agcrn`, `aircade`, `airdualode`, `airformer`, `airphynet`, `astgcn`, `bigst`, `bist`, `cauair`, `d2stgnn`, `dcrnn`, `deepair`, `dfdgcn`, `dgcrn`, `extralonger`, `gagnn`, `gclstm`, `gts`, `gwnet`, `himnet`, `lstm`, `mage`, `megacrn`, `mtgnn`, `pcdcnet`, `pgn`, `pm25gnn`, `ragc`, `st_ssdl`, `staeformer`, `stdn`, `stgcn`, `stgode`, `stid`, `stnorm`, `stop`, `sttn`, `stwave`, `visifold`
+`agcrn`, `aircade`, `airdualode`, `airformer`, `airphynet`, `astgcn`, `bigst`, `bist`, `cauair`, `d2stgnn`, `dcrnn`, `deepair`, `dfdgcn`, `dgcrn`, `extralonger`, `fredf`, `gagnn`, `gclstm`, `gts`, `gwnet`, `himnet`, `lstm`, `mage`, `megacrn`, `mtgnn`, `pcdcnet`, `pgn`, `pm25gnn`, `ragc`, `st_ssdl`, `staeformer`, `stdmae`, `stdn`, `stgcn`, `stgode`, `stid`, `stnorm`, `stop`, `sttn`, `stwave`, `visifold`
 <!-- component-card:generated:end -->

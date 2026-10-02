@@ -113,7 +113,7 @@ from tsflab.models._components.adaptive_node_embedding_adjacency import adaptive
 
 `adaptive`, `adjacency`, `embedding`, `graph`, `node`, `softmax`
 
-## Current model consumers (6)
+## Current model consumers (7)
 
-`adamshyper`, `agcrn`, `d2stgnn`, `dfdgcn`, `gwnet`, `himnet`
+`adamshyper`, `agcrn`, `d2stgnn`, `dfdgcn`, `gwnet`, `himnet`, `stdmae`
 <!-- component-card:generated:end -->
