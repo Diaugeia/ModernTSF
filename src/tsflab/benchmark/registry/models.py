@@ -373,4 +373,5 @@ MODEL_CATALOG = ModelCatalog({
     "CoRe": "tsflab.models.core.spec",
     "MTLinear": "tsflab.models.mtlinear.spec",
     "LIFT": "tsflab.models.lift.spec",
+    "TimeMachine": "tsflab.models.timemachine.spec",
 })

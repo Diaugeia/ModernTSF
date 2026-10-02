@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 202 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -188,6 +188,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `TimeExpert` | [`configs/models/TimeExpert.toml`](../../configs/models/TimeExpert.toml) | time-series | [README](../../src/tsflab/models/timeexpert/README.md) |
 | `TimeFilter` | [`configs/models/TimeFilter.toml`](../../configs/models/TimeFilter.toml) | time-series | [README](../../src/tsflab/models/timefilter/README.md) |
 | `TimeKAN` | [`configs/models/TimeKAN.toml`](../../configs/models/TimeKAN.toml) | time-series | [README](../../src/tsflab/models/timekan/README.md) |
+| `TimeMachine` | [`configs/models/TimeMachine.toml`](../../configs/models/TimeMachine.toml) | time-series | [README](../../src/tsflab/models/timemachine/README.md) |
 | `TimeMixer` | [`configs/models/TimeMixer.toml`](../../configs/models/TimeMixer.toml) | time-series | [README](../../src/tsflab/models/timemixer/README.md) |
 | `TimeMosaic` | [`configs/models/TimeMosaic.toml`](../../configs/models/TimeMosaic.toml) | time-series | [README](../../src/tsflab/models/timemosaic/README.md) |
 | `TimeO1` | [`configs/models/TimeO1.toml`](../../configs/models/TimeO1.toml) | time-series | [README](../../src/tsflab/models/timeo1/README.md) |
