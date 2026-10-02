@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SEMPO",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "e287dc500cb4ab2fea38d9ec645320d9932ebe2d73ba4f26d0d9b442fd31a91e",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "36b3ea6dda89b300e87ebfccf8c05390679ce87b902f3d6c5355c69b15e5aa1d",
   "paper": {
     "title": "SEMPO: Lightweight Foundation Models for Time Series Forecasting",
     "venue": "NeurIPS 2025",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model SEMPO",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
+    "python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

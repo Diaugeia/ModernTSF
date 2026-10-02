@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ST-SSDL",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "965572afd1540861b6152818aff054e24d9354ebcbdcedb938f10a695bb0d167",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "34cebdbee7087e2d896aaa91c7822eddcfbe79e6bd5c98dca7976dbacdd33622",
   "paper": {
     "title": "How Different from the Past? Spatio-Temporal Time Series Forecasting with Self-Supervised Deviation Learning",
     "venue": "NeurIPS 2025",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model ST-SSDL",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

@@ -82,7 +82,7 @@ Each track has an append-only panel store (`dataset/realtime/<track>/`,
 parquet by year plus a manifest). An update only adds new timestamps or fills
 cells that were missing, never rewrites observed history, and records a release
 with a content hash. Releases are mirrored to the Hugging Face dataset
-`Diaugeia/ModernTSF-RealTime` (owner overridable with `MODERNTSF_HUB_OWNER`), one commit per release, so every round can be
+`Diaugeia/TSFLab-RealTime` (owner overridable with `TSFLAB_HUB_OWNER`), one commit per release, so every round can be
 reproduced from a pinned revision.
 
 ## Rounds
@@ -125,7 +125,7 @@ the rankings of consecutive rounds.
 
 ## Weekly automation
 
-The `realtime-weekly` workflow runs `python -m moderntsf.realtime weekly` on a
+The `realtime-weekly` workflow runs `python -m tsflab.realtime weekly` on a
 CPU runner every Monday (update → score → open → baselines) and proposes the
 results as a pull request. The real-time package imports no torch outside
 `forecast`, so the job installs only `pydantic`, `pandas`, `pyarrow`, `requests`,

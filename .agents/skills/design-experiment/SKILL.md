@@ -1,6 +1,6 @@
 ---
 name: design-experiment
-description: Design a reproducible ModernTSF experiment before execution. Use for selecting baselines, datasets, horizons, metrics, seeds, ablations, controls, budget, and stopping criteria; not for launching an already-defined config.
+description: Design a reproducible TSFLab experiment before execution. Use for selecting baselines, datasets, horizons, metrics, seeds, ablations, controls, budget, and stopping criteria; not for launching an already-defined config.
 ---
 
 # Design an experiment
@@ -21,7 +21,7 @@ or design command is required.
    budget, and failure or stopping criteria. Separate required comparisons from
    optional scale-up runs.
 3. Encode shared settings by inheritance: a short run file that extends
-   `base.toml`, one dataset preset, and one model preset (or `moderntsf://configs/...`
+   `base.toml`, one dataset preset, and one model preset (or `tsflab://configs/...`
    in a standalone project). Override only scientific variables under
    `experiment`, `task`, `training`, `model.params`, and `evaluation`; use
    `[sweep]` only for intended axes. The loader rejects unknown structural keys.

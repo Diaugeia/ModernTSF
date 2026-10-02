@@ -10,10 +10,10 @@ import zipfile
 import numpy as np
 import pandas as pd
 
-from moderntsf.data.calendar import node_calendar
-from moderntsf.data.datasets.ultratraffic import Dataset_UltraTraffic_ST, Dataset_UltraTraffic_TS
-from moderntsf.data.prepare.ultratraffic import convert
-from moderntsf.data.ultratraffic_store import load_panel
+from tsflab.data.calendar import node_calendar
+from tsflab.data.datasets.ultratraffic import Dataset_UltraTraffic_ST, Dataset_UltraTraffic_TS
+from tsflab.data.prepare.ultratraffic import convert
+from tsflab.data.ultratraffic_store import load_panel
 
 
 def _year_csv(year: int, stations: list[str]) -> bytes:
@@ -79,6 +79,6 @@ def test_calendar_covariates() -> None:
 def test_store_reader_is_torch_free() -> None:
     import subprocess
 
-    code = "import sys, moderntsf.data.ultratraffic_store, moderntsf.data.calendar; print('torch' in sys.modules)"
+    code = "import sys, tsflab.data.ultratraffic_store, tsflab.data.calendar; print('torch' in sys.modules)"
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True).stdout.strip()
     assert out == "False"

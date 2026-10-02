@@ -1,6 +1,6 @@
-# Submitting data to the ModernTSF Leaderboard
+# Submitting data to the TSFLab Leaderboard
 
-The leaderboard at **[the ModernTSF Space](https://huggingface.co/spaces/Diaugeia/ModernTSF)** is an open board
+The leaderboard at **[the TSFLab Space](https://huggingface.co/spaces/Diaugeia/TSFLab)** is an open board
 you can check: every row is rebuilt from the submission evidence under
 [`submissions/`](submissions/) in this repo — the single source of truth. To add or
 update results you commit submission files and push — CI validates, aggregates, and
@@ -33,7 +33,7 @@ submissions:
 ```jsonc
 {
   "schema_version": "1.0.0",
-  "model": "PatchTST",          // must match a ModernTSF model name (see data/model-meta.json)
+  "model": "PatchTST",          // must match a TSFLab model name (see data/model-meta.json)
   "dataset_id": "ETTh1",        // ETTh1 … weather, or stock_hs300
   "track": "time_series",       // "time_series" or "realtime"
   "seed": 2021,                 // one seed per file (see "Multiple runs" below)
@@ -101,7 +101,7 @@ submissions/realtime/<track>/rounds/<round_id>/
 
 To take part, open a pull request that adds `forecasts/<YourModel>.json` for an
 open round **before its `deadline`**. The file is a `ForecastSubmission`
-(`src/moderntsf/tsf_core/schema/forecast_submission.schema.json`):
+(`src/tsflab/tsf_core/schema/forecast_submission.schema.json`):
 `predictions` has shape `(len(target_timestamps), len(channels))` in the
 round's raw units. CI checks the shape and rejects the file if the pull request
 was last updated after the deadline, so forecasts always precede their truth.
@@ -129,5 +129,5 @@ Ranking is per `(track, dataset, horizon)` by **MSE** (lower is better). Weights
 **not** part of a submission and are never required to get on the board — a row earns
 its place with its result, trajectory, and report. If you *want* bit-level
 reproducibility, you may optionally archive your trained weights in the public
-[`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights)
+[`Diaugeia/TSFLab-Weights`](https://huggingface.co/Diaugeia/TSFLab-Weights)
 dataset, but that is an invitation, not a gate.

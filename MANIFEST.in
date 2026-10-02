@@ -2,7 +2,7 @@ graft .agents
 graft catalog
 graft configs
 graft verification
-graft src/moderntsf/models
+graft src/tsflab/models
 include AGENTS.md
 include LICENSE
 include README.md

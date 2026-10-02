@@ -6,8 +6,8 @@ import unittest
 
 import torch
 
-from moderntsf.models.paifilter.model import PlainShapingFilter
-from moderntsf.models.texfilter.model import ContextualShapingFilter, _complex_linear
+from tsflab.models.paifilter.model import PlainShapingFilter
+from tsflab.models.texfilter.model import ContextualShapingFilter, _complex_linear
 
 
 class LocalFilterForecasterTests(unittest.TestCase):

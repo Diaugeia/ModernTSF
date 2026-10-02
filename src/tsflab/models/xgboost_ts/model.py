@@ -1,0 +1,57 @@
+"""Independent regularized residual soft-tree forecasting baseline."""
+
+from __future__ import annotations
+import torch
+import torch.nn as nn
+from tsflab.models._components.revin import RevIN
+from tsflab.models._components.soft_tree import SoftDecisionTree
+
+class Model(nn.Module):
+    """Use column-masked additive trees with explicit leaf regularization."""
+    def __init__(self, seq_len: int, pred_len: int, enc_in: int, num_estimators: int = 16,
+                 tree_depth: int = 3, learning_rate: float = 0.1,
+                 column_fraction: float = 0.8, l1_penalty: float = 0.0,
+                 l2_penalty: float = 1e-4, temperature: float = 1.0,
+                 random_seed: int = 1741, use_revin: bool = True) -> None:
+        super().__init__()
+        if min(seq_len, pred_len, enc_in, num_estimators, tree_depth) < 1 or min(learning_rate, temperature) <= 0:
+            raise ValueError("dimensions, estimators, and learning_rate must be positive")
+        if not 0 < column_fraction <= 1 or min(l1_penalty, l2_penalty) < 0:
+            raise ValueError("column_fraction or penalties are invalid")
+        self.seq_len, self.pred_len, self.enc_in = seq_len, pred_len, enc_in
+        self.learning_rate, self.l1_penalty, self.l2_penalty = learning_rate, l1_penalty, l2_penalty
+        input_dim, output_dim = seq_len * enc_in, pred_len * enc_in
+        generator = torch.Generator().manual_seed(random_seed)
+        masks, trees, backcasts = [], [], []
+        for _ in range(num_estimators):
+            mask = (torch.rand(input_dim, generator=generator) < column_fraction).float()
+            if not mask.any():
+                mask[torch.randint(input_dim, (), generator=generator)] = 1.0
+            masks.append(mask)
+            trees.append(SoftDecisionTree(input_dim, output_dim, tree_depth, temperature))
+            if len(trees) < num_estimators:
+                backcasts.append(nn.Linear(output_dim, input_dim, bias=False))
+        self.register_buffer("column_masks", torch.stack(masks))
+        self.base = nn.Linear(input_dim, output_dim)
+        self.trees, self.backcasts = nn.ModuleList(trees), nn.ModuleList(backcasts)
+        self.revin = RevIN(enc_in, affine=use_revin, enabled=use_revin)
+        self.aux_loss: torch.Tensor | None = None
+    def forward(
+        self,
+        x_enc,
+        x_mark_enc=None,
+        x_dec=None,
+        x_mark_dec=None,
+    ):
+        if x_enc.ndim != 3 or x_enc.shape[1:] != (self.seq_len, self.enc_in):
+            raise ValueError(f"expected [batch, {self.seq_len}, {self.enc_in}], got {tuple(x_enc.shape)}")
+        state = self.revin(x_enc, "norm").flatten(1)
+        forecast = self.base(state)
+        for index, tree in enumerate(self.trees):
+            correction = tree(state * self.column_masks[index])
+            forecast = forecast + self.learning_rate * correction
+            if index < len(self.backcasts):
+                state = state - self.learning_rate * torch.tanh(self.backcasts[index](correction))
+        leaves = torch.cat([tree.leaf_value.flatten() for tree in self.trees])
+        self.aux_loss = self.l1_penalty * leaves.abs().mean() + self.l2_penalty * leaves.square().mean()
+        return self.revin(forecast.view(-1, self.pred_len, self.enc_in), "denorm")

@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 
-bucket="${R2_BUCKET:-moderntsf-artifacts}"
+bucket="${R2_BUCKET:-tsflab-artifacts}"
 source_root="${1:-work_dirs}"
 prefix="${R2_PREFIX:-work_dirs}"
 parallelism="${R2_PARALLELISM:-4}"

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ElasticNetTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "3c4885ae8dced5e88c00b21ccb3f07fc4c177f80ed981379fc8193090abbefd6",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "66e366e8abd39ad153e5627cb745a8ab4e987887844c283288f548d1821a9f8a",
   "paper": {
     "title": "Regularization and Variable Selection via the Elastic Net",
     "venue": "Journal of the Royal Statistical Society, Series B",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model ElasticNetTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
+    "python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

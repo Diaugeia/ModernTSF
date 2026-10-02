@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MegaCRN",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "ec4cc29a8cfedda9871cabc783bbf17f4417756b08635927f1f0d2dec47dec5c",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "9c1da9b7e66c5dc6645f5d0abc2de05a07c2199562036fc939249d1809392d08",
   "paper": {
     "title": "Spatio-Temporal Meta-Graph Learning for Traffic Forecasting",
     "venue": "AAAI 2023",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MegaCRN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_graph_forecasters_b.py"
+    "python -m pytest -q tests/test_graph_forecasters_b.py"
   ]
 }

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LSINet",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "15b47d2a5aaac893790b92678be7844f80838e2ff162405ad30dd90cc891a339",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "f3da170699bd5d3066cc357ec68a5437e3be93e3262dc3f5fc36794bb10902bb",
   "paper": {
     "title": "A Lightweight Sparse Interaction Network for Time Series Forecasting",
     "venue": "AAAI 2025",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model LSINet",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_lsinet_forecaster.py"
+    "python -m pytest -q tests/test_lsinet_forecaster.py"
   ]
 }

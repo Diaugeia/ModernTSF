@@ -1,6 +1,6 @@
 ---
 name: setup-environment
-description: Install, repair, or verify the ModernTSF Python environment and PyTorch backend, including the optional hub and realtime extras. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes.
+description: Install, repair, or verify the TSFLab Python environment and PyTorch backend, including the optional hub and realtime extras. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes.
 ---
 
 # Set up the environment

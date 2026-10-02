@@ -2,7 +2,7 @@
 
 DUET and DynamicTMoE previously implemented their own gated top-k expert
 mixing inline. Both were refactored to consume the shared
-``moderntsf.models._components.topk_expert_router`` component. These tests prove the
+``tsflab.models._components.topk_expert_router`` component. These tests prove the
 refactor left every consumer's behavior unchanged:
 
 - ``tests/fixtures/duet_pre_refactor.pt`` and
@@ -26,9 +26,9 @@ import unittest
 
 import torch
 
-from moderntsf.models._components.topk_expert_router import GatingMLP, topk_dense_mix
-from moderntsf.models.duet.model import Model as DuetModel
-from moderntsf.models.dynamic_tmoe.model import Model as DynamicTMoEModel
+from tsflab.models._components.topk_expert_router import GatingMLP, topk_dense_mix
+from tsflab.models.duet.model import Model as DuetModel
+from tsflab.models.dynamic_tmoe.model import Model as DynamicTMoEModel
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
@@ -193,13 +193,13 @@ class TestDuetMovingAverageStaysLocal(unittest.TestCase):
     """
 
     def test_shared_component_still_rejects_even_kernel(self) -> None:
-        from moderntsf.models._components.series_decomposition import EdgePaddedMovingAverage
+        from tsflab.models._components.series_decomposition import EdgePaddedMovingAverage
 
         with self.assertRaisesRegex(ValueError, "positive odd"):
             EdgePaddedMovingAverage(kernel_size=4)
 
     def test_duet_local_helper_still_accepts_even_kernel(self) -> None:
-        from moderntsf.models.duet.model import moving_average
+        from tsflab.models.duet.model import moving_average
 
         torch.manual_seed(0)
         x = torch.randn(2, 20, 3)

@@ -11,27 +11,27 @@ from pydantic import BaseModel
 import torch
 import torch.nn as nn
 
-from moderntsf import hub
-from moderntsf.benchmark.model_artifacts import fetch_artifact
-from moderntsf.benchmark.registry.models import ModelArtifact, ModelSpec
-from moderntsf.scaffold import init_project
+from tsflab import hub
+from tsflab.benchmark.model_artifacts import fetch_artifact
+from tsflab.benchmark.registry.models import ModelArtifact, ModelSpec
+from tsflab.scaffold import init_project
 
-REPO = "Diaugeia/ModernTSF-Weights"
+REPO = "Diaugeia/TSFLab-Weights"
 REV = "0123abcd"
 
 
 def test_parse_round_trips_every_repo_type() -> None:
     for text, repo_type in (
         (f"hf://{REPO}@{REV}/weather/DLinear/run/model.safetensors", "model"),
-        (f"hf://datasets/Diaugeia/ModernTSF-Static@main/ett/ETTh1.csv", "dataset"),
-        (f"hf://spaces/Diaugeia/ModernTSF@v1/index.html", "space"),
+        (f"hf://datasets/Diaugeia/TSFLab-Static@main/ett/ETTh1.csv", "dataset"),
+        (f"hf://spaces/Diaugeia/TSFLab@v1/index.html", "space"),
     ):
         uri = hub.parse(text)
         assert uri.repo_type == repo_type
         assert str(uri) == text
-    uri = hub.parse(f"hf://datasets/Diaugeia/ModernTSF-Static@main/ett/ETTh1.csv")
+    uri = hub.parse(f"hf://datasets/Diaugeia/TSFLab-Static@main/ett/ETTh1.csv")
     assert uri.resolve_url() == (
-        "https://huggingface.co/datasets/Diaugeia/ModernTSF-Static/resolve/main/ett/ETTh1.csv"
+        "https://huggingface.co/datasets/Diaugeia/TSFLab-Static/resolve/main/ett/ETTh1.csv"
     )
 
 
@@ -74,7 +74,7 @@ def test_model_artifacts_accept_pinned_hf_uris(tmp_path: Path, monkeypatch) -> N
     )
     spec = ModelSpec(
         name="Fixture",
-        module="moderntsf.models.fixture",
+        module="tsflab.models.fixture",
         model_class=nn.Identity,
         factory=lambda cfg, params: nn.Identity(),
         params_schema=_Params,
@@ -120,7 +120,7 @@ def test_pack_then_load_state_dict_round_trips(tmp_path: Path, monkeypatch) -> N
     manifest = hub.pack(record, checkpoint, bundle)
     assert manifest["path"] == f"weather/DLinear/{run_id}"
     assert manifest["metrics"] == {"mse": 0.5}
-    assert (bundle / "README.md").read_text().startswith("---\nlibrary_name: moderntsf")
+    assert (bundle / "README.md").read_text().startswith("---\nlibrary_name: tsflab")
 
     served = tmp_path / "hub"
     for file in bundle.iterdir():
@@ -139,7 +139,7 @@ def test_pack_then_load_state_dict_round_trips(tmp_path: Path, monkeypatch) -> N
 
 
 def test_init_project_scaffolds_and_inherits_package_configs(tmp_path: Path) -> None:
-    from moderntsf.benchmark.config.loader import _resolve_extends
+    from tsflab.benchmark.config.loader import _resolve_extends
 
     written = init_project(tmp_path / "proj")
     assert (tmp_path / "proj" / "configs" / "runs" / "example.toml") in written
@@ -156,12 +156,12 @@ def test_init_project_scaffolds_and_inherits_package_configs(tmp_path: Path) -> 
 def test_hub_owner_comes_from_the_environment(monkeypatch) -> None:
     import importlib
 
-    from moderntsf.hub import uri
+    from tsflab.hub import uri
 
-    monkeypatch.setenv("MODERNTSF_HUB_OWNER", "someone")
+    monkeypatch.setenv("TSFLAB_HUB_OWNER", "someone")
     try:
-        assert importlib.reload(uri).default_repo("ModernTSF-Static") == "someone/ModernTSF-Static"
+        assert importlib.reload(uri).default_repo("TSFLab-Static") == "someone/TSFLab-Static"
     finally:
-        monkeypatch.delenv("MODERNTSF_HUB_OWNER")
+        monkeypatch.delenv("TSFLAB_HUB_OWNER")
         importlib.reload(uri)
-    assert uri.default_repo("ModernTSF-Static") == "Diaugeia/ModernTSF-Static"
+    assert uri.default_repo("TSFLab-Static") == "Diaugeia/TSFLab-Static"

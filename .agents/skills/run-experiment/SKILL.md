@@ -1,6 +1,6 @@
 ---
 name: run-experiment
-description: Preview and run one or more ModernTSF experiment or sweep configurations, in the repository or in a standalone project created with tsf init. Use for training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
+description: Preview and run one or more TSFLab experiment or sweep configurations, in the repository or in a standalone project created with tsf init. Use for training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
 ---
 
 # Run experiments
@@ -15,7 +15,7 @@ and the CLI below are equivalent.
 - Resolved run configs (from `design-experiment` or the user) and the resource
   intent: jobs, GPUs, and an optional research round.
 - For a standalone project, scaffold it with `uv run tsf init <dir>`; its run
-  configs extend installed presets through `moderntsf://configs/...` and write to
+  configs extend installed presets through `tsflab://configs/...` and write to
   the project's own `work_dirs/`.
 
 ## Steps

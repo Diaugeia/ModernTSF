@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "KalmanFilterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "db0ce34a98583710b9d4fda0a22f38fe33b79687a04c55d69810f8faedc09ea3",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "5328744ec1abe0d0b9ab167edcac563e6d1849fa81d8ad913133575b4f54db37",
   "paper": {
     "title": "A New Approach to Linear Filtering and Prediction Problems",
     "venue": "Journal of Basic Engineering",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model KalmanFilterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
+    "python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

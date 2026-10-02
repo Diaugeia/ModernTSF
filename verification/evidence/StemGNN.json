@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "StemGNN",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "a2f012b96aa54e12f091a21e6f24ab7360773cb3797b3d06180d1eec460628e4",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "79e987b20d03f94066ee0b3b82cc807d3738b2517587e558f04fb851b8301337",
   "paper": {
     "title": "Spectral Temporal Graph Neural Network for Multivariate Time-series Forecasting",
     "venue": "NeurIPS 2020",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model StemGNN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

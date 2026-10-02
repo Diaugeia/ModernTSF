@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MoFo",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "3beb9f88ef65e1f2dea1c1ec9782a24bd65acae018e952c848c14d88375e5396",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "18a98c537145d6e1513c861f0178feb7546ddf16eea552dd3c56627e0cb600ac",
   "paper": {
     "title": "MoFo: Empowering Long-term Time Series Forecasting with Periodic Pattern Modeling",
     "venue": "NeurIPS 2025",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MoFo",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_mofo.py::LocalMoFoTests::test_model_uses_period_modulated_future_queries"
+    "python -m pytest -q tests/test_local_mofo.py::LocalMoFoTests::test_model_uses_period_modulated_future_queries"
   ]
 }

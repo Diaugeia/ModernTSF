@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GRUForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "205154b6c8af98b8a193eaa4019edf8544834d74ae81aa6521aceac4778a1230",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "5c8fc20d367b3429436953e5d8f25a5170f1e9fda0fc1ade2eebce4d92858269",
   "paper": {
     "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
     "venue": "arXiv preprint",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model GRUForecasterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_neural_baselines.py"
+    "python -m pytest -q tests/test_neural_baselines.py"
   ]
 }

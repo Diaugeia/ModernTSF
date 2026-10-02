@@ -1,5 +1,5 @@
 ---
-title: ModernTSF Leaderboard
+title: TSFLab Leaderboard
 emoji: "📈"
 colorFrom: gray
 colorTo: yellow
@@ -8,10 +8,10 @@ pinned: false
 license: mit
 ---
 
-# ModernTSF — Time-Series Forecasting Leaderboard
+# TSFLab — Time-Series Forecasting Leaderboard
 
 Built by [Diaugeia.AI](https://diaugeia.ai). Source + submissions:
-[github.com/Diaugeia/ModernTSF](https://github.com/Diaugeia/ModernTSF).
+[github.com/Diaugeia/TSFLab](https://github.com/Diaugeia/TSFLab).
 
 This Space is auto-deployed by the repository's `web-deploy` workflow (static
 export) on every push to `main`. The former `Diaugeia/TSEval` Space redirects here.

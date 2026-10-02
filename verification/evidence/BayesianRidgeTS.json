@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "BayesianRidgeTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "7fb586a42b8fb27c4f49006284691504b30b52a112a19e3efe4604487fa9852a",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "539be1c4b8b8992c12c3901c7c16f297fa13c543ebe04ca6ed7662bf70ae9901",
   "paper": {
     "title": "Bayesian Interpolation",
     "venue": "Neural Computation",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model BayesianRidgeTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
+    "python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MQRNN",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "fcbaab1eb2f4c1074607573e3a01b21398c79205c44ec49a16c0233707e443ff",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "53e9c92952ebbc4e1f20a904691bc192ce9f0de421eb234aff591f8d4e4b403c",
   "paper": {
     "title": "A Multi-Horizon Quantile Recurrent Forecaster",
     "venue": "NeurIPS 2017 Time Series Workshop",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model MQRNN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_probabilistic_forecasters.py"
+    "python -m pytest -q tests/test_probabilistic_forecasters.py"
   ]
 }

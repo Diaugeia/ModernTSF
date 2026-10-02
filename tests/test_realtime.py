@@ -11,13 +11,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from moderntsf.realtime import rounds as R
-from moderntsf.realtime.baselines import run_baselines
-from moderntsf.realtime.sources.openaq import parse_hours
-from moderntsf.realtime.sources.pems import parse_station_5min
-from moderntsf.realtime.store import PanelStore
-from moderntsf.realtime.tracks import TrackSpec, get_track, list_tracks
-from moderntsf.tsf_core.realtime import ForecastSubmission
+from tsflab.realtime import rounds as R
+from tsflab.realtime.baselines import run_baselines
+from tsflab.realtime.sources.openaq import parse_hours
+from tsflab.realtime.sources.pems import parse_station_5min
+from tsflab.realtime.store import PanelStore
+from tsflab.realtime.tracks import TrackSpec, get_track, list_tracks
+from tsflab.tsf_core.realtime import ForecastSubmission
 
 TRACK = TrackSpec(id="toy", title="toy", mode="time_series", freq="h", seq_len=24, horizon=6,
                   submission_hours=2, seasonal_period=24, min_coverage=0.8, tz="America/Los_Angeles")
@@ -123,7 +123,7 @@ def test_openaq_hours_parser() -> None:
 
 
 def test_validate_cli_uses_trusted_arrival_time(tmp_path: Path, monkeypatch) -> None:
-    from moderntsf.realtime.cli import main
+    from tsflab.realtime.cli import main
 
     _, spec = _opened_round(tmp_path)
     monkeypatch.setattr(R, "ROUNDS_ROOT", tmp_path / "rounds")
@@ -138,7 +138,7 @@ def test_validate_cli_uses_trusted_arrival_time(tmp_path: Path, monkeypatch) -> 
 
 
 def test_equity_fallback_moves_the_working_vendor_first(monkeypatch) -> None:
-    from moderntsf.realtime.sources import equity
+    from tsflab.realtime.sources import equity
 
     monkeypatch.setattr(equity.time, "sleep", lambda seconds: None)
     calls = []
@@ -161,9 +161,9 @@ def test_equity_fallback_moves_the_working_vendor_first(monkeypatch) -> None:
 
 
 def test_equity_panel_stores_log_returns_and_resumes_from_cache(tmp_path: Path, monkeypatch) -> None:
-    from moderntsf.realtime.sources import equity
+    from tsflab.realtime.sources import equity
 
-    monkeypatch.setenv("MODERNTSF_REALTIME_ROOT", str(tmp_path))
+    monkeypatch.setenv("TSFLAB_REALTIME_ROOT", str(tmp_path))
     monkeypatch.setattr(equity.time, "sleep", lambda seconds: None)
     track = replace(TRACK, id="toy_stock", freq="B", source={"transform": "log_return"})
     days = pd.bdate_range("2026-08-24", "2026-09-11")
@@ -185,7 +185,7 @@ def test_equity_panel_stores_log_returns_and_resumes_from_cache(tmp_path: Path, 
 
 
 def test_nasdaq_historical_fallback_parses_quoted_closes(monkeypatch) -> None:
-    from moderntsf.realtime.sources import nasdaq100, us_prices
+    from tsflab.realtime.sources import nasdaq100, us_prices
 
     rows = [{"date": "09/25/2026", "close": "$1,341.07"}, {"date": "09/24/2026", "close": "$335.92"}]
     seen = {}

@@ -1,6 +1,6 @@
 ---
 name: submit-results
-description: Package a completed ModernTSF run and its research evidence as a ModernTSF Leaderboard submission. Use for local submission bundles or leaderboard contribution; publishing a pull request requires explicit authorization.
+description: Package a completed TSFLab run and its research evidence as a TSFLab Leaderboard submission. Use for local submission bundles or leaderboard contribution; publishing a pull request requires explicit authorization.
 ---
 
 # Submit results

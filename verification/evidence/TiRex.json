@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TiRex",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "3e9d88c1101278ee314f57ebf86922aa504f5cb85dd3177d1681d120aea55662",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "2761418ac3100105013002cbebb6bc5745e58cb42d8e7bf0cfc31ff11ba8d6ec",
   "paper": {
     "title": "TiRex: Zero-Shot Forecasting Across Long and Short Horizons with Enhanced In-Context Learning",
     "venue": "NeurIPS 2025",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model TiRex",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
+    "python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
   ]
 }

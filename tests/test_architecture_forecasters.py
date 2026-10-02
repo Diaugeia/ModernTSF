@@ -7,24 +7,24 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from moderntsf.models.dtaf.model import FrequencyWaveModeling, TemporalStabilizingFusion
-from moderntsf.models.dtaf.model import Model as DTAF
-from moderntsf.models.dtaf.spec import ModelParameterConfig as DTAFParameters
-from moderntsf.models.fredformer.model import FrequencyEqualization, split_frequency_bands
-from moderntsf.models.fredformer.model import Model as Fredformer
-from moderntsf.models.fredformer.spec import ModelParameterConfig as FredformerParameters
-from moderntsf.models.hdmixer.model import HierarchicalDependencyBlock, LengthExtendablePatcher
-from moderntsf.models.hdmixer.model import Model as HDMixer
-from moderntsf.models.hdmixer.spec import ModelParameterConfig as HDMixerParameters
-from moderntsf.models.micn.model import IsometricConvolutionBranch, MultiScaleDecomposition
-from moderntsf.models.micn.model import Model as MICN
-from moderntsf.models.micn.spec import ModelParameterConfig as MICNParameters
-from moderntsf.models.msgnet.model import AdaptiveMixHopGraph, MultiScaleGraphBlock
-from moderntsf.models.msgnet.model import Model as MSGNet
-from moderntsf.models.msgnet.spec import ModelParameterConfig as MSGNetParameters
-from moderntsf.models.moderntcn.model import LargeKernelDepthwiseConv, ModernTCNBlock
-from moderntsf.models.moderntcn.model import Model as ModernTCN
-from moderntsf.models.moderntcn.spec import ModelParameterConfig as ModernTCNParameters
+from tsflab.models.dtaf.model import FrequencyWaveModeling, TemporalStabilizingFusion
+from tsflab.models.dtaf.model import Model as DTAF
+from tsflab.models.dtaf.spec import ModelParameterConfig as DTAFParameters
+from tsflab.models.fredformer.model import FrequencyEqualization, split_frequency_bands
+from tsflab.models.fredformer.model import Model as Fredformer
+from tsflab.models.fredformer.spec import ModelParameterConfig as FredformerParameters
+from tsflab.models.hdmixer.model import HierarchicalDependencyBlock, LengthExtendablePatcher
+from tsflab.models.hdmixer.model import Model as HDMixer
+from tsflab.models.hdmixer.spec import ModelParameterConfig as HDMixerParameters
+from tsflab.models.micn.model import IsometricConvolutionBranch, MultiScaleDecomposition
+from tsflab.models.micn.model import Model as MICN
+from tsflab.models.micn.spec import ModelParameterConfig as MICNParameters
+from tsflab.models.msgnet.model import AdaptiveMixHopGraph, MultiScaleGraphBlock
+from tsflab.models.msgnet.model import Model as MSGNet
+from tsflab.models.msgnet.spec import ModelParameterConfig as MSGNetParameters
+from tsflab.models.moderntcn.model import LargeKernelDepthwiseConv, ModernTCNBlock
+from tsflab.models.moderntcn.model import Model as ModernTCN
+from tsflab.models.moderntcn.spec import ModelParameterConfig as ModernTCNParameters
 
 
 class PaperStructureTests(unittest.TestCase):

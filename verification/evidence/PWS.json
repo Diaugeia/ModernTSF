@@ -2,11 +2,11 @@
   "schema_version": 1,
   "model": "PWS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "288ff437ea18012b618e7b02b6727fd3ae44b152013eba200310e42d6024e219",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "1114c412935267ec9ce44a7ad099457d29a7583ad8b40aa0da7e10118e07fcb5",
   "paper": {
-    "title": "Patch Weighted Sum (ModernTSF baseline)",
-    "venue": "ModernTSF",
+    "title": "Patch Weighted Sum (TSFLab baseline)",
+    "venue": "TSFLab",
     "year": 2026,
     "url": ""
   },
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model PWS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_probabilistic_forecasters.py"
+    "python -m pytest -q tests/test_probabilistic_forecasters.py"
   ]
 }

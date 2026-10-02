@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MAGE",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "2d55da7cf8e550ed6e14dd1f3a170361280d7ad4138589604d4a38a61b2e9c3e",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "f4184f9530da1f425f436eb3495102fa30b936e909ab759d65d36c019b7197ad",
   "paper": {
     "title": "Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting",
     "venue": "NeurIPS 2025",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MAGE",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_graph_forecasters_c.py"
+    "python -m pytest -q tests/test_graph_forecasters_c.py"
   ]
 }

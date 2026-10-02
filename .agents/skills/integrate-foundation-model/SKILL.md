@@ -7,7 +7,7 @@ description: Integrate a released pretrained time-series foundation model throug
 
 Expose an official pretrained runtime as one flat, inference-only catalog entry.
 Do not reimplement the network, copy its source, convert checkpoints without a
-demonstrated need, or bundle weights in ModernTSF.
+demonstrated need, or bundle weights in TSFLab.
 
 ## Inputs
 
@@ -21,11 +21,11 @@ demonstrated need, or bundle weights in ModernTSF.
    claim and belongs to `implement-model`.
 2. Check whether the official package coexists with the main environment. If
    dependencies conflict, use a compatible provider environment behind the same
-   `src/moderntsf/models/_foundation/` boundary; never relax core dependencies.
+   `src/tsflab/models/_foundation/` boundary; never relax core dependencies.
 3. Reuse `FoundationModel` and the closest official runtime adapter. Load only
    from an explicit local path with offline mode on; no network request during
    construction, verification, or an experiment.
-4. Add one ordinary `src/moderntsf/models/<slug>/` entry whose factory receives
+4. Add one ordinary `src/tsflab/models/<slug>/` entry whose factory receives
    verified local artifacts, declares `inference-only`, and exposes the canonical
    four-input interface. Do not add a provider registry or a foundation category.
 5. Document official behavior, checkpoint facts, cache preparation,

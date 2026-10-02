@@ -1,12 +1,12 @@
 name: "📦 Submit a new model"
-description: Propose adding a new forecasting model to ModernTSF.
+description: Propose adding a new forecasting model to TSFLab.
 title: "[Model] <model name>"
 labels: ["new-model"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for proposing a model! ModernTSF integrates models behind a common
+        Thanks for proposing a model! TSFLab integrates models behind a common
         four-input forecasting interface and keeps models and methods flat. Please
         provide enough information to evaluate and implement it. See
         `docs/en/workflows.md#add-a-model-or-method` and the `add-model` skill.

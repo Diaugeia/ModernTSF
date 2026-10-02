@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from moderntsf.models.autoregressive_ts.model import Model as AutoRegressive
-from moderntsf.models.exp_smoothing_ts.model import Model as ExpSmoothing
-from moderntsf.models.knn_forecaster_ts.model import Model as SoftKNN
-from moderntsf.models.lasso_regression_ts.model import Model as Lasso
-from moderntsf.models.polynomial_regression_ts.model import Model as Polynomial
-from moderntsf.models.ridge_regression_ts.model import Model as Ridge
+from tsflab.models.autoregressive_ts.model import Model as AutoRegressive
+from tsflab.models.exp_smoothing_ts.model import Model as ExpSmoothing
+from tsflab.models.knn_forecaster_ts.model import Model as SoftKNN
+from tsflab.models.lasso_regression_ts.model import Model as Lasso
+from tsflab.models.polynomial_regression_ts.model import Model as Polynomial
+from tsflab.models.ridge_regression_ts.model import Model as Ridge
 
 
 CASES = {

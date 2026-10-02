@@ -7,8 +7,8 @@ import unittest
 
 import torch
 
-from moderntsf.models._components.self_attention_family import AttentionLayer, FullAttention
-from moderntsf.models.dualformer.model import AutoCorrelationAttention, Model as Dualformer
+from tsflab.models._components.self_attention_family import AttentionLayer, FullAttention
+from tsflab.models.dualformer.model import AutoCorrelationAttention, Model as Dualformer
 
 
 def marks(batch: int = 2, length: int = 12) -> torch.Tensor:

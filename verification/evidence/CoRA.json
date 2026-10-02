@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CoRA",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "57ceea719a00401e2cc83d51b1d43d1a68343fabd2c26672f8c210485abb8171",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "def4d913c1cf623961ff8d313e07a4675c6502502a7f8a1c5ad9b16977fc0f46",
   "paper": {
     "title": "CoRA: Boosting Time Series Foundation Models for Multivariate Forecasting through Correlation-aware Adapter",
     "venue": "ICLR 2026",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model CoRA",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
+    "python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

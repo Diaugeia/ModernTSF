@@ -8,10 +8,10 @@ import unittest
 import numpy as np
 import torch
 
-from moderntsf.benchmark.model_contracts import audit_model_contracts
-from moderntsf.models.fedformer.model import FrequencyEnhancedAttention, FrequencyEnhancedBlock
-from moderntsf.models.koopa.model import Model as Koopa
-from moderntsf.models.pcdcnet.model import Model as PCDCNet
+from tsflab.benchmark.model_contracts import audit_model_contracts
+from tsflab.models.fedformer.model import FrequencyEnhancedAttention, FrequencyEnhancedBlock
+from tsflab.models.koopa.model import Model as Koopa
+from tsflab.models.pcdcnet.model import Model as PCDCNet
 
 
 class StateDictRoundTripRegressionTests(unittest.TestCase):

@@ -1,6 +1,6 @@
 ---
 name: diagnose-experiment
-description: Diagnose a failed, unstable, or invalid ModernTSF experiment. Use for crashes, NaNs, OOMs, suspicious metrics, missing outputs, leakage, or irreproducible runs; not for ordinary result ranking.
+description: Diagnose a failed, unstable, or invalid TSFLab experiment. Use for crashes, NaNs, OOMs, suspicious metrics, missing outputs, leakage, or irreproducible runs; not for ordinary result ranking.
 ---
 
 # Diagnose an experiment

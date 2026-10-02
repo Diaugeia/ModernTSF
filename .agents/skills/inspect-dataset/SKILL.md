@@ -1,6 +1,6 @@
 ---
 name: inspect-dataset
-description: Inspect, profile, or visualize an existing ModernTSF dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, model-selection profiles, or raw sample plots; not for result plots or model predictions.
+description: Inspect, profile, or visualize an existing TSFLab dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, model-selection profiles, or raw sample plots; not for result plots or model predictions.
 ---
 
 # Inspect a dataset

@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 import torch
 
-from moderntsf.models._foundation import (
+from tsflab.models._foundation import (
     ChronosRuntime,
     FoundationForecast,
     FoundationModel,
@@ -154,7 +154,7 @@ class FoundationRuntimeTests(unittest.TestCase):
             def from_pretrained(cls, *_args, **_kwargs):
                 raise AssertionError("loader must not run for a missing path")
 
-        missing = Path(tempfile.gettempdir()) / "modern-tsf-missing-foundation"
+        missing = Path(tempfile.gettempdir()) / "tsflab-missing-foundation"
         with self.assertRaises(FileNotFoundError):
             ChronosRuntime.from_local(_source("Chronos"), missing, loader=Loader)
 

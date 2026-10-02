@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeO1",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "644ec4c7d1d44d6cf244d519c8813e6af007f054e7c70f7e01f6b0c67f5d95a2",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "33e1fb40afe39704836ea3c5c5c0de061de9b54410f9bb4cdea0097a463b6cd3",
   "paper": {
     "title": "Time-o1: Time-Series Forecasting Needs Transformed Label Alignment",
     "venue": "NeurIPS 2025",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model TimeO1",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
+    "python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
   ]
 }

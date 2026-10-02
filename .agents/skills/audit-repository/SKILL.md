@@ -1,6 +1,6 @@
 ---
 name: audit-repository
-description: Audit ModernTSF for Agent-first assets, catalog drift, documentation consistency, generated cards, model construction, and forward contracts. Use before release or after structural changes; not for a single model-only check.
+description: Audit TSFLab for Agent-first assets, catalog drift, documentation consistency, generated cards, model construction, and forward contracts. Use before release or after structural changes; not for a single model-only check.
 ---
 
 # Audit the repository

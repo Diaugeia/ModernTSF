@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 300
     env:
       PYTHONPATH: src
-      MODERNTSF_HUB_OWNER: ${{ vars.HUB_OWNER || 'Diaugeia' }}
+      TSFLAB_HUB_OWNER: ${{ vars.HUB_OWNER || 'Diaugeia' }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       PEMS_USER: ${{ secrets.PEMS_USER }}
       PEMS_PASSWORD: ${{ secrets.PEMS_PASSWORD }}
@@ -52,7 +52,7 @@ jobs:
           status=0
           for track in ${{ inputs.tracks || 'stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us' }}; do
             echo "::group::$track"
-            python -m moderntsf.realtime weekly --track "$track" --pull --push || status=$?
+            python -m tsflab.realtime weekly --track "$track" --pull --push || status=$?
             echo "::endgroup::"
           done
           echo "last_status=$status" >> "$GITHUB_ENV"

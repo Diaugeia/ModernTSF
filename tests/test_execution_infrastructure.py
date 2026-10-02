@@ -9,9 +9,9 @@ import pytest
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from moderntsf.benchmark.infra.policy import ExecutionPolicy
-from moderntsf.benchmark.infra.comparison import compare_rows
-from moderntsf.benchmark.runner.trainer import train
+from tsflab.benchmark.infra.policy import ExecutionPolicy
+from tsflab.benchmark.infra.comparison import compare_rows
+from tsflab.benchmark.runner.trainer import train
 
 
 class Forecaster(torch.nn.Module):
@@ -102,9 +102,9 @@ def test_policy_is_optional_and_rejects_unknown_or_invalid_limits():
 
 
 def test_gpu_lease_is_exclusive_and_released(tmp_path, monkeypatch):
-    import moderntsf.benchmark.infra.resources as resource_module
+    import tsflab.benchmark.infra.resources as resource_module
 
-    monkeypatch.setenv("MODERNTSF_RESOURCE_DIR", str(tmp_path))
+    monkeypatch.setenv("TSFLAB_RESOURCE_DIR", str(tmp_path))
     monkeypatch.setattr(
         resource_module,
         "gpu_inventory",
@@ -123,7 +123,7 @@ def test_gpu_lease_is_exclusive_and_released(tmp_path, monkeypatch):
 
 
 def test_parallel_round_budget_and_resume_do_not_double_count(tmp_path, monkeypatch):
-    from moderntsf.benchmark.research_round import (
+    from tsflab.benchmark.research_round import (
         create_round,
         claim_run,
         finish_run,
@@ -146,7 +146,7 @@ def test_parallel_round_budget_and_resume_do_not_double_count(tmp_path, monkeypa
 
 
 def test_csv_writes_are_concurrent_and_idempotent(tmp_path):
-    from moderntsf.benchmark.utils.results import write_csv_summary
+    from tsflab.benchmark.utils.results import write_csv_summary
     import csv
 
     path = tmp_path / "performance.csv"
@@ -194,7 +194,7 @@ def test_comparison_separates_protocols_and_exposes_missing_or_duplicate_seeds()
 def test_report_propagates_aggregation_failure_without_reading_stale_csv(
     tmp_path, monkeypatch
 ):
-    from moderntsf.benchmark.commands import report
+    from tsflab.benchmark.commands import report
 
     monkeypatch.setattr(
         "sys.argv", ["report", "--dataset", "fixture", "--work-dir", str(tmp_path)]
@@ -214,15 +214,15 @@ def test_run_records_failure_before_data_loading_and_rejects_changed_data(
     tmp_path, monkeypatch
 ):
     import importlib
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra.runs import prepare_run, read_run, verify_resume
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.runs import prepare_run, read_run, verify_resume
 
-    module = importlib.import_module("moderntsf.benchmark.runner.run_one")
+    module = importlib.import_module("tsflab.benchmark.runner.run_one")
     loaded = load_config("configs/runs/smoke_crib.toml")[0]
     config = loaded.config
     config.experiment.work_dir = str(tmp_path)
     directory = prepare_run(config, loaded.raw)
-    monkeypatch.setenv("MODERNTSF_RUN_DIR", str(directory))
+    monkeypatch.setenv("TSFLAB_RUN_DIR", str(directory))
     monkeypatch.setattr(
         module,
         "_build_loaders",
@@ -239,7 +239,7 @@ def test_run_records_failure_before_data_loading_and_rejects_changed_data(
 
 
 def test_default_tracking_has_no_optional_imports(tmp_path, monkeypatch):
-    from moderntsf.benchmark.infra.tracking import Tracker
+    from tsflab.benchmark.infra.tracking import Tracker
     import sys
 
     monkeypatch.setitem(sys.modules, "wandb", None)
@@ -253,9 +253,9 @@ def test_default_tracking_has_no_optional_imports(tmp_path, monkeypatch):
 
 
 def test_real_subprocess_sweep_and_resume_skip_completed(tmp_path):
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra.execution import prepare_sweep, execute, status
-    from moderntsf.benchmark.infra.runs import read_run
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.execution import prepare_sweep, execute, status
+    from tsflab.benchmark.infra.runs import read_run
 
     loaded = load_config("configs/runs/smoke_crib.toml")
     loaded[0].config.experiment.work_dir = str(tmp_path)
@@ -277,9 +277,9 @@ def test_real_subprocess_sweep_and_resume_skip_completed(tmp_path):
 
 
 def test_real_process_timeout_preserves_failure_and_can_resume(tmp_path):
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra.execution import prepare_sweep, execute
-    from moderntsf.benchmark.infra.runs import read_run
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.execution import prepare_sweep, execute
+    from tsflab.benchmark.infra.runs import read_run
 
     loaded = load_config("configs/runs/smoke_crib.toml")
     loaded[0].config.experiment.work_dir = str(tmp_path)
@@ -295,7 +295,7 @@ def test_real_process_timeout_preserves_failure_and_can_resume(tmp_path):
 def test_real_optional_tracking_writes_tensorboard_and_wandb_offline(tmp_path):
     pytest.importorskip("tensorboard")
     pytest.importorskip("wandb")
-    from moderntsf.benchmark.infra.tracking import Tracker
+    from tsflab.benchmark.infra.tracking import Tracker
     from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
     tracker = Tracker(
@@ -314,7 +314,7 @@ def test_real_optional_tracking_writes_tensorboard_and_wandb_offline(tmp_path):
 
 
 def test_tracker_failure_preserves_local_events_and_closes_backend(tmp_path):
-    from moderntsf.benchmark.infra.tracking import Tracker
+    from tsflab.benchmark.infra.tracking import Tracker
 
     class BrokenWriter:
         closed = False
@@ -360,9 +360,9 @@ def test_planned_cells_with_no_results_remain_in_comparison():
 
 def test_real_cancellation_and_single_run_resume_preserve_sweep_context(tmp_path):
     import time
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra.execution import prepare_sweep, execute, cancel
-    from moderntsf.benchmark.infra.runs import read_run
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.execution import prepare_sweep, execute, cancel
+    from tsflab.benchmark.infra.runs import read_run
 
     loaded = load_config("configs/runs/smoke_crib.toml")
     loaded[0].config.experiment.work_dir = str(tmp_path)
@@ -384,7 +384,7 @@ def test_real_cancellation_and_single_run_resume_preserve_sweep_context(tmp_path
 
 
 def test_batch_recovery_matches_uninterrupted(tmp_path, monkeypatch):
-    import moderntsf.benchmark.infra.checkpoint as checkpoints
+    import tsflab.benchmark.infra.checkpoint as checkpoints
 
     original_train = train
     monkeypatch.setitem(
@@ -412,7 +412,7 @@ def test_batch_recovery_matches_uninterrupted(tmp_path, monkeypatch):
 
 
 def test_external_usage_reservation_is_atomic_and_idempotent(tmp_path):
-    from moderntsf.benchmark.infra.accounting import account
+    from tsflab.benchmark.infra.accounting import account
 
     budget = ExecutionPolicy.model_validate(
         {"budget": {"max_tokens": 100, "max_cost_usd": 1}}
@@ -437,8 +437,8 @@ def test_external_usage_reservation_is_atomic_and_idempotent(tmp_path):
 
 
 def test_storage_preview_protects_live_and_best_files(tmp_path):
-    from moderntsf.benchmark.infra.retention import cleanup
-    from moderntsf.benchmark.infra.storage import file_lock
+    from tsflab.benchmark.infra.retention import cleanup
+    from tsflab.benchmark.infra.storage import file_lock
 
     (tmp_path / "manifest.json").write_text("{}")
     folder = tmp_path / "checkpoints"
@@ -458,9 +458,9 @@ def test_storage_preview_protects_live_and_best_files(tmp_path):
 
 
 def test_shared_gpu_limits_and_exclusive_compatibility(tmp_path, monkeypatch):
-    import moderntsf.benchmark.infra.resources as resources
+    import tsflab.benchmark.infra.resources as resources
 
-    monkeypatch.setenv("MODERNTSF_RESOURCE_DIR", str(tmp_path))
+    monkeypatch.setenv("TSFLAB_RESOURCE_DIR", str(tmp_path))
     monkeypatch.setattr(
         resources,
         "gpu_inventory",
@@ -491,9 +491,9 @@ def test_shared_gpu_limits_and_exclusive_compatibility(tmp_path, monkeypatch):
 
 
 def test_queue_priority_and_duplicate_submission(tmp_path, monkeypatch):
-    from moderntsf.benchmark.infra.queue import enqueue, jobs
+    from tsflab.benchmark.infra.queue import enqueue, jobs
 
-    monkeypatch.setattr("moderntsf.benchmark.infra.execution.status", lambda p: {})
+    monkeypatch.setattr("tsflab.benchmark.infra.execution.status", lambda p: {})
     low = enqueue(tmp_path, tmp_path / "low", priority=1)
     high = enqueue(tmp_path, tmp_path / "high", priority=10)
     assert enqueue(tmp_path, tmp_path / "low")["id"] == low["id"]
@@ -501,7 +501,7 @@ def test_queue_priority_and_duplicate_submission(tmp_path, monkeypatch):
 
 
 def test_slurm_uses_argument_arrays_and_retains_job_identity(tmp_path, monkeypatch):
-    from moderntsf.benchmark.infra.slurm import slurm
+    from tsflab.benchmark.infra.slurm import slurm
 
     (tmp_path / "sweep.json").write_text("{}")
     calls = []
@@ -512,7 +512,7 @@ def test_slurm_uses_argument_arrays_and_retains_job_identity(tmp_path, monkeypat
             stdout="123;cluster\n" if args[0] == "sbatch" else "123|COMPLETED|0:0\n"
         )
 
-    monkeypatch.setattr("moderntsf.benchmark.infra.slurm.subprocess.run", command)
+    monkeypatch.setattr("tsflab.benchmark.infra.slurm.subprocess.run", command)
     assert slurm(tmp_path, "submit", partition="a;echo bad")["job_id"] == "123"
     assert "a;echo bad" in calls[0]
     with pytest.raises(ValueError, match="already"):
@@ -527,7 +527,7 @@ def test_cli_envelope_includes_parser_failures():
     import sys
 
     result = subprocess.run(
-        [sys.executable, "-m", "moderntsf.benchmark.cli", "--format", "json", "run", "--invalid"],
+        [sys.executable, "-m", "tsflab.benchmark.cli", "--format", "json", "run", "--invalid"],
         text=True,
         capture_output=True,
     )
@@ -537,8 +537,8 @@ def test_cli_envelope_includes_parser_failures():
 
 
 def test_pretraining_resume_matches_full_training(tmp_path, monkeypatch):
-    import moderntsf.benchmark.infra.stages as stages
-    from moderntsf.models.latenttsf.model import Model
+    import tsflab.benchmark.infra.stages as stages
+    from tsflab.models.latenttsf.model import Model
 
     def run(path):
         torch.manual_seed(77)
@@ -577,7 +577,7 @@ def test_pretraining_resume_matches_full_training(tmp_path, monkeypatch):
 
 
 def test_runtime_state_contract_rejects_partial_hooks():
-    from moderntsf.benchmark.infra.checkpoint import runtime_state, restore_runtime_state
+    from tsflab.benchmark.infra.checkpoint import runtime_state, restore_runtime_state
 
     model = Forecaster()
     model.runtime_state_dict = lambda: {"cursor": 4}
@@ -594,9 +594,9 @@ def test_local_queue_recovers_after_controller_crash(tmp_path):
     import os
     import signal
     import time
-    from moderntsf.benchmark.infra.queue import enqueue, work, jobs
-    from moderntsf.benchmark.infra.execution import prepare_sweep
-    from moderntsf.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.queue import enqueue, work, jobs
+    from tsflab.benchmark.infra.execution import prepare_sweep
+    from tsflab.benchmark.config.loader import load_config
 
     loaded = load_config("configs/runs/smoke_crib.toml")
     loaded[0].config.experiment.work_dir = str(tmp_path / "outputs")
@@ -623,8 +623,8 @@ def test_local_queue_recovers_after_controller_crash(tmp_path):
 
 
 def test_evaluation_resumes_predictions_and_rng(tmp_path, monkeypatch):
-    from moderntsf.benchmark.runner.evaluator import evaluate
-    import moderntsf.benchmark.infra.stages as stages
+    from tsflab.benchmark.runner.evaluator import evaluate
+    import tsflab.benchmark.infra.stages as stages
 
     def run(checkpoint):
         torch.manual_seed(43)

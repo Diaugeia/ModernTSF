@@ -47,7 +47,7 @@ export default function Page() {
             </div>
             <ThemeToggle labels={THEME_LABELS[locale]} />
             <a
-              href="https://github.com/Diaugeia/ModernTSF"
+              href="https://github.com/Diaugeia/TSFLab"
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub repository"
@@ -91,8 +91,8 @@ export default function Page() {
             διαύγεια · open infrastructure for AI research
           </span>
           <span className="flex gap-4">
-            <a className="hover:text-ink" href="https://github.com/Diaugeia/ModernTSF">GitHub</a>
-            <a className="hover:text-ink" href="https://github.com/Diaugeia/ModernTSF/blob/main/apps/web/SUBMITTING.md">Submit</a>
+            <a className="hover:text-ink" href="https://github.com/Diaugeia/TSFLab">GitHub</a>
+            <a className="hover:text-ink" href="https://github.com/Diaugeia/TSFLab/blob/main/apps/web/SUBMITTING.md">Submit</a>
             <a className="hover:text-ink" href="https://huggingface.co/datasets/Diaugeia/TSEval-Static">Datasets</a>
           </span>
         </div>

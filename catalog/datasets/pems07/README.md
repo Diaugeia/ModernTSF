@@ -39,7 +39,7 @@ PEMS07 is a spatiotemporal traffic benchmark: 883 sensors recording traffic flow
 
 - Producer: Caltrans PeMS District 7 data, processed by Song et al. (STSGCN, https://github.com/Davidham3/STSGCN) and Guo et al. (ASTGCN, https://github.com/Davidham3/ASTGCN, AAAI 2019). Neither repository carries a license, so the packaged data's license is `unknown`; PeMS's Conditions of Use call site information public domain unless otherwise indicated (generic policy).
 - Cite Spatial-Temporal Synchronous Graph Convolutional Networks (Song et al., AAAI 2020), https://ojs.aaai.org/index.php/AAAI/article/view/5438, and the ASTGCN paper (https://ojs.aaai.org/index.php/AAAI/article/view/3881).
-- ModernTSF does not ship the data (the STSGCN files are distributed through Baidu Pan); convert with `tsf dataset convert-traffic`.
+- TSFLab does not ship the data (the STSGCN files are distributed through Baidu Pan); convert with `tsf dataset convert-traffic`.
 
 ## Structure and statistics
 

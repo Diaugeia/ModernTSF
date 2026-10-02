@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build data/model-meta.json from a ModernTSF checkout.
+"""Build data/model-meta.json from a TSFLab checkout.
 
-Each model lives at ``<moderntsf>/src/moderntsf/models/<name>/README.md`` with a YAML
+Each model lives at ``<tsflab>/src/tsflab/models/<name>/README.md`` with a YAML
 front matter block carrying ``model`` / ``year`` / ``venue`` / ``arxiv`` /
 ``paper_title``. We harvest those into a flat ``{model: {...}}`` map keyed by
 the canonical model name (the ``model:`` field), which matches the model names
@@ -13,7 +13,7 @@ stays untouched.
 
 Usage:
     python pipeline/build_model_meta.py            # defaults to this monorepo's root
-    python pipeline/build_model_meta.py /path/to/ModernTSF --out data/model-meta.json
+    python pipeline/build_model_meta.py /path/to/TSFLab --out data/model-meta.json
 """
 
 from __future__ import annotations
@@ -34,9 +34,9 @@ def _field(front_matter: str, key: str) -> str | None:
     return val or None
 
 
-def parse_models(moderntsf_root: str) -> dict[str, dict]:
+def parse_models(tsflab_root: str) -> dict[str, dict]:
     meta: dict[str, dict] = {}
-    pattern = os.path.join(moderntsf_root, "src", "moderntsf", "models", "*", "README.md")
+    pattern = os.path.join(tsflab_root, "src", "tsflab", "models", "*", "README.md")
     for readme in sorted(glob.glob(pattern)):
         text = open(readme, encoding="utf-8", errors="ignore").read()
         fm = re.match(r"^---\n(.*?)\n---", text, re.S)
@@ -60,10 +60,10 @@ def parse_models(moderntsf_root: str) -> dict[str, dict]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "moderntsf",
+        "tsflab",
         nargs="?",
         default=os.path.join(os.path.dirname(__file__), "..", "..", ".."),
-        help="Path to a ModernTSF checkout (default: the enclosing monorepo)",
+        help="Path to a TSFLab checkout (default: the enclosing monorepo)",
     )
     ap.add_argument(
         "--out",
@@ -72,9 +72,9 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    meta = parse_models(args.moderntsf)
+    meta = parse_models(args.tsflab)
     if not meta:
-        print(f"No models found under {args.moderntsf}/src/moderntsf/models/*/README.md", file=sys.stderr)
+        print(f"No models found under {args.tsflab}/src/tsflab/models/*/README.md", file=sys.stderr)
         return 1
 
     out = os.path.abspath(args.out)

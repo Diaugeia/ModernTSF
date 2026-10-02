@@ -1,12 +1,12 @@
 # Workflows and architecture
 
-ModernTSF has one flat model catalog, one shared-component area, one data
+TSFLab has one flat model catalog, one shared-component area, one data
 pipeline, and one verification route. Models and methods are peers.
 
 ```text
-src/moderntsf/models/<slug>/              local model code, spec, and model card
-src/moderntsf/models/_components/<name>/  reusable component code and card
-src/moderntsf/data/                       dataset loaders and parameter schemas
+src/tsflab/models/<slug>/              local model code, spec, and model card
+src/tsflab/models/_components/<name>/  reusable component code and card
+src/tsflab/data/                       dataset loaders and parameter schemas
 dataset/                        local dataset bytes (not packaged)
 catalog/datasets/<preset>/      dataset cards: curated facts plus a generated runtime block
 configs/                        composable model, dataset, and run TOML
@@ -105,7 +105,7 @@ Foundation models remain ordinary flat model entries. Pretraining scale is not a
 catalog category. A local architecture without released weights must say so in
 its card and cannot claim zero-shot checkpoint behavior.
 
-Released pretrained models use the thin boundary in `src/moderntsf/models/_foundation/`.
+Released pretrained models use the thin boundary in `src/tsflab/models/_foundation/`.
 `FoundationModel` converts the canonical `[batch, time, channels]` input to the
 official runtime's series batch and restores point or quantile output axes.
 Chronos and TimesFM have direct adapters; Moirai accepts an official forecast
@@ -122,7 +122,7 @@ experiment rather than through a second registry.
 Weights, tokenizers, or normalization statistics remain explicit runtime facts:
 
 ```python
-from moderntsf.benchmark.registry.models import ModelArtifact
+from tsflab.benchmark.registry.models import ModelArtifact
 
 artifacts = (ModelArtifact(
     name="weights",
@@ -145,7 +145,7 @@ SPEC = ModelSpec(
 )
 ```
 
-ModernTSF never downloads them during construction. Inspect or explicitly fetch
+TSFLab never downloads them during construction. Inspect or explicitly fetch
 an artifact before a run:
 
 ```bash
@@ -154,7 +154,7 @@ uv run tsf model artifacts MyFoundationModel --fetch weights
 ```
 
 The cache defaults to the user cache directory and may be changed with
-`MODERNTSF_CACHE`. A required artifact must exist and match SHA-256 before the
+`TSFLAB_CACHE`. A required artifact must exist and match SHA-256 before the
 artifact-aware factory runs. Ordinary models keep the two-argument factory;
 artifact-backed models explicitly receive a mapping of verified local paths.
 Artifact tests, loading behavior, offline failure, and the exact checkpoint claim
@@ -162,7 +162,7 @@ belong in verification and the model card.
 
 ## Components
 
-Components live only in `src/moderntsf/models/_components/<name>/`. Each directory has an
+Components live only in `src/tsflab/models/_components/<name>/`. Each directory has an
 implementation, a catalog contract, focused tests, and a README card. The card is
 curated (purpose and formula, origin and why it was cut at this boundary, every
 public symbol with parameters and tensor shapes, equivalence evidence, variants,
@@ -207,7 +207,7 @@ not import implementation code from another named model.
 Data has three non-overlapping layers:
 
 - `dataset/`: local files, downloads, and converted arrays; never code or cards.
-- `src/moderntsf/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
+- `src/tsflab/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
 - `catalog/datasets/`: one README card per runnable dataset preset, plus one family
   card for GIFT-Eval. Each card pairs curated facts (domain, source, license,
   statistics, protocol, pitfalls) with a generated runtime block.

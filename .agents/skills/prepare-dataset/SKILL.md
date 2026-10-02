@@ -1,6 +1,6 @@
 ---
 name: prepare-dataset
-description: Fetch published preset data or convert existing time-series files into ModernTSF-ready data. Use for downloading pinned benchmark files, windowing CSV data, producing NPZ splits, converting traffic bundles, building the UltraTraffic PeMS store, or downloading GIFT-Eval data; not for registering a new loader.
+description: Fetch published preset data or convert existing time-series files into TSFLab-ready data. Use for downloading pinned benchmark files, windowing CSV data, producing NPZ splits, converting traffic bundles, building the UltraTraffic PeMS store, or downloading GIFT-Eval data; not for registering a new loader.
 ---
 
 # Prepare a dataset

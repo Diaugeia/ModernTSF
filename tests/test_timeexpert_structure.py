@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.timeexpert.model import Model as TimeExpert
+from tsflab.models.timeexpert.model import Model as TimeExpert
 
 
 def marks(batch=2, steps=12, offset=0):

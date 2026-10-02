@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimePro",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "1abb6fc8df4330256083d21135e2ac653235752f0c75ad5e402b58b2b20b5946",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "ed097e5c5a321f95e9cde6277366d8ac53b1fa3ecc43074d59e62df8b034d4eb",
   "paper": {
     "title": "TimePro: Efficient Multivariate Long-term Time Series Forecasting with Variable- and Time-Aware Hyper-state",
     "venue": "arXiv preprint",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model TimePro",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
+    "python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
   ]
 }

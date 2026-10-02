@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Kronos",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "980b25e6e90f1258f375bf96b38267d5d688703aad8dbcbc42a2990d6111115a",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "1c856c97143e5c9ec452b29707fab6173a00bf82cf463fdf96292d1e419eef3f",
   "paper": {
     "title": "Kronos: A Foundation Model for the Language of Financial Markets",
     "venue": "AAAI 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model Kronos",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_memory_diffusion_forecasters.py"
+    "python -m pytest -q tests/test_memory_diffusion_forecasters.py"
   ]
 }

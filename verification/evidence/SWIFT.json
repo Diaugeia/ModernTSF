@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SWIFT",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "e7d0f72faf9d659a80c3a06b3e0630d70e45d8c1ceab87a6496e9bcd99a980d8",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "198f562f7056257d4e7c6757b870eb23124f819098e3c6f1d8fa643a4ef1b21c",
   "paper": {
     "title": "SWIFT: Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting",
     "venue": "arXiv",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model SWIFT",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_frequency_wavelet_attention_forecasters.py"
+    "python -m pytest -q tests/test_frequency_wavelet_attention_forecasters.py"
   ]
 }

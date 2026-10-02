@@ -42,7 +42,7 @@ CCAQ is a nationwide city air-quality dataset of hourly station readings with we
 - Dataset origin: Chen et al., Group-aware graph neural network for nationwide city air quality forecasting, ACM TKDD 2023 (GAGNN); CauAir (https://github.com/PoorOtterBob/CauAir) ships the processed data. Raw air-quality readings come from China's national monitoring network.
 - Cite Causal Learning Meet Covariates: Empowering Lightweight and Effective Nationwide Air Quality Forecasting (Ma et al., IJCAI 2025) (https://www.ijcai.org/proceedings/2025/353) and the GAGNN paper.
 - License: the CauAir repository has no LICENSE file (GitHub API 404) and the README states none; the upstream monitoring-data terms were not checked. `license` and `redistribution` are `unknown`.
-- The CauAir model card records the same repository as reference-only; no data are bundled with ModernTSF.
+- The CauAir model card records the same repository as reference-only; no data are bundled with TSFLab.
 
 ## Structure and statistics
 

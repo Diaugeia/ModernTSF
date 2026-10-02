@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MambaSimple",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "34ee7d67995b2c8c8ea4be8e8cfef0fb4ab986afb4a3147406666db875025170",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "a00e9b66b9a7658b7ff7ed8fb2c05d0b61b79e188799874658d12dbf75a21870",
   "paper": {
     "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
     "venue": "arXiv preprint",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MambaSimple",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_ssm_sequence_forecasters.py"
+    "python -m pytest -q tests/test_ssm_sequence_forecasters.py"
   ]
 }

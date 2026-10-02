@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "KNNForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "548c1e1072b5d1374f9a048f38784658a1a0f1dced6283b30a937d1942787b4c",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "03a4db858f1aa4f97092354bcf5f8bc33d008490d2b71163ab2a2a8eb110babf",
   "paper": {
     "title": "Nearest Neighbor Pattern Classification",
     "venue": "IEEE Transactions on Information Theory",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model KNNForecasterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_classical_forecasters.py"
+    "python -m pytest -q tests/test_classical_forecasters.py"
   ]
 }

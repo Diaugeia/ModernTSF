@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from moderntsf.models.pulse.model import Model as PULSE
-from moderntsf.models.symtime.model import Model as SymTime
-from moderntsf.models.timecap.model import Model as TimeCAP
-from moderntsf.models.timeo1.model import Model as TimeO1
-from moderntsf.models.tirex.model import Model as TiRex
-from moderntsf.models.tsrag.model import Model as TSRAG
+from tsflab.models.pulse.model import Model as PULSE
+from tsflab.models.symtime.model import Model as SymTime
+from tsflab.models.timecap.model import Model as TimeCAP
+from tsflab.models.timeo1.model import Model as TimeO1
+from tsflab.models.tirex.model import Model as TiRex
+from tsflab.models.tsrag.model import Model as TSRAG
 
 
 CASES = {

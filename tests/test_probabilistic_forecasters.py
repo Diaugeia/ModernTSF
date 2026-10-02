@@ -8,18 +8,18 @@ import unittest
 import torch
 import torch.nn.functional as F
 
-from moderntsf.models.gaussian_mlp.model import Model as GaussianMLP
-from moderntsf.models.mqrnn.model import Model as MQRNN
-from moderntsf.models.patchmlp.model import Model as PatchMLP
-from moderntsf.models.pws.model import Model as PWS
-from moderntsf.models.svtime.model import Model as SVTime
-from moderntsf.models.timebase.model import Model as TimeBase, cal_orthogonal_loss
-from moderntsf.models.gaussian_mlp.spec import ModelParameterConfig as GaussianSchema
-from moderntsf.models.mqrnn.spec import ModelParameterConfig as MQRNNSchema
-from moderntsf.models.patchmlp.spec import ModelParameterConfig as PatchMLPSchema
-from moderntsf.models.pws.spec import ModelParameterConfig as PWSSchema
-from moderntsf.models.svtime.spec import ModelParameterConfig as SVTimeSchema
-from moderntsf.models.timebase.spec import ModelParameterConfig as TimeBaseSchema
+from tsflab.models.gaussian_mlp.model import Model as GaussianMLP
+from tsflab.models.mqrnn.model import Model as MQRNN
+from tsflab.models.patchmlp.model import Model as PatchMLP
+from tsflab.models.pws.model import Model as PWS
+from tsflab.models.svtime.model import Model as SVTime
+from tsflab.models.timebase.model import Model as TimeBase, cal_orthogonal_loss
+from tsflab.models.gaussian_mlp.spec import ModelParameterConfig as GaussianSchema
+from tsflab.models.mqrnn.spec import ModelParameterConfig as MQRNNSchema
+from tsflab.models.patchmlp.spec import ModelParameterConfig as PatchMLPSchema
+from tsflab.models.pws.spec import ModelParameterConfig as PWSSchema
+from tsflab.models.svtime.spec import ModelParameterConfig as SVTimeSchema
+from tsflab.models.timebase.spec import ModelParameterConfig as TimeBaseSchema
 from pydantic import ValidationError
 
 

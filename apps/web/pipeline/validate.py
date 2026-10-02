@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate every submission in submissions/ against the TSF-Core contract.
 
-The contract is the pydantic models in ``moderntsf.tsf_core`` (RunRecord for
+The contract is the pydantic models in ``tsflab.tsf_core`` (RunRecord for
 flat records, SubmissionReport for bundles); only ``pydantic`` is needed.
 Exit code is non-zero if anything fails, so CI can gate PRs.
 
@@ -16,7 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT.parent.parent / "src"))
 
-from moderntsf.tsf_core.leaderboard import load_submissions  # noqa: E402
+from tsflab.tsf_core.leaderboard import load_submissions  # noqa: E402
 
 
 def main() -> int:

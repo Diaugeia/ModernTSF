@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Sensorformer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "fc7951534e8cafa57d9a06bb25427a074c28e8e16f6544987961a5862259cba1",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "28c0de9f1044f0adea801a0a0af7516f7d8cbbd4296ca66f584b9d08d381b8a3",
   "paper": {
     "title": "Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting",
     "venue": "arXiv",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model Sensorformer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_frequency_wavelet_attention_forecasters.py"
+    "python -m pytest -q tests/test_frequency_wavelet_attention_forecasters.py"
   ]
 }

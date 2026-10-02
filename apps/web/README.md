@@ -1,12 +1,12 @@
 <div align="center">
 
-# 📊 ModernTSF Leaderboard
+# 📊 TSFLab Leaderboard
 
 **Open, reproducible time-series forecasting leaderboard**
 
-[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
-[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/ModernTSF-yellow.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
-[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-ModernTSF--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static)
+[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/TSFLab)
+[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/TSFLab-yellow.svg)](https://huggingface.co/spaces/Diaugeia/TSFLab)
+[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-TSFLab--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/TSFLab-Static)
 [![Next.js](https://img.shields.io/badge/Next.js-static%20export-black.svg?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -19,12 +19,12 @@ ranked transparently across tracks, datasets, and horizons.
 
 ---
 
-## 🧭 What is ModernTSF Leaderboard
+## 🧭 What is TSFLab Leaderboard
 
-ModernTSF Leaderboard is the public scoreboard for [ModernTSF](https://github.com/Diaugeia/ModernTSF):
-**ModernTSF is where experiments run; ModernTSF Leaderboard is where they're shown, in the open.**
+TSFLab Leaderboard is the public scoreboard for [TSFLab](https://github.com/Diaugeia/TSFLab):
+**TSFLab is where experiments run; TSFLab Leaderboard is where they're shown, in the open.**
 Most forecasting numbers are impossible to check — a paper reports them, a leaderboard
-reprints them, nobody re-runs them. ModernTSF Leaderboard works the other way around: every row is a
+reprints them, nobody re-runs them. TSFLab Leaderboard works the other way around: every row is a
 committed **submission you can open** — the result, the agent's trajectory, and a
 readable report — so the board stays comparable, auditable, and reproducible. It's a
 function of the evidence, not a table someone pasted in.
@@ -52,9 +52,9 @@ one that tells you when the problem is genuinely hard.
 
 ## 🔗 Live & data
 
-- 🌐 **Site:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/ModernTSF) (auto-deployed on every push to `main`)
-- 📦 **Datasets** (on Hugging Face): [`Diaugeia/ModernTSF-Static`](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static) — benchmark sets (ETT, electricity, solar, traffic, weather, …)
-- 🧠 **Weights (optional):** [`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights) — a public, *optional* reproducibility archive of trained checkpoints. A submission carries no weights and never needs a `.pth` to rank.
+- 🌐 **Site:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/TSFLab) (auto-deployed on every push to `main`)
+- 📦 **Datasets** (on Hugging Face): [`Diaugeia/TSFLab-Static`](https://huggingface.co/datasets/Diaugeia/TSFLab-Static) — benchmark sets (ETT, electricity, solar, traffic, weather, …)
+- 🧠 **Weights (optional):** [`Diaugeia/TSFLab-Weights`](https://huggingface.co/Diaugeia/TSFLab-Weights) — a public, *optional* reproducibility archive of trained checkpoints. A submission carries no weights and never needs a `.pth` to rank.
 
 ---
 
@@ -83,7 +83,7 @@ git add submissions/…/submission.json && git push  # CI: validate → aggregat
 
 ```jsonc
 {
-  "model": "PatchTST",        // must match a ModernTSF model name
+  "model": "PatchTST",        // must match a TSFLab model name
   "dataset_id": "ETTh1",      // ETTh1 … weather, or stock_hs300
   "track": "time_series",     // "time_series" | "realtime"
   "seed": 2021,
@@ -103,13 +103,13 @@ push main
   └─ .github/workflows/web-deploy.yml
        ├ python3 pipeline/build_leaderboard.py   validate → aggregate submissions/ → data/leaderboard.json
        ├ bun run build                           Next static export → out/
-       └ deploy out/ to the Hugging Face Space (static) → Diaugeia/ModernTSF
+       └ deploy out/ to the Hugging Face Space (static) → Diaugeia/TSFLab
          (legacy Space Diaugeia/TSEval serves a redirect to it)
 ```
 
-- `pipeline/validate.py` — TSF-Core contract schema + ModernTSF-binding check.
+- `pipeline/validate.py` — TSF-Core contract schema + TSFLab-binding check.
 - `pipeline/build_leaderboard.py` — aggregates submissions (mean / std / `n_runs`), ranks by MSE; curated overlay for blocks without raw submissions yet (air-quality, stock quant).
-- `pipeline/build_model_meta.py` — regenerates `data/model-meta.json` (publication years) from a ModernTSF checkout.
+- `pipeline/build_model_meta.py` — regenerates `data/model-meta.json` (publication years) from a TSFLab checkout.
 
 ---
 
@@ -143,7 +143,7 @@ pipeline/                       contract schema + validate + build_leaderboard +
 
 ## 🔗 Related
 
-- [ModernTSF](https://github.com/Diaugeia/ModernTSF) — the forecasting library that produces submissions and supplies model metadata.
+- [TSFLab](https://github.com/Diaugeia/TSFLab) — the forecasting library that produces submissions and supplies model metadata.
 - [Diaugeia.AI](https://diaugeia.ai) — open infrastructure for AI research.
 
 ---

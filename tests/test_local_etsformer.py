@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.etsformer.model import ExponentialSmoothing, FrequencyAttention, Model
+from tsflab.models.etsformer.model import ExponentialSmoothing, FrequencyAttention, Model
 
 
 class LocalETSformerTests(unittest.TestCase):

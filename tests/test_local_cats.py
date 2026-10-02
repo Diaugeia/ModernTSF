@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.cats.model import Model
+from tsflab.models.cats.model import Model
 
 
 class LocalCATSTests(unittest.TestCase):

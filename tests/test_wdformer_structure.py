@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.wdformer.model import Model as WDformer
+from tsflab.models.wdformer.model import Model as WDformer
 
 
 def marks(batch=2, steps=12, offset=0):

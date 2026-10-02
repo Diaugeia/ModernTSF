@@ -1,11 +1,11 @@
-# Stock CSI-300 — the first ModernTSF Leaderboard RealTime dataset.
+# Stock CSI-300 — the first TSFLab Leaderboard RealTime dataset.
 #
 # Same flat-channel forecasting loader as cauair_ts (each constituent's series
 # is a channel); what makes this a distinct, correctly-labelled benchmark is:
 #   alias = "stock_hs300"  -> records / run_ids / leaderboard use this id
 #   track = "realtime"     -> filed under the RealTime leaderboard track
 #
-# Data: Diaugeia/ModernTSF-RealTime (stock_hs300/). Place the prepared panel under
+# Data: Diaugeia/TSFLab-RealTime (stock_hs300/). Place the prepared panel under
 # `path` before running (see that dataset's README). Reference protocol:
 # seq_len 20 trading days -> pred_len 5.
 [dataset]

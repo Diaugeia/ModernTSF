@@ -4,18 +4,18 @@ import copy
 import unittest
 import torch
 from pydantic import ValidationError
-from moderntsf.models.card.model import Model as CARD, exponential_smooth
-from moderntsf.models.card.spec import ModelParameterConfig as CARDParams
-from moderntsf.models.crossformer.model import Model as Crossformer, dsw_embed
-from moderntsf.models.crossformer.spec import ModelParameterConfig as CrossParams
-from moderntsf.models.dsformer.model import Model as DSFormer, dual_sampling
-from moderntsf.models.dsformer.spec import ModelParameterConfig as DSParams
-from moderntsf.models.duet.model import Model as DUET, mahalanobis_bias, moving_average
-from moderntsf.models.duet.spec import ModelParameterConfig as DUETParams
-from moderntsf.models.multipatchformer.model import Model as MultiPatchFormer, SemiAutoregressiveHead
-from moderntsf.models.multipatchformer.spec import ModelParameterConfig as MultiParams
-from moderntsf.models.nstransformer.model import Model as NSTransformer, DeStationaryAttention
-from moderntsf.models.nstransformer.spec import ModelParameterConfig as NSParams
+from tsflab.models.card.model import Model as CARD, exponential_smooth
+from tsflab.models.card.spec import ModelParameterConfig as CARDParams
+from tsflab.models.crossformer.model import Model as Crossformer, dsw_embed
+from tsflab.models.crossformer.spec import ModelParameterConfig as CrossParams
+from tsflab.models.dsformer.model import Model as DSFormer, dual_sampling
+from tsflab.models.dsformer.spec import ModelParameterConfig as DSParams
+from tsflab.models.duet.model import Model as DUET, mahalanobis_bias, moving_average
+from tsflab.models.duet.spec import ModelParameterConfig as DUETParams
+from tsflab.models.multipatchformer.model import Model as MultiPatchFormer, SemiAutoregressiveHead
+from tsflab.models.multipatchformer.spec import ModelParameterConfig as MultiParams
+from tsflab.models.nstransformer.model import Model as NSTransformer, DeStationaryAttention
+from tsflab.models.nstransformer.spec import ModelParameterConfig as NSParams
 
 
 def factories(length=8, horizon=3, channels=2):

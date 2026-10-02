@@ -19,7 +19,7 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: "ModernTSF — Time-Series Forecasting Leaderboard · Diaugeia.AI",
+  title: "TSFLab — Time-Series Forecasting Leaderboard · Diaugeia.AI",
   description:
     "An open, transparent leaderboard for time-series forecasting — covering static and real-time evaluation, with community submissions categorized and ranked across tracks, datasets, and horizons.",
 };

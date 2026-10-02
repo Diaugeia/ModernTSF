@@ -15,15 +15,15 @@ import torch
 from pydantic import ValidationError
 from torch import nn
 
-from moderntsf.benchmark.catalog_metadata import model_records
-from moderntsf.benchmark.config.schema.evaluation import EvaluationConfig
-from moderntsf.benchmark.config.schema.runtime import ExperimentRuntimeConfig
-from moderntsf.benchmark.config.schema.training import TrainConfig
-from moderntsf.benchmark.registry.losses import LOSS_NAME_MAP
-from moderntsf.benchmark.registry.models import MODEL_CATALOG
-from moderntsf.benchmark.runner.trainer import _forward_training
-from moderntsf.benchmark.utils.record import write_run_record
-from moderntsf.data.schemas.datasets.custom import DatasetParameterConfig
+from tsflab.benchmark.catalog_metadata import model_records
+from tsflab.benchmark.config.schema.evaluation import EvaluationConfig
+from tsflab.benchmark.config.schema.runtime import ExperimentRuntimeConfig
+from tsflab.benchmark.config.schema.training import TrainConfig
+from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
+from tsflab.benchmark.registry.models import MODEL_CATALOG
+from tsflab.benchmark.runner.trainer import _forward_training
+from tsflab.benchmark.utils.record import write_run_record
+from tsflab.data.schemas.datasets.custom import DatasetParameterConfig
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,8 +55,8 @@ class BlockModelRuntime(importlib.abc.MetaPathFinder):
         return None
 
 sys.meta_path.insert(0, BlockModelRuntime())
-from moderntsf.benchmark.cli import main
-from moderntsf.benchmark.registry.models import MODEL_CATALOG
+from tsflab.benchmark.cli import main
+from tsflab.benchmark.registry.models import MODEL_CATALOG
 assert len(MODEL_CATALOG.names()) == 199
 output = io.StringIO()
 with redirect_stdout(output):
@@ -92,7 +92,7 @@ assert len(json.loads(output.getvalue())) == 199
             target = Path(directory) / "records" / "invalid.json"
             with (
                 patch(
-                    "moderntsf.benchmark.utils.record.build_record_dict",
+                    "tsflab.benchmark.utils.record.build_record_dict",
                     side_effect=ValueError("invalid record"),
                 ),
                 self.assertRaisesRegex(ValueError, "invalid record"),
@@ -101,11 +101,11 @@ assert len(json.loads(output.getvalue())) == 199
             self.assertFalse(target.exists())
 
     def test_catalog_metadata_uses_registration_as_admission_boundary(self) -> None:
-        records = model_records(ROOT, refs={"Linear": "moderntsf.models.linear.spec"})
+        records = model_records(ROOT, refs={"Linear": "tsflab.models.linear.spec"})
         self.assertEqual([record["name"] for record in records], ["Linear"])
 
     def test_profiler_uses_canonical_four_input_call_and_restores_mode(self) -> None:
-        profile = importlib.import_module("moderntsf.benchmark.evaluation.profile")
+        profile = importlib.import_module("tsflab.benchmark.evaluation.profile")
         model = _FourInputModel().eval()
         loader = [
             (

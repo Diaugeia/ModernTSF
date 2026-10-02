@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TCNForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "c80c6ee24e81d1e9c49c5b1d621f48b33f923d6502910e4b5517892dbb7e1917",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "af8b51cbdc2eef9f4b694031583d01adc0e2400b0f28fe6f5111e7e46b696642",
   "paper": {
     "title": "An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling",
     "venue": "arXiv preprint",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model TCNForecasterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_neural_baselines.py"
+    "python -m pytest -q tests/test_neural_baselines.py"
   ]
 }

@@ -3,7 +3,7 @@ Read only the section relevant to the change; `AGENTS.md` holds the always-on ru
 
 ## Models
 
-Every model or method is a peer under `src/moderntsf/models/<lowercase_module_slug>/`
+Every model or method is a peer under `src/tsflab/models/<lowercase_module_slug>/`
 with no architecture categories. Each entry owns `model.py`, a checked `README.md`
 model card, and a `spec.py` limited to its factory, parameter schema, config path,
 and runtime contract. The catalog index joins registered specs to card front matter;
@@ -13,7 +13,7 @@ correctly shaped output, and pass unified verification.
 
 ## Components
 
-Reusable building blocks live in `src/moderntsf/models/_components/`; they never
+Reusable building blocks live in `src/tsflab/models/_components/`; they never
 classify models. Every new model maps its defining operations to
 `reuse-existing`, `extract-new`, or `model-local` first. Reuse a component only
 when mathematics, shapes, normalization, masking, residual order, initialization,
@@ -53,7 +53,7 @@ code fields, or invented source facts.
 Ordinary paper architectures are local code; inspect official code at a pinned
 revision to resolve paper omissions without copying it. A released pretrained
 foundation model is the exception: use its official package and unchanged
-checkpoint behind `src/moderntsf/models/_foundation/`, load offline from an
+checkpoint behind `src/tsflab/models/_foundation/`, load offline from an
 explicit local path, and declare the entry inference-only. A shape-only smoke test
 is not verification; status is computed from evidence, never written into the card.
 
@@ -67,7 +67,7 @@ sequence boundaries, input contract, and reference comparison (official code, el
 `not-applicable`). Use `tsf verify model`, `stale`, `all --jobs`, and `index`.
 
 ## Data, experiments, and model artifacts
-Dataset bytes live only in `dataset/`; loaders and schemas in `src/moderntsf/data/`; cards in
+Dataset bytes live only in `dataset/`; loaders and schemas in `src/tsflab/data/`; cards in
 `catalog/datasets/`. Task modes are executable contracts checked during config loading.
 Experiments are resolved TOML and immutable evidence under `work_dirs/`; execution policy never
 changes scientific settings. Large weights and tokenizers are `ModelArtifact` facts in `spec.py`,
@@ -95,5 +95,5 @@ kebab-case `name` and discriminating `description` frontmatter. Each skill owns
 one recognizable outcome, expected inputs, preflight checks, execution path,
 success criteria, artifacts, and stopping conditions. Use public APIs or CLI commands;
 omit harness-specific paths, retired aliases, internal entry points, and tutorials.
-Changed skills must pass `uv run python -m moderntsf.tsf_core.agent_assets`; test
+Changed skills must pass `uv run python -m tsflab.tsf_core.agent_assets`; test
 descriptions against positive, indirect, negative, and edge-case requests.

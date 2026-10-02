@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "S_Mamba",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "b346fa06baa7f966f6b79270732a71291ae5827d6ff1f588c9bde0833be9836e",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "bde9a8fda6df2b6549daefc6956503def9593fe78f7019bb46fffbeade410254",
   "paper": {
     "title": "Is Mamba Effective for Time Series Forecasting?",
     "venue": "arXiv preprint",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model S_Mamba",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_ssm_sequence_forecasters.py"
+    "python -m pytest -q tests/test_ssm_sequence_forecasters.py"
   ]
 }

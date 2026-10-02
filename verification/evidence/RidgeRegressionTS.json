@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RidgeRegressionTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "b600f0cc5b43e875b62be2da95b2076dff120ba148a731cd40b03e1e4ada17f3",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "231bf43726fc3d710e8f2c631861aa7719a76e3b66a3a7f04cf39a907fa8041b",
   "paper": {
     "title": "Ridge Regression: Biased Estimation for Nonorthogonal Problems",
     "venue": "Technometrics",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model RidgeRegressionTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_classical_forecasters.py"
+    "python -m pytest -q tests/test_classical_forecasters.py"
   ]
 }

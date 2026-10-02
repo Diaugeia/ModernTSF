@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.sdmixer.model import Model as SDMixer
+from tsflab.models.sdmixer.model import Model as SDMixer
 
 
 SEQ_LEN = 24

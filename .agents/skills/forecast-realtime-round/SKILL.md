@@ -1,6 +1,6 @@
 ---
 name: forecast-realtime-round
-description: Produce, validate, and submit a forecast for an open ModernTSF real-time round (stocks, PeMS traffic, air quality, weather, solar, grid load), then read its score once the truth arrives. Use for live or replayed rolling evaluation; not for static benchmark runs or leaderboard result bundles.
+description: Produce, validate, and submit a forecast for an open TSFLab real-time round (stocks, PeMS traffic, air quality, weather, solar, grid load), then read its score once the truth arrives. Use for live or replayed rolling evaluation; not for static benchmark runs or leaderboard result bundles.
 ---
 
 # Forecast a real-time round

@@ -8,21 +8,21 @@ import unittest
 import numpy as np
 import torch
 
-from moderntsf.models.agcrn.model import Model as AGCRN
-from moderntsf.models.d2stgnn.model import Model as D2STGNN
-from moderntsf.models.dfdgcn.model import Model as DFDGCN
-from moderntsf.models.extralonger.model import Model as Extralonger
-from moderntsf.models.gwnet.model import Model as GWNet
-from moderntsf.models.himnet.model import Model as HimNet
-from moderntsf.models.ragc.model import Model as RAGC
-from moderntsf.models.staeformer.model import Model as STAEformer
-from moderntsf.models.stdn.model import Model as STDN
-from moderntsf.models.stemgnn.model import Model as StemGNN
-from moderntsf.models.stgcn.model import Model as STGCN
-from moderntsf.models.stid.model import Model as STID
-from moderntsf.models.stnorm.model import Model as STNorm
-from moderntsf.models.st_ssdl.model import Model as STSSDL
-from moderntsf.models.visifold.model import Model as VisiFold
+from tsflab.models.agcrn.model import Model as AGCRN
+from tsflab.models.d2stgnn.model import Model as D2STGNN
+from tsflab.models.dfdgcn.model import Model as DFDGCN
+from tsflab.models.extralonger.model import Model as Extralonger
+from tsflab.models.gwnet.model import Model as GWNet
+from tsflab.models.himnet.model import Model as HimNet
+from tsflab.models.ragc.model import Model as RAGC
+from tsflab.models.staeformer.model import Model as STAEformer
+from tsflab.models.stdn.model import Model as STDN
+from tsflab.models.stemgnn.model import Model as StemGNN
+from tsflab.models.stgcn.model import Model as STGCN
+from tsflab.models.stid.model import Model as STID
+from tsflab.models.stnorm.model import Model as STNorm
+from tsflab.models.st_ssdl.model import Model as STSSDL
+from tsflab.models.visifold.model import Model as VisiFold
 
 
 def _graph(nodes: int = 4) -> np.ndarray:
@@ -130,7 +130,7 @@ class PaperStructureTests(unittest.TestCase):
         self.assertGreater(far_losses["deviation_loss"].item(), close_losses["deviation_loss"].item())
 
     def test_st_ssdl_prototype_memory_retrieval_shapes(self) -> None:
-        from moderntsf.models._components.deviation_memory import PrototypeMemory, deviation_score
+        from tsflab.models._components.deviation_memory import PrototypeMemory, deviation_score
 
         torch.manual_seed(0)
         memory = PrototypeMemory(query_dim=8, prototype_dim=6, num_prototypes=5)
@@ -145,7 +145,7 @@ class PaperStructureTests(unittest.TestCase):
         self.assertTrue((deviation_score(retrieval.query, -retrieval.query) >= 0).all())
 
     def test_extralonger_global_local_attention_matches_paper_equation(self) -> None:
-        from moderntsf.models._components.graph_masked_attention import GlobalLocalGraphAttention
+        from tsflab.models._components.graph_masked_attention import GlobalLocalGraphAttention
 
         torch.manual_seed(0)
         attn = GlobalLocalGraphAttention(model_dim=8, num_heads=2).eval()
@@ -183,7 +183,7 @@ class PaperStructureTests(unittest.TestCase):
         dense-adjacency degree-normalized matmul it is algebraically
         equivalent to, for the implicit adjacency A = support @ support.T.
         """
-        from moderntsf.models._components.regularized_adaptive_graph_conv import EfficientCosineGraphConv
+        from tsflab.models._components.regularized_adaptive_graph_conv import EfficientCosineGraphConv
 
         torch.manual_seed(0)
         gconv = EfficientCosineGraphConv(hidden_dim=5, spatial_dim=3, order=1).eval()
@@ -199,7 +199,7 @@ class PaperStructureTests(unittest.TestCase):
         torch.testing.assert_close(actual_hop, expected_hop, atol=1e-5, rtol=1e-5)
 
     def test_ragc_stochastic_shared_embedding_regularizes_only_in_training(self) -> None:
-        from moderntsf.models._components.regularized_adaptive_graph_conv import StochasticSharedEmbedding
+        from tsflab.models._components.regularized_adaptive_graph_conv import StochasticSharedEmbedding
 
         torch.manual_seed(0)
         sse = StochasticSharedEmbedding(p=1.0)

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Extralonger",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "87da31304c8991a49a51e741c8ca888e4ed52236161491e36f82b32f4f88c691",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "6b0364914e08f883bea87851b1d4f88d1580c4fbbe689a134e74edc76bb6e708",
   "paper": {
     "title": "Extralonger: Toward a Unified Perspective of Spatial-Temporal Factors for Extra-Long-Term Traffic Forecasting",
     "venue": "NeurIPS 2024 Workshop",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model Extralonger",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

@@ -9,8 +9,8 @@ import zipfile
 import pandas as pd
 import pytest
 
-from moderntsf.realtime.sources import airnow, eia930, ercot, openaq, openmeteo, sp500, us_prices
-from moderntsf.realtime.tracks import get_track, list_tracks
+from tsflab.realtime.sources import airnow, eia930, ercot, openaq, openmeteo, sp500, us_prices
+from tsflab.realtime.tracks import get_track, list_tracks
 
 NEW_TRACKS = ["weather_openmeteo_temp", "solar_openmeteo_ghi", "air_airnow_us", "air_openaq_us",
               "air_openaq_eu", "grid_ercot", "grid_eia_us", "solar_eia_us", "stock_sp500"]
@@ -216,7 +216,7 @@ def test_yahoo_chart_drops_the_unsettled_session_and_uses_exchange_dates() -> No
 
 
 def test_us_close_falls_back_from_nasdaq_to_yahoo_and_skips_unknown_symbols(monkeypatch) -> None:
-    from moderntsf.realtime.sources import equity
+    from tsflab.realtime.sources import equity
 
     monkeypatch.setattr(equity.time, "sleep", lambda s: None)
     good = pd.Series([1.0, 2.0], index=pd.to_datetime(["2026-09-30", "2026-10-01"]))

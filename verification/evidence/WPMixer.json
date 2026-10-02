@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "WPMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "135f18d15c91141b1175e10100b8b40219be8eac2eeb321f6ba555041a9aa0a0",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "bfceb74aadc2f34405f94f48bd8dbc833e69a67ef54c5e877722b7dc8da047df",
   "paper": {
     "title": "WPMixer: Efficient Multi-Resolution Mixing for Long-Term Time Series Forecasting",
     "venue": "AAAI 2025",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model WPMixer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_c.py"
+    "python -m pytest -q tests/test_recent_forecasters_c.py"
   ]
 }

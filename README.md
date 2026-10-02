@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 ModernTSF
+# 🚀 TSFLab
 
 **A fully automated, continuously updated platform for time series forecasting**
 
@@ -16,11 +16,11 @@ we already have **and** on data that did not exist when the method was written.
 
 </div>
 
-> 🧪 **Latest features land on the [`dev`](https://github.com/Diaugeia/ModernTSF/tree/dev) branch first.** `main` is the stable, versioned release line.
+> 🧪 **Latest features land on the [`dev`](https://github.com/Diaugeia/TSFLab/tree/dev) branch first.** `main` is the stable, versioned release line.
 
 ---
 
-## 🧭 Why ModernTSF
+## 🧭 Why TSFLab
 
 Forecasting papers multiply every year, yet each one can compare against only a
 few baselines, re-run under its own code and data conventions. Keeping hundreds
@@ -28,9 +28,9 @@ of methods in one benchmark by hand, verifying their code, and re-evaluating the
 on new data no longer scales, and fixed benchmark snapshots cannot show how a
 model holds up as the world moves on.
 
-ModernTSF automates that loop. Coding agents read new papers, implement them
+TSFLab automates that loop. Coding agents read new papers, implement them
 behind one verified interface, and evaluate them under one protocol on static
-datasets and on **rolling real-time tracks** that refresh every week. ModernTSF
+datasets and on **rolling real-time tracks** that refresh every week. TSFLab
 ships no agent of its own: it is the infrastructure (catalog, contracts, data,
 protocols, evidence) that any coding agent operates through declarative skills.
 
@@ -53,8 +53,8 @@ protocols, evidence) that any coding agent operates through declarative skills.
 **Work in the repository with an agent:**
 
 ```bash
-git clone https://github.com/Diaugeia/ModernTSF.git
-cd ModernTSF
+git clone https://github.com/Diaugeia/TSFLab.git
+cd TSFLab
 codex          # or any other coding agent
 ```
 
@@ -68,15 +68,15 @@ codex          # or any other coding agent
 **Or install the framework and scaffold your own project:**
 
 ```bash
-uv tool install "git+https://github.com/Diaugeia/ModernTSF"   # provides `tsf`
+uv tool install "git+https://github.com/Diaugeia/TSFLab"   # provides `tsf`
 tsf init my-forecasting-project && cd my-forecasting-project
 tsf dataset download etth1          # pinned, checksum-verified from the Hub
 tsf inspect --config configs/runs/example.toml
 tsf run configs/runs/example.toml
 ```
 
-Scaffolded run configs inherit the installed catalog through `moderntsf://`
-paths, so upgrading ModernTSF upgrades their defaults.
+Scaffolded run configs inherit the installed catalog through `tsflab://`
+paths, so upgrading TSFLab upgrades their defaults.
 
 **Direct CLI discovery:**
 
@@ -152,16 +152,16 @@ Exact command options stay in `tsf <command> --help`.
 
 | Path | Contents |
 | --- | --- |
-| `src/moderntsf/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
+| `src/tsflab/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
 | `configs/`, `catalog/`, `verification/` | Experiment and real-time track configs, dataset cards, verification evidence |
-| `apps/web/` | ModernTSF Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
+| `apps/web/` | TSFLab Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
 | `experiments/` | Local research workspace; only `*/scripts/` is tracked |
 
 ---
 
 ## 📜 License
 
-ModernTSF is released under the [MIT License](LICENSE). Copyright © 2026 **Diaugeia.AI**.
+TSFLab is released under the [MIT License](LICENSE). Copyright © 2026 **Diaugeia.AI**.
 
 Ordinary paper architectures are maintained locally under the project license.
 Released pretrained foundation models use optional official packages and unchanged
@@ -173,4 +173,4 @@ their providers' terms (Caltrans PeMS, OpenAQ, exchange data via AKShare).
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Diaugeia/ModernTSF&type=Date)](https://star-history.com/#Diaugeia/ModernTSF&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Diaugeia/TSFLab&type=Date)](https://star-history.com/#Diaugeia/TSFLab&Date)

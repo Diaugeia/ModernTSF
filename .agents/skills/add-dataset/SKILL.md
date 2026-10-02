@@ -1,6 +1,6 @@
 ---
 name: add-dataset
-description: Register a new dataset in ModernTSF from a standard CSV, a custom loader, a traffic bundle, or the UltraTraffic PeMS store. Use for dataset integration and preset configuration; not merely for inspecting or preprocessing an existing dataset.
+description: Register a new dataset in TSFLab from a standard CSV, a custom loader, a traffic bundle, or the UltraTraffic PeMS store. Use for dataset integration and preset configuration; not merely for inspecting or preprocessing an existing dataset.
 ---
 
 # Add a dataset
@@ -18,7 +18,7 @@ a preset, and a generated card.
 
 ## Steps
 
-1. Keep bytes in `dataset/`, loader and schema code in `src/moderntsf/data/`, the
+1. Keep bytes in `dataset/`, loader and schema code in `src/tsflab/data/`, the
    preset in `configs/datasets/`, and the card in `catalog/datasets/`.
 2. Scaffold a CSV-backed preset:
 

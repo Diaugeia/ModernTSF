@@ -1,6 +1,6 @@
 ---
 name: implement-model
-description: Implement or replace one ModernTSF forecasting model as local code after checking its paper and pinned official implementation when available. Use after structure extraction and component matching; not for paper discovery, scaffolding alone, or experiment reproduction.
+description: Implement or replace one TSFLab forecasting model as local code after checking its paper and pinned official implementation when available. Use after structure extraction and component matching; not for paper discovery, scaffolding alone, or experiment reproduction.
 ---
 
 # Implement a model
@@ -23,10 +23,10 @@ If the requested outcome is a released pretrained foundation model, stop and use
 1. Resolve paper omissions (tensor order, padding, initialization, defaults,
    train/eval behavior) from the paper and pinned official code. Never copy,
    rename, mechanically rewrite, import, or depend on external model source.
-2. Reuse `src/moderntsf/models/_components/` only after proving mathematical and
+2. Reuse `src/tsflab/models/_components/` only after proving mathematical and
    runtime equivalence. Implement each `extract-new` operator as a component with
    its own card, tests, and `ComponentSpec`; keep paper-specific glue local.
-3. Implement inside the flat `src/moderntsf/models/<slug>/` package with the exact
+3. Implement inside the flat `src/tsflab/models/<slug>/` package with the exact
    four-input `forward(x_enc, x_mark_enc=None, x_dec=None, x_mark_dec=None)`.
    Model-specific operations belong in named methods, not extra public inputs.
    Keep useful paper formulas as comments, never source-derived code or comments.

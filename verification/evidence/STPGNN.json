@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STPGNN",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "b85998b4f63f94492d02f8c6e2a136bec57c800271ce97cb6344fcec6747d499",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "98996a1af11defa423e3e21726bc3feb630f9862504eaa27e6bf268cb76b6657",
   "paper": {
     "title": "Spatio-Temporal Pivotal Graph Neural Networks for Traffic Flow Forecasting",
     "venue": "AAAI 2024",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model STPGNN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_c.py"
+    "python -m pytest -q tests/test_recent_forecasters_c.py"
   ]
 }

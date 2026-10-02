@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "XGBoostTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "98d11056c48fe0803cf824b3edcc83d6f347f8fff824aa69560338cd843074cc",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "1853f23263e3e9228a862ca27abb60b9c1bb61b14bad21be627bb8815b6e17d2",
   "paper": {
     "title": "XGBoost: A Scalable Tree Boosting System",
     "venue": "KDD 2016",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model XGBoostTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_tree_baselines.py"
+    "python -m pytest -q tests/test_tree_baselines.py"
   ]
 }

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CANet",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "e64bcae9479f85c5d6d7be946ccf71a811da8517feffe7a4f453ffd057cd3df6",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "4e9095cbddb401c9f477360d8ae270858a834302d74318fe04ddc55c718e5df1",
   "paper": {
     "title": "CANet: ChronoAdaptive Network for Enhanced Long-Term Time Series Forecasting under Non-Stationarity",
     "venue": "arXiv preprint",
@@ -159,6 +159,6 @@
   },
   "commands": [
     "uv run tsf verify model CANet",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
+    "python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
   ]
 }

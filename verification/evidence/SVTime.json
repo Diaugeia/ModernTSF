@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SVTime",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "3585a2d207f3ff816d87443e074b2f5d080cab46899c7c1816e869fe37788219",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "d68ce4932d3c17fa860edd4bd9d7ee26f9bf8597f753345863ef3eb042f7c7bc",
   "paper": {
     "title": "SVTime: Small Time Series Forecasting Models Informed by \\\"Physics\\\" of Large Vision Model Forecasters",
     "venue": "arXiv preprint",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model SVTime",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_probabilistic_forecasters.py"
+    "python -m pytest -q tests/test_probabilistic_forecasters.py"
   ]
 }

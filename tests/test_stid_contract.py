@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.stid.model import Model as STID
+from tsflab.models.stid.model import Model as STID
 
 
 class STIDContractTests(unittest.TestCase):

@@ -1,6 +1,6 @@
 ---
 name: smoke-models
-description: Run fast end-to-end smoke checks for one or more ModernTSF models. Use after implementation changes or when validating training and output shape quickly; not for exhaustive repository or paper audits.
+description: Run fast end-to-end smoke checks for one or more TSFLab models. Use after implementation changes or when validating training and output shape quickly; not for exhaustive repository or paper audits.
 ---
 
 # Smoke-test models

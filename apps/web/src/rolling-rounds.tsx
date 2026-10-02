@@ -26,7 +26,7 @@ export function RollingRounds({ data, copy }: { data: Record<string, RollingSumm
       <p className="mt-1 max-w-3xl text-sm text-muted">
         {copy.intro}{" "}
         <a className="text-accent underline-offset-2 hover:underline"
-           href="https://github.com/Diaugeia/ModernTSF/blob/main/apps/web/SUBMITTING.md#real-time-rounds">
+           href="https://github.com/Diaugeia/TSFLab/blob/main/apps/web/SUBMITTING.md#real-time-rounds">
           {copy.submit}
         </a>
       </p>

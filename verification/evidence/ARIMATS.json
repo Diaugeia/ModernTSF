@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ARIMATS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "e9e4de0fc7b94dc34117cb66d626e94889264af6da52df78633720ae228243f5",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "df87bfb37602c9211774454b2023023966963767d2c12e5839c510e46e729246",
   "paper": {
     "title": "Time Series Analysis: Forecasting and Control",
     "venue": "Holden-Day (book) / N/A (classical baseline)",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model ARIMATS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
+    "python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

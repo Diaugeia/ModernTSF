@@ -1,6 +1,6 @@
 ---
 name: expand-model-catalog
-description: Discover and integrate a bounded number of new time-series forecasting papers into the ModernTSF catalog. Use for an authorized search-to-model expansion run; not for literature monitoring that must leave the repository unchanged.
+description: Discover and integrate a bounded number of new time-series forecasting papers into the TSFLab catalog. Use for an authorized search-to-model expansion run; not for literature monitoring that must leave the repository unchanged.
 ---
 
 # Expand the model catalog

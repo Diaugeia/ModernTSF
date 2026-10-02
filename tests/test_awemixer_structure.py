@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.awemixer.model import Model as AWEMixer
+from tsflab.models.awemixer.model import Model as AWEMixer
 
 
 def marks(batch=2, steps=12, offset=0):

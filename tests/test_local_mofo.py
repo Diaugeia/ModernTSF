@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.mofo.model import Model, RegulatedRelaxation, period_structured_patches
+from tsflab.models.mofo.model import Model, RegulatedRelaxation, period_structured_patches
 
 
 class LocalMoFoTests(unittest.TestCase):

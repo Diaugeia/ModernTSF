@@ -16,4 +16,4 @@ jobs:
       - name: Install TSF-Core runtime dependency
         run: python -m pip install "pydantic==2.12.5"
       - name: Verify cross-harness Agent-first instructions and skills
-        run: PYTHONPATH=src python -m moderntsf.tsf_core.agent_assets
+        run: PYTHONPATH=src python -m tsflab.tsf_core.agent_assets

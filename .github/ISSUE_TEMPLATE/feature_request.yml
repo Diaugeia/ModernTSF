@@ -19,7 +19,7 @@ body:
     id: solution
     attributes:
       label: Proposed solution
-      description: What should ModernTSF do? Sketch the API/config/CLI if you can.
+      description: What should TSFLab do? Sketch the API/config/CLI if you can.
     validations:
       required: true
   - type: textarea

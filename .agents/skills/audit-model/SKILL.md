@@ -1,6 +1,6 @@
 ---
 name: audit-model
-description: Audit one existing ModernTSF model against its card, paper, official-code facts, local implementation, component decisions, and unified verification evidence. Use for a focused review; batch ownership belongs in a task harness.
+description: Audit one existing TSFLab model against its card, paper, official-code facts, local implementation, component decisions, and unified verification evidence. Use for a focused review; batch ownership belongs in a task harness.
 ---
 
 # Audit a model
@@ -30,7 +30,7 @@ uv run tsf model audit <Name>
    absence fails before construction, and the card claims no checkpoint behavior
    beyond what verification covers.
 4. For an inference-only foundation runtime: it uses the official loader through
-   `src/moderntsf/models/_foundation/`, never downloads implicitly, skips training,
+   `src/tsflab/models/_foundation/`, never downloads implicitly, skips training,
    and records training/gradient checks as `not-applicable`.
 5. Run the executable checks:
 

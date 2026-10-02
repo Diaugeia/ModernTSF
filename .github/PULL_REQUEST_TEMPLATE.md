@@ -1,4 +1,4 @@
-<!-- Thanks for contributing to ModernTSF! Fill in the sections below. -->
+<!-- Thanks for contributing to TSFLab! Fill in the sections below. -->
 
 ## Summary
 

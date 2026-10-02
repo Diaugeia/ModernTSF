@@ -8,12 +8,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from moderntsf.benchmark.catalog.components import COMPONENT_CATALOG
-from moderntsf.benchmark.catalog.composition import validate_composition
-from moderntsf.benchmark.catalog_metadata import model_records
-from moderntsf.benchmark.commands import dataset_analyze
-from moderntsf.benchmark.registry.losses import LOSS_NAME_MAP
-from moderntsf.data import profile as prof
+from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+from tsflab.benchmark.catalog.composition import validate_composition
+from tsflab.benchmark.catalog_metadata import model_records
+from tsflab.benchmark.commands import dataset_analyze
+from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
+from tsflab.data import profile as prof
 
 ROOT = Path(__file__).resolve().parents[1]
 PERIOD = 24

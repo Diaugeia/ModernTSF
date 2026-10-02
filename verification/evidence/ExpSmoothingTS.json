@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ExpSmoothingTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "514b69b0d976ceda91db310199225dd3f82b1208ed347c85be7f2565b3bbdebb",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "4495821e10c283257d27d686ffa643345b0c6c1bae7997150d3294999487971a",
   "paper": {
     "title": "Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages",
     "venue": "International Journal of Forecasting",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model ExpSmoothingTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_classical_forecasters.py"
+    "python -m pytest -q tests/test_classical_forecasters.py"
   ]
 }

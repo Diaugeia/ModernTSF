@@ -10,7 +10,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.semixer.model import Model
+from tsflab.models.semixer.model import Model
 
 
 def make_model(**overrides):

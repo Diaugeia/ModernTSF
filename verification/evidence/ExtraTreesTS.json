@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ExtraTreesTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "7eb1bbb932f573abaafb7d535651419800898bf03f8a1655b12e16d7f34b624a",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "f79493b8ac3b841bc0a5448eca77cfbc723ee8b31ffb313afdd956c20aabca41",
   "paper": {
     "title": "Extremely Randomized Trees",
     "venue": "Machine Learning 2006",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model ExtraTreesTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_tree_baselines.py"
+    "python -m pytest -q tests/test_tree_baselines.py"
   ]
 }

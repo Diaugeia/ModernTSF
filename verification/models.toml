@@ -1,4 +1,4 @@
-# Declarative coverage for the single ModernTSF verification runner.
+# Declarative coverage for the single TSFLab verification runner.
 # Every model declares an executable paper-structure test. Models with a passed
 # official-code comparison also declare the test that reproduces that check.
 schema_version = 1
@@ -13,7 +13,7 @@ structure = ['node-adaptive graph convolution', 'adaptive graph GRU', 'learned n
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/AirCade/blob/179067f5b9fbc05f894022809e0b1c83e9f61fd8/src/moderntsf/models/AirCade.py']
+reference_sources = ['https://github.com/PoorOtterBob/AirCade/blob/179067f5b9fbc05f894022809e0b1c83e9f61fd8/src/tsflab/models/AirCade.py']
 
 [models.AirDualODE]
 profile = 'standard'
@@ -25,7 +25,7 @@ reference_sources = ['https://github.com/decisionintelligence/Air-DualODE/blob/3
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/moderntsf/models/airformer.py']
+reference_sources = ['https://github.com/yoshall/airformer/blob/ef7d3933768490e3a06921b8eb0f837c61741194/src/tsflab/models/airformer.py']
 
 [models.AirPhyNet]
 profile = 'standard'
@@ -116,7 +116,7 @@ structure = ['channel-independent patching', 'future horizon-dependent learned q
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/cauair.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/tsflab/models/cauair.py']
 
 [models.CMoS]
 profile = 'standard'
@@ -189,7 +189,7 @@ test = 'tests/test_tree_baselines.py'
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
 reference_test = 'tests/test_air_quality_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/deepair.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/tsflab/models/deepair.py']
 
 [models.DeepAR]
 profile = 'standard'
@@ -401,7 +401,7 @@ reference_sources = ['https://github.com/dantian123121/HMformer/blob/18e014934a7
 profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'
 reference_test = 'tests/test_recent_forecasters_a.py'
-reference_sources = ['https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/layers.py', 'https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/moderntsf/models/dlinear.py']
+reference_sources = ['https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/layers.py', 'https://github.com/av-savchenko/HN-MVTS/blob/e86c58a315576cef021d99e04b9b5fef55ddd6d6/src/tsflab/models/dlinear.py']
 
 [models.ImplicitForecaster]
 profile = 'standard'
@@ -723,7 +723,7 @@ test = 'tests/test_neural_baselines.py'
 profile = 'standard'
 test = 'tests/test_linear_mixer_forecasters.py'
 reference_test = 'tests/test_linear_mixer_forecasters.py'
-reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/moderntsf/models/rpmixer.py']
+reference_sources = ['https://github.com/PoorOtterBob/CauAir/blob/73dae00ca6ad14abb15174a0a0286d500e868b94/src/tsflab/models/rpmixer.py']
 
 [models.S4]
 profile = 'standard'

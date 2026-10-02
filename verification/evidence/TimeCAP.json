@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeCAP",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "fd3691e57497698ba0064563dd85ba84a652cc300e781b98900737c168873080",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "d9f6d439f245654b3d566c135365156eec0acf69be0a06908c2470c888944e87",
   "paper": {
     "title": "TimeCAP: A Channel-Aware Pre-Training Framework for Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model TimeCAP",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
+    "python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
   ]
 }

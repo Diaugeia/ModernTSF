@@ -39,7 +39,7 @@ PEMS-BAY is a spatiotemporal traffic benchmark: 325 sensors recording traffic sp
 
 - Producer: DCRNN authors packaged Caltrans PeMS data; repository https://github.com/liyaguang/DCRNN (code MIT). The packaged file has no stated data license; PeMS's own Conditions of Use say site information is in the public domain unless otherwise indicated, a generic policy, so `license` stays `unknown`.
 - Cite: Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018), https://arxiv.org/abs/1707.01926.
-- Obtain `pems-bay.h5` and `adj_mx_bay.pkl` from the DCRNN README; ModernTSF does not ship them.
+- Obtain `pems-bay.h5` and `adj_mx_bay.pkl` from the DCRNN README; TSFLab does not ship them.
 
 ## Structure and statistics
 

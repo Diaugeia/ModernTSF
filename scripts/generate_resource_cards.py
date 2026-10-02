@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from moderntsf.benchmark.resource_cards import write_resource_cards
-from moderntsf.tsf_core.paths import require_checkout
+from tsflab.benchmark.resource_cards import write_resource_cards
+from tsflab.tsf_core.paths import require_checkout
 
 
 def main() -> int:

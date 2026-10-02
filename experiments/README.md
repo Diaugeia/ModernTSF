@@ -6,7 +6,7 @@ are version-controlled; results stay on the machine that produced them
 
 | Path | Contents | Tracked |
 | --- | --- | --- |
-| `repo-bench/scripts/` | `baseline.sh` / `final.sh` — code-quality measurements of ModernTSF vs. Time-Series-Library, TFB, PyOmniTS | yes |
+| `repo-bench/scripts/` | `baseline.sh` / `final.sh` — code-quality measurements of TSFLab vs. Time-Series-Library, TFB, PyOmniTS | yes |
 | `repo-bench/measurements/` | ruff / radon / vulture / jscpd reports, before and after | no |
 | `repo-bench/repos/` | cloned comparison repositories | no |
 | `data/` | raw server result bundles | no |

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PolynomialRegressionTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "d07cbe6178e076d92c16d353b58b55ea2cd11e43508659b0f7d8bda719a8d445",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "e0e7288f502be4e1141ad8bdc306879c9e562328afc25f67bd1a9d6a6495c795",
   "paper": {
     "title": "Applied Regression Analysis",
     "venue": "Wiley",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model PolynomialRegressionTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_classical_forecasters.py"
+    "python -m pytest -q tests/test_classical_forecasters.py"
   ]
 }

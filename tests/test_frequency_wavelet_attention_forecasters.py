@@ -7,20 +7,20 @@ import unittest
 
 import torch
 
-from moderntsf.models._components.energy_frequency_pooling import EnergyBasedFrequencyPooling
-from moderntsf.models._components.freq_band_moe import FrequencyBandMixtureOfExperts
-from moderntsf.models._components.global_patch_compression_attention import (
+from tsflab.models._components.energy_frequency_pooling import EnergyBasedFrequencyPooling
+from tsflab.models._components.freq_band_moe import FrequencyBandMixtureOfExperts
+from tsflab.models._components.global_patch_compression_attention import (
     GlobalPatchCompressionAttention,
 )
-from moderntsf.models._components.haar_dwt1d import HaarDWT1D, HaarIDWT1D
-from moderntsf.models.freqmoe.model import Model as FreqMoE
-from moderntsf.models.freqmoe.spec import ModelParameterConfig as FreqMoEParameters
-from moderntsf.models.refocus.model import Model as ReFocus
-from moderntsf.models.refocus.spec import ModelParameterConfig as ReFocusParameters
-from moderntsf.models.sensorformer.model import Model as Sensorformer
-from moderntsf.models.sensorformer.spec import ModelParameterConfig as SensorformerParameters
-from moderntsf.models.swift.model import Model as SWIFT
-from moderntsf.models.swift.spec import ModelParameterConfig as SWIFTParameters
+from tsflab.models._components.haar_dwt1d import HaarDWT1D, HaarIDWT1D
+from tsflab.models.freqmoe.model import Model as FreqMoE
+from tsflab.models.freqmoe.spec import ModelParameterConfig as FreqMoEParameters
+from tsflab.models.refocus.model import Model as ReFocus
+from tsflab.models.refocus.spec import ModelParameterConfig as ReFocusParameters
+from tsflab.models.sensorformer.model import Model as Sensorformer
+from tsflab.models.sensorformer.spec import ModelParameterConfig as SensorformerParameters
+from tsflab.models.swift.model import Model as SWIFT
+from tsflab.models.swift.spec import ModelParameterConfig as SWIFTParameters
 
 
 class ComponentEquationTests(unittest.TestCase):

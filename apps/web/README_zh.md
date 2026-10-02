@@ -1,12 +1,12 @@
 <div align="center">
 
-# 📊 ModernTSF Leaderboard
+# 📊 TSFLab Leaderboard
 
 **开放、可复现的时间序列预测榜单**
 
-[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
-[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/ModernTSF-yellow.svg)](https://huggingface.co/spaces/Diaugeia/ModernTSF)
-[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-ModernTSF--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static)
+[![Live](https://img.shields.io/badge/live-Hugging%20Face%20Space-8c6f24.svg)](https://huggingface.co/spaces/Diaugeia/TSFLab)
+[![🤗 Space](https://img.shields.io/badge/🤗%20Space-Diaugeia/TSFLab-yellow.svg)](https://huggingface.co/spaces/Diaugeia/TSFLab)
+[![🤗 Datasets](https://img.shields.io/badge/🤗%20Datasets-TSFLab--Static-orange.svg)](https://huggingface.co/datasets/Diaugeia/TSFLab-Static)
 [![Next.js](https://img.shields.io/badge/Next.js-static%20export-black.svg?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -18,11 +18,11 @@
 
 ---
 
-## 🧭 ModernTSF Leaderboard 是什么
+## 🧭 TSFLab Leaderboard 是什么
 
-ModernTSF Leaderboard 是 [ModernTSF](https://github.com/Diaugeia/ModernTSF) 的公开记分牌:**ModernTSF 是实验
-发生的地方,ModernTSF Leaderboard 是实验被公开展示的地方。** 大多数预测数字是没法核验的——论文报告它、榜单
-抄过去、没人重跑。ModernTSF Leaderboard 反过来:每一行都是**一份你能打开的提交**(结果 + 智能体轨迹 + 可读报告),
+TSFLab Leaderboard 是 [TSFLab](https://github.com/Diaugeia/TSFLab) 的公开记分牌:**TSFLab 是实验
+发生的地方,TSFLab Leaderboard 是实验被公开展示的地方。** 大多数预测数字是没法核验的——论文报告它、榜单
+抄过去、没人重跑。TSFLab Leaderboard 反过来:每一行都是**一份你能打开的提交**(结果 + 智能体轨迹 + 可读报告),
 因此榜单可比、可审计、可复现。它是证据的一个函数,而不是谁手填的一张表。
 
 本仓库是**唯一真源**——网站、每一份 `submission.json`、以及把提交变成榜单的构建管线。
@@ -46,9 +46,9 @@ ModernTSF Leaderboard 是 [ModernTSF](https://github.com/Diaugeia/ModernTSF) 的
 
 ## 🔗 在线与数据
 
-- 🌐 **网站:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/ModernTSF)(每次推送到 `main` 自动部署)
-- 📦 **数据集**(在 Hugging Face):[`Diaugeia/ModernTSF-Static`](https://huggingface.co/datasets/Diaugeia/ModernTSF-Static) —— 基准数据集(ETT、electricity、solar、traffic、weather…)
-- 🧠 **权重(可选):** [`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights) —— 一个公开、*可选*的可复现归档(训练好的 checkpoint)。提交本身不含权重,上榜从不需要 `.pth`。
+- 🌐 **网站:** [Hugging Face Space](https://huggingface.co/spaces/Diaugeia/TSFLab)(每次推送到 `main` 自动部署)
+- 📦 **数据集**(在 Hugging Face):[`Diaugeia/TSFLab-Static`](https://huggingface.co/datasets/Diaugeia/TSFLab-Static) —— 基准数据集(ETT、electricity、solar、traffic、weather…)
+- 🧠 **权重(可选):** [`Diaugeia/TSFLab-Weights`](https://huggingface.co/Diaugeia/TSFLab-Weights) —— 一个公开、*可选*的可复现归档(训练好的 checkpoint)。提交本身不含权重,上榜从不需要 `.pth`。
 
 ---
 
@@ -77,7 +77,7 @@ git add submissions/…/submission.json && git push  # CI:校验 → 聚合 → 
 
 ```jsonc
 {
-  "model": "PatchTST",        // 需与 ModernTSF 模型名一致
+  "model": "PatchTST",        // 需与 TSFLab 模型名一致
   "dataset_id": "ETTh1",      // ETTh1 … weather,或 stock_hs300
   "track": "time_series",     // "time_series" | "realtime"
   "seed": 2021,
@@ -97,13 +97,13 @@ push main
        ├ python3 pipeline/build_leaderboard.py   校验 → 聚合 submissions/ → data/leaderboard.json
        ├ bun run build                           Next 静态导出 → out/
        └ out/ 部署到:
-            └─► Hugging Face Space (static) →  Diaugeia/ModernTSF
+            └─► Hugging Face Space (static) →  Diaugeia/TSFLab
                 (旧 Space Diaugeia/TSEval 自动跳转到这里)
 ```
 
-- `pipeline/validate.py` —— TSF-Core 合约 schema + ModernTSF 绑定校验。
+- `pipeline/validate.py` —— TSF-Core 合约 schema + TSFLab 绑定校验。
 - `pipeline/build_leaderboard.py` —— 聚合提交(均值 / 标准差 / `n_runs`),按 MSE 排名;尚无原始提交的区块(空气质量、股票量化)用 curated 兜底。
-- `pipeline/build_model_meta.py` —— 从 ModernTSF 检出重新生成 `data/model-meta.json`(发表年份)。
+- `pipeline/build_model_meta.py` —— 从 TSFLab 检出重新生成 `data/model-meta.json`(发表年份)。
 
 ---
 
@@ -137,7 +137,7 @@ pipeline/                       合约 schema + validate + build_leaderboard + b
 
 ## 🔗 相关
 
-- [ModernTSF](https://github.com/Diaugeia/ModernTSF) —— 产出提交、并提供模型元数据的预测库。
+- [TSFLab](https://github.com/Diaugeia/TSFLab) —— 产出提交、并提供模型元数据的预测库。
 - [Diaugeia.AI](https://diaugeia.ai) —— 面向 AI 研究的开放基础设施。
 
 ---

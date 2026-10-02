@@ -1,6 +1,6 @@
 ---
 name: reproduce-paper-results
-description: Reproduce and compare a forecasting paper's reported experiments in ModernTSF by mapping its protocol to runnable configs and aligned metrics. Use for paper-result replication; not for implementing the model or designing an unrelated benchmark.
+description: Reproduce and compare a forecasting paper's reported experiments in TSFLab by mapping its protocol to runnable configs and aligned metrics. Use for paper-result replication; not for implementing the model or designing an unrelated benchmark.
 ---
 
 # Reproduce paper results

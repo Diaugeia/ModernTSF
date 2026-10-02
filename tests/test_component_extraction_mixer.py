@@ -2,7 +2,7 @@
 
 This freezes a copy of the pre-extraction ``MixerBlock``/``Model`` classes as
 they existed in ``models/tsmixer/model.py`` before the shared
-``moderntsf.models._components.mixer_block.MixerBlock`` component was introduced, and
+``tsflab.models._components.mixer_block.MixerBlock`` component was introduced, and
 checks that the current, component-consuming implementation is behaviorally
 identical: same ``state_dict()`` keys/shapes, same forward output, and same
 gradients, from a fixed seed and fixed input.
@@ -15,8 +15,8 @@ import unittest
 import torch
 import torch.nn as nn
 
-from moderntsf.models._components.channel_wise_linear import ChannelWiseLinear
-from moderntsf.models.tsmixer.model import Model as CurrentTSMixer
+from tsflab.models._components.channel_wise_linear import ChannelWiseLinear
+from tsflab.models.tsmixer.model import Model as CurrentTSMixer
 
 
 class _ReferenceMixerBlock(nn.Module):

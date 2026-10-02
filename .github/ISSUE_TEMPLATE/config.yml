@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📚 Documentation
-    url: https://github.com/Diaugeia/ModernTSF/tree/main/docs
+    url: https://github.com/Diaugeia/TSFLab/tree/main/docs
     about: Setup, parameters, configs, adding models/datasets, and tools.
   - name: 💬 Questions & discussion
-    url: https://github.com/Diaugeia/ModernTSF/discussions
+    url: https://github.com/Diaugeia/TSFLab/discussions
     about: For usage questions and open-ended discussion (not bug reports).

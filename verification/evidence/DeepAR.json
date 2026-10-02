@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DeepAR",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "942d4bec100cdf640ebd9e1dbf4179287e7171f4334dfa47e55213337f56b454",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "7add80dd780fb7ea52cb2c747c5aae6f96bf687471f17237e4bda567ec3008b8",
   "paper": {
     "title": "DeepAR: Probabilistic Forecasting with Autoregressive Recurrent Networks",
     "venue": "International Journal of Forecasting 2020",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model DeepAR",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_sequence_baselines.py"
+    "python -m pytest -q tests/test_sequence_baselines.py"
   ]
 }

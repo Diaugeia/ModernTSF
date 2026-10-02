@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CatBoostTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "45c3ce2163c865e0b756c16fce1934d6cbc0115f8f917304cb5dfddcf3911cf0",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "7aeadbc051d758095e863af6c12f16006e59e06042b51683ad15ce931538ee92",
   "paper": {
     "title": "CatBoost: unbiased boosting with categorical features",
     "venue": "NeurIPS 2018",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model CatBoostTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_tree_baselines.py"
+    "python -m pytest -q tests/test_tree_baselines.py"
   ]
 }

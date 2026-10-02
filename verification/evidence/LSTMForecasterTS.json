@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LSTMForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "801b6b7f68ef6a34cb139cbbb7dbc8523d0d964e93ae8b3bbfb16e95d3dcf92b",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "e7fc8e590934c4efbfd068d7ad790fba76daf0d409516f4e6dfb7eb7f74b2b24",
   "paper": {
     "title": "Long Short-Term Memory",
     "venue": "Neural Computation",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model LSTMForecasterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_neural_baselines.py"
+    "python -m pytest -q tests/test_neural_baselines.py"
   ]
 }

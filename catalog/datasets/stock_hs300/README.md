@@ -1,12 +1,12 @@
 ---
 name: "stock_hs300"
 kind: "dataset"
-summary: "Daily log returns of the CSI-300 constituents on business days from 2019-01-02, the first ModernTSF real-time benchmark: rounds open weekly and forecast five trading days from a 20-day history."
+summary: "Daily log returns of the CSI-300 constituents on business days from 2019-01-02, the first TSFLab real-time benchmark: rounds open weekly and forecast five trading days from a 20-day history."
 domain: "Finance / equities"
 tags: ["stock", "csi-300", "hs300", "china", "equities", "log-return", "daily", "real-time", "leaderboard", "akshare", "multivariate", "business-days"]
 source: "Daily forward-adjusted closes fetched with AKShare (third-party Chinese market-data sites)"
 source_url: "https://github.com/akfamily/akshare"
-citation: "n/a (no dataset paper; ModernTSF real-time track stock_hs300)"
+citation: "n/a (no dataset paper; TSFLab real-time track stock_hs300)"
 citation_url: "n/a"
 license: "unknown"
 redistribution: "unknown"
@@ -40,7 +40,7 @@ task_modes: ["time_series"]
 
 - Source: the AKShare Python library (https://github.com/akfamily/akshare, MIT-licensed code) fetching daily prices; AKShare's README acknowledges third-party vendors (Eastmoney, Sina Finance, and others) and states that its data are for academic research. The per-endpoint vendor was not traced.
 - Data license: not stated. MIT covers AKShare's code, not the market data, and vendor redistribution terms are unknown, so `license` and `redistribution` are `unknown`.
-- Real-time data releases are mirrored to the Hugging Face dataset `Diaugeia/ModernTSF-RealTime` (`stock_hs300/`); check the vendor terms before publishing a release.
+- Real-time data releases are mirrored to the Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`stock_hs300/`); check the vendor terms before publishing a release.
 
 ## Structure and statistics
 

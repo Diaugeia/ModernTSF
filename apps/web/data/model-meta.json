@@ -367,8 +367,8 @@
   },
   "GaussianMLP": {
     "arxiv": null,
-    "paper": "Gaussian-head MLP (ModernTSF parametric probabilistic baseline)",
-    "venue": "ModernTSF",
+    "paper": "Gaussian-head MLP (TSFLab parametric probabilistic baseline)",
+    "venue": "TSFLab",
     "year": 2026
   },
   "GaussianProcessTS": {
@@ -673,8 +673,8 @@
   },
   "PWS": {
     "arxiv": null,
-    "paper": "Patch Weighted Sum (ModernTSF baseline)",
-    "venue": "ModernTSF",
+    "paper": "Patch Weighted Sum (TSFLab baseline)",
+    "venue": "TSFLab",
     "year": 2026
   },
   "PaiFilter": {

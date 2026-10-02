@@ -6,8 +6,8 @@ import unittest
 
 import torch
 
-from moderntsf.models.lsinet.model import Model
-from moderntsf.models._components.sparse_connection_router import SharedSparseConnectionRouter
+from tsflab.models.lsinet.model import Model
+from tsflab.models._components.sparse_connection_router import SharedSparseConnectionRouter
 
 
 def make_model(**overrides):

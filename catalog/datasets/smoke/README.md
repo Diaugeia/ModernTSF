@@ -4,7 +4,7 @@ kind: "dataset"
 summary: "A 400-row synthetic hourly CSV with five sinusoidal channels and a cosine target OT, generated for end-to-end smoke runs rather than for benchmarking."
 domain: "Synthetic / test fixture"
 tags: ["smoke", "synthetic", "fixture", "test", "hourly", "csv", "cpu", "sanity-check"]
-source: "ModernTSF (scripts/make_smoke_data.py)"
+source: "TSFLab (scripts/make_smoke_data.py)"
 source_url: "n/a"
 citation: "n/a"
 citation_url: "n/a"

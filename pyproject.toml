@@ -3,9 +3,9 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "modern-tsf"
+name = "tsflab"
 version = "1.0.0rc2"
-description = "ModernTSF — Agent-first time-series forecasting with TOML configs and flat model/component catalogs."
+description = "TSFLab — Agent-first time-series forecasting with TOML configs and flat model/component catalogs."
 readme = "README.md"
 authors = [{ name = "ChengAo Shen", email = "chengao_shen@ieee.org" }]
 requires-python = ">=3.12"
@@ -15,7 +15,7 @@ dependencies = [
     "matplotlib",
     "scikit-learn",
     # Used by the probabilistic metrics (gaussian closed-form CRPS / inverse-CDF
-    # in moderntsf.benchmark.evaluation.metrics). Previously only a transitive dep.
+    # in tsflab.benchmark.evaluation.metrics). Previously only a transitive dep.
     "scipy",
     "pydantic",
     "packaging>=24",
@@ -38,14 +38,14 @@ dependencies = [
     # LSH self-attention for the Reformer model.
     # Transitively pulls local-attention / axial-positional-embedding / etc.
     "reformer-pytorch",
-    # Wavelet filter banks for the STWave model (src/moderntsf/models/stwave).
+    # Wavelet filter banks for the STWave model (src/tsflab/models/stwave).
     "pywavelets",
 ]
 
 [project.optional-dependencies]
-# Publish and load checkpoints on the Hugging Face Hub (moderntsf.hub).
+# Publish and load checkpoints on the Hugging Face Hub (tsflab.hub).
 hub = ["huggingface_hub>=0.25", "safetensors>=0.4"]
-# Live data sources for the rolling real-time tracks (moderntsf.realtime).
+# Live data sources for the rolling real-time tracks (tsflab.realtime).
 realtime = ["akshare", "requests", "pyarrow", "huggingface_hub>=0.25"]
 tensorboard = ["tensorboard>=2.18"]
 wandb = ["wandb>=0.19"]
@@ -56,18 +56,18 @@ dev = [
 ]
 
 [project.scripts]
-tsf = "moderntsf.benchmark.cli:main"
+tsf = "tsflab.benchmark.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["moderntsf*"]
+include = ["tsflab*"]
 
 [tool.setuptools.package-data]
-"moderntsf.tsf_core" = ["schema/*.json"]
-"moderntsf.data" = ["profile_rules.toml"]
+"tsflab.tsf_core" = ["schema/*.json"]
+"tsflab.data" = ["profile_rules.toml"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

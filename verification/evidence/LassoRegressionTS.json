@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LassoRegressionTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "2f5a1374004c11a4efb4e0b6cfc170e936aa0dab0dd1d69dd4d13867a5dac8f7",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "cde88cdafb64e455fd6a026183442c80ddd21c474a88535a82c160ec6a7d8ae4",
   "paper": {
     "title": "Regression Shrinkage and Selection via the Lasso",
     "venue": "Journal of the Royal Statistical Society: Series B, 1996",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model LassoRegressionTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_classical_forecasters.py"
+    "python -m pytest -q tests/test_classical_forecasters.py"
   ]
 }

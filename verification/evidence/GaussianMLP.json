@@ -2,11 +2,11 @@
   "schema_version": 1,
   "model": "GaussianMLP",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "9560879ddb1626aa2405dd426745317a2c61ae9202a936b5c14661a80894901b",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "bdf0592ff169900822860c1e91ee24f6bd90838d4c8039eb2a3f42582e0249fa",
   "paper": {
-    "title": "Gaussian-head MLP (ModernTSF parametric probabilistic baseline)",
-    "venue": "ModernTSF",
+    "title": "Gaussian-head MLP (TSFLab parametric probabilistic baseline)",
+    "venue": "TSFLab",
     "year": 2026,
     "url": ""
   },
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model GaussianMLP",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_probabilistic_forecasters.py"
+    "python -m pytest -q tests/test_probabilistic_forecasters.py"
   ]
 }

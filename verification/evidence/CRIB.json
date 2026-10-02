@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CRIB",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "ddd00f328fb8145066aaab85ce39ac2afde16d886b94d2d7f4535e354cd2919c",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "84f114181afc85cb29625d2fe977fd2041a6f30afd51a03e30bbbc3a239185fa",
   "paper": {
     "title": "Revisiting Multivariate Time Series Forecasting with Missing Values",
     "venue": "ICLR 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model CRIB",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_mixer_frequency_forecasters.py"
+    "python -m pytest -q tests/test_mixer_frequency_forecasters.py"
   ]
 }

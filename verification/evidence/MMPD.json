@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MMPD",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "275110cee672c17dee6d4e847c7f93dc16e61535303edfe1ea72455c82daffcc",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "623b7aaf30458d037537b35c856f19ab1369d086f65c35fbbaa72884301506c2",
   "paper": {
     "title": "MMPD: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss",
     "venue": "ICLR 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model MMPD",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_memory_diffusion_forecasters.py"
+    "python -m pytest -q tests/test_memory_diffusion_forecasters.py"
   ]
 }

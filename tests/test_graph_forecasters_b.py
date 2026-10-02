@@ -4,12 +4,12 @@ import copy
 import unittest
 import numpy as np
 import torch
-from moderntsf.models.bigst.model import Model as BigST
-from moderntsf.models.gagnn.model import Model as GAGNN
-from moderntsf.models.mtgnn.model import Model as MTGNN
-from moderntsf.models.megacrn.model import Model as MegaCRN
-from moderntsf.models.pm25gnn.model import Model as PM25GNN
-from moderntsf.models.stgode.model import Model as STGODE
+from tsflab.models.bigst.model import Model as BigST
+from tsflab.models.gagnn.model import Model as GAGNN
+from tsflab.models.mtgnn.model import Model as MTGNN
+from tsflab.models.megacrn.model import Model as MegaCRN
+from tsflab.models.pm25gnn.model import Model as PM25GNN
+from tsflab.models.stgode.model import Model as STGODE
 
 def graph(nodes=4):
     value=np.eye(nodes,dtype=np.float32)

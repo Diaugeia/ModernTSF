@@ -36,7 +36,7 @@ is reported separately and changes how results should be read.
 
 ## Profile to catalog
 
-The mapping is data in `src/moderntsf/data/profile_rules.toml` (a threshold, the facts, the
+The mapping is data in `src/tsflab/data/profile_rules.toml` (a threshold, the facts, the
 components, models, and slot options each rule names). Examples: strong seasonality points
 to `series_decomposition`, `periodic_query_bank`, `dominant_periods` and CycleNet-style
 models; high cross-correlation to channel mixing (`iTransformer`, `SOFTS`, `TQNet`);

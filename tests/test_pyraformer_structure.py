@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.pyraformer.model import (
+from tsflab.models.pyraformer.model import (
     Model,
     PyramidalAttention,
     finest_ancestor_table,

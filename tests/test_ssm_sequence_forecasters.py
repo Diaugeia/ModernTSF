@@ -8,24 +8,24 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from moderntsf.models._components.mamba import MambaBlock
-from moderntsf.models.bimamba.model import MambaPlus, SeriesRelationDecider, patchify
-from moderntsf.models.bimamba.model import Model as BiMamba
-from moderntsf.models.bimamba.spec import ModelParameterConfig as BiMambaParameters
-from moderntsf.models.mambasimple.model import Model as MambaSimple
-from moderntsf.models.mambasimple.spec import ModelParameterConfig as MambaSimpleParameters
-from moderntsf.models.reformer.model import LSHSelfAttention, ReversibleBlock
-from moderntsf.models.reformer.model import Model as Reformer
-from moderntsf.models.reformer.spec import ModelParameterConfig as ReformerParameters
-from moderntsf.models.s4.model import DiagonalSSMKernel, zoh_discretize_diagonal
-from moderntsf.models.s4.model import Model as S4
-from moderntsf.models.s4.spec import ModelParameterConfig as S4Parameters
-from moderntsf.models.s_mamba.model import InvertedTokenization
-from moderntsf.models.s_mamba.model import Model as SMamba
-from moderntsf.models.s_mamba.spec import ModelParameterConfig as SMambaParameters
-from moderntsf.models.scinet.model import Model as SCINet
-from moderntsf.models.scinet.model import SCIInteraction, SCITree, interleave
-from moderntsf.models.scinet.spec import ModelParameterConfig as SCINetParameters
+from tsflab.models._components.mamba import MambaBlock
+from tsflab.models.bimamba.model import MambaPlus, SeriesRelationDecider, patchify
+from tsflab.models.bimamba.model import Model as BiMamba
+from tsflab.models.bimamba.spec import ModelParameterConfig as BiMambaParameters
+from tsflab.models.mambasimple.model import Model as MambaSimple
+from tsflab.models.mambasimple.spec import ModelParameterConfig as MambaSimpleParameters
+from tsflab.models.reformer.model import LSHSelfAttention, ReversibleBlock
+from tsflab.models.reformer.model import Model as Reformer
+from tsflab.models.reformer.spec import ModelParameterConfig as ReformerParameters
+from tsflab.models.s4.model import DiagonalSSMKernel, zoh_discretize_diagonal
+from tsflab.models.s4.model import Model as S4
+from tsflab.models.s4.spec import ModelParameterConfig as S4Parameters
+from tsflab.models.s_mamba.model import InvertedTokenization
+from tsflab.models.s_mamba.model import Model as SMamba
+from tsflab.models.s_mamba.spec import ModelParameterConfig as SMambaParameters
+from tsflab.models.scinet.model import Model as SCINet
+from tsflab.models.scinet.model import SCIInteraction, SCITree, interleave
+from tsflab.models.scinet.spec import ModelParameterConfig as SCINetParameters
 
 
 def marks(batch, length):

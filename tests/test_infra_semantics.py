@@ -7,11 +7,11 @@ import time
 
 import pytest
 
-from moderntsf.benchmark.infra.policy import ExecutionPolicy
+from tsflab.benchmark.infra.policy import ExecutionPolicy
 
 
 def test_budget_has_one_validated_source_before_persistence(tmp_path, monkeypatch):
-    from moderntsf.benchmark.research_round import (
+    from tsflab.benchmark.research_round import (
         create_round,
         claim_run,
         load_round,
@@ -37,9 +37,9 @@ def test_budget_has_one_validated_source_before_persistence(tmp_path, monkeypatc
 
 
 def test_matrix_preparation_does_not_define_research_iterations(tmp_path, monkeypatch):
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra.execution import prepare_sweep
-    from moderntsf.benchmark.research_round import (
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra.execution import prepare_sweep
+    from tsflab.benchmark.research_round import (
         create_round,
         load_round,
         claim_iteration,
@@ -61,8 +61,8 @@ def test_matrix_preparation_does_not_define_research_iterations(tmp_path, monkey
 
 
 def test_preflight_returns_resolved_copy_and_preserves_input(tmp_path, monkeypatch):
-    from moderntsf.benchmark.config.loader import load_config
-    from moderntsf.benchmark.infra import execution
+    from tsflab.benchmark.config.loader import load_config
+    from tsflab.benchmark.infra import execution
 
     config = load_config("configs/runs/smoke_crib.toml")[0].config
     config.experiment.runtime.device = "cuda"
@@ -71,7 +71,7 @@ def test_preflight_returns_resolved_copy_and_preserves_input(tmp_path, monkeypat
     original = policy.model_dump()
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
     monkeypatch.setattr(
-        "moderntsf.benchmark.infra.environment.gpu_inventory", lambda: [{"uuid": "gpu-test"}]
+        "tsflab.benchmark.infra.environment.gpu_inventory", lambda: [{"uuid": "gpu-test"}]
     )
     monkeypatch.setattr(execution, "audit_environment", lambda *a, **k: {"checks": []})
     report = execution.preflight([config], policy)
@@ -87,10 +87,10 @@ def test_model_pretraining_works_without_infrastructure_import():
 import importlib.abc
 import sys
 import torch
-from moderntsf.models.latenttsf.model import Model
+from tsflab.models.latenttsf.model import Model
 class Block(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
-        if fullname.startswith('moderntsf.benchmark.infra'):
+        if fullname.startswith('tsflab.benchmark.infra'):
             raise AssertionError(fullname)
 sys.meta_path.insert(0, Block())
 model = Model(4, 2, 1, d_model=2, d_ff=3, kernel_size=3, ae_train_epochs=1)
@@ -104,7 +104,7 @@ assert model._autoencoder_frozen
 
 
 def test_same_executor_contract_in_process_and_detached(tmp_path, monkeypatch):
-    from moderntsf.benchmark.infra.queue import enqueue, run_job, work, jobs
+    from tsflab.benchmark.infra.queue import enqueue, run_job, work, jobs
 
     module = tmp_path / "local_test_executor.py"
     module.write_text(
@@ -142,7 +142,7 @@ def test_same_executor_contract_in_process_and_detached(tmp_path, monkeypatch):
 
 
 def test_executor_contract_errors_are_structured(tmp_path):
-    from moderntsf.benchmark.infra.queue import enqueue, run_job
+    from tsflab.benchmark.infra.queue import enqueue, run_job
 
     item = enqueue(tmp_path, tmp_path / "input", validate=lambda p: None)
     state = run_job(tmp_path / item["id"], executor=lambda *a, **k: {"ok": "yes"})
@@ -151,8 +151,8 @@ def test_executor_contract_errors_are_structured(tmp_path):
 
 
 def test_cli_envelope_calls_route_directly_and_shares_result_shape(monkeypatch, capsys):
-    from moderntsf.benchmark.cli import main
-    from moderntsf.benchmark.infra.results import invoke
+    from tsflab.benchmark.cli import main
+    from tsflab.benchmark.infra.results import invoke
 
     def no_subprocess(*a, **k):
         raise AssertionError("unexpected CLI subprocess")

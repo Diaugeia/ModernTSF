@@ -32,7 +32,7 @@ const xOf = (year: number) => (year < PRE_CUTOFF ? PRE_CUTOFF - 1 : year);
 const PICK_COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6"];
 const MAX_PICKS = 5;
 
-// Case-insensitive lookup into the ModernTSF metadata map.
+// Case-insensitive lookup into the TSFLab metadata map.
 const metaLookup = (() => {
   const lower: Record<string, keyof Meta> = {};
   for (const k of Object.keys(META)) lower[k.toLowerCase()] = k;

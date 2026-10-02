@@ -3,8 +3,8 @@ name: release
 # Tag push v*: build the sdist + wheel, verify the packaged catalog, create a
 # GitHub release (pre-release for rc/a/b tags), and publish to PyPI through
 # Trusted Publishing — no API token is stored. One-time setup on pypi.org:
-# add a trusted publisher for project `modern-tsf`, owner `Diaugeia`,
-# repository `ModernTSF`, workflow `release.yml`, environment `pypi`.
+# add a trusted publisher for project `tsflab`, owner `Diaugeia`,
+# repository `TSFLab`, workflow `release.yml`, environment `pypi`.
 on:
   push:
     tags: ["v*"]
@@ -54,7 +54,7 @@ jobs:
         run: |
           flags=""
           case "$GITHUB_REF_NAME" in *rc*|*a[0-9]*|*b[0-9]*) flags="--prerelease";; esac
-          gh release create "$GITHUB_REF_NAME" dist/* --title "ModernTSF $GITHUB_REF_NAME" \
+          gh release create "$GITHUB_REF_NAME" dist/* --title "TSFLab $GITHUB_REF_NAME" \
             --notes "See CHANGELOG.md for this release." $flags
 
   pypi:

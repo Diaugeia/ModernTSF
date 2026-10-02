@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GTR",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "1a885d83f0f5de130ff5c4bd7a703de8c28ff9bfb1ed11d33b78a1273774cc5b",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "d5e63048daaefcd6c0b1a04de104bb176219df6531283ad4c24c4c1df42ce118",
   "paper": {
     "title": "Enhancing Multivariate Time Series Forecasting with Global Temporal Retrieval",
     "venue": "ICLR 2026",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model GTR",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_memory_diffusion_forecasters.py"
+    "python -m pytest -q tests/test_memory_diffusion_forecasters.py"
   ]
 }

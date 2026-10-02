@@ -6,13 +6,13 @@ import unittest
 
 import torch
 
-from moderntsf.models.cyclenet.model import Model as CycleNet
-from moderntsf.models.dlinear.model import Model as DLinear
-from moderntsf.models.fits.model import ComplexFrequencyInterpolation, Model as FITS
-from moderntsf.models.linear.model import Model as Linear
-from moderntsf.models.nlinear.model import Model as NLinear
-from moderntsf.models.segrnn.model import Model as SegRNN
-from moderntsf.models.sparsetsf.model import Model as SparseTSF
+from tsflab.models.cyclenet.model import Model as CycleNet
+from tsflab.models.dlinear.model import Model as DLinear
+from tsflab.models.fits.model import ComplexFrequencyInterpolation, Model as FITS
+from tsflab.models.linear.model import Model as Linear
+from tsflab.models.nlinear.model import Model as NLinear
+from tsflab.models.segrnn.model import Model as SegRNN
+from tsflab.models.sparsetsf.model import Model as SparseTSF
 
 
 class CompactLocalEquationTests(unittest.TestCase):

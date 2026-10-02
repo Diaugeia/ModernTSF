@@ -1,6 +1,6 @@
 ---
 name: report-defect
-description: Reproduce, diagnose, and draft a ModernTSF defect report. Use for bugs, regressions, incorrect model behavior, or repository failures; do not publish an issue or pull request without explicit authorization.
+description: Reproduce, diagnose, and draft a TSFLab defect report. Use for bugs, regressions, incorrect model behavior, or repository failures; do not publish an issue or pull request without explicit authorization.
 ---
 
 # Report a defect

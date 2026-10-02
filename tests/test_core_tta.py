@@ -8,8 +8,8 @@ import unittest
 import numpy as np
 import torch
 
-from moderntsf.models._components.spectral_descriptor import SpectralDescriptor
-from moderntsf.models.core.model import Model as CoRe
+from tsflab.models._components.spectral_descriptor import SpectralDescriptor
+from tsflab.models.core.model import Model as CoRe
 
 
 def _oracle_descriptor(window: np.ndarray, eps: float = 1e-8) -> np.ndarray:

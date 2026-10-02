@@ -8,12 +8,12 @@ import unittest
 import torch
 import torch.nn.functional as F
 
-from moderntsf.models.crosslinear.model import Model as CrossLinear
-from moderntsf.models.mixlinear.model import LowRankSpectralPath, Model as MixLinear
-from moderntsf.models.mtsmixer.model import Model as MTSMixer, TemporalSubsequenceMixer
-from moderntsf.models.rlinear.model import Model as RLinear
-from moderntsf.models.rpmixer.model import Model as RPMixer
-from moderntsf.models.tsmixer.model import Model as TSMixer
+from tsflab.models.crosslinear.model import Model as CrossLinear
+from tsflab.models.mixlinear.model import LowRankSpectralPath, Model as MixLinear
+from tsflab.models.mtsmixer.model import Model as MTSMixer, TemporalSubsequenceMixer
+from tsflab.models.rlinear.model import Model as RLinear
+from tsflab.models.rpmixer.model import Model as RPMixer
+from tsflab.models.tsmixer.model import Model as TSMixer
 
 
 def _factories():

@@ -39,7 +39,7 @@ METR-LA is a spatiotemporal traffic benchmark: 207 sensors recording traffic spe
 
 - Producer: DCRNN authors (USC and Caltech) packaged LA County loop-detector data; repository https://github.com/liyaguang/DCRNN (code MIT). The data file (`metr-la.h5` on Google Drive) has no stated data license, so `license` is `unknown`.
 - Cite: Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018), https://arxiv.org/abs/1707.01926.
-- Obtain `metr-la.h5` and `adj_mx.pkl` from the DCRNN README; ModernTSF does not ship them (see `tsf dataset convert-traffic --help`).
+- Obtain `metr-la.h5` and `adj_mx.pkl` from the DCRNN README; TSFLab does not ship them (see `tsf dataset convert-traffic --help`).
 
 ## Structure and statistics
 

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "VisiFold",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "1db20deac2465564f685f49cad89d310b353239be5936750cd3d26bc491211ab",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "65556665856b90d6904317da7acd825d7463c60217818c753132d31f179fd284",
   "paper": {
     "title": "VisiFold: Long-Term Traffic Forecasting via Temporal Folding Graph and Node Visibility",
     "venue": "ICDE 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model VisiFold",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

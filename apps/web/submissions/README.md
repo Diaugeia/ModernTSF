@@ -1,16 +1,16 @@
 ---
 license: mit
-pretty_name: ModernTSF Submissions
+pretty_name: TSFLab Submissions
 tags: [time-series, forecasting, leaderboard, benchmark]
 ---
 
-# ModernTSF — Submissions
+# TSFLab — Submissions
 
-Append-only evidence index of **leaderboard submissions** for the [Diaugeia.AI](https://diaugeia.ai) ModernTSF benchmark,
-living inside the canonical [`github.com/Diaugeia/ModernTSF`](https://github.com/Diaugeia/ModernTSF) repo — one source of truth.
+Append-only evidence index of **leaderboard submissions** for the [Diaugeia.AI](https://diaugeia.ai) TSFLab benchmark,
+living inside the canonical [`github.com/Diaugeia/TSFLab`](https://github.com/Diaugeia/TSFLab) repo — one source of truth.
 This holds only the lightweight **evidence** of each run (result + trajectory + report) so it stays cheap to clone and to
 rebuild the leaderboard from. Weights are **not** part of a submission; they may *optionally* be archived in the public
-[`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights) dataset for bit-level
+[`Diaugeia/TSFLab-Weights`](https://huggingface.co/Diaugeia/TSFLab-Weights) dataset for bit-level
 reproducibility, but are never required to get on the board.
 
 ## Layout
@@ -23,12 +23,12 @@ reproducibility, but are never required to get on the board.
 ```
 
 A submission carries its **result + trajectory + report only** — there is no weight reference in the bundle.
-Trained weights MAY *optionally* be archived in the public [`Diaugeia/ModernTSF-Weights`](https://huggingface.co/Diaugeia/ModernTSF-Weights)
+Trained weights MAY *optionally* be archived in the public [`Diaugeia/TSFLab-Weights`](https://huggingface.co/Diaugeia/TSFLab-Weights)
 dataset for bit-level reproducibility, but are never required.
 
 ## Tracks
 
-- `time_series/` — 8 static benchmark datasets (ETTh1, ETTh2, ETTm1, ETTm2, electricity, solar, traffic, weather), horizon 192, **108 models** (see `Diaugeia/ModernTSF-Static`).
+- `time_series/` — 8 static benchmark datasets (ETTh1, ETTh2, ETTm1, ETTm2, electricity, solar, traffic, weather), horizon 192, **108 models** (see `Diaugeia/TSFLab-Static`).
 - `realtime/` — live, periodically-refreshed datasets: `stock_hs300` → **Stock-HS300 (CSI-300)**, seq_len 20 → pred_len 5, **135 models** (regression + quant backtest).
 - `air_quality/` — **Air-CHNCities**, 6 pollutants (PM2.5, PM10, O₃, NO₂, SO₂, CO), **134 models** (curated).
 

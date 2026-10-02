@@ -7,7 +7,7 @@ import shutil
 import tempfile
 import unittest
 
-from moderntsf.benchmark.dataset_cards import (
+from tsflab.benchmark.dataset_cards import (
     CURATED_KEYS,
     END,
     REQUIRED_PRESET_KEYS,

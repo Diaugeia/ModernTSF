@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STNorm",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "86bb33ae06654f028f9d3fe5a488021c5c23d9f33b09cea26697fee505cfca20",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "cda01b5ce4bd19d24bbb842613037e2c790675730bf0382c3861c3b893cad6d0",
   "paper": {
     "title": "ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting",
     "venue": "KDD 2021",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model STNorm",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

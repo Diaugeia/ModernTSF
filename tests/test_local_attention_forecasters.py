@@ -7,9 +7,9 @@ import unittest
 
 import torch
 
-from moderntsf.models._components.self_attention_family import FullAttention, ProbAttention
-from moderntsf.models.informer.model import Model as Informer
-from moderntsf.models.transformer.model import Model as Transformer
+from tsflab.models._components.self_attention_family import FullAttention, ProbAttention
+from tsflab.models.informer.model import Model as Informer
+from tsflab.models.transformer.model import Model as Transformer
 
 
 class LocalAttentionForecasterTests(unittest.TestCase):

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SEMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "7febe4a587747f1c28f08faf54de4ec9c47144ffc881e36a80792df30b87ae75",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "b2f6d2c0a0e51028e1f8b49fdb1bfbd006d7706f9781ed929131f716c9233132",
   "paper": {
     "title": "SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting",
     "venue": "WWW 2026",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model SEMixer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_semixer_forecaster.py"
+    "python -m pytest -q tests/test_semixer_forecaster.py"
   ]
 }

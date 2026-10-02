@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "WDformer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "d9c741a435ceccaba45a21ca8414c3c28ae54aa7ce7450de2c5641735f8b9d67",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "8f2572dc40bc75c42dd269f136f8c11982897235b43529e9ef827be930ec310d",
   "paper": {
     "title": "WDformer: A Wavelet-based Differential Transformer Model for Time Series Forecasting",
     "venue": "arXiv",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model WDformer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_wdformer_structure.py"
+    "python -m pytest -q tests/test_wdformer_structure.py"
   ]
 }

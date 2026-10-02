@@ -6,7 +6,7 @@ free-form slot only for what the catalog cannot express.
 ## Slot grid
 
 Slots and static defaults are the `[slot.*]` tables in
-`src/moderntsf/data/profile_rules.toml`; `recommendations.slots` in the profile adds the
+`src/tsflab/data/profile_rules.toml`; `recommendations.slots` in the profile adds the
 options promoted by fired rules.
 
 | Slot | Choice | Typical options |

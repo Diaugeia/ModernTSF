@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CycleNet",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "8a1ce5cf8b842bdc3dbd170c7c2eee57099098227a0f70277ca44c5203248f85",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "31fd685f84a6a2285bbde4123400d8e97c24ecb5ce9a598058d7aca9c2679616",
   "paper": {
     "title": "CycleNet: Enhancing Time Series Forecasting through Modeling Periodic Patterns",
     "venue": "NeurIPS 2024",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model CycleNet",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_cyclenet_restores_the_aligned_future_cycle"
+    "python -m pytest -q tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_cyclenet_restores_the_aligned_future_cycle"
   ]
 }

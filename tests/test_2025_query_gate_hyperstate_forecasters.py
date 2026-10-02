@@ -13,21 +13,21 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from moderntsf.models._components.periodic_query_bank import PeriodicQueryBank
-from moderntsf.models.tqnet.model import Model as TQNet
-from moderntsf.models.tqnet.spec import ModelParameterConfig as TQNetParameters
+from tsflab.models._components.periodic_query_bank import PeriodicQueryBank
+from tsflab.models.tqnet.model import Model as TQNet
+from tsflab.models.tqnet.spec import ModelParameterConfig as TQNetParameters
 
-from moderntsf.models._components.gated_fusion import GatedFusion
-from moderntsf.models.gateformer.model import Model as Gateformer
-from moderntsf.models.gateformer.spec import ModelParameterConfig as GateformerParameters
+from tsflab.models._components.gated_fusion import GatedFusion
+from tsflab.models.gateformer.model import Model as Gateformer
+from tsflab.models.gateformer.spec import ModelParameterConfig as GateformerParameters
 
-from moderntsf.models._components.hyper_state_scan import diagonal_selective_scan, GridStateMixer
-from moderntsf.models.timepro.model import Model as TimePro
-from moderntsf.models.timepro.spec import ModelParameterConfig as TimeProParameters
+from tsflab.models._components.hyper_state_scan import diagonal_selective_scan, GridStateMixer
+from tsflab.models.timepro.model import Model as TimePro
+from tsflab.models.timepro.spec import ModelParameterConfig as TimeProParameters
 
-from moderntsf.models._components.adain_style_norm import AdaptiveInstanceNorm1d
-from moderntsf.models.canet.model import Model as CANet
-from moderntsf.models.canet.spec import ModelParameterConfig as CANetParameters
+from tsflab.models._components.adain_style_norm import AdaptiveInstanceNorm1d
+from tsflab.models.canet.model import Model as CANet
+from tsflab.models.canet.spec import ModelParameterConfig as CANetParameters
 
 
 def marks(batch, length):

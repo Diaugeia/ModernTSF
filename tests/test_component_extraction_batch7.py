@@ -16,10 +16,10 @@ from pathlib import Path
 
 import torch
 
-from moderntsf.models.crossgnn.model import Model as CrossGNNModel
-from moderntsf.models.nlinear.model import Model as NLinearModel
-from moderntsf.models.segrnn.model import Model as SegRNNModel
-from moderntsf.models.timemixer.model import Model as TimeMixerModel
+from tsflab.models.crossgnn.model import Model as CrossGNNModel
+from tsflab.models.nlinear.model import Model as NLinearModel
+from tsflab.models.segrnn.model import Model as SegRNNModel
+from tsflab.models.timemixer.model import Model as TimeMixerModel
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "component_extraction_batch7.pt"
 

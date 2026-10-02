@@ -1,4 +1,4 @@
-// Model-type classification, derived from the ModernTSF work_dirs structure.
+// Model-type classification, derived from the TSFLab work_dirs structure.
 // Used to tag each leaderboard row (ts / st / aq / baseline) for filtering and
 // the per-category rank column.
 

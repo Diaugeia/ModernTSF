@@ -59,7 +59,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
-      - name: Install ModernTSF (CPU)
+      - name: Install TSFLab (CPU)
         run: uv sync --python 3.12 --frozen
       - name: Render the paper-watch task
         run: |
@@ -152,7 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v6
-      - name: Install ModernTSF (CPU)
+      - name: Install TSFLab (CPU)
         run: uv sync --python 3.12 --frozen
       - name: Render the paper-to-model task
         env:

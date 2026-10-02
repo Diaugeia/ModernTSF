@@ -1,6 +1,6 @@
 ---
 name: analyze-results
-description: Aggregate, filter, rank, compare, plot, and report completed ModernTSF experiment results. Use for exploratory analysis, leaderboards, prediction plots, or a verified shareable report.
+description: Aggregate, filter, rank, compare, plot, and report completed TSFLab experiment results. Use for exploratory analysis, leaderboards, prediction plots, or a verified shareable report.
 ---
 
 # Analyze results

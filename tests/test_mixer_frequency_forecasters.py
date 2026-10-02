@@ -8,24 +8,24 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from moderntsf.models.amplifier.model import Model as Amplifier
-from moderntsf.models.amplifier.model import flipped_spectrum
-from moderntsf.models.amplifier.spec import ModelParameterConfig as AmplifierParameters
-from moderntsf.models.cmos.model import Model as CMoS
-from moderntsf.models.cmos.model import periodic_correlation_initialization
-from moderntsf.models.cmos.spec import ModelParameterConfig as CMoSParameters
-from moderntsf.models.crib.model import Model as CRIB
-from moderntsf.models.crib.model import observed_statistics
-from moderntsf.models.crib.spec import ModelParameterConfig as CRIBParameters
-from moderntsf.models.crossgnn.model import AdaptiveMultiScaleIdentifier
-from moderntsf.models.crossgnn.model import Model as CrossGNN
-from moderntsf.models.crossgnn.spec import ModelParameterConfig as CrossGNNParameters
-from moderntsf.models.film.model import Model as FiLM
-from moderntsf.models.film.model import bilinear_discretize, legendre_basis, legt_transition
-from moderntsf.models.film.spec import ModelParameterConfig as FiLMParameters
-from moderntsf.models.frets.model import ComplexFrequencyMLP
-from moderntsf.models.frets.model import Model as FreTS
-from moderntsf.models.frets.spec import ModelParameterConfig as FreTSParameters
+from tsflab.models.amplifier.model import Model as Amplifier
+from tsflab.models.amplifier.model import flipped_spectrum
+from tsflab.models.amplifier.spec import ModelParameterConfig as AmplifierParameters
+from tsflab.models.cmos.model import Model as CMoS
+from tsflab.models.cmos.model import periodic_correlation_initialization
+from tsflab.models.cmos.spec import ModelParameterConfig as CMoSParameters
+from tsflab.models.crib.model import Model as CRIB
+from tsflab.models.crib.model import observed_statistics
+from tsflab.models.crib.spec import ModelParameterConfig as CRIBParameters
+from tsflab.models.crossgnn.model import AdaptiveMultiScaleIdentifier
+from tsflab.models.crossgnn.model import Model as CrossGNN
+from tsflab.models.crossgnn.spec import ModelParameterConfig as CrossGNNParameters
+from tsflab.models.film.model import Model as FiLM
+from tsflab.models.film.model import bilinear_discretize, legendre_basis, legt_transition
+from tsflab.models.film.spec import ModelParameterConfig as FiLMParameters
+from tsflab.models.frets.model import ComplexFrequencyMLP
+from tsflab.models.frets.model import Model as FreTS
+from tsflab.models.frets.spec import ModelParameterConfig as FreTSParameters
 
 
 class PaperStructureTests(unittest.TestCase):

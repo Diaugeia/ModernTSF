@@ -8,18 +8,18 @@ import unittest
 import torch
 from pydantic import ValidationError
 
-from moderntsf.models.aircade.model import DomainKnowledgeAttention, Model as AirCade
-from moderntsf.models.aircade.spec import ModelParameterConfig as AirCadeParameters
-from moderntsf.models.airdualode.model import BoundaryAwareDynamics, Model as AirDualODE
-from moderntsf.models.airdualode.spec import ModelParameterConfig as AirDualODEParameters
-from moderntsf.models.airformer.model import CausalTemporalAttention, Model as AirFormer, default_dartboard
-from moderntsf.models.airformer.spec import ModelParameterConfig as AirFormerParameters
-from moderntsf.models.airphynet.model import Model as AirPhyNet, PhysicsVectorField
-from moderntsf.models.airphynet.spec import ModelParameterConfig as AirPhyNetParameters
-from moderntsf.models.cauair.model import CacheAttention, Model as CauAir
-from moderntsf.models.cauair.spec import ModelParameterConfig as CauAirParameters
-from moderntsf.models.deepair.model import Model as DeepAir, default_spatial_projection
-from moderntsf.models.deepair.spec import ModelParameterConfig as DeepAirParameters
+from tsflab.models.aircade.model import DomainKnowledgeAttention, Model as AirCade
+from tsflab.models.aircade.spec import ModelParameterConfig as AirCadeParameters
+from tsflab.models.airdualode.model import BoundaryAwareDynamics, Model as AirDualODE
+from tsflab.models.airdualode.spec import ModelParameterConfig as AirDualODEParameters
+from tsflab.models.airformer.model import CausalTemporalAttention, Model as AirFormer, default_dartboard
+from tsflab.models.airformer.spec import ModelParameterConfig as AirFormerParameters
+from tsflab.models.airphynet.model import Model as AirPhyNet, PhysicsVectorField
+from tsflab.models.airphynet.spec import ModelParameterConfig as AirPhyNetParameters
+from tsflab.models.cauair.model import CacheAttention, Model as CauAir
+from tsflab.models.cauair.spec import ModelParameterConfig as CauAirParameters
+from tsflab.models.deepair.model import Model as DeepAir, default_spatial_projection
+from tsflab.models.deepair.spec import ModelParameterConfig as DeepAirParameters
 
 
 def marks(batch: int, length: int, *, offset: float = 0.0) -> torch.Tensor:

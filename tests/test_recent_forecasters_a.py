@@ -7,15 +7,15 @@ import unittest
 
 import torch
 
-from moderntsf.models.apn.model import Model as APN
-from moderntsf.models.cora.model import Model as CoRA
-from moderntsf.models.hn_mvts.model import Model as HNMVTS
-from moderntsf.models.interpdn.model import Model as InterPDN
-from moderntsf.models.olinear.model import Model as OLinear, NormLin
-from moderntsf.models.phaseformer.model import CrossPhaseRouter, Model as PhaseFormer
-from moderntsf.models.sempo.model import Model as SEMPO
-from moderntsf.models.sonnet.model import Model as Sonnet
-from moderntsf.models.timemosaic.model import Model as TimeMosaic
+from tsflab.models.apn.model import Model as APN
+from tsflab.models.cora.model import Model as CoRA
+from tsflab.models.hn_mvts.model import Model as HNMVTS
+from tsflab.models.interpdn.model import Model as InterPDN
+from tsflab.models.olinear.model import Model as OLinear, NormLin
+from tsflab.models.phaseformer.model import CrossPhaseRouter, Model as PhaseFormer
+from tsflab.models.sempo.model import Model as SEMPO
+from tsflab.models.sonnet.model import Model as Sonnet
+from tsflab.models.timemosaic.model import Model as TimeMosaic
 
 
 PRIOR_CASES = {

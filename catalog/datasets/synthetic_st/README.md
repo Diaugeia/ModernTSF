@@ -4,7 +4,7 @@ kind: "dataset"
 summary: "A deterministic synthetic spatiotemporal fixture of 8 nodes and 600 hourly steps with daily and weekly sinusoids plus calendar covariates, for smoke-testing node-structured models."
 domain: "Synthetic / test fixture"
 tags: ["synthetic", "fixture", "spatiotemporal", "nodes", "covariate", "smoke", "test", "calendar", "cpu"]
-source: "ModernTSF (src/moderntsf/data/datasets/synthetic_st.py)"
+source: "TSFLab (src/tsflab/data/datasets/synthetic_st.py)"
 source_url: "n/a"
 citation: "n/a"
 citation_url: "n/a"

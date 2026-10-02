@@ -1,4 +1,4 @@
-# ModernTSF documentation
+# TSFLab documentation
 
 ← [Project README](../../README.md)
 

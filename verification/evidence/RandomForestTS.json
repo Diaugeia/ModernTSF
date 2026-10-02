@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RandomForestTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "8b150258e92ec59297e024cf019b3acce541d4cce33467ac2c508dec5872a671",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "4cb86478a9582e67ac182169ae134e87124f74f16c047f15c84818c657ef65e5",
   "paper": {
     "title": "Random Forests",
     "venue": "Machine Learning, 2001",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model RandomForestTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_tree_baselines.py"
+    "python -m pytest -q tests/test_tree_baselines.py"
   ]
 }

@@ -8,11 +8,11 @@ import unittest
 import torch
 import torch.nn.functional as F
 
-from moderntsf.models.gru_forecaster_ts.model import Model as GRUForecaster
-from moderntsf.models.lstm_forecaster_ts.model import Model as LSTMForecaster
-from moderntsf.models.mlp_forecaster_ts.model import Model as MLPForecaster
-from moderntsf.models.rnn_forecaster_ts.model import Model as RNNForecaster
-from moderntsf.models.tcn_forecaster_ts.model import CausalConv1d, Model as TCNForecaster
+from tsflab.models.gru_forecaster_ts.model import Model as GRUForecaster
+from tsflab.models.lstm_forecaster_ts.model import Model as LSTMForecaster
+from tsflab.models.mlp_forecaster_ts.model import Model as MLPForecaster
+from tsflab.models.rnn_forecaster_ts.model import Model as RNNForecaster
+from tsflab.models.tcn_forecaster_ts.model import CausalConv1d, Model as TCNForecaster
 
 
 CASES = {

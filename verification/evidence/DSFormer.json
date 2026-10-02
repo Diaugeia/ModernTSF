@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DSFormer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "8f5d6634b8b60fdab203b4a098cd3c81bdd0a39e1d0af1d1a64416727ed300e4",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "a897b7c09953784cfe5ab06ad1efbfd1545f9de489ec806ded21cee1ce2d1575",
   "paper": {
     "title": "DSformer: A Double Sampling Transformer for Multivariate Time Series Long-term Prediction",
     "venue": "CIKM 2023",
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model DSFormer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_transformer_patch_forecasters_b.py"
+    "python -m pytest -q tests/test_transformer_patch_forecasters_b.py"
   ]
 }

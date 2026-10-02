@@ -1,9 +1,17 @@
 # Changelog
 
-All notable changes to ModernTSF are documented here. The format loosely follows
+All notable changes to TSFLab (formerly ModernTSF) are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
 ## [Unreleased]
+
+### Breaking
+
+- Renamed ModernTSF to **TSFLab**: import package `tsflab` (was `moderntsf`),
+  distribution `tsflab` (was `modern-tsf`), config scheme `tsflab://` (was
+  `moderntsf://`), environment variables `TSFLAB_*` (was `MODERNTSF_*`), and Hub
+  repositories `TSFLab-Static`, `TSFLab-RealTime`, `TSFLab-Weights`, and the
+  `TSFLab` Space. The command stays `tsf`.
 
 ### Added
 

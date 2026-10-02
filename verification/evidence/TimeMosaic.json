@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeMosaic",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "aa65c7926b1d16efccf1d3cc4aa85de0ba6997239c93d8c56eb62830ad668bf4",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "f887b42643ed7143d3b33ef13e459f0ff378b24d1f176c924eaec374a0d1a468",
   "paper": {
     "title": "TimeMosaic: Temporal Heterogeneity Guided Time Series Forecasting via Adaptive Granularity Patch and Segment-wise Decoding",
     "venue": "AAAI 2026",
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model TimeMosaic",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
+    "python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

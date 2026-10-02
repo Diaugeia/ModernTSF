@@ -19,11 +19,11 @@ jobs:
           python -m build --sdist --outdir dist
           mkdir sdist-source
           tar -xzf dist/*.tar.gz -C sdist-source
-          python -m build --wheel --outdir wheelhouse sdist-source/modern_tsf-*
+          python -m build --wheel --outdir wheelhouse sdist-source/tsflab-*
       - name: Verify installed catalog and Agent resources
         run: |
           python -m pip install --no-deps wheelhouse/*.whl
-          export EXPECTED_MODELS="$(ls src/moderntsf/models/*/spec.py | wc -l)"
+          export EXPECTED_MODELS="$(ls src/tsflab/models/*/spec.py | wc -l)"
           cd "$RUNNER_TEMP"
           python - <<'PY'
           import contextlib
@@ -31,16 +31,16 @@ jobs:
           import json
           import os
 
-          from moderntsf.benchmark.cli import main
-          from moderntsf.tsf_core.agent_assets import audit_agent_assets
-          from moderntsf.tsf_core.agent_tasks import audit_tasks
-          from moderntsf.tsf_core.paths import is_packaged_root
+          from tsflab.benchmark.cli import main
+          from tsflab.tsf_core.agent_assets import audit_agent_assets
+          from tsflab.tsf_core.agent_tasks import audit_tasks
+          from tsflab.tsf_core.paths import is_packaged_root
 
           assert is_packaged_root()
           assert audit_agent_assets() == []
           assert audit_tasks() == []
-          from moderntsf.tsf_core.paths import repository_root
-          assert not (repository_root() / "src" / "modern_tsf.egg-info").exists()
+          from tsflab.tsf_core.paths import repository_root
+          assert not (repository_root() / "src" / "tsflab.egg-info").exists()
           output = io.StringIO()
           with contextlib.redirect_stdout(output):
               assert main(["model", "list", "--json"]) == 0

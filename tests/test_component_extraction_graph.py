@@ -27,18 +27,18 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from moderntsf.models._components.diffusion_conv import DiffusionConv2d
-from moderntsf.models._components.graph_utils import adj_to_supports
-from moderntsf.models._components.marks import to_spatiotemporal
-from moderntsf.models._components.revin import RevIN
+from tsflab.models._components.diffusion_conv import DiffusionConv2d
+from tsflab.models._components.graph_utils import adj_to_supports
+from tsflab.models._components.marks import to_spatiotemporal
+from tsflab.models._components.revin import RevIN
 
-import moderntsf.models.agcrn.model as agcrn_model
-import moderntsf.models.d2stgnn.model as d2stgnn_model
-import moderntsf.models.dfdgcn.model as dfdgcn_model
-import moderntsf.models.gwnet.model as gwnet_model
-import moderntsf.models.himnet.model as himnet_model
-import moderntsf.models.mtgnn.model as mtgnn_model
-import moderntsf.models.wavenet.model as wavenet_model
+import tsflab.models.agcrn.model as agcrn_model
+import tsflab.models.d2stgnn.model as d2stgnn_model
+import tsflab.models.dfdgcn.model as dfdgcn_model
+import tsflab.models.gwnet.model as gwnet_model
+import tsflab.models.himnet.model as himnet_model
+import tsflab.models.mtgnn.model as mtgnn_model
+import tsflab.models.wavenet.model as wavenet_model
 
 
 # ---------------------------------------------------------------------------
@@ -516,7 +516,7 @@ class _RefHimNetModel(nn.Module):
                 value = states[layer]
         decoder_input = x_enc[:, -1].unsqueeze(-1)
         outputs = []
-        from moderntsf.models._components.marks import normalized_time_features
+        from tsflab.models._components.marks import normalized_time_features
 
         future = (
             normalized_time_features(x_mark_dec[:, -self.pred_len :])

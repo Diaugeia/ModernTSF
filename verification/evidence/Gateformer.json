@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Gateformer",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "011f69df2c505ba8b795bd4c03e2108d659984199e7a8b2a602fe756111a2f28",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "07729d3649c1f07824a9890ca2923c9b2c45dd76112669ff2629361418c281d6",
   "paper": {
     "title": "Gateformer: Advancing Multivariate Time Series Forecasting through Temporal and Variate-Wise Attention with Gated Representations",
     "venue": "arXiv preprint",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model Gateformer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
+    "python -m pytest -q tests/test_2025_query_gate_hyperstate_forecasters.py"
   ]
 }

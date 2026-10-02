@@ -9,8 +9,8 @@ import pytest
 from pydantic import BaseModel
 import torch.nn as nn
 
-from moderntsf.benchmark.model_artifacts import artifact_status, fetch_artifact, require_artifacts
-from moderntsf.benchmark.registry.models import ModelArtifact, ModelSpec
+from tsflab.benchmark.model_artifacts import artifact_status, fetch_artifact, require_artifacts
+from tsflab.benchmark.registry.models import ModelArtifact, ModelSpec
 
 
 class _Params(BaseModel):
@@ -28,7 +28,7 @@ def _spec(source: Path, digest: str) -> ModelSpec:
     )
     return ModelSpec(
         name="Fixture",
-        module="moderntsf.models.fixture",
+        module="tsflab.models.fixture",
         model_class=nn.Identity,
         factory=lambda cfg, params: nn.Identity(),
         params_schema=_Params,
@@ -108,7 +108,7 @@ def test_artifact_factory_requires_a_declared_artifact() -> None:
     with pytest.raises(ValueError, match="without artifacts"):
         ModelSpec(
             name="Fixture",
-            module="moderntsf.models.fixture",
+            module="tsflab.models.fixture",
             model_class=nn.Identity,
             factory=lambda cfg, params: nn.Identity(),
             artifact_factory=lambda cfg, params, paths: nn.Identity(),

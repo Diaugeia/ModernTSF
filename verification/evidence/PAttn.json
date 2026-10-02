@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PAttn",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "f611522f9b0bedb59310c37eb737743eaf67b15850408ba015ac8432b21993fa",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "dc0d7b2f1d364d4a445ab208bbda935807ea6649c93dfd20070efba487d88c93",
   "paper": {
     "title": "Are Language Models Actually Useful for Time Series Forecasting?",
     "venue": "NeurIPS 2024",
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model PAttn",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_probabilistic_attention_forecasters.py"
+    "python -m pytest -q tests/test_probabilistic_attention_forecasters.py"
   ]
 }

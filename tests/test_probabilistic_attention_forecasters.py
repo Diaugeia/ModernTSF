@@ -7,12 +7,12 @@ import unittest
 
 import torch
 
-from moderntsf.models.glocalib.model import Model as GlocalIB
-from moderntsf.models.pattn.model import Model as PAttn
-from moderntsf.models.phat.model import Model as PHAT, _distance_masks
-from moderntsf.models.quantile_dlinear.model import Model as QuantileDLinear
-from moderntsf.models.quantile_patchtst.model import Model as QuantilePatchTST
-from moderntsf.models.tide.model import Model as TiDE
+from tsflab.models.glocalib.model import Model as GlocalIB
+from tsflab.models.pattn.model import Model as PAttn
+from tsflab.models.phat.model import Model as PHAT, _distance_masks
+from tsflab.models.quantile_dlinear.model import Model as QuantileDLinear
+from tsflab.models.quantile_patchtst.model import Model as QuantilePatchTST
+from tsflab.models.tide.model import Model as TiDE
 
 
 def make_model(name: str, length: int = 8, horizon: int = 3, channels: int = 2):

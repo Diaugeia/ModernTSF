@@ -13,46 +13,46 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from moderntsf.benchmark.command_runtime import module_slug as cli_module_slug
-from moderntsf.benchmark.catalog_metadata import model_records, read_front_matter
-from moderntsf.benchmark.cli import main as cli_main
-from moderntsf.benchmark.commands.check_registry import check as check_model_catalog
-from moderntsf.benchmark.model_contracts import audit_model_contracts
-from moderntsf.benchmark.model_cards import REQUIRED_SECTIONS, audit_model_card_body
-from moderntsf.benchmark.verification.reference import compare_model_reference
-from moderntsf.benchmark.resource_cards import audit_resource_cards, dataset_records
-from moderntsf.benchmark.commands.new_model import (
+from tsflab.benchmark.command_runtime import module_slug as cli_module_slug
+from tsflab.benchmark.catalog_metadata import model_records, read_front_matter
+from tsflab.benchmark.cli import main as cli_main
+from tsflab.benchmark.commands.check_registry import check as check_model_catalog
+from tsflab.benchmark.model_contracts import audit_model_contracts
+from tsflab.benchmark.model_cards import REQUIRED_SECTIONS, audit_model_card_body
+from tsflab.benchmark.verification.reference import compare_model_reference
+from tsflab.benchmark.resource_cards import audit_resource_cards, dataset_records
+from tsflab.benchmark.commands.new_model import (
     _model as scaffold_model,
     _module_slug as scaffold_module_slug,
     _package_init as scaffold_package_init,
     _spec as scaffold_spec,
 )
-from moderntsf.benchmark.commands.new_dataset import _schema_single as scaffold_dataset_schema
-from moderntsf.benchmark.config.loader import validate_task_compatibility
-from moderntsf.benchmark.registry.datasets import DATASET_REGISTRY, register_dataset_by_name
-from moderntsf.benchmark.registry.models import MODEL_CATALOG
-from moderntsf.benchmark.runner.model_io import call_forecaster, slice_prediction_target
-from moderntsf.models._components.adj_norm import gcn_norm, transition_matrix
-from moderntsf.benchmark.catalog.component_audit import audit_components, component_dependency_closure
-from moderntsf.benchmark.catalog.components import COMPONENT_CATALOG
-from moderntsf.models._components.channel_alignment import fit_channels
-from moderntsf.models._components.channel_wise_linear import ChannelWiseLinear
-from moderntsf.models._components.dominant_periods import dominant_periods
-from moderntsf.models._components.diffusion_conv import DiffusionConv2d
-from moderntsf.models._components.flatten_forecast_head import FlattenForecastHead
-from moderntsf.models._components.forecast_embedding import ForecastEmbedding
-from moderntsf.models._components.gaussian_parameter_head import GaussianParameterHead
-from moderntsf.models._components.graph_spectral import chebyshev_polynomials, chebyshev_supports, scaled_laplacian
-from moderntsf.models._components.graph_utils import adj_to_supports, cheb_poly, normalize_adj_mx
-from moderntsf.models._components.marks import to_spatiotemporal
-from moderntsf.models._components.quantile_head import QuantileHead, validate_quantile_levels
-from moderntsf.models._components.revin import RevIN
-from moderntsf.models._components.series_decomposition import (
+from tsflab.benchmark.commands.new_dataset import _schema_single as scaffold_dataset_schema
+from tsflab.benchmark.config.loader import validate_task_compatibility
+from tsflab.benchmark.registry.datasets import DATASET_REGISTRY, register_dataset_by_name
+from tsflab.benchmark.registry.models import MODEL_CATALOG
+from tsflab.benchmark.runner.model_io import call_forecaster, slice_prediction_target
+from tsflab.models._components.adj_norm import gcn_norm, transition_matrix
+from tsflab.benchmark.catalog.component_audit import audit_components, component_dependency_closure
+from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+from tsflab.models._components.channel_alignment import fit_channels
+from tsflab.models._components.channel_wise_linear import ChannelWiseLinear
+from tsflab.models._components.dominant_periods import dominant_periods
+from tsflab.models._components.diffusion_conv import DiffusionConv2d
+from tsflab.models._components.flatten_forecast_head import FlattenForecastHead
+from tsflab.models._components.forecast_embedding import ForecastEmbedding
+from tsflab.models._components.gaussian_parameter_head import GaussianParameterHead
+from tsflab.models._components.graph_spectral import chebyshev_polynomials, chebyshev_supports, scaled_laplacian
+from tsflab.models._components.graph_utils import adj_to_supports, cheb_poly, normalize_adj_mx
+from tsflab.models._components.marks import to_spatiotemporal
+from tsflab.models._components.quantile_head import QuantileHead, validate_quantile_levels
+from tsflab.models._components.revin import RevIN
+from tsflab.models._components.series_decomposition import (
     EdgePaddedMovingAverage,
     SeriesDecomposition,
 )
-from moderntsf.tsf_core.agent_assets import audit_agent_assets
-from moderntsf.tsf_core.paths import is_packaged_root, repository_root, require_checkout
+from tsflab.tsf_core.agent_assets import audit_agent_assets
+from tsflab.tsf_core.paths import is_packaged_root, repository_root, require_checkout
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -67,7 +67,7 @@ class RepositoryContractTests(unittest.TestCase):
         obsolete = "implementation/adapter: `model.py`"
         offenders = [
             str(path.relative_to(root))
-            for path in (root / "src" / "moderntsf" / "models").glob("*/README.md")
+            for path in (root / "src" / "tsflab" / "models").glob("*/README.md")
             if obsolete in path.read_text(encoding="utf-8")
         ]
         self.assertEqual(offenders, [])
@@ -76,13 +76,13 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         missing = [
             str(path.relative_to(root))
-            for path in sorted((root / "src" / "moderntsf" / "models").glob("*/README.md"))
+            for path in sorted((root / "src" / "tsflab" / "models").glob("*/README.md"))
             if not (path.parent / "__init__.py").is_file()
         ]
         self.assertEqual(missing, [])
 
     def test_dataset_default_uses_the_ignored_local_data_layer(self) -> None:
-        from moderntsf.benchmark.config.schema.dataset import DatasetConfig
+        from tsflab.benchmark.config.schema.dataset import DatasetConfig
 
         fields = DatasetConfig.model_fields
         self.assertEqual(fields["path"].default, "")
@@ -186,9 +186,9 @@ class RepositoryContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["component", "show", "quantile_head", "--json"]), 0)
         payload = json.loads(output.getvalue())
-        self.assertEqual(payload["module"], "moderntsf.models._components.quantile_head")
+        self.assertEqual(payload["module"], "tsflab.models._components.quantile_head")
         self.assertIn("quantile_dlinear", payload["consumers"])
-        self.assertEqual(payload["card"], "src/moderntsf/models/_components/quantile_head/README.md")
+        self.assertEqual(payload["card"], "src/tsflab/models/_components/quantile_head/README.md")
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
@@ -312,7 +312,7 @@ class RepositoryContractTests(unittest.TestCase):
         source = {"code", "revision", "license"}
         cards = [
             card
-            for card in (root / "src" / "moderntsf" / "models").glob("*/README.md")
+            for card in (root / "src" / "tsflab" / "models").glob("*/README.md")
             if not card.parent.name.startswith("_")
         ]
         for card in cards:
@@ -337,7 +337,7 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         cards = sorted(
             card
-            for card in (root / "src" / "moderntsf" / "models").glob("*/README.md")
+            for card in (root / "src" / "tsflab" / "models").glob("*/README.md")
             if not card.parent.name.startswith("_")
         )
         self.assertEqual(len(cards), 199)
@@ -384,7 +384,7 @@ class RepositoryContractTests(unittest.TestCase):
 
     def test_model_cards_do_not_repeat_the_summary(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        for card in (root / "src/moderntsf/models").glob("*/README.md"):
+        for card in (root / "src/tsflab/models").glob("*/README.md"):
             if card.parent.name.startswith("_"):
                 continue
             text = card.read_text(encoding="utf-8")
@@ -396,11 +396,11 @@ class RepositoryContractTests(unittest.TestCase):
     def test_every_cataloged_component_and_dataset_has_a_current_card(self) -> None:
         root = Path(__file__).resolve().parents[1]
         self.assertEqual(audit_resource_cards(root), [])
-        self.assertTrue((root / "src/moderntsf/models/_foundation/README.md").is_file())
+        self.assertTrue((root / "src/tsflab/models/_foundation/README.md").is_file())
         self.assertEqual(len(COMPONENT_CATALOG.names()), 48)
         self.assertEqual(len(dataset_records(root)), 89)
         self.assertEqual(
-            len(list((root / "src/moderntsf/models/_components").glob("*/README.md"))),
+            len(list((root / "src/tsflab/models/_components").glob("*/README.md"))),
             48,
         )
         self.assertEqual(
@@ -480,7 +480,7 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         forbidden = {"_fit_channels", "_levels", "ForecastEmbedding"}
         offenders = []
-        for path in (root / "src" / "moderntsf" / "models").glob("*/model.py"):
+        for path in (root / "src" / "tsflab" / "models").glob("*/model.py"):
             tree = ast.parse(path.read_text(encoding="utf-8"))
             names = {
                 node.name

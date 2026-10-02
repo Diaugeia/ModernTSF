@@ -20,7 +20,7 @@ related: ["etth1", "ettm1", "electricity", "solar", "weather", "pems_bay", "metr
 
 ## Overview
 
-GIFT-Eval (General Time Series Forecasting Model Evaluation) was built by Salesforce AI Research to compare time series foundation models and classical or deep baselines on one broad, zero-shot-oriented suite. The benchmark holds 23 datasets across 7 domains and 10 frequencies (144,000 series, 177 million observations; 97 dataset, frequency, and term configurations), mixing 15 univariate and 8 multivariate datasets (source-reported). ModernTSF ships 53 of the dataset-frequency series as presets named `gift_eval/<id>`, each at the short-term horizon.
+GIFT-Eval (General Time Series Forecasting Model Evaluation) was built by Salesforce AI Research to compare time series foundation models and classical or deep baselines on one broad, zero-shot-oriented suite. The benchmark holds 23 datasets across 7 domains and 10 frequencies (144,000 series, 177 million observations; 97 dataset, frequency, and term configurations), mixing 15 univariate and 8 multivariate datasets (source-reported). TSFLab ships 53 of the dataset-frequency series as presets named `gift_eval/<id>`, each at the short-term horizon.
 
 Use a family member when you need breadth (many domains, frequencies, series counts, and horizons) rather than the single long-horizon multivariate protocols of the LTSF presets (`etth1`, `electricity`, `weather`, ...). Each series card links back here.
 
@@ -30,7 +30,7 @@ Use a family member when you need breadth (many domains, frequencies, series cou
 - Paper: https://arxiv.org/abs/2410.10393. Data: https://huggingface.co/datasets/Salesforce/GiftEval. Code: https://github.com/SalesforceAIResearch/gift-eval. Leaderboard: https://huggingface.co/spaces/Salesforce/GIFT-Eval.
 - License of the benchmark packaging: `apache-2.0` (Hugging Face dataset card; the repository LICENSE is Apache License 2.0, Copyright 2024 Salesforce, Inc.).
 - Each underlying dataset keeps its own license. The member cards record it: CC-BY-4.0 for the Monash, M4, KDD Cup 2018, and UCI Electricity series; CC-BY-ND-4.0 for ETT; CDLA-Sharing-1.0 for BizITObs; and `unknown` for the Solar, LOOP Seattle, M-DENSE, SZ-Taxi, Bitbrains, Jena weather, Hierarchical Sales, and Restaurant sources. `redistribution: "unknown"` on a member means no explicit terms were found, not that republishing is allowed.
-- ModernTSF does not bundle these bytes. Download with `tsf dataset gift-download`; it links `./dataset/gift_eval` to the download directory.
+- TSFLab does not bundle these bytes. Download with `tsf dataset gift-download`; it links `./dataset/gift_eval` to the download directory.
 
 ## Structure and statistics
 

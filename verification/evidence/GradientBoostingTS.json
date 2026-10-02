@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GradientBoostingTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "e55934c9c9e3094b661acb59a4e8dbeaa2d951e2a8918da39b8be85de1b94d6e",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "705b71d14cd9dd0eee21e70a51d38f8c35497fb0ba6391b7ea956bffcb25d86b",
   "paper": {
     "title": "Greedy function approximation: A gradient boosting machine",
     "venue": "Annals of Statistics, 2001",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model GradientBoostingTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_tree_baselines.py"
+    "python -m pytest -q tests/test_tree_baselines.py"
   ]
 }

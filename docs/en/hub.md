@@ -9,20 +9,20 @@ instead of a checkout:
 
 ```
 <dir>/
-├── configs/runs/example.toml   # extends moderntsf://configs/...
+├── configs/runs/example.toml   # extends tsflab://configs/...
 ├── dataset/                    # local data (ignored)
 ├── pyproject.toml              # depends on the package's hub extra
 └── README.md
 ```
 
-Run configs may extend catalog presets with `moderntsf://` paths, which resolve
+Run configs may extend catalog presets with `tsflab://` paths, which resolve
 against the checkout or the installed package's read-only assets:
 
 ```toml
 extends = [
-    "moderntsf://configs/base.toml",
-    "moderntsf://configs/datasets/etth1.toml",
-    "moderntsf://configs/models/DLinear.toml",
+    "tsflab://configs/base.toml",
+    "tsflab://configs/datasets/etth1.toml",
+    "tsflab://configs/models/DLinear.toml",
 ]
 ```
 
@@ -38,20 +38,20 @@ hf://[datasets/|spaces/]<owner>/<repo>@<revision>/<path>
 
 The revision is mandatory, so a URI always names the same bytes. Model
 `ModelArtifact` declarations accept `hf://` URIs next to `https://` and
-`file://`, and every download is SHA-256 verified into `$MODERNTSF_CACHE`
-(default `~/.cache/moderntsf`). `HF_TOKEN` is sent only to the Hugging Face
+`file://`, and every download is SHA-256 verified into `$TSFLAB_CACHE`
+(default `~/.cache/tsflab`). `HF_TOKEN` is sent only to the Hugging Face
 endpoint, so private repositories work; `HF_ENDPOINT` overrides the endpoint.
 
 ## Published repositories
 
 | Repository | Type | Contents |
 | --- | --- | --- |
-| `Diaugeia/ModernTSF-Static` | dataset | files behind the dataset presets, laid out as `dataset/` |
-| `Diaugeia/ModernTSF-RealTime` | dataset | append-only real-time track panels, one commit per release |
-| `Diaugeia/ModernTSF-Weights` | model | trained weights bundles |
-| `Diaugeia/ModernTSF` | space | the static leaderboard site |
+| `Diaugeia/TSFLab-Static` | dataset | files behind the dataset presets, laid out as `dataset/` |
+| `Diaugeia/TSFLab-RealTime` | dataset | append-only real-time track panels, one commit per release |
+| `Diaugeia/TSFLab-Weights` | model | trained weights bundles |
+| `Diaugeia/TSFLab` | space | the static leaderboard site |
 
-A fork or personal mirror sets `MODERNTSF_HUB_OWNER` to publish under another
+A fork or personal mirror sets `TSFLAB_HUB_OWNER` to publish under another
 namespace instead of passing `--repo` to every command. Maintainers create them, with their cards, through
 `uv run tsf hub init [--migrate-legacy]`; `--migrate-legacy` renames the former
 TSEval repositories so their old addresses redirect.
@@ -82,7 +82,7 @@ redistribution.
 
 A finished run is published as one bundle directory at
 `<dataset>/<model>/<run_id>/` in a model repository (default
-`Diaugeia/ModernTSF-Weights`):
+`Diaugeia/TSFLab-Weights`):
 
 | File | Contents |
 | --- | --- |
@@ -102,10 +102,10 @@ uv run tsf hub pull hf://<owner>/<repo>@<revision>/weather/DLinear/<run_id>
 `--public` is passed, and prints the bundle URI pinned to the new commit.
 
 ```python
-from moderntsf import hub
+from tsflab import hub
 
 state_dict, manifest = hub.load_state_dict(
-    "hf://Diaugeia/ModernTSF-Weights@<revision>/weather/DLinear/<run_id>"
+    "hf://Diaugeia/TSFLab-Weights@<revision>/weather/DLinear/<run_id>"
 )
 ```
 

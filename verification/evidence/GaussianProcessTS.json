@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GaussianProcessTS",
   "status": "passed",
-  "verified_at": "2026-10-02T15:56:36.954952Z",
-  "subject_sha256": "65aba0c049ee9135db1b94cc630bfcbb482358ad6ebdd0deaab27af8aed60db8",
+  "verified_at": "2026-10-02T16:17:44.836160Z",
+  "subject_sha256": "06f10977ec893ce2eae19d6af85896ed0fe5f51cf3e11c12643462fdf0f44d74",
   "paper": {
     "title": "Gaussian Processes for Machine Learning",
     "venue": "MIT Press",
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model GaussianProcessTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_statistical_baselines.py"
+    "python -m pytest -q tests/test_statistical_baselines.py"
   ]
 }

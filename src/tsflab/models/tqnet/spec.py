@@ -1,0 +1,58 @@
+"""Runtime specification for TQNet."""
+
+from __future__ import annotations
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.models.tqnet.model import Model
+
+
+class ModelParameterConfig(BaseModel):
+    """Parameters supplied through ``model.params``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enc_in: int = Field(gt=0)
+    cycle: int = Field(default=24, gt=0)
+    d_model: int = Field(default=64, gt=0)
+    dropout: float = Field(default=0.1, ge=0.0, lt=1.0)
+    attn_dropout: float = Field(default=0.5, ge=0.0, lt=1.0)
+    channel_aggre_heads: int = Field(default=4, gt=0)
+    use_revin: bool = True
+
+    @model_validator(mode="after")
+    def _architecture_contract(self) -> "ModelParameterConfig":
+        return self
+
+
+def build_model(cfg, params):
+    """Construct TQNet from a validated run configuration."""
+    if cfg.task.seq_len % params.get("channel_aggre_heads", 4):
+        raise ValueError("seq_len must be divisible by channel_aggre_heads")
+    return Model(
+        seq_len=cfg.task.seq_len,
+        pred_len=cfg.task.pred_len,
+        enc_in=params["enc_in"],
+        cycle=params.get("cycle", 24),
+        d_model=params.get("d_model", 64),
+        dropout=params.get("dropout", 0.1),
+        attn_dropout=params.get("attn_dropout", 0.5),
+        channel_aggre_heads=params.get("channel_aggre_heads", 4),
+        use_revin=bool(params.get("use_revin", True)),
+    )
+
+
+SPEC = ModelSpec(
+    name="TQNet",
+    module="tsflab.models.tqnet",
+    model_class=Model,
+    factory=build_model,
+    params_schema=ModelParameterConfig,
+    config_path="configs/models/TQNet.toml",
+    model_card="src/tsflab/models/tqnet/README.md",
+    smoke_config="configs/runs/smoke_tqnet.toml",
+    capabilities=frozenset({"time-series"}),
+    components=("periodic_query_bank", "revin"),
+    contract_task={"seq_len": 96, "pred_len": 12, "label_len": 0},
+)

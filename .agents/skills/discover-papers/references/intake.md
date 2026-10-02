@@ -88,6 +88,6 @@ Suggested recurring-task prompt:
 
 > Use $discover-papers to scan arXiv and Hugging Face Papers for time-series
 > forecasting work published or updated in the last 14 days. Deduplicate against
-> the current ModernTSF catalog. Dispatch at most three separate review tasks for
+> the current TSFLab catalog. Dispatch at most three separate review tasks for
 > candidates that clear the harness thresholds; do not implement, merge, or publish
 > them. If nothing qualifies, report a successful scan with no dispatch.

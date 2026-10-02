@@ -6,7 +6,7 @@ import unittest
 
 import torch
 
-from moderntsf.models.dpwmixer.model import Model as DPWMixer
+from tsflab.models.dpwmixer.model import Model as DPWMixer
 
 
 def marks(batch=2, steps=12, offset=0):
