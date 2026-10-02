@@ -48,6 +48,13 @@ profile = 'standard'
 test = 'tests/test_special_forecasters.py'
 reference_test = 'tests/test_special_forecasters.py'
 
+[models.ARMD]
+profile = 'standard'
+test = 'tests/test_armd.py'
+reference_test = 'tests/test_armd.py'
+reference_sources = ['https://github.com/daxin007/ARMD/blob/07a3dc4674f2f5cdf401e1a7f8895939bb2b07e2/Models/autoregressive_diffusion/armd.py', 'https://github.com/daxin007/ARMD/blob/07a3dc4674f2f5cdf401e1a7f8895939bb2b07e2/Models/autoregressive_diffusion/linear.py']
+structure = ['sliding-window deterministic diffusion chain', 'linear devolution network with learnable step weight', 'evolution-trend L1 objective with step weights', 'deterministic few-step DDIM forecast from the history window']
+
 [models.APN]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'
@@ -516,6 +523,13 @@ profile = 'standard'
 test = 'tests/test_ssm_sequence_forecasters.py'
 reference_test = 'tests/test_ssm_sequence_forecasters.py'
 
+[models.MambaTS]
+profile = 'standard'
+test = 'tests/test_mambats.py'
+reference_test = 'tests/test_mambats.py'
+reference_sources = ['https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/models/MambaTS.py', 'https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/layers/mamba_ssm/mixer2_seq_simple.py', 'https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/layers/mamba_ssm/mamba_simple.py']
+structure = ['variable-major patch-token layout', 'convolution-free selective SSM with selective-parameter dropout', 'add-then-norm residual stream', 'variable permutation training with per-sample transition costs', 'asymmetric TSP scan-order decoding', 'shared flatten head with instance de-normalisation']
+
 [models.MegaCRN]
 profile = 'standard'
 test = 'tests/test_graph_forecasters_b.py'
@@ -830,6 +844,13 @@ profile = 'local-graph'
 test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
 reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
 structure = ['raw value embedding', 'time and day embeddings', 'adaptive spatiotemporal embedding', 'alternating temporal and spatial attention']
+
+[models.STDMAE]
+profile = 'standard'
+test = 'tests/test_stdmae.py'
+reference_test = 'tests/test_stdmae.py'
+reference_sources = ['https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/stdmae.py', 'https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/mask/mask.py', 'https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/graphwavenet/model.py']
+structure = ['temporal masked-autoencoder encoder over patch tokens', 'spatial masked-autoencoder encoder across nodes', '2-D sinusoidal node-patch position', 'last-patch context injection into the Graph WaveNet skip path', 'valid dilated gated convolution with diffusion graph convolution']
 
 [models.STDN]
 profile = 'local-graph'

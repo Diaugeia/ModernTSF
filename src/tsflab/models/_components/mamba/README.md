@@ -45,8 +45,9 @@ recorded in the commit messages above.
 
 ## Interface
 
-`MambaBlock(d_model, d_inner, dt_rank, d_conv, d_state)`, all positive ints, no
-defaults. `d_inner` is the expanded width (callers use `expand * d_model`),
+`MambaBlock(d_model, d_inner, dt_rank, d_conv, d_state, *, use_conv=True,
+x_dropout=0.0, reference_dt_init=False)`, the five widths are positive ints with no
+defaults; the keyword-only options are described under Variants. `d_inner` is the expanded width (callers use `expand * d_model`),
 `dt_rank` the low-rank width of the step-size path, `d_conv` the conv kernel,
 `d_state` the state size per channel. Methods: `forward(x)` for `[B, L, d_model]` to
 `[B, L, d_model]`; `ssm(x)` for `[B, L, d_inner]` to `[B, L, d_inner]`;
@@ -57,7 +58,8 @@ static `selective_scan(u, delta, a, b, c, d)` with `u, delta: [B, L, d_inner]`,
 - State-dict keys of `MambaBlock`: `A_log` `[d_inner, d_state]` (init log(1..d_state)),
   `D` `[d_inner]` (ones), `in_proj.weight`, `conv1d.weight`/`conv1d.bias`,
   `x_proj.weight`, `dt_proj.weight`/`dt_proj.bias`, `out_proj.weight`. No buffers.
-  `dt_proj` uses default `nn.Linear` init, not the reference Mamba dt init.
+  `use_conv=False` removes the two `conv1d.*` keys; the other options add no keys.
+  `dt_proj` uses default `nn.Linear` init unless `reference_dt_init=True`.
 - `RMSNorm(d_model, eps=1e-5)`: parameter `weight` `[d_model]`; no shape check.
 - `MambaResidualBlock(d_model, d_inner, dt_rank, d_conv, d_state)`: keys `mixer.*`
   and `norm.weight`; output shape equals input, so `d_model` is preserved.
@@ -74,11 +76,19 @@ static `selective_scan(u, delta, a, b, c, d)` with `u, delta: [B, L, d_inner]`,
 - Causality (outputs at positions before a perturbation are unchanged) and the
   `[B, L, d_model]` shape were confirmed with a tiny CPU snippet while writing
   this card; they are now pinned by the contract test below.
+- `tests/test_component_contracts_signal.py` also pins the keyword options (same keys as the default block apart from `use_conv=False`, the dt-init ranges, and train-only dropout).
 - `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/mamba.pt`.
 
 ## Variants and options
 
-Only the constructor widths. Not covered here: bidirectional use (instantiate two
+The constructor widths plus three keyword-only options, all defaulting to the
+original block: `use_conv=False` skips the causal convolution and its SiLU (the
+scan then sees the in-projection output directly, as in MambaTS);
+`x_dropout=p` applies dropout to the joint step-size/B/C projection output, active
+only in training mode (the "selective parameter dropout" of MambaTS); and
+`reference_dt_init=True` draws `dt_proj.weight` uniformly in `+-dt_rank**-0.5` and sets
+the bias to the inverse softplus of a log-uniform step in `[1e-3, 1e-1]` (floor
+`1e-4`), as the reference Mamba does. Not covered here: bidirectional use (instantiate two
 blocks and flip the sequence, as `bimamba` and `s_mamba` do), a gated "Mamba+"
 variant (model-local in `bimamba`), a scalar-state scan (see `hyper_state_scan`),
 parallel-scan or fused CUDA kernels, and step/cached inference.
@@ -102,8 +112,8 @@ Implementation: [`__init__.py`](__init__.py)
 
 - `RMSNorm(d_model: int, eps: float=1e-05)`
   Root-mean-square normalization over the final feature dimension.
-- `MambaBlock(d_model: int, d_inner: int, dt_rank: int, d_conv: int, d_state: int)`
-  Pure-PyTorch selective state-space mixer with a causal depthwise convolution.
+- `MambaBlock(d_model: int, d_inner: int, dt_rank: int, d_conv: int, d_state: int, *, use_conv: bool=True, x_dropout: float=0.0, reference_dt_init: bool=False)`
+  Pure-PyTorch selective state-space mixer with an optional causal depthwise convolution.
 - `MambaResidualBlock(d_model: int, d_inner: int, dt_rank: int, d_conv: int, d_state: int)`
   Pre-normalized residual wrapper around :class:`MambaBlock`.
 

@@ -108,7 +108,7 @@ from tsflab.models._components.diffusion_conv import DiffusionConv2d
 
 `diffusion`, `graph`, `graph-wavenet`, `support`, `spatiotemporal`
 
-## Current model consumers (1)
+## Current model consumers (2)
 
-`gwnet`
+`gwnet`, `stdmae`
 <!-- component-card:generated:end -->

@@ -15,6 +15,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `AMRC` | [`configs/models/AMRC.toml`](../../configs/models/AMRC.toml) | time-series | [README](../../src/tsflab/models/amrc/README.md) |
 | `APN` | [`configs/models/APN.toml`](../../configs/models/APN.toml) | time-series | [README](../../src/tsflab/models/apn/README.md) |
 | `ARIMATS` | [`configs/models/ARIMATS.toml`](../../configs/models/ARIMATS.toml) | time-series | [README](../../src/tsflab/models/arima_ts/README.md) |
+| `ARMD` | [`configs/models/ARMD.toml`](../../configs/models/ARMD.toml) | time-series | [README](../../src/tsflab/models/armd/README.md) |
 | `ASTGCN` | [`configs/models/ASTGCN.toml`](../../configs/models/ASTGCN.toml) | covariate, spatiotemporal | [README](../../src/tsflab/models/astgcn/README.md) |
 | `Aurora` | [`configs/models/Aurora.toml`](../../configs/models/Aurora.toml) | dense-modality-context, time-series | [README](../../src/tsflab/models/aurora/README.md) |
 | `Autoformer` | [`configs/models/Autoformer.toml`](../../configs/models/Autoformer.toml) | time-series | [README](../../src/tsflab/models/autoformer/README.md) |
@@ -104,6 +105,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `MAFS` | [`configs/models/MAFS.toml`](../../configs/models/MAFS.toml) | time-series | [README](../../src/tsflab/models/mafs/README.md) |
 | `MAGE` | [`configs/models/MAGE.toml`](../../configs/models/MAGE.toml) | spatiotemporal | [README](../../src/tsflab/models/mage/README.md) |
 | `MambaSimple` | [`configs/models/MambaSimple.toml`](../../configs/models/MambaSimple.toml) | time-series | [README](../../src/tsflab/models/mambasimple/README.md) |
+| `MambaTS` | [`configs/models/MambaTS.toml`](../../configs/models/MambaTS.toml) | time-series | [README](../../src/tsflab/models/mambats/README.md) |
 | `MegaCRN` | [`configs/models/MegaCRN.toml`](../../configs/models/MegaCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/megacrn/README.md) |
 | `MGSFformer` | [`configs/models/MGSFformer.toml`](../../configs/models/MGSFformer.toml) | spatiotemporal | [README](../../src/tsflab/models/mgsfformer/README.md) |
 | `MICN` | [`configs/models/MICN.toml`](../../configs/models/MICN.toml) | time-series | [README](../../src/tsflab/models/micn/README.md) |
@@ -161,6 +163,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `SRSNet` | [`configs/models/SRSNet.toml`](../../configs/models/SRSNet.toml) | time-series | [README](../../src/tsflab/models/srsnet/README.md) |
 | `ST-SSDL` | [`configs/models/ST-SSDL.toml`](../../configs/models/ST-SSDL.toml) | spatiotemporal | [README](../../src/tsflab/models/st_ssdl/README.md) |
 | `STAEformer` | [`configs/models/STAEformer.toml`](../../configs/models/STAEformer.toml) | spatiotemporal | [README](../../src/tsflab/models/staeformer/README.md) |
+| `STDMAE` | [`configs/models/STDMAE.toml`](../../configs/models/STDMAE.toml) | spatiotemporal | [README](../../src/tsflab/models/stdmae/README.md) |
 | `STDN` | [`configs/models/STDN.toml`](../../configs/models/STDN.toml) | spatiotemporal | [README](../../src/tsflab/models/stdn/README.md) |
 | `StemGNN` | [`configs/models/StemGNN.toml`](../../configs/models/StemGNN.toml) | spatiotemporal | [README](../../src/tsflab/models/stemgnn/README.md) |
 | `STGCN` | [`configs/models/STGCN.toml`](../../configs/models/STGCN.toml) | spatiotemporal | [README](../../src/tsflab/models/stgcn/README.md) |

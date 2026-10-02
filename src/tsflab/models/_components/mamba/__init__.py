@@ -7,6 +7,8 @@ so every consumer receives the same portable tensor and gradient contract.
 
 from __future__ import annotations
 
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -26,7 +28,14 @@ class RMSNorm(nn.Module):
 
 
 class MambaBlock(nn.Module):
-    """Pure-PyTorch selective state-space mixer with a causal depthwise convolution."""
+    """Pure-PyTorch selective state-space mixer with an optional causal depthwise convolution.
+
+    Keyword-only options (defaults reproduce the original block exactly):
+    ``use_conv=False`` drops the convolution and its SiLU (no ``conv1d`` keys),
+    ``x_dropout > 0`` applies dropout to the step-size/B/C projection output
+    (the selective parameters), and ``reference_dt_init=True`` initialises
+    ``dt_proj`` as in the reference Mamba (uniform weight, log-uniform step bias).
+    """
 
     def __init__(
         self,
@@ -35,22 +44,41 @@ class MambaBlock(nn.Module):
         dt_rank: int,
         d_conv: int,
         d_state: int,
+        *,
+        use_conv: bool = True,
+        x_dropout: float = 0.0,
+        reference_dt_init: bool = False,
     ) -> None:
         super().__init__()
+        if not 0.0 <= x_dropout < 1.0:
+            raise ValueError("x_dropout must be in [0, 1)")
         self.d_inner = d_inner
         self.dt_rank = dt_rank
         self.d_state = d_state
+        self.use_conv = use_conv
         self.in_proj = nn.Linear(d_model, d_inner * 2, bias=False)
-        self.conv1d = nn.Conv1d(
-            in_channels=d_inner,
-            out_channels=d_inner,
-            bias=True,
-            kernel_size=d_conv,
-            padding=d_conv - 1,
-            groups=d_inner,
-        )
+        if use_conv:
+            self.conv1d = nn.Conv1d(
+                in_channels=d_inner,
+                out_channels=d_inner,
+                bias=True,
+                kernel_size=d_conv,
+                padding=d_conv - 1,
+                groups=d_inner,
+            )
+        self.x_dropout = nn.Dropout(x_dropout)
         self.x_proj = nn.Linear(d_inner, dt_rank + d_state * 2, bias=False)
         self.dt_proj = nn.Linear(dt_rank, d_inner, bias=True)
+        if reference_dt_init:
+            dt_min, dt_max, floor = 1e-3, 1e-1, 1e-4
+            bound = dt_rank**-0.5
+            nn.init.uniform_(self.dt_proj.weight, -bound, bound)
+            dt = torch.exp(
+                torch.rand(d_inner) * (math.log(dt_max) - math.log(dt_min))
+                + math.log(dt_min)
+            ).clamp(min=floor)
+            with torch.no_grad():
+                self.dt_proj.bias.copy_(dt + torch.log(-torch.expm1(-dt)))
         state = repeat(torch.arange(1, d_state + 1), "n -> d n", d=d_inner).float()
         self.A_log = nn.Parameter(torch.log(state))
         self.D = nn.Parameter(torch.ones(d_inner))
@@ -60,9 +88,10 @@ class MambaBlock(nn.Module):
         """Apply the selective state-space mixer to ``(batch, length, width)``."""
         length = x.shape[1]
         x, residual = self.in_proj(x).split([self.d_inner, self.d_inner], dim=-1)
-        x = rearrange(x, "b l d -> b d l")
-        x = self.conv1d(x)[:, :, :length]
-        x = F.silu(rearrange(x, "b d l -> b l d"))
+        if self.use_conv:
+            x = rearrange(x, "b l d -> b d l")
+            x = self.conv1d(x)[:, :, :length]
+            x = F.silu(rearrange(x, "b d l -> b l d"))
         return self.out_proj(self.ssm(x) * F.silu(residual))
 
     def ssm(self, x: torch.Tensor) -> torch.Tensor:
@@ -70,7 +99,7 @@ class MambaBlock(nn.Module):
         state_size = self.A_log.shape[1]
         a = -torch.exp(self.A_log.float())
         d = self.D.float()
-        delta, b, c = self.x_proj(x).split(
+        delta, b, c = self.x_dropout(self.x_proj(x)).split(
             [self.dt_rank, state_size, state_size], dim=-1
         )
         delta = F.softplus(self.dt_proj(delta))
