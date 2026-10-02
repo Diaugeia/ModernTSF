@@ -1,15 +1,19 @@
-"""Generate and audit canonical README cards for datasets and models._components."""
+"""Generate and audit canonical README cards for datasets and models._components.
+
+Component card rendering and audit live in ``component_cards``."""
 
 from __future__ import annotations
 
-import ast
 from dataclasses import dataclass
 import json
 from pathlib import Path
 import tomllib
 
-from moderntsf.benchmark.catalog.component_audit import components_used_by
-from moderntsf.benchmark.catalog.components import COMPONENT_CATALOG, ComponentSpec
+from moderntsf.benchmark.catalog.components import COMPONENT_CATALOG
+from moderntsf.benchmark.component_cards import (
+    audit_component_cards,
+    update_component_card,
+)
 
 
 @dataclass(frozen=True)
@@ -70,136 +74,9 @@ def dataset_records(root: Path) -> tuple[DatasetRecord, ...]:
     return tuple(records)
 
 
-def component_card_path(root: Path, name: str) -> Path:
-    """Return the canonical component-card path."""
-    return root / "src" / "moderntsf" / "models" / "_components" / name / "README.md"
-
-
 def dataset_card_path(root: Path, name: str) -> Path:
     """Return the canonical dataset-card path."""
     return root / "catalog" / "datasets" / Path(name) / "README.md"
-
-
-def _component_consumers(root: Path, name: str) -> tuple[str, ...]:
-    consumers = []
-    for package in sorted((root / "src" / "moderntsf" / "models").iterdir()):
-        if package.is_dir() and not package.name.startswith("_") and name in components_used_by(package):
-            consumers.append(package.name)
-    return tuple(consumers)
-
-
-def _first_paragraph(value: str | None) -> str:
-    """Compact a docstring to its descriptive opening paragraph."""
-    if not value:
-        return "No additional symbol-level description is recorded."
-    return " ".join(value.strip().split("\n\n", 1)[0].split())
-
-
-def _component_api(root: Path, spec: ComponentSpec) -> tuple[str, str]:
-    """Read module and public-symbol documentation without importing code."""
-    path = root / "src" / "moderntsf" / "models" / "_components" / spec.name / "__init__.py"
-    tree = ast.parse(path.read_text(encoding="utf-8"))
-    nodes = {
-        node.name: node
-        for node in tree.body
-        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
-    }
-    lines = []
-    for symbol in spec.public_symbols:
-        node = nodes.get(symbol)
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            signature = f"{symbol}({ast.unparse(node.args)})"
-            detail = _first_paragraph(ast.get_docstring(node))
-        elif isinstance(node, ast.ClassDef):
-            initializer = next(
-                (
-                    child
-                    for child in node.body
-                    if isinstance(child, ast.FunctionDef) and child.name == "__init__"
-                ),
-                None,
-            )
-            arguments = ast.unparse(initializer.args) if initializer else ""
-            if arguments.startswith("self, "):
-                arguments = arguments[6:]
-            elif arguments == "self":
-                arguments = ""
-            signature = f"{symbol}({arguments})"
-            detail = _first_paragraph(ast.get_docstring(node))
-        else:
-            signature = symbol
-            detail = "Public module constant."
-        lines.extend((f"- `{signature}`", f"  {detail}"))
-    if not lines:
-        lines.append("- Import the module and use its documented functions/classes.")
-    return _first_paragraph(ast.get_docstring(tree)), "\n".join(lines)
-
-
-def render_component_card(root: Path, spec: ComponentSpec) -> str:
-    """Render a component card from its catalog contract and real consumers."""
-    consumers = _component_consumers(root, spec.name)
-    module_description, symbols = _component_api(root, spec)
-    consumer_lines = "\n".join(
-        f"- [`{name}`](../../{name}/README.md)" for name in consumers
-    )
-    if not consumer_lines:
-        consumer_lines = "- No model currently declares this component directly."
-    import_hint = (
-        f"from {spec.module} import {', '.join(spec.public_symbols)}"
-        if spec.public_symbols
-        else f"import {spec.module}"
-    )
-    keywords = ", ".join(f"`{keyword}`" for keyword in spec.keywords)
-    return f"""---
-name: {_quoted(spec.name)}
-kind: "component"
-module: {_quoted(spec.module)}
-summary: {_quoted(spec.contract)}
----
-
-# {spec.name}
-
-## Purpose
-
-{spec.contract}
-
-{module_description}
-
-Implementation: [`__init__.py`](__init__.py)
-
-## Public API
-
-{symbols}
-
-```python
-{import_hint}
-```
-
-## Input and output contract
-
-Tensor axes, accepted values, validation rules, and returned shapes are defined by
-the public symbol docstrings and runtime checks in the implementation. Preserve
-those semantics when composing the component; matching tensor rank alone is not
-sufficient.
-
-## Composition guidance
-
-Retrieve this component with `tsf component match`, inspect this card and its
-implementation, then declare `{spec.name}` in the consuming model's `components`
-tuple. The repository audit checks that declaration against actual imports.
-
-Retrieval terms: {keywords}.
-
-## Current model consumers
-
-{consumer_lines}
-
-## Semantic boundary
-
-This card documents one reusable contract, not a promise that similarly named
-model-local blocks are interchangeable. Keep a block model-local when its axis
-meaning, normalization, state update, or paper equation differs.
-"""
 
 
 def _dataset_mode(record: DatasetRecord) -> tuple[tuple[str, ...], str, str]:
@@ -298,40 +175,39 @@ may need local overrides; the card does not imply that the data is bundled.
 
 
 def expected_resource_cards(root: Path) -> dict[Path, str]:
-    """Return every canonical generated card and its expected content."""
-    expected = {
-        component_card_path(root, spec.name): render_component_card(root, spec)
-        for spec in COMPONENT_CATALOG.specs()
+    """Return every fully generated card (datasets) and its expected content.
+
+    Component cards are curated; only their generated block is machine-owned,
+    so they are refreshed by ``write_resource_cards`` and checked by
+    ``audit_component_cards`` instead.
+    """
+    return {
+        dataset_card_path(root, record.name): render_dataset_card(record)
+        for record in dataset_records(root)
     }
-    expected.update(
-        {
-            dataset_card_path(root, record.name): render_dataset_card(record)
-            for record in dataset_records(root)
-        }
-    )
-    return expected
 
 
 def write_resource_cards(root: Path) -> int:
-    """Write all canonical cards and return their count."""
+    """Write dataset cards, refresh component generated blocks; return the count."""
     expected = expected_resource_cards(root)
     for path, content in expected.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
-    return len(expected)
+    for spec in COMPONENT_CATALOG.specs():
+        update_component_card(root, spec)
+    return len(expected) + len(COMPONENT_CATALOG.names())
 
 
 def audit_resource_cards(root: Path) -> list[str]:
-    """Report missing, stale, or orphaned generated resource cards."""
+    """Report missing, stale, or orphaned resource cards."""
     expected = expected_resource_cards(root)
-    errors = []
+    errors = audit_component_cards(root)
     for path, content in expected.items():
         if not path.is_file():
             errors.append(f"missing resource card: {path.relative_to(root)}")
         elif path.read_text(encoding="utf-8") != content:
             errors.append(f"stale resource card: {path.relative_to(root)}")
-    actual = set((root / "src" / "moderntsf" / "models" / "_components").glob("*/README.md"))
-    actual.update((root / "catalog" / "datasets").glob("**/README.md"))
+    actual = set((root / "catalog" / "datasets").glob("**/README.md"))
     for path in sorted(actual - set(expected)):
         errors.append(f"orphaned resource card: {path.relative_to(root)}")
     return errors
