@@ -13,17 +13,6 @@ license: "unlicensed (no LICENSE file in repository; inspected only for read-onl
 # FreqMoE
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-FreqMoE first reconstructs a denoised series from a learned, input-gated Mixture of Experts over contiguous rFFT frequency bands, then forecasts the horizon with a small stack of residual frequency-extension blocks that each upsample the spectrum from seq_len to seq_len+pred_len bins with a complex linear layer, a complex ReLU/dropout nonlinearity, and a second complex linear refinement before inverting with irfft; each block's backcast residual feeds the next block and every block's forecast segment is summed into the final prediction.
-
-## Core architecture
-
-FreqMoE first reconstructs a denoised series from a learned, input-gated Mixture of Experts over contiguous rFFT frequency bands, then forecasts the horizon with a small stack of residual frequency-extension blocks that each upsample the spectrum from seq_len to seq_len+pred_len bins with a complex linear layer, a complex ReLU/dropout nonlinearity, and a second complex linear refinement before inverting with irfft; each block's backcast residual feeds the next block and every block's forecast segment is summed into the final prediction.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -39,7 +28,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/FreqMoE.toml`](../../../../configs/models/FreqMoE.toml).
 
 ## Differences

@@ -16,8 +16,6 @@ ROOT = repository_root()
 START = "<!-- model-card:canonical:start -->"
 END = "<!-- model-card:canonical:end -->"
 REQUIRED_SECTIONS = (
-    "Method overview",
-    "Core architecture",
     "Input and output",
     "Paper and code",
     "Local implementation",
@@ -45,14 +43,6 @@ def _section(text: str, *names: str) -> str:
     return ""
 
 
-def _summary_parts(summary: str) -> tuple[str, str]:
-    """Split existing card prose into overview and architecture descriptions."""
-    sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", summary.strip(), maxsplit=1)
-    overview = sentences[0]
-    architecture = sentences[1] if len(sentences) > 1 else summary.strip()
-    return overview, architecture
-
-
 def _link(label: str, url: object) -> str:
     value = str(url or "").strip()
     return f"[{label}]({value})" if value else f"{label}: not available"
@@ -69,8 +59,6 @@ def render_canonical_body(card_path: Path) -> str:
     task = runtime.get("contract_task", {})
     capabilities = set(runtime.get("capabilities", ()))
     components = tuple(runtime.get("components", ()))
-    summary = str(metadata["summary"]).strip()
-    overview, architecture = _summary_parts(summary)
     paper = metadata["paper"]
     codebase = metadata["codebase"]
     assert isinstance(paper, dict)
@@ -129,17 +117,6 @@ def render_canonical_body(card_path: Path) -> str:
         ]
     )
     return f"""{START}
-## Method overview
-
-{overview}
-
-## Core architecture
-
-{architecture}
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, {seq_len}, {axis}]`. The
@@ -155,7 +132,8 @@ declared output contract is a {output}.{extra_input}
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`{runtime['config_path']}`](../../../../{runtime['config_path']}).
 
 ## Differences
@@ -248,7 +226,11 @@ def main() -> int:
     args = parser.parse_args()
     if args.write:
         require_checkout("model-card regeneration")
-    cards = sorted((ROOT / "src" / "moderntsf" / "models").glob("*/README.md"))
+    cards = sorted(
+        card
+        for card in (ROOT / "src" / "moderntsf" / "models").glob("*/README.md")
+        if not card.parent.name.startswith("_")
+    )
     changed = sum(update_model_card(card) for card in cards) if args.write else 0
     problems = [problem for card in cards for problem in audit_model_card_body(card)]
     gaps = {str(card.relative_to(ROOT)): documentation_gaps(card) for card in cards}

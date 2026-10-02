@@ -14,17 +14,6 @@ license: "NOASSERTION"
 Air-DualODE models an open pollutant system with a physical BA-DAE branch and a separate data-driven latent ODE, then fuses both node representations on the geographic graph. This is a paper-derived local implementation; the unlicensed reference code was inspected at the pinned revision; no external source code was copied.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Air-DualODE combines explicit open-system pollutant dynamics with a complementary data-driven latent ODE.
-
-## Core architecture
-
-This local implementation retains BA-DAE diffusion, directed advection and source/sink correction, masked learned dynamics, temporal rollout, and geographic graph fusion.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/AirDualODE.toml`](../../../../configs/models/AirDualODE.toml).
 
 ## Differences

@@ -28,7 +28,9 @@ def dataset_command(args: list[str]) -> int:
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
             "usage: tsf dataset {add,list,show,search,audit,prepare,inspect,plot,"
-            "convert-traffic,convert-ultratraffic,download,publish,gift-download} [args...]"
+            "convert-traffic,convert-ultratraffic,download,publish,gift-download} [args...]\n"
+            "       tsf dataset search <terms...> [--limit N] [--json]   (L0 lines)\n"
+            "       tsf dataset show <preset> [--depth {0,1,2,3}] [--json]"
         )
         return 0
     action, rest = args[0], args[1:]
@@ -49,42 +51,40 @@ def dataset_command(args: list[str]) -> int:
                     print(f"{record['name']}\t{record['loader']}\t{modes}\t{record['alias']}")
             return 0
         if action == "show":
-            if len(rest) != 1:
-                print("usage: tsf dataset show <preset>", file=sys.stderr)
-                return 2
-            selected = next((record for record in records if record.name == rest[0]), None)
+            from moderntsf.benchmark.catalog_show import existing, parse_show, show_card
+            from moderntsf.benchmark.resource_cards import dataset_card_path
+
+            parsed = parse_show("tsf dataset show", "dataset preset name", rest)
+            selected = next((record for record in records if record.name == parsed.name), None)
             if selected is None:
-                print(f"Unknown dataset preset {rest[0]!r}", file=sys.stderr)
+                print(f"Unknown dataset preset {parsed.name!r}", file=sys.stderr)
                 return 2
-            _print(_dataset_record_payload(selected))
-            return 0
+            legacy = _dataset_record_payload(selected)
+            facts = {
+                "config": selected.config,
+                "loader": selected.loader,
+                "task_modes": list(selected.task_modes),
+                "path": selected.path or "(loader-defined)",
+            }
+            card_path = dataset_card_path(ROOT, selected.name)
+            paths = existing(
+                ROOT,
+                card_path.relative_to(ROOT).as_posix(),
+                selected.config,
+                selected.path,
+            )
+            return show_card(ROOT, card_path, parsed, facts=facts, paths=paths, legacy=legacy)
         if action == "search":
-            parser = argparse.ArgumentParser(prog="tsf dataset search")
-            parser.add_argument("query", nargs="+")
-            parser.add_argument("--limit", type=int, default=10)
-            parser.add_argument("--json", action="store_true")
-            parsed = parser.parse_args(rest)
-            if parsed.limit < 1:
-                parser.error("--limit must be positive")
-            terms = set(re.findall(r"[a-z0-9]+", " ".join(parsed.query).casefold()))
-            matches = []
-            for record in records:
-                text = " ".join(
-                    (record.name, record.alias, record.loader, record.dataset_id or record.path, record.track)
-                ).casefold()
-                matched = sorted(term for term in terms if term in text)
-                if matched:
-                    payload = _dataset_record_payload(record)
-                    payload.update(score=len(matched), matched_terms=matched)
-                    matches.append(payload)
-            matches.sort(key=lambda item: (-int(item["score"]), str(item["name"])))
-            matches = matches[: parsed.limit]
-            if parsed.json:
-                _print(matches)
-            else:
-                for match in matches:
-                    print(f"{match['name']}\t{match['loader']}\t{match['alias']}")
-            return 0
+            from moderntsf.benchmark.catalog_search import search_command
+
+            by_name = {record.name: record for record in records}
+
+            def augment(match: dict[str, object]) -> dict[str, object]:
+                return {**_dataset_record_payload(by_name[str(match["name"])]), **match}
+
+            return search_command(
+                ROOT, rest, prog="tsf dataset search", kind="dataset", augment=augment
+            )
         if rest:
             print("tsf dataset audit takes no arguments", file=sys.stderr)
             return 2

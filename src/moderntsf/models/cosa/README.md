@@ -14,17 +14,6 @@ license: "CC-BY-NC-4.0"
 COSA corrects a frozen forecast directly in output space using recently revealed context statistics; it is an adaptation method rather than a standalone backbone.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-COSA is a clean-room output-space correction method implementing a context-conditioned linear residual and bounded scalar gate around a frozen base forecast.
-
-## Core architecture
-
-COSA is a clean-room output-space correction method implementing a context-conditioned linear residual and bounded scalar gate around a frozen base forecast.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/COSA.toml`](../../../../configs/models/COSA.toml).
 
 ## Differences

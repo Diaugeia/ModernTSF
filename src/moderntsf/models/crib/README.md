@@ -16,17 +16,6 @@ entries use NaNs through the common four-input interface. Model-specific callers
 that already hold an explicit observation mask may use `forecast_masked`.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-CRIB forecasts directly from partially observed multivariate series.
-
-## Core architecture
-
-It embeds non-overlapping value/missingness patches with temporal convolutions, applies unified-variate attention across every channel-patch token, learns a Gaussian information-bottleneck latent, and predicts with an MLP. Random-mask and Gaussian-noise views provide the consistency objective.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -42,7 +31,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/CRIB.toml`](../../../../configs/models/CRIB.toml).
 
 ## Differences

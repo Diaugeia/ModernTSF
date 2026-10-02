@@ -14,17 +14,6 @@ license: "NOASSERTION"
 OLinear is a linear-based multivariate time series forecasting model that operates in an orthogonally transformed domain rather than directly in the time domain. It introduces OrthoTrans, a data-adaptive transformation built on an orthogonal matrix that diagonalizes the series' temporal Pearson correlation matrix via eigenvalue decomposition, yielding a decorrelated feature space for linear encoding. Complementing this, OLinear uses NormLin, a customized linear layer with a normalized weight matrix to capture multivariate dependencies, which empirically outperforms multi-head self-attention while requiring roughly half the FLOPs.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-OLinear is a linear-based multivariate time series forecasting model that operates in an orthogonally transformed domain rather than directly in the time domain.
-
-## Core architecture
-
-It introduces OrthoTrans, a data-adaptive transformation built on an orthogonal matrix that diagonalizes the series' temporal Pearson correlation matrix via eigenvalue decomposition, yielding a decorrelated feature space for linear encoding. Complementing this, OLinear uses NormLin, a customized linear layer with a normalized weight matrix to capture multivariate dependencies, which empirically outperforms multi-head self-attention while requiring roughly half the FLOPs.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/OLinear.toml`](../../../../configs/models/OLinear.toml).
 
 ## Differences

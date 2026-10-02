@@ -14,17 +14,6 @@ license: "NOASSERTION"
 SEMixer is a fully MLP-based multiscale forecaster that replaces learned attention with a Random Attention Mechanism (RAM): a randomly sampled patch-interaction mask trained with Bernoulli dropconnect and collapsed to a closed-form dropout-ensemble average at inference. A Multiscale Progressive Mixing Chain (MPMC) patchifies the normalized history at several scales and mixes them pairwise, finest-to-coarsest, so each scale's semantics are aligned with its neighbor before entering the next stage.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-SEMixer is a fully MLP-based multiscale forecaster that replaces learned attention with a Random Attention Mechanism (RAM): a randomly sampled patch-interaction mask trained with Bernoulli dropconnect and collapsed to a closed-form dropout-ensemble average at inference.
-
-## Core architecture
-
-A Multiscale Progressive Mixing Chain (MPMC) patchifies the normalized history at several scales and mixes them pairwise, finest-to-coarsest, so each scale's semantics are aligned with its neighbor before entering the next stage.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 336, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/SEMixer.toml`](../../../../configs/models/SEMixer.toml).
 
 ## Differences

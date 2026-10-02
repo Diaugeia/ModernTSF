@@ -171,14 +171,6 @@ year: {year}
 # {name}
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-SCAFFOLD: map the paper method to the local implementation.
-
-## Core architecture
-
-SCAFFOLD: list defining operations in execution order.
-
 ## Input and output
 
 Document the four-input forecasting interface and exact output semantics.

@@ -18,17 +18,6 @@ improving representation quality. It is originally a **time-series imputation**
 method (masked view vs complete view).
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Glocal-IB is a plug-in regularizer that aligns the latent embeddings of two views of a series through a global-local Information Bottleneck: a projector on one branch is pulled toward a stop-gradient embedding of the other branch, improving representation quality.
-
-## Core architecture
-
-It is originally a **time-series imputation** method (masked view vs complete view).
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -44,7 +33,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/GlocalIB.toml`](../../../../configs/models/GlocalIB.toml).
 
 ## Differences

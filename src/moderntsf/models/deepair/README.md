@@ -14,17 +14,6 @@ license: "NOASSERTION"
 DeepAir transforms sparse neighboring station readings into consistent target-relative regional features, then learns individual and holistic effects of heterogeneous air-quality factors. This implementation was written from the KDD paper and does not retain the former unlicensed CauAir derivative.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-DeepAir converts sparse neighboring readings into a consistent target-relative spatial representation before fusing heterogeneous factors.
-
-## Core architecture
-
-This local implementation retains spatial partition/aggregation/interpolation, five residual HW/WF/SP/MP/HI FusionNets, and the equation (1) horizon-wise weighted sigmoid merge.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DeepAir.toml`](../../../../configs/models/DeepAir.toml).
 
 ## Differences

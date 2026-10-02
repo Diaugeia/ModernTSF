@@ -14,17 +14,6 @@ license: "MIT"
 AirPhyNet embeds diffusion and directed wind advection in a graph differential equation, using a GRU posterior for the initial latent state and a shared future decoder. This implementation was written from the ICLR paper equations, not from the former CauAir-derived file.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-AirPhyNet models pollutant diffusion and directed advection as a graph differential equation.
-
-## Core architecture
-
-This clean-room implementation maps equations (9)-(12) to a GRU posterior, reparameterized initial state, gated diffusion-advection vector field, Euler/RK4 trajectory, and shared decoder.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/AirPhyNet.toml`](../../../../configs/models/AirPhyNet.toml).
 
 ## Differences

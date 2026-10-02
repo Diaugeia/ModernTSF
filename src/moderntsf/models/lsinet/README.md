@@ -14,17 +14,6 @@ license: "NOASSERTION"
 LSINet is a lightweight, fully MLP-based forecaster that replaces self-attention with a Multihead Sparse Interaction Mechanism (MSIM): a per-head 0/1 interaction matrix over time patches, learned from a position-only memory table (not from the input) via a sparsity-induced Bernoulli/Gumbel-softmax relaxation, and reused unchanged across every sample and channel (Shared Interaction Learning, SIL).
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-LSINet is a lightweight, fully MLP-based forecaster that replaces self-attention with a Multihead Sparse Interaction Mechanism (MSIM): a per-head 0/1 interaction matrix over time patches, learned from a position-only memory table (not from the input) via a sparsity-induced Bernoulli/Gumbel-softmax relaxation, and reused unchanged across every sample and channel (Shared Interaction Learning, SIL).
-
-## Core architecture
-
-LSINet is a lightweight, fully MLP-based forecaster that replaces self-attention with a Multihead Sparse Interaction Mechanism (MSIM): a per-head 0/1 interaction matrix over time patches, learned from a position-only memory table (not from the input) via a sparsity-induced Bernoulli/Gumbel-softmax relaxation, and reused unchanged across every sample and channel (Shared Interaction Learning, SIL).
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/LSINet.toml`](../../../../configs/models/LSINet.toml).
 
 ## Differences

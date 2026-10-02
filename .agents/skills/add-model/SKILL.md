@@ -26,10 +26,12 @@ verified. Models and methods are peers; do not create family directories.
    ```
 
    Pass `--task-mode` explicitly when it is not ordinary `time_series`.
-2. Before implementing any block, run `uv run tsf component match <terms> --json`
-   per operation and inspect candidates with `tsf component show`. Retrieval is a
-   shortlist: verify shapes, axes, normalization, masking, residual order,
-   initialization, state, and outputs before reusing.
+2. Before implementing any block, run `uv run tsf component search <terms>` per
+   operation (L0 lines), open a candidate with `tsf component show <name>` (L1:
+   interface and constraints), and read `--depth 2` or the source (`--depth 3`
+   lists paths) only to settle a doubt. Retrieval is a shortlist: verify shapes,
+   axes, normalization, masking, residual order, initialization, state, and outputs
+   before reusing.
 3. Implement with `implement-model`; replace every scaffold placeholder and never
    import another named model package.
 4. Keep `spec.py` to factory, strict schema, config path, capabilities, declared

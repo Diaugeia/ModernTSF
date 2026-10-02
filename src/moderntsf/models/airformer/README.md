@@ -14,17 +14,6 @@ license: "NOASSERTION"
 AirFormer factorizes nationwide air-quality learning into deterministic causal-temporal and dartboard-spatial attention, followed by a top-down latent hierarchy for uncertainty. This implementation is independently derived from the AAAI paper.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-AirFormer factorizes nationwide air-quality learning into deterministic temporal/spatial stages and a stochastic uncertainty stage.
-
-## Core architecture
-
-This local implementation includes growing-window CT-MSA, explicit query-relative dartboard DS-MSA, residual blocks, and a reverse-level Gaussian latent hierarchy.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/AirFormer.toml`](../../../../configs/models/AirFormer.toml).
 
 ## Differences

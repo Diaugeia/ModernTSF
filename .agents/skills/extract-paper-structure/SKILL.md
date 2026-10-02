@@ -12,7 +12,7 @@ audit the model without guessing a defining operation.
 
 - The primary paper and supplement.
 - The official repository, when one exists: pin a revision and record its license.
-- The current component catalog (`uv run tsf component list`).
+- The current component catalog (`uv run tsf component list`, one L0 line each).
 
 ## Steps
 
@@ -33,8 +33,8 @@ audit the model without guessing a defining operation.
    `model-local` (the reason it is paper-specific). Check candidates with:
 
    ```bash
-   uv run tsf component match <operation-and-contract-terms> --json
-   uv run tsf component show <candidate>
+   uv run tsf component search <operation-and-contract-terms>   # L0 lines
+   uv run tsf component show <candidate>                        # L1; --depth 2 only if needed
    ```
 
    Compare mathematics, axes, normalization, masking, residual order,

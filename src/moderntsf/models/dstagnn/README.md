@@ -14,17 +14,6 @@ license: "NOASSERTION"
 The DSTAGNN paper combines a data-derived pattern-aware graph, spatial-temporal attention with residual attention, Chebyshev graph convolution, and multi-scale gated temporal convolution. This clean-room implementation couples dense temporal and spatial multi-head attention to attention-modulated Chebyshev filtering and three gated temporal receptive fields.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-The DSTAGNN paper combines a data-derived pattern-aware graph, spatial-temporal attention with residual attention, Chebyshev graph convolution, and multi-scale gated temporal convolution.
-
-## Core architecture
-
-This clean-room implementation couples dense temporal and spatial multi-head attention to attention-modulated Chebyshev filtering and three gated temporal receptive fields.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DSTAGNN.toml`](../../../../configs/models/DSTAGNN.toml).
 
 ## Differences

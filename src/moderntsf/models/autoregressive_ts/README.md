@@ -11,17 +11,6 @@ year: 1970
 AutoRegressiveTS is a classical autoregressive lag model for univariate and multivariate time-series forecasting. It directly maps the historical input window to the future prediction window using a learned linear projection over lagged observations, and is wrapped as a PyTorch `nn.Module` so that it integrates with the standard ModernTSF training loop and can run on CUDA/MPS devices.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-AutoRegressiveTS is a classical autoregressive lag model for univariate and multivariate time-series forecasting.
-
-## Core architecture
-
-It directly maps the historical input window to the future prediction window using a learned linear projection over lagged observations, and is wrapped as a PyTorch `nn.Module` so that it integrates with the standard ModernTSF training loop and can run on CUDA/MPS devices.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -37,7 +26,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/AutoRegressiveTS.toml`](../../../../configs/models/AutoRegressiveTS.toml).
 
 ## Differences

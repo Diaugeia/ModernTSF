@@ -83,6 +83,8 @@ paths, so upgrading ModernTSF upgrades their defaults.
 ```bash
 uv run tsf model list --details
 uv run tsf dataset list
+uv run tsf catalog search "reversible normalization"   # one line per match
+uv run tsf component show revin --depth 1             # 0 line, 1 interface, 2 card, 3 paths
 uv run tsf realtime list
 uv run tsf agent task list
 ```

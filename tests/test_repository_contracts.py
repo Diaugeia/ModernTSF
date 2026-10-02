@@ -184,7 +184,7 @@ class RepositoryContractTests(unittest.TestCase):
     def test_cli_routes_lightweight_catalog_descriptions(self) -> None:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["component", "show", "quantile_head"]), 0)
+            self.assertEqual(cli_main(["component", "show", "quantile_head", "--json"]), 0)
         payload = json.loads(output.getvalue())
         self.assertEqual(payload["module"], "moderntsf.models._components.quantile_head")
         self.assertIn("quantile_dlinear", payload["consumers"])
@@ -240,7 +240,7 @@ class RepositoryContractTests(unittest.TestCase):
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["model", "show", "Linear"]), 0)
+            self.assertEqual(cli_main(["model", "show", "Linear", "--json"]), 0)
         shown = json.loads(output.getvalue())
         self.assertEqual(shown["verification"]["status"], "passed")
         self.assertEqual(shown["blockers"], [])
@@ -341,11 +341,57 @@ class RepositoryContractTests(unittest.TestCase):
             if not card.parent.name.startswith("_")
         )
         self.assertEqual(len(cards), 198)
-        self.assertEqual(REQUIRED_SECTIONS[0], "Method overview")
+        self.assertEqual(REQUIRED_SECTIONS[0], "Input and output")
         self.assertEqual(
             [problem for card in cards for problem in audit_model_card_body(card)],
             [],
         )
+
+    def test_progressive_disclosure_depths_and_catalog_search(self) -> None:
+        def run(*argv: str) -> str:
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(cli_main(list(argv)), 0)
+            return output.getvalue()
+
+        for resource, name in (
+            ("component", "revin"),
+            ("model", "Linear"),
+            ("dataset", "etth1"),
+        ):
+            l0 = run(resource, "show", name, "--depth", "0").rstrip("\n")
+            self.assertEqual(len(l0.splitlines()), 1)
+            self.assertEqual(len(l0.split("\t")), 4)
+            l1 = run(resource, "show", name, "--depth", "1")
+            l2 = run(resource, "show", name, "--depth", "2")
+            self.assertTrue(l1.startswith("---"))
+            self.assertLess(len(l1), len(l2))
+            paths = run(resource, "show", name, "--depth", "3")
+            self.assertIn("README.md", paths)
+            payload = json.loads(run(resource, "show", name, "--depth", "2", "--json"))
+            self.assertEqual(payload["depth"], 2)
+            self.assertIn("text", payload)
+        interface = run("component", "show", "revin", "--depth", "1")
+        self.assertIn("## Interface", interface)
+        self.assertNotIn("## Origin and granularity", interface)
+        hits = run("catalog", "search", "reversible", "instance", "normalization", "--limit", "3")
+        first = hits.splitlines()[0].split("\t")
+        self.assertEqual((first[0], first[1]), ("revin", "component"))
+        only = json.loads(
+            run("catalog", "search", "electricity", "--kind", "dataset", "--json")
+        )
+        self.assertTrue(only and all(item["kind"] == "dataset" for item in only))
+
+    def test_model_cards_do_not_repeat_the_summary(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        for card in (root / "src/moderntsf/models").glob("*/README.md"):
+            if card.parent.name.startswith("_"):
+                continue
+            text = card.read_text(encoding="utf-8")
+            summary = next(
+                line for line in text.splitlines() if line.startswith("summary:")
+            )
+            self.assertLessEqual(text.count(json.loads(summary[len("summary: ") :])), 2, card)
 
     def test_every_cataloged_component_and_dataset_has_a_current_card(self) -> None:
         root = Path(__file__).resolve().parents[1]

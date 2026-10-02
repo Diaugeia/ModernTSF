@@ -65,6 +65,8 @@ def split_sections(text: str) -> tuple[tuple[str, str], ...]:
     for line in text.splitlines():
         if line.lstrip().startswith("```"):
             fenced = not fenced
+        if not fenced and re.fullmatch(r"<!-- [\w:-]+ -->", line.strip()):
+            continue  # generated-block markers are not content
         if not fenced and line.startswith("## "):
             sections.append((line[3:].strip(), []))
         elif sections:
@@ -164,7 +166,8 @@ def render_text(
     parts = [front_matter_text(card)]
     if facts:
         parts.append(
-            "\n".join(f"{key}: {_format_fact(value)}" for key, value in facts.items())
+            "Runtime facts:\n"
+            + "\n".join(f"- {key}: {_format_fact(value)}" for key, value in facts.items())
         )
     for title, body in l1_sections(card):
         parts.append(f"## {title}\n\n{body}")

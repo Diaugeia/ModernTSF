@@ -30,7 +30,9 @@ the current Agent; a rendered task, CLI call, or second Agent is not required.
    `run-experiment`, changing one factor per iteration unless an interaction is
    the question.
 5. When authorized to build a candidate method, compose it from cataloged
-   components (`uv run tsf component match <terms> --json`) in a new flat model
+   components (search L0 with `uv run tsf catalog search <terms> --kind component`,
+   open L1 with `tsf component show <name>`, escalate to `--depth 2` or source only
+   when a decision needs it) in a new flat model
    through `add-model`, so it is verified and compared against the whole catalog
    under the same protocol.
 6. Route failures to `diagnose-experiment` and compatible results to

@@ -14,17 +14,6 @@ license: "Apache-2.0"
 STWave is a spatiotemporal forecasting model for traffic flow prediction that disentangles non-stationary traffic sequences into long-term (low-frequency) trend components and short-term (high-frequency) event components using discrete wavelet transform. A dual-channel encoder processes each frequency band separately with an efficient spectral graph attention mechanism that incorporates wavelet-based graph positional encoding and a query sampling strategy to reduce the quadratic complexity of full graph attention while preserving spatial expressiveness.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-STWave is a spatiotemporal forecasting model for traffic flow prediction that disentangles non-stationary traffic sequences into long-term (low-frequency) trend components and short-term (high-frequency) event components using discrete wavelet transform.
-
-## Core architecture
-
-A dual-channel encoder processes each frequency band separately with an efficient spectral graph attention mechanism that incorporates wavelet-based graph positional encoding and a query sampling strategy to reduce the quadratic complexity of full graph attention while preserving spatial expressiveness.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/STWave.toml`](../../../../configs/models/STWave.toml).
 
 ## Differences

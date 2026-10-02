@@ -11,17 +11,6 @@ year: 1992
 BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation.
-
-## Core architecture
-
-BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -37,7 +26,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/BayesianRidgeTS.toml`](../../../../configs/models/BayesianRidgeTS.toml).
 
 ## Differences

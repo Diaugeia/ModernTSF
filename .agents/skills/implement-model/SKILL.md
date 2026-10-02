@@ -41,7 +41,7 @@ If the requested outcome is a released pretrained foundation model, stop and use
    bounded `reference_comparison`; otherwise record it as `not-applicable`.
 
 ```bash
-uv run tsf model show <Name>
+uv run tsf model show <Name>   # L1; --depth 2 for the full card, --depth 3 for paths to open
 uv run tsf verify model <Name>   # existing model; new entries verify during model add
 uv run tsf model audit <Name>
 uv run tsf repo doctor --strict --models <Name>

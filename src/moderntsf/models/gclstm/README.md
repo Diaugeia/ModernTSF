@@ -14,17 +14,6 @@ license: "NOASSERTION"
 GCLSTM is a node-level air-quality forecaster that combines spectral graph filtering with LSTM temporal state. This clean-room implementation computes Chebyshev responses jointly for values, covariates, and recurrent state inside all four LSTM gates, then applies a node-wise direct multi-horizon readout.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-GCLSTM is a node-level air-quality forecaster that combines spectral graph filtering with LSTM temporal state.
-
-## Core architecture
-
-This clean-room implementation computes Chebyshev responses jointly for values, covariates, and recurrent state inside all four LSTM gates, then applies a node-wise direct multi-horizon readout.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, nodes]` point forecast. Timestamp or 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/GCLSTM.toml`](../../../../configs/models/GCLSTM.toml).
 
 ## Differences
