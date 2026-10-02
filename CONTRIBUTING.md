@@ -43,11 +43,13 @@ environment, official-source license, …); issues without it may be closed.
 
 ## Proposing a method (no code required)
 
-Open a **Submit a new model** issue with the paper link. When a maintainer adds
-the `intake-approved` label, the `paper-intake` workflow has a coding agent
-implement the paper as a catalog model, re-runs the verification battery
-independently, and opens a pull request for review. The same workflow scans the
-literature weekly.
+Open a **Submit a new model** issue with the paper link. The `paper-intake`
+workflow has an agent triage it and post the decision on the issue. An accepted
+paper is implemented by a coding agent as a catalog model; the workflow then
+re-runs verification, audits, and tests independently, a second read-only agent
+reviews the card against the code and paper, and the pull request is merged
+when both pass (repository variable `INTAKE_AUTOMERGE=false` turns merging back
+over to maintainers). The same workflow scans the literature weekly.
 
 ## Submitting results and real-time forecasts
 

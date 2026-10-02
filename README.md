@@ -125,11 +125,12 @@ Each track is also a frozen static dataset (`rt_<track>`, `tsf dataset list`). S
 
 ## 🤝 Contributing
 
-There are three ways to take part, all reviewed through pull requests:
+There are three ways to take part, all through pull requests:
 
-1. **Propose a method** — open a *Submit a new model* issue. Once a maintainer
-   approves it, the `paper-intake` workflow has a coding agent implement and
-   verify it and opens a pull request.
+1. **Propose a method** — open a *Submit a new model* issue. An agent triages it
+   and posts its decision; accepted requests are implemented, independently
+   verified, reviewed by a second agent pass, and merged by the `paper-intake`
+   workflow.
 2. **Submit results** — add a `submission.json` under `apps/web/submissions/`
    (see [SUBMITTING.md](apps/web/SUBMITTING.md)); CI validates it against the
    contract before it can reach the leaderboard.
