@@ -47,7 +47,8 @@ def show_card(
             payload = {**legacy, **payload}
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
-        print(render_text(card, parsed.depth, facts=facts, paths=paths), end="")
+        text = render_text(card, parsed.depth, facts=facts, paths=paths)
+        print(text, end="" if text.endswith("\n") else "\n")
     return 0
 
 
