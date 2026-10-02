@@ -372,4 +372,5 @@ MODEL_CATALOG = ModelCatalog({
     "CANet": "tsflab.models.canet.spec",
     "CoRe": "tsflab.models.core.spec",
     "FreDF": "tsflab.models.fredf.spec",
+    "GPHT": "tsflab.models.gpht.spec",
 })

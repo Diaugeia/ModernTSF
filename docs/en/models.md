@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -75,6 +75,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `GCLSTM` | [`configs/models/GCLSTM.toml`](../../configs/models/GCLSTM.toml) | covariate, spatiotemporal | [README](../../src/tsflab/models/gclstm/README.md) |
 | `GlocalIB` | [`configs/models/GlocalIB.toml`](../../configs/models/GlocalIB.toml) | time-series | [README](../../src/tsflab/models/glocalib/README.md) |
 | `GOTSF` | [`configs/models/GOTSF.toml`](../../configs/models/GOTSF.toml) | time-series | [README](../../src/tsflab/models/gotsf/README.md) |
+| `GPHT` | [`configs/models/GPHT.toml`](../../configs/models/GPHT.toml) | time-series | [README](../../src/tsflab/models/gpht/README.md) |
 | `GradientBoostingTS` | [`configs/models/GradientBoostingTS.toml`](../../configs/models/GradientBoostingTS.toml) | time-series | [README](../../src/tsflab/models/gradient_boosting_ts/README.md) |
 | `GRUForecasterTS` | [`configs/models/GRUForecasterTS.toml`](../../configs/models/GRUForecasterTS.toml) | time-series | [README](../../src/tsflab/models/gru_forecaster_ts/README.md) |
 | `GTR` | [`configs/models/GTR.toml`](../../configs/models/GTR.toml) | time-series | [README](../../src/tsflab/models/gtr/README.md) |

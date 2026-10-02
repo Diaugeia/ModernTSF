@@ -455,6 +455,13 @@
       "subject_sha256": "a07bba82da35f4b3b62cf195be26ca9250ce6c740f03134213035489221e9030",
       "verified_at": "2026-10-02T18:35:57.615490Z"
     },
+    "GPHT": {
+      "evidence": "verification/evidence/GPHT.json",
+      "sha256": "18c22f0d682d867cff8c1b515cbcc7b5a87d2d5c2f0a45e71ef033c8e987a49a",
+      "status": "passed",
+      "subject_sha256": "009a8b2ec594632ececd26ae42fedb37b14ad7fadbbf2ff8452b773649123610",
+      "verified_at": "2026-10-02T18:56:44.053475Z"
+    },
     "GRUForecasterTS": {
       "evidence": "verification/evidence/GRUForecasterTS.json",
       "sha256": "9a022e291831e0e7b575899184b2bfa81d224267d3d66cf485179e3e038e9256",

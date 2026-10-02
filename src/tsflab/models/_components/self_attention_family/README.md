@@ -134,7 +134,7 @@ import tsflab.models._components.self_attention_family
 
 `attention`, `full`, `probabilistic`
 
-## Current model consumers (3)
+## Current model consumers (4)
 
-`dualformer`, `informer`, `transformer`
+`dualformer`, `gpht`, `informer`, `transformer`
 <!-- component-card:generated:end -->
