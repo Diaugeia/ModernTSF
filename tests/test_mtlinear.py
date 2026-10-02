@@ -113,6 +113,23 @@ class MTLinearTests(unittest.TestCase):
         expected = ((pred - target).pow(2).mean((0, 1)) / e_v).sum()
         torch.testing.assert_close(only_v.penalized_loss(pred, target), expected)
 
+    def test_training_setup_uses_full_series_when_dataset_has_one(self) -> None:
+        series = correlated_series(60)
+        seen = []
+
+        class Loader:
+            dataset = type("D", (), {"data": series.numpy()})()
+
+            def __iter__(self):
+                raise AssertionError("must not iterate when the dataset exposes the series")
+
+        model = Model(8, 2, 5, max_clusters=5)
+        original = model.fit_clusters
+        model.fit_clusters = lambda x: (seen.append(x), original(x))[1]
+        training_setup(model, Loader(), pred_len=2, features="M")
+        self.assertEqual(tuple(seen[0].shape), (60, 5))
+        self.assertTrue(bool(model.clusters_fitted))
+
     def test_training_hooks_fit_clusters_and_return_forecast(self) -> None:
         series = correlated_series(120)
         windows = [(series[i:i + 8][None], series[i + 8:i + 10][None]) for i in range(100)]

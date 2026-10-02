@@ -71,6 +71,12 @@ or head choice.
   `2 * d_model` and does not read `d_ff`. This implementation keeps `d_ff` as
   an accepted parameter for preset/CLI parity but it has no effect, matching
   the official dead code.
+- Depth schedule of the differential-attention `lambda_init`: the paper's
+  Differential-Transformer schedule is `0.8 - 0.6 * exp(-0.3 * (l - 1))` with
+  1-based layer index `l`; the pinned official `model/WDformer.py` instead uses
+  `0.7 - 0.5 * exp(-0.3 * l)` with 0-based `l`. This implementation follows the
+  official code (checked against the pinned revision), so the paper and code
+  differ and TSFLab keeps the code's values.
 - Haar wavelet decomposition of a sequence whose length is not a multiple of
   `2 ** wave_size` requires one extra padded sample at some level; the
   learned projection to pseudo-subband coefficients is sized to the exact
@@ -120,6 +126,12 @@ or head choice.
   `2 * d_model` and does not read `d_ff`. This implementation keeps `d_ff` as
   an accepted parameter for preset/CLI parity but it has no effect, matching
   the official dead code.
+- Depth schedule of the differential-attention `lambda_init`: the paper's
+  Differential-Transformer schedule is `0.8 - 0.6 * exp(-0.3 * (l - 1))` with
+  1-based layer index `l`; the pinned official `model/WDformer.py` instead uses
+  `0.7 - 0.5 * exp(-0.3 * l)` with 0-based `l`. This implementation follows the
+  official code (checked against the pinned revision), so the paper and code
+  differ and TSFLab keeps the code's values.
 - Haar wavelet decomposition of a sequence whose length is not a multiple of
   `2 ** wave_size` requires one extra padded sample at some level; the
   learned projection to pseudo-subband coefficients is sized to the exact

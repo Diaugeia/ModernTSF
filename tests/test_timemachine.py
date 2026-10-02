@@ -28,6 +28,15 @@ class TimeMachineTests(unittest.TestCase):
         self.assertEqual(widths(independent), [1, 4, 8, 1])
         self.assertEqual(widths(mixing), [4, 4, 8, 8])
 
+    def test_mambas_use_reference_dt_initialisation(self) -> None:
+        model = make(ch_ind=False)
+        for name in ("mamba1", "mamba2", "mamba3", "mamba4"):
+            block = getattr(model, name)
+            step = torch.nn.functional.softplus(block.dt_proj.bias)
+            self.assertGreaterEqual(float(step.min()), 1e-4 - 1e-7)
+            self.assertLessEqual(float(step.max()), 0.1 + 1e-6)
+            self.assertLessEqual(float(block.dt_proj.weight.abs().max()), block.dt_rank**-0.5 + 1e-6)
+
     def test_forward_matches_stage_by_stage_equations(self) -> None:
         """y = P2( (P1(x(2)-branch) + x(1)) || (mamba3 + mamba4 branches) ) for both layouts."""
         torch.manual_seed(0)

@@ -16,6 +16,7 @@ class ModelParameterConfig(BaseModel):
     state_num: int = Field(default=8, ge=1)
     temperature: float = Field(default=1.0, gt=0)
     kernel_size: int = Field(default=25, ge=1)
+    lead_chunk_size: int = Field(default=32, ge=1)
 
 
 def build_model(cfg, params):
@@ -27,6 +28,7 @@ def build_model(cfg, params):
         state_num=params.get("state_num", 8),
         temperature=params.get("temperature", 1.0),
         kernel_size=params.get("kernel_size", 25),
+        lead_chunk_size=params.get("lead_chunk_size", 32),
     )
 
 

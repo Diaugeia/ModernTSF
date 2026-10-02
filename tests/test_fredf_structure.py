@@ -24,7 +24,16 @@ class PaperStructureTests(unittest.TestCase):
         self.assertEqual(block.bins, 9)  # K = (T + S) / 2 + 1
         self.assertEqual(tuple(block.transfer.shape), (9, 8, 8, 2))
         self.assertEqual(tuple(block.frequency_weight.shape), (9,))
-        self.assertAlmostEqual(block.frequency_weight.sum().item(), 1.0, places=5)
+        self.assertAlmostEqual(block.fusion_weights().sum().item(), 1.0, places=5)
+        # parameters stay unconstrained; the simplex is enforced in forward
+        with torch.no_grad():
+            block.frequency_weight.add_(5.0 * torch.randn(9))
+        weights = block.fusion_weights()
+        self.assertAlmostEqual(weights.sum().item(), 1.0, places=5)
+        self.assertTrue((weights > 0).all())
+        values = torch.randn(1, 16, 8)
+        block(values).sum().backward()
+        self.assertIsNotNone(block.frequency_weight.grad)
 
     def test_fused_block_equals_algorithm_one_masked_per_frequency_form(self):
         torch.manual_seed(0)
@@ -44,7 +53,7 @@ class PaperStructureTests(unittest.TestCase):
         values = torch.fft.irfft(spectrum, n=16, dim=1, norm="ortho")
         expected = torch.zeros_like(spectrum)
         expected[0, k] = (
-            spectrum[0, k] @ torch.view_as_complex(block.transfer)[k].T * block.frequency_weight[k]
+            spectrum[0, k] @ torch.view_as_complex(block.transfer)[k].T * block.fusion_weights()[k]
         )
         torch.testing.assert_close(
             torch.fft.rfft(block(values), dim=1, norm="ortho"), expected, rtol=1e-4, atol=1e-5
@@ -57,7 +66,9 @@ class PaperStructureTests(unittest.TestCase):
         other = model(x, marks(), x_mark_dec=marks(2, 4, 9))
         self.assertFalse(torch.allclose(base, other))
         torch.testing.assert_close(model(x), model(x))
-        self.assertEqual(len(factory(2).blocks), 2)
+        shared = factory(2)
+        self.assertEqual(len(shared.blocks), 1)  # official code shares one block
+        self.assertEqual(shared.e_layers, 2)
 
     def test_forecast_is_equivariant_to_input_offset_and_scale(self):
         model = factory().eval()

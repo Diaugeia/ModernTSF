@@ -40,14 +40,30 @@ def build_model(cfg, params):
     )
 
 
+def _full_training_series(train_loader, enc_in: int):
+    """Return the full ``(T, C)`` training series behind the loader, or ``None``."""
+    data = getattr(getattr(train_loader, "dataset", None), "data", None)
+    if data is None:
+        return None
+    series = torch.as_tensor(data).float()
+    if series.ndim != 2 or series.shape[1] != enc_in or series.shape[0] < 2:
+        return None
+    return series
+
+
 def training_setup(model, train_loader, *, pred_len, features):
     """Fit the variate grouping on the training split (MTLinear Sec. 4.2).
 
-    The newest step of every stride-1 window visits each training timestamp once, so
-    their stack is the training series (minus the first lookback).
+    The official code clusters on the whole scaled training series, so the loader's
+    dataset series is used in full. Loaders without a series-backed dataset fall back
+    to the newest step of every stride-1 window, which covers the training series
+    minus the first lookback.
     """
-    steps = [batch_x[:, -1, :].float() for batch_x, *_ in train_loader]
-    model.fit_clusters(torch.cat(steps).to(model.group_of.device))
+    series = _full_training_series(train_loader, model.enc_in)
+    if series is None:
+        steps = [batch_x[:, -1, :].float() for batch_x, *_ in train_loader]
+        series = torch.cat(steps)
+    model.fit_clusters(series.to(model.group_of.device))
 
 
 def training_objective(model, batch: TrainingBatch, criterion):

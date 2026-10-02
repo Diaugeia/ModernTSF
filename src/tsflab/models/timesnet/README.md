@@ -50,6 +50,8 @@ amplitude aggregation, and residual TimesBlocks map the paper's forecast path.
 Inputs are `[B, seq_len, enc_in]` with active six-column marks; outputs are
 `[B, pred_len, c_out]`. Non-forecast tasks, official recipes, checkpoint reference comparison,
 and published-metric reference comparison are omitted.
+Detected periods are clamped to at least 1 (a degenerate all-zero spectrum can
+select the DC bin and give period 0); the official code divides unguarded.
 
 ## Shared components
 
@@ -84,6 +86,8 @@ amplitude aggregation, and residual TimesBlocks map the paper's forecast path.
 Inputs are `[B, seq_len, enc_in]` with active six-column marks; outputs are
 `[B, pred_len, c_out]`. Non-forecast tasks, official recipes, checkpoint reference comparison,
 and published-metric reference comparison are omitted.
+Detected periods are clamped to at least 1 (a degenerate all-zero spectrum can
+select the DC bin and give period 0); the official code divides unguarded.
 
 ## Citation
 

@@ -49,6 +49,10 @@ one-shot decoder using verified shared attention and Transformer primitives.
 TSFLab uses its common decoder-input contract and does not claim the paper's
 reported benchmark values. The external repository is reference-only; no
 source file was copied or adapted.
+`ProbAttention` returns its context time-first (`[B, L, heads, d_head]`) as in
+the original Informer implementation; the pinned Time-Series-Library revision
+keeps heads-first and views it without a transpose, which TSFLab does not
+reproduce. Batch or head count 1 is supported (explicit `squeeze(-2)`).
 
 ## Shared components
 
@@ -82,6 +86,10 @@ one-shot decoder using verified shared attention and Transformer primitives.
 TSFLab uses its common decoder-input contract and does not claim the paper's
 reported benchmark values. The external repository is reference-only; no
 source file was copied or adapted.
+`ProbAttention` returns its context time-first (`[B, L, heads, d_head]`) as in
+the original Informer implementation; the pinned Time-Series-Library revision
+keeps heads-first and views it without a transpose, which TSFLab does not
+reproduce. Batch or head count 1 is supported (explicit `squeeze(-2)`).
 
 ## Citation
 

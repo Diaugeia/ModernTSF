@@ -47,15 +47,19 @@ class Model(nn.Module):
         state_num: int = 8,
         temperature: float = 1.0,
         kernel_size: int = 25,
+        lead_chunk_size: int = 32,
     ) -> None:
         super().__init__()
         if min(pred_len, enc_in, leader_num, state_num) < 1 or seq_len < 4:
             raise ValueError("seq_len must be at least 4 and other sizes positive")
+        if lead_chunk_size < 1:
+            raise ValueError("lead_chunk_size must be positive")
         if temperature <= 0:
             raise ValueError("temperature must be positive")
         self.seq_len, self.pred_len, self.enc_in = seq_len, pred_len, enc_in
         self.leaders = min(leader_num, enc_in)
         self.states = state_num
+        self.lead_chunk_size = lead_chunk_size
         freq = pred_len // 2 + 1
         self.freq = freq
         self.backbone = DLinearBackbone(enc_in, seq_len, pred_len, kernel_size=kernel_size)
@@ -86,16 +90,24 @@ class Model(nn.Module):
         """
         length = normalized.shape[-1]
         spectrum = torch.fft.rfft(normalized, dim=-1)
-        corr = torch.fft.irfft(
-            spectrum.unsqueeze(2) * spectrum.conj().unsqueeze(1), n=length, dim=-1
-        ) / length
-        magnitude = corr.abs()
-        peak = (magnitude[..., 1:-1] >= magnitude[..., :-2]) & (magnitude[..., 1:-1] >= magnitude[..., 2:])
-        corr = corr[..., 1:-1] * peak
-        strength, lag = corr.abs().max(-1)  # (B, C, C)
+        strengths, lags, signeds = [], [], []
+        # chunk over the first variate axis (official code uses 32) so that the full
+        # [B, C, C, L] correlation tensor is never materialised; results are identical
+        for start in range(0, spectrum.shape[1], self.lead_chunk_size):
+            block = spectrum[:, start : start + self.lead_chunk_size]
+            corr = torch.fft.irfft(
+                block.unsqueeze(2) * spectrum.conj().unsqueeze(1), n=length, dim=-1
+            ) / length
+            magnitude = corr.abs()
+            peak = (magnitude[..., 1:-1] >= magnitude[..., :-2]) & (magnitude[..., 1:-1] >= magnitude[..., 2:])
+            corr = corr[..., 1:-1] * peak
+            strength, lag = corr.abs().max(-1)  # (B, chunk, C)
+            strengths.append(strength)
+            lags.append(lag)
+            signeds.append(corr.gather(-1, lag.unsqueeze(-1)).squeeze(-1))
+        strength, lag, signed = torch.cat(strengths, 1), torch.cat(lags, 1), torch.cat(signeds, 1)
         _, leaders = strength.topk(self.leaders, dim=-1)
-        signed = corr.gather(-1, lag.unsqueeze(-1)).squeeze(-1).gather(2, leaders)
-        return leaders, lag.gather(2, leaders) + 1, signed
+        return leaders, lag.gather(2, leaders) + 1, signed.gather(2, leaders)
 
     # -- Eq. (5)-(6): target-oriented shifts -----------------------------------------------
     @torch.no_grad()

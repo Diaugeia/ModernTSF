@@ -21,7 +21,14 @@ from tsflab.models._components.revin import RevIN
 
 def _mamba(width: int, d_state: int, d_conv: int, expand: int) -> MambaBlock:
     """Kernel-free Mamba mixer of input width ``width`` (no norm, no residual)."""
-    return MambaBlock(width, width * expand, math.ceil(width / 16), d_conv, d_state)
+    return MambaBlock(
+        width,
+        width * expand,
+        math.ceil(width / 16),
+        d_conv,
+        d_state,
+        reference_dt_init=True,
+    )
 
 
 class Model(nn.Module):

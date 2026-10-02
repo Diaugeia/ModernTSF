@@ -5,7 +5,7 @@ module: "tsflab.models._components.self_attention_family"
 summary: "Time-Series-Library-style attention cores (full softmax, ProbSparse, flow, tiled flash-style, Reformer LSH) plus the AttentionLayer that wraps any core with Q/K/V/output projections."
 category: "attention"
 input: "AttentionLayer: queries [batch, len_q, d_model], keys/values [batch, len_k, d_model]; cores: queries [batch, len_q, heads, d_head], keys/values [batch, len_k, heads, d_head]"
-output: "AttentionLayer: ([batch, len_q, d_model], attention map or None); FullAttention/FlowAttention/FlashAttention cores: ([batch, len_q, heads, d_head], map or None); ProbAttention core: ([batch, heads, len_q, d_head], map or None)"
+output: "AttentionLayer: ([batch, len_q, d_model], attention map or None); FullAttention/FlowAttention/FlashAttention cores: ([batch, len_q, heads, d_head], map or None); ProbAttention core: ([batch, len_q, heads, d_head], map or None)"
 origin: "Attention classes follow the Informer / Time-Series-Library layer API (Zhou et al., AAAI 2021 for ProbSparse; Vaswani et al., 2017 for full attention); FlowAttention, FlashAttention and ReformerLayer are named after Flowformer, tiled flash attention and Reformer LSH attention but their upstream source is not recorded in history"
 origin_models: ["informer", "transformer"]
 tags: ["attention", "full", "probabilistic", "probsparse", "causal-mask", "multi-head", "stateless", "flow", "flash", "reformer", "lsh", "informer"]
@@ -87,15 +87,14 @@ unselected queries; `FlowAttention` and `FlashAttention` always return `None`). 
 on CPU, so it is stochastic even in eval mode; `FullAttention` dropout is the
 only other randomness. All cores are stateless.
 
-Quirk to know: `ProbAttention.forward` returns the context as `[B, heads,
-len_q, d_head]` (heads before time), unlike the other cores, and
-`AttentionLayer` then applies `view(B, L, -1)` to that tensor without a transpose,
-so with `ProbAttention` the head and time axes are reinterpreted rather than
-swapped before `out_projection` (the Informer reference returns the context
-transposed to `[B, len_q, heads, d_head]`). Any consumer that mixes
-`ProbAttention` with other cores must not assume the same output layout. Its
-`_get_initial_context` also asserts `len_q == len_k` when `mask_flag=True`, and
-its sampled-score `squeeze()` is not safe for batch or head count 1.
+Layout note: `ProbAttention.forward` transposes its context back to
+`[B, len_q, heads, d_head]` like the other cores and like the original Informer
+code (zhouhaoyi/Informer2020), so `AttentionLayer`'s `view(B, L, -1)` concatenates
+heads per time step. The pinned Time-Series-Library revision keeps the un-transposed
+`[B, heads, len_q, d_head]` context (a head/time reinterpretation before
+`out_projection`); TSFLab deliberately follows the original Informer instead. The
+sampled-score squeeze is the explicit `squeeze(-2)`, so batch or head count 1 is safe.
+Its `_get_initial_context` still asserts `len_q == len_k` when `mask_flag=True`.
 
 ## Invariants and equivalence evidence
 
@@ -110,7 +109,7 @@ its sampled-score `squeeze()` is not safe for batch or head count 1.
   and the causal default, `AttentionLayer` state-dict keys and gradients, `FlowAttention`
   finiteness and gradients, `FlashAttention` equal to `FullAttention` unmasked and
   invariant to values at padded keys, and `ProbAttention` shapes (including the
-  heads-first layout), row sums, the `len_q == len_k` assertion, and seeded
+  time-first layout and batch/head count 1), row sums, the `len_q == len_k` assertion, and seeded
   reproducibility. `ReformerLayer` is only checked for its optional-dependency behavior.
 - no fixture: no pre-refactor fixture exists, and `FlowAttention`, `FlashAttention` and
   `ReformerLayer` have no recorded upstream reference.

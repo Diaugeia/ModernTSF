@@ -206,3 +206,19 @@ def test_params_schema_rejects_invalid_slot_combinations():
         spec.validate_params({"enc_in": 3, "temporal": "mixer_block"})
     with pytest.raises(ValidationError, match="not executable"):
         spec.validate_params({"enc_in": 3, "decomposition": "wavelet"})
+
+
+def test_params_schema_forbids_extras_and_explains_removed_options():
+    from pydantic import ValidationError
+
+    from tsflab.catalog.registry.models import MODEL_CATALOG
+
+    schema = MODEL_CATALOG.get("Composed").params_schema
+    with pytest.raises(ValidationError, match="Extra inputs"):
+        schema.model_validate({"enc_in": 3, "bogus": 1})
+    with pytest.raises(ValidationError, match="--register"):
+        schema.model_validate({"enc_in": 3, "head": "quantile_head"})
+    with pytest.raises(ValidationError, match="--register"):
+        schema.model_validate({"enc_in": 3, "head": "gaussian_parameter_head"})
+    with pytest.raises(ValidationError, match="not executable"):
+        schema.model_validate({"enc_in": 3, "decomposition": "wavelet"})

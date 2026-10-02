@@ -231,7 +231,7 @@ class ProbAttention(nn.Module):
         ]
         qk_sample = torch.matmul(
             queries.unsqueeze(-2), keys_sample.transpose(-2, -1)
-        ).squeeze()
+        ).squeeze(-2)
 
         measurement = qk_sample.max(-1)[0] - torch.div(qk_sample.sum(-1), length_k)
         m_top = measurement.topk(n_top, sorted=False)[1]
@@ -313,7 +313,9 @@ class ProbAttention(nn.Module):
             context, values, scores_top, index, length_q, attn_mask
         )
 
-        return context.contiguous(), attn
+        # [B, H, L_q, D] -> [B, L_q, H, D], as in the original Informer code, so
+        # AttentionLayer's view(B, L, -1) concatenates heads per time step.
+        return context.transpose(2, 1).contiguous(), attn
 
 
 class AttentionLayer(nn.Module):

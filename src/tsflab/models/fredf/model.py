@@ -34,14 +34,19 @@ class FrequencyDynamicFusionBlock(nn.Module):
         self.transfer = nn.Parameter(
             torch.empty(self.bins, d_model, d_model, 2).uniform_(-bound, bound)
         )
-        # Frequency importance W (eq. 14), initialised on the simplex.
-        self.frequency_weight = nn.Parameter(torch.softmax(torch.randn(self.bins), dim=0))
+        # Frequency importance logits (eq. 14); the fusion weights are the softmax of
+        # these, recomputed in every forward as in the official code.
+        self.frequency_weight = nn.Parameter(torch.randn(self.bins))
+
+    def fusion_weights(self) -> torch.Tensor:
+        """Fusion weights on the simplex: ``softmax(frequency_weight)``."""
+        return torch.softmax(self.frequency_weight, dim=0)
 
     def forward(self, values: torch.Tensor) -> torch.Tensor:
         spectrum = torch.fft.rfft(values, dim=1, norm="ortho")  # [B, K, D]
         transfer = torch.view_as_complex(self.transfer)  # [K, D_out, D_in]
         transferred = torch.einsum("bkd,ked->bke", spectrum, transfer)
-        fused = transferred * self.frequency_weight.to(transferred.real.dtype)[None, :, None]
+        fused = transferred * self.fusion_weights().to(transferred.real.dtype)[None, :, None]
         return torch.fft.irfft(fused, n=self.length, dim=1, norm="ortho")
 
     def decoupled_reference(self, values: torch.Tensor) -> torch.Tensor:
@@ -49,12 +54,13 @@ class FrequencyDynamicFusionBlock(nn.Module):
         spectrum = torch.fft.rfft(values, dim=1, norm="ortho")
         transfer = torch.view_as_complex(self.transfer)
         total = torch.zeros_like(values)
+        weights = self.fusion_weights()
         for m in range(self.bins):
             single = torch.zeros_like(spectrum)
             single[:, m] = spectrum[:, m] @ transfer[m].transpose(0, 1)
             total = total + torch.fft.irfft(
                 single, n=self.length, dim=1, norm="ortho"
-            ) * self.frequency_weight[m]
+            ) * weights[m]
         return total
 
 
@@ -90,9 +96,9 @@ class Model(nn.Module):
             time_feature_dim=tslib_time_feature_dimension(freq),
         )
         self.dropout = nn.Dropout(dropout)
-        self.blocks = nn.ModuleList(
-            FrequencyDynamicFusionBlock(length, d_model) for _ in range(e_layers)
-        )
+        # One block reused by every layer, as in the official code.
+        self.e_layers = e_layers
+        self.blocks = nn.ModuleList([FrequencyDynamicFusionBlock(length, d_model)])
         self.horizon_mlp = nn.Sequential(
             nn.Linear(pred_len, pred_len), nn.ReLU(), nn.Dropout(dropout)
         )
@@ -117,7 +123,8 @@ class Model(nn.Module):
         hidden = torch.cat((hidden, padding), dim=1)  # zero-pad the unknown future
         hidden = self.embedding(hidden, self._joint_marks(x_mark_enc, x_mark_dec))
         hidden = self.dropout(hidden)
-        for block in self.blocks:
+        block = self.blocks[0]
+        for _ in range(self.e_layers):
             hidden = hidden + self.dropout(block(hidden))
         future = hidden[:, -self.pred_len :, :]
         future = self.horizon_mlp(future.transpose(1, 2)).transpose(1, 2)

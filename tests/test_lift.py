@@ -15,6 +15,16 @@ def make(seq_len: int = 64, pred_len: int = 8, channels: int = 3, **kwargs) -> M
 
 
 class LIFTTests(unittest.TestCase):
+    def test_chunked_lead_estimation_matches_single_chunk(self) -> None:
+        torch.manual_seed(3)
+        x = torch.randn(2, 7, 64)
+        x = (x - x.mean(-1, keepdim=True)) / x.std(-1, unbiased=False, keepdim=True)
+        reference = make(channels=7, leader_num=3, lead_chunk_size=64).estimate_leaders(x)
+        for chunk in (1, 2, 3, 7):
+            chunked = make(channels=7, leader_num=3, lead_chunk_size=chunk).estimate_leaders(x)
+            for expected, actual in zip(reference, chunked):
+                torch.testing.assert_close(actual, expected)
+
     def test_lead_estimator_recovers_circular_lag_and_sign(self) -> None:
         """Eq. (2)-(4): variate 1 repeats variate 0 five steps later, variate 2 is -variate 0."""
         torch.manual_seed(0)

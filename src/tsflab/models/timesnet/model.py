@@ -51,7 +51,7 @@ class TimesBlock(nn.Module):
         periods, amplitudes = dominant_periods(values, self.top_k)
         transformed = []
         for period_tensor in periods:
-            period = int(period_tensor)
+            period = max(1, int(period_tensor))
             padded_length = ((length + period - 1) // period) * period
             padded = F.pad(values, (0, 0, 0, padded_length - length))
             image = padded.reshape(batch, padded_length // period, period, channels)

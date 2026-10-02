@@ -204,12 +204,12 @@ def test_prob_attention_contract():
     core = ProbAttention(mask_flag=False, factor=1, attention_dropout=0.0, output_attention=True).eval()
     assert list(core.state_dict()) == []
     out, attn = core(q, k, v, None)
-    # documented quirk: heads before time
-    assert out.shape == (2, 2, 16, 4)
+    # time-first layout like the other cores / original Informer
+    assert out.shape == (2, 16, 2, 4)
     assert attn.shape == (2, 2, 16, 16)
     assert torch.allclose(attn.sum(-1), torch.ones(2, 2, 16), atol=1e-5)
     cm, _ = ProbAttention(mask_flag=True, factor=1, attention_dropout=0.0).eval()(q, k, v, None)
-    assert cm.shape == (2, 2, 16, 4)
+    assert cm.shape == (2, 16, 2, 4)
     with pytest.raises(AssertionError):
         ProbAttention(mask_flag=True)(q, k[:, :8], v[:, :8], None)
     # sampling is stochastic only through torch RNG: reseeding reproduces output
@@ -219,6 +219,20 @@ def test_prob_attention_contract():
     b = core(q, k, v, None)[0]
     assert torch.equal(a, b)
     assert_reference("self_attention_family_prob", {"out": a})
+
+
+def test_prob_attention_batch_or_head_one_and_layout():
+    _seed()
+    for b, h in ((1, 2), (2, 1), (1, 1)):
+        q = torch.randn(b, 16, h, 4)
+        out, _ = ProbAttention(mask_flag=False, factor=1, attention_dropout=0.0)(q, q, q, None)
+        assert out.shape == (b, 16, h, 4)
+    # unselected queries get mean(V) per head, laid out time-first
+    q = torch.randn(2, 16, 2, 4)
+    v = torch.randn(2, 16, 2, 4)
+    out, _ = ProbAttention(mask_flag=False, factor=1, attention_dropout=0.0)(q, q, v, None)
+    mean_v = v.mean(1, keepdim=True).expand_as(out)
+    assert torch.isclose(out, mean_v, atol=1e-5).all(-1).any()
 
 
 def test_reformer_layer_requires_optional_dependency():
