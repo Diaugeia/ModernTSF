@@ -1,6 +1,6 @@
 ---
 name: add-dataset
-description: Register a new dataset in TSFLab, from a standard CSV, a custom loader, a traffic bundle, or the UltraTraffic PeMS store, including fetching or converting its files into loader-ready data. Use for dataset integration, data preparation, and preset configuration; not for profiling an existing dataset.
+description: "Register a new dataset in TSFLab, from a standard CSV, a custom loader, a traffic bundle, or the UltraTraffic PeMS store, including fetching or converting its files into loader-ready data. Use for dataset integration, data preparation, and preset configuration; not for profiling an existing dataset."
 ---
 
 # Add a dataset
@@ -20,7 +20,8 @@ strict parameter schema, a preset, and a card. The card and the profile from
 ## Steps
 
 1. Keep bytes in `dataset/`, loader and schema code in `src/tsflab/data/`, the
-   preset in `configs/datasets/`, and the card in `catalog/datasets/`.
+   preset in `configs/datasets/`, and the card in `catalog/datasets/`. Loader, preset,
+   and card changes need a TSFLab checkout; in a standalone project, only plan them.
 2. Get the data loader-ready (download a published preset, window a CSV, convert a
    traffic bundle or the UltraTraffic archive) per
    [references/prepare.md](references/prepare.md); never alter the source files.
@@ -39,12 +40,12 @@ strict parameter schema, a preset, and a card. The card and the profile from
 5. Keep `[dataset]` to `name`, optional display/track fields, `path`, optional `id`,
    and `[dataset.params]`. Loader options live in a strict registered schema that
    rejects misspellings.
-6. Write the card from measured or cited facts per
+6. Create the card skeleton, write it from measured or cited facts per
    [references/card.md](references/card.md), then exercise the data:
 
    ```bash
+   uv run tsf repo cards              # creates catalog/datasets/my_data/README.md with TODOs
    uv run tsf data inspect --config configs/datasets/my_data.toml
-   uv run tsf repo cards
    uv run tsf data audit
    ```
 

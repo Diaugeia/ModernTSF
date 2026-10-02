@@ -67,8 +67,16 @@ def test_module_selection_and_extras() -> None:
     assert "audit" in module_skills(["models"], {"intake": ["audit"]})
 
 
+def test_maintenance_is_opt_in() -> None:
+    assert "maintenance" not in parse_modules(None)
+    assert parse_modules("maintenance,data") == ["data", "maintenance"]
+    assert extras_for([*CHAIN, "maintenance"]) == ["all"]
+    assert extras_for(["maintenance"]) == []
+
+
 def test_generated_agents_md_fits_the_context_budget() -> None:
     assert len(render_agents_md("p", list(CHAIN)).splitlines()) <= 50
+    assert len(render_agents_md("p", [*CHAIN, "maintenance"]).splitlines()) <= 50
 
 
 def test_init_scaffolds_selected_modules(tmp_path, monkeypatch) -> None:
@@ -80,6 +88,8 @@ def test_init_scaffolds_selected_modules(tmp_path, monkeypatch) -> None:
     skills = {p.name for p in (project / ".agents" / "skills").iterdir()}
     assert skills == {"add-dataset", "inspect-dataset", "run-autoresearch"}
     assert (project / ".agents" / "tasks" / "autoresearch.toml").is_file()
+    index = (project / ".agents" / "README.md").read_text()
+    assert "run-autoresearch" in index and "add-model" not in index and "audit" not in index
     assert not (project / ".agents" / "tasks" / "experiment.toml").exists()
     agents = (project / "AGENTS.md").read_text()
     assert "tsf catalog" in agents and "run-autoresearch" in agents and "add-model" not in agents

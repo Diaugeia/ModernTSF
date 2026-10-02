@@ -17,7 +17,7 @@ spending compute. Design in the current Agent; no design command is required.
    preprocessing, training budget, evaluation strategy, and metric direction across
    models; disclose unavoidable capability differences.
 5. Verify the resolved matrix, run count, and parameter variation through the config
-   loader and preflight (`uv run tsf run <run.toml>`). --dry-run
+   loader and preflight (`uv run tsf run <run.toml> --dry-run --json`).
 
 Deliverable: config paths plus a compact table of hypothesis, control, treatment,
 datasets, horizons, metrics, seeds, estimated runs, and acceptance criteria. Do not

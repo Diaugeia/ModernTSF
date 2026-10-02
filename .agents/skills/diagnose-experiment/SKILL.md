@@ -1,6 +1,6 @@
 ---
 name: diagnose-experiment
-description: Diagnose a failed, unstable, or invalid TSFLab experiment. Use for crashes, NaNs, OOMs, suspicious metrics, missing outputs, leakage, or irreproducible runs; not for ordinary result ranking.
+description: "Diagnose a failed, unstable, or invalid TSFLab experiment. Use for crashes, NaNs, OOMs, suspicious metrics, missing outputs, leakage, or irreproducible runs; not for ordinary result ranking."
 ---
 
 # Diagnose an experiment
@@ -12,7 +12,8 @@ their guarantees matter.
 ## Inputs
 
 - The failing config, command, environment, logs, and artifacts; preserve them
-  all before changing anything.
+  all before changing anything. Failures from GPU or CI runs arrive as `work_dirs/`
+  copies and logs; diagnose from those, and reproduce only at smoke scale locally.
 
 ## Steps
 
@@ -21,9 +22,10 @@ their guarantees matter.
 2. Reproduce with the smallest equivalent config and classify the failure:
    environment, data, shape/contract, model, optimization, resource, evaluation,
    or output bookkeeping.
-3. Inspect the resolved matrix (`uv run tsf run <run.toml>`), --dry-run the
-   model's smoke case, dataset splits, tensor shapes, loss/output pairing, metric
-   direction, seeds, device placement, checkpoints, and finite values.
+3. Inspect the resolved matrix (`uv run tsf run <run.toml> --dry-run`), the
+   model's smoke case (`tsf run --smoke --model <Name>`, tiny CPU data), dataset
+   splits, tensor shapes, loss/output pairing, metric direction, seeds, device
+   placement, checkpoints, and finite values.
 4. For OOM or instability, change one resource or optimization variable at a time;
    never lower the scientific workload and call it equivalent.
 5. When the run belongs to a research round, append the supported classification

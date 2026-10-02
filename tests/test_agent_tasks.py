@@ -14,6 +14,26 @@ from tsflab.agent.tasks import (
 )
 
 
+class ModuleMapTests(unittest.TestCase):
+    def test_every_skill_and_task_has_exactly_one_module(self) -> None:
+        from tsflab.agent.assets import audit_module_map
+        from tsflab.agent import assets
+        from tsflab.agent.modules import ALL_MODULES, CHAIN, owners
+
+        on_disk = {path.parent.name for path in assets.SKILLS.glob("*/SKILL.md")}
+        self.assertEqual(audit_module_map(on_disk), [])
+        self.assertTrue(all(len(modules) == 1 for modules in owners("skills").values()))
+        self.assertEqual(ALL_MODULES, (*CHAIN, "maintenance"))
+        self.assertIn("unmapped-skill", " ".join(audit_module_map(on_disk | {"unmapped-skill"})))
+        self.assertIn("ghost", " ".join(audit_module_map(on_disk - {"audit"} | {"ghost"})))
+
+    def test_index_is_generated_from_the_map(self) -> None:
+        from tsflab.agent import assets
+        from tsflab.agent.index import render_index
+
+        self.assertEqual(assets.INDEX.read_text(encoding="utf-8"), render_index(assets.ROOT / ".agents"))
+
+
 class AgentTaskTests(unittest.TestCase):
     def test_catalog_is_valid_and_contains_bounded_workflows(self) -> None:
         self.assertEqual(audit_tasks(), [])

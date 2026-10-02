@@ -9,7 +9,8 @@
 | 3 | `screen-2` | about a sixth | Combine the two best compatible swaps, or the recombined spec. |
 | 4 | `confirm` | the rest | Finalists plus incumbent, 3 seeds (`experiment.random_seed` sweep). |
 
-Scale proportionally for other budgets. Reserve confirmation runs up front; a search that
+Scale proportionally for other budgets. Each iteration ends when its runs have returned
+as records from the run machine; ledger events cite those records. Reserve confirmation runs up front; a search that
 leaves none cannot conclude. Use `tsf run <run.toml> --dry-run` to count resolved runs
 before spending, and `--round <id>` so the budget is consumed atomically.
 

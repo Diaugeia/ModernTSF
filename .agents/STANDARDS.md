@@ -85,16 +85,14 @@ first, then regenerate.
 
 ## Modules, skills, and tasks
 Chain: Data -> Models -> Experiments -> Release; each module yields context AutoResearch
-reads (cards, profiles, compositions, interfaces, result board, round ledger).
-
-- Data: add-dataset, inspect-dataset.
-- Models: discover-papers, add-model, integrate-foundation-model, curate-components (task `intake`).
-- Experiments: setup-environment, run-experiment, diagnose-experiment, reproduce-paper-results, analyze-results (task `experiment`).
-- Release: submit-results, forecast-realtime-round, publish-weights.
-- AutoResearch: run-autoresearch (task `autoresearch`).
-- Maintenance: audit, handle-contribution (tasks `maintenance`, `contribution`).
+reads (cards, profiles, compositions, interfaces, result board, round ledger). Maintenance
+(audit, handle-contribution; tasks `maintenance`, `contribution`) sits beside the chain and
+is opt-in for `tsf init`. `src/tsflab/agent/modules.py` is the only source of the
+skill/task-to-module map; `.agents/README.md` is generated from it by `tsf repo cards` and
+checked by the asset audit, which also requires each skill and task in exactly one module.
 
 Skills live only at `.agents/skills/<skill-name>/SKILL.md` (80-line budget; detail in
-`references/`), kebab-case `name`, discriminating `description`, and Inputs, Steps,
-Success, Stop sections using public commands only. Tasks are `.agents/tasks/<name>.toml`
-(`tsf agent task`). Check with `uv run python -m tsflab.agent.assets`.
+`references/`), kebab-case `name`, discriminating quoted `description`, and Inputs, Steps,
+Chain, Success, Stop sections using public commands only. Training and sweeps run on GPU
+machines or CI; skills preview, hand off, and read the returned records. Tasks are
+`.agents/tasks/<name>.toml` (`tsf agent task`). Check with `uv run python -m tsflab.agent.assets`.

@@ -1,6 +1,6 @@
 ---
 name: publish-weights
-description: Package a completed TSFLab run's best checkpoint as a checksummed safetensors bundle and publish or load it through pinned hf:// URIs on the Hugging Face Hub. Use for sharing or reloading trained weights; not for leaderboard result submissions or pretrained foundation checkpoints.
+description: "Package a completed TSFLab run's best checkpoint as a checksummed safetensors bundle and publish or load it through pinned hf:// URIs on the Hugging Face Hub. Use for sharing or reloading trained weights; not for leaderboard result submissions or pretrained foundation checkpoints."
 ---
 
 # Publish weights
@@ -11,8 +11,9 @@ addressed by a URI pinned to an immutable revision.
 
 ## Inputs
 
-- A completed run id (or its `record.json`) with a checkpoint under
-  `work_dirs/<dataset>/<model>/checkpoints/<run_id>/`.
+- A completed run id (or its record `work_dirs/<dataset>/<model>/records/<run_id>.json`)
+  with a checkpoint under `work_dirs/<dataset>/<model>/checkpoints/<run_id>/`; the
+  checkpoint is produced on the training machine and must be copied back with the record.
 - A target model repository (default `Diaugeia/TSFLab-Weights`) and write
   credentials (`HF_TOKEN` or a local Hub login), plus explicit authorization to
   publish. Requires the `hub` extra.

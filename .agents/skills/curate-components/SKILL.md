@@ -1,6 +1,6 @@
 ---
 name: curate-components
-description: Identify repeated or reusable operators across existing TSFLab models, prove semantic and runtime-contract equivalence, and extract them as cataloged components without changing behavior. Use for deliberate cross-model consolidation or preparing building blocks for automated research; not for reorganizing models into families or sharing code based on similar names.
+description: "Identify repeated or reusable operators across existing TSFLab models, prove semantic and runtime-contract equivalence, and extract them as cataloged components without changing behavior. Use for deliberate cross-model consolidation or preparing building blocks for automated research; not for reorganizing models into families or sharing code based on similar names."
 ---
 
 # Curate shared components

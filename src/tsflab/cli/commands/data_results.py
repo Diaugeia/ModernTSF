@@ -155,7 +155,7 @@ def _extract_from(args: list[str]) -> tuple[str | None, list[str]]:
 
 def _hub_dataset_command(action: str, rest: list[str]) -> int:
     """Download published preset files, or publish local ones (maintainers)."""
-    from tsflab import hub
+    from tsflab.release import hub
 
     parser = argparse.ArgumentParser(prog=f"tsf data {action}")
     parser.add_argument("presets", nargs="*")

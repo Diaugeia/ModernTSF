@@ -98,7 +98,7 @@ Trained with [TSFLab](https://github.com/Diaugeia/TSFLab)
 {rows}
 
 ```python
-from tsflab import hub
+from tsflab.release import hub
 state_dict, manifest = hub.load_state_dict("hf://<repo>@<revision>/{manifest['path']}")
 ```
 """

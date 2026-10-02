@@ -1,6 +1,6 @@
 ---
 name: add-model
-description: Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, model card, spec, preset, verification manifest, and tests. Use for adding or replacing one locally implemented model; not for paper discovery, foundation checkpoints, or placeholder entries.
+description: "Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, model card, spec, preset, verification manifest, and tests. Use for adding or replacing one locally implemented model; not for paper discovery, foundation checkpoints, or placeholder entries."
 ---
 
 # Add a model

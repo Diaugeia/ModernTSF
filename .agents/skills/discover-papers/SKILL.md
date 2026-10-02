@@ -1,6 +1,6 @@
 ---
 name: discover-papers
-description: Discover, deduplicate, rank, and optionally expand the catalog with new time-series forecasting papers. Use for arXiv or Hugging Face paper scans, recurring literature monitoring, candidate-model intake, and an authorized search-to-model expansion run; not for reproducing a paper's results.
+description: "Discover, deduplicate, rank, and optionally expand the catalog with new time-series forecasting papers. Use for arXiv or Hugging Face paper scans, recurring literature monitoring, candidate-model intake, and an authorized search-to-model expansion run; not for implementing one approved paper (add-model) or reproducing a paper's results (reproduce-paper-results)."
 ---
 
 # Discover forecasting papers

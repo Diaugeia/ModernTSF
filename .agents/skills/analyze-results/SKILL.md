@@ -1,6 +1,6 @@
 ---
 name: analyze-results
-description: Aggregate, filter, rank, compare, plot, and report completed TSFLab experiment results. Use for exploratory analysis, leaderboards, prediction plots, or a verified shareable report.
+description: "Aggregate, filter, rank, compare, plot, and report completed TSFLab experiment results. Use for exploratory analysis, leaderboards, prediction plots, or a verified shareable report; not for failed or suspect runs (diagnose-experiment) or packaging a submission (submit-results)."
 ---
 
 # Analyze results
@@ -12,7 +12,8 @@ aggregation and protocol checks. The CLI helpers are optional.
 
 ## Inputs
 
-- Completed run artifacts under `work_dirs/` and the intended comparison set.
+- Completed run artifacts under `work_dirs/` (produced on GPU machines or CI and copied
+  back; analysis here never trains) and the intended comparison set.
 
 ## Steps
 
@@ -21,6 +22,7 @@ aggregation and protocol checks. The CLI helpers are optional.
    ```bash
    uv run tsf result aggregate --dataset <name> --collapse \
      --aggregate mean --null-threshold 0.3
+   uv run tsf result board --dataset <name> --json     # leaderboard plus local records
    uv run tsf result rank --help
    uv run tsf result plot --help
    uv run tsf result predictions --help
@@ -41,7 +43,7 @@ aggregation and protocol checks. The CLI helpers are optional.
 
 - Module: Experiments.
 - Reads: run records and artifacts under `work_dirs/` (read-only).
-- Produces: the result board: aggregates, ranks, plots, report artifacts, round conclusion.
+- Produces: aggregates `work_dirs/<dataset>/results_all.csv`, ranks, plots, report artifacts, round conclusion; `tsf result board` is the board AutoResearch reads.
 - Hands off to: `submit-results` (compatible records), `run-autoresearch` (baselines and bars), `reproduce-paper-results`.
 
 ## Success

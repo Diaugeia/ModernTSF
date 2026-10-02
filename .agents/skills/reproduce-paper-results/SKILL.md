@@ -1,6 +1,6 @@
 ---
 name: reproduce-paper-results
-description: Reproduce and compare a forecasting paper's reported experiments in TSFLab by mapping its protocol to runnable configs and aligned metrics. Use for paper-result replication; not for implementing the model or designing an unrelated benchmark.
+description: "Reproduce and compare a forecasting paper's reported experiments in TSFLab by mapping its protocol to runnable configs and aligned metrics. Use for paper-result replication; not for implementing the model or designing an unrelated benchmark."
 ---
 
 # Reproduce paper results
@@ -31,9 +31,10 @@ numbers match.
    uv run tsf run <paper-run.toml> --dry-run
    ```
 
-4. When authorized, execute through `run-experiment`; for multi-run work use the
-   `experiment` task round and pass it with `tsf run --round`. Preserve raw
-   outputs, resolved configs, environment facts, seeds, and failed runs.
+4. When authorized, execute through `run-experiment` on a GPU machine or CI (no local
+   training); for multi-run work open a round (`tsf agent task start experiment --set
+   question=...`) and pass it with `tsf run --round`. Preserve raw outputs, resolved
+   configs, environment facts, seeds, and failed runs returned from that machine.
 5. Aggregate compatible cells with `analyze-results`, then report per cell: paper
    value, local value, absolute and relative difference, run count, uncertainty,
    and every protocol deviation. Missing or failed cells stay visible.
