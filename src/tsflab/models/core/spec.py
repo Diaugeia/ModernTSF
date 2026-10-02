@@ -1,6 +1,6 @@
 """Runtime specification for CoRe."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.core.model import Model
 
 """Validated parameters for CoRe."""

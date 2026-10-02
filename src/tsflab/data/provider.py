@@ -6,7 +6,7 @@ from typing import Tuple, Type, cast
 
 from torch.utils.data import DataLoader
 
-from tsflab.benchmark.registry.datasets import DATASET_REGISTRY
+from tsflab.catalog.registry.datasets import DATASET_REGISTRY
 
 
 def build_data_loader(

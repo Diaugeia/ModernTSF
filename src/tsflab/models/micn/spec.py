@@ -1,6 +1,6 @@
 """Runtime specification for MICN."""
 from pydantic import BaseModel, Field, field_validator
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.micn.model import Model
 
 class ModelParameterConfig(BaseModel):

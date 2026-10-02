@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from tsflab.data.schemas.datasets.ett import DatasetParameterConfig
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.datasets.base import ForecastingDataset
 
 

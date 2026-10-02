@@ -136,7 +136,7 @@ experiment rather than through a second registry.
 Weights, tokenizers, or normalization statistics remain explicit runtime facts:
 
 ```python
-from tsflab.benchmark.registry.models import ModelArtifact
+from tsflab.catalog.registry.models import ModelArtifact
 
 artifacts = (ModelArtifact(
     name="weights",

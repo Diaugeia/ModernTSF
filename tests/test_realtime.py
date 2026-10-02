@@ -16,7 +16,7 @@ from tsflab.realtime.sources.openaq import parse_hours
 from tsflab.realtime.sources.pems import parse_station_5min
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import TrackSpec, get_track, list_tracks
-from tsflab.tsf_core.realtime import ForecastSubmission
+from tsflab.core.realtime import ForecastSubmission
 
 TRACK = TrackSpec(id="toy", title="toy", mode="time_series", freq="h", seq_len=24, horizon=6,
                   submission_hours=2, seasonal_period=24, min_coverage=0.8, tz="America/Los_Angeles")

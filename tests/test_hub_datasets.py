@@ -9,8 +9,8 @@ import shutil
 
 import pytest
 
-from tsflab.hub import datasets as hd
-from tsflab.tsf_core.paths import repository_root
+from tsflab.release.hub import datasets as hd
+from tsflab.core.paths import repository_root
 
 ROOT = repository_root()
 

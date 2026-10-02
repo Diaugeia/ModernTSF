@@ -14,7 +14,7 @@ import pytest
 
 pytest.importorskip("torch")
 
-from tsflab.benchmark.cli import main  # noqa: E402
+from tsflab.cli.main import main  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.e2e

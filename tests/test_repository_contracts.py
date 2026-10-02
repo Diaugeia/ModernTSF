@@ -13,28 +13,28 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from tsflab.benchmark.command_runtime import module_slug as cli_module_slug
-from tsflab.benchmark.cards.metadata import model_records, read_front_matter
-from tsflab.benchmark.cli import main as cli_main
-from tsflab.benchmark.commands.check_registry import check as check_model_catalog
-from tsflab.benchmark.model_contracts import audit_model_contracts
-from tsflab.benchmark.cards.models import REQUIRED_SECTIONS, audit_model_card_body
-from tsflab.benchmark.verification.reference import compare_model_reference
-from tsflab.benchmark.cards.resources import audit_resource_cards, dataset_records
-from tsflab.benchmark.commands.new_model import (
+from tsflab.cli.runtime import module_slug as cli_module_slug
+from tsflab.catalog.cards.metadata import model_records, read_front_matter
+from tsflab.cli.main import main as cli_main
+from tsflab.cli.commands.check_registry import check as check_model_catalog
+from tsflab.catalog.model_contracts import audit_model_contracts
+from tsflab.catalog.cards.models import REQUIRED_SECTIONS, audit_model_card_body
+from tsflab.catalog.verification.reference import compare_model_reference
+from tsflab.catalog.cards.resources import audit_resource_cards, dataset_records
+from tsflab.cli.commands.new_model import (
     _model as scaffold_model,
     _module_slug as scaffold_module_slug,
     _package_init as scaffold_package_init,
     _spec as scaffold_spec,
 )
-from tsflab.benchmark.commands.new_dataset import _schema_single as scaffold_dataset_schema
-from tsflab.benchmark.config.loader import validate_task_compatibility
-from tsflab.benchmark.registry.datasets import DATASET_REGISTRY, register_dataset_by_name
-from tsflab.benchmark.registry.models import MODEL_CATALOG
-from tsflab.benchmark.runner.model_io import call_forecaster, slice_prediction_target
+from tsflab.cli.commands.new_dataset import _schema_single as scaffold_dataset_schema
+from tsflab.experiments.config.loader import validate_task_compatibility
+from tsflab.catalog.registry.datasets import DATASET_REGISTRY, register_dataset_by_name
+from tsflab.catalog.registry.models import MODEL_CATALOG
+from tsflab.experiments.runner.model_io import call_forecaster, slice_prediction_target
 from tsflab.models._components.adj_norm import gcn_norm, transition_matrix
-from tsflab.benchmark.catalog.component_audit import audit_components, component_dependency_closure
-from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+from tsflab.catalog.component_audit import audit_components, component_dependency_closure
+from tsflab.catalog.components import COMPONENT_CATALOG
 from tsflab.models._components.channel_alignment import fit_channels
 from tsflab.models._components.channel_wise_linear import ChannelWiseLinear
 from tsflab.models._components.dominant_periods import dominant_periods
@@ -51,8 +51,8 @@ from tsflab.models._components.series_decomposition import (
     EdgePaddedMovingAverage,
     SeriesDecomposition,
 )
-from tsflab.tsf_core.agent_assets import audit_agent_assets
-from tsflab.tsf_core.paths import is_packaged_root, repository_root, require_checkout
+from tsflab.agent.assets import audit_agent_assets
+from tsflab.core.paths import is_packaged_root, repository_root, require_checkout
 
 
 
@@ -87,7 +87,7 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(missing, [])
 
     def test_dataset_default_uses_the_ignored_local_data_layer(self) -> None:
-        from tsflab.benchmark.config.schema.dataset import DatasetConfig
+        from tsflab.experiments.config.schema.dataset import DatasetConfig
 
         fields = DatasetConfig.model_fields
         self.assertEqual(fields["path"].default, "")

@@ -1,6 +1,6 @@
 """Runtime specification for TimeCAP."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.timecap.model import Model
 from pydantic import BaseModel
 

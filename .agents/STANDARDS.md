@@ -97,4 +97,4 @@ reads (cards, profiles, compositions, interfaces, result board, round ledger).
 Skills live only at `.agents/skills/<skill-name>/SKILL.md` (80-line budget; detail in
 `references/`), kebab-case `name`, discriminating `description`, and Inputs, Steps,
 Success, Stop sections using public commands only. Tasks are `.agents/tasks/<name>.toml`
-(`tsf agent task`). Check with `uv run python -m tsflab.tsf_core.agent_assets`.
+(`tsf agent task`). Check with `uv run python -m tsflab.agent.assets`.

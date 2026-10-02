@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.ragc.model import Model
 
 from pydantic import BaseModel

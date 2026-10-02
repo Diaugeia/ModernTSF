@@ -1,6 +1,6 @@
 """Runtime specification for AWEMixer."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.awemixer.model import Model
 
 """Validated parameters for AWEMixer."""

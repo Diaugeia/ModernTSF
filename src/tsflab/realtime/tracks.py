@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import tomllib
 
-from tsflab.tsf_core.paths import repository_root
+from tsflab.core.paths import repository_root
 
 TRACK_DIR = Path("configs") / "realtime"
 

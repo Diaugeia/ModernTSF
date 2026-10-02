@@ -15,7 +15,7 @@ dependencies = [
     "matplotlib",
     "scikit-learn",
     # Used by the probabilistic metrics (gaussian closed-form CRPS / inverse-CDF
-    # in tsflab.benchmark.evaluation.metrics). Previously only a transitive dep.
+    # in tsflab.experiments.evaluation.metrics). Previously only a transitive dep.
     "scipy",
     "pydantic",
     "packaging>=24",
@@ -50,7 +50,7 @@ data = ["pyarrow", "huggingface_hub>=0.25"]
 models = ["huggingface_hub>=0.25", "safetensors>=0.4"]
 # experiments: run tracking beyond the built-in records.
 experiments = ["tensorboard>=2.18"]
-# Publish and load checkpoints on the Hugging Face Hub (tsflab.hub).
+# Publish and load checkpoints on the Hugging Face Hub (tsflab.release.hub).
 hub = ["huggingface_hub>=0.25", "safetensors>=0.4"]
 # Live data sources for the rolling real-time tracks (tsflab.realtime).
 realtime = ["akshare", "requests", "pyarrow", "huggingface_hub>=0.25"]
@@ -66,7 +66,7 @@ dev = [
 ]
 
 [project.scripts]
-tsf = "tsflab.benchmark.cli:main"
+tsf = "tsflab.cli.main:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -76,7 +76,7 @@ where = ["src"]
 include = ["tsflab*"]
 
 [tool.setuptools.package-data]
-"tsflab.tsf_core" = ["schema/*.json"]
+"tsflab.core" = ["schema/*.json"]
 "tsflab.data" = ["profile_rules.toml"]
 
 [tool.pytest.ini_options]

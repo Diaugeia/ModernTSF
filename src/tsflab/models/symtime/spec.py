@@ -1,6 +1,6 @@
 """Runtime specification for SymTime."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.symtime.model import Model
 from pydantic import BaseModel
 

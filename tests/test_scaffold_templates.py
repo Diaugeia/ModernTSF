@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 import inspect
 
-from tsflab.benchmark.commands import new_dataset, new_model
+from tsflab.cli.commands import new_dataset, new_model
 
 LEGACY = ("benchmark", "data", "models", "tsf_core")
 
@@ -41,7 +41,7 @@ def test_scaffold_templates_use_the_tsflab_namespace() -> None:
 def test_scaffold_literals_emit_valid_toml_and_python_booleans() -> None:
     import tomllib
 
-    from tsflab.benchmark.commands.new_model import _literal, _python_literal
+    from tsflab.cli.commands.new_model import _literal, _python_literal
 
     for written, toml_value in (("True", True), ("false", False), (None, True)):
         literal = _literal("bool", written)

@@ -13,7 +13,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import Dataset
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.schemas.datasets.gift_eval import GiftEvalParameterConfig
 
 # ---------------------------------------------------------------------------

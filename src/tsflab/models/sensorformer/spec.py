@@ -1,6 +1,6 @@
 """Runtime specification for Sensorformer."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.sensorformer.model import Model
 
 """Validated parameters for Sensorformer."""

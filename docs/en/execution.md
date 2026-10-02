@@ -340,7 +340,7 @@ text terms. This does not introduce another model registry or architecture tree.
 
 ## Use individual Python modules
 
-The supported facade is `tsflab.benchmark.infra.api`. It loads only the requested
+The supported facade is `tsflab.experiments.infra.api`. It loads only the requested
 implementation; importing it does not initialize a run, query hardware, start a
 worker, or connect to a tracking service. Discover the exported functions and their
 operational requirements with `tsf agent interface modules --json`. Inspect just one
@@ -348,18 +348,18 @@ configuration section with `tsf agent interface schema --module storage --json`.
 
 | Responsibility | Focused module | Required context |
 | --- | --- | --- |
-| Local records and locks | `tsflab.benchmark.infra.storage` | A local filesystem; locks use POSIX |
-| Scientific identity | `tsflab.benchmark.infra.fingerprints` | Config or repository/installed-code context |
-| External spending | `tsflab.benchmark.infra.accounting` | A ledger directory and optional `Budget` |
-| Metrics | `tsflab.benchmark.infra.tracking` | A directory and run label; mirrors are optional |
-| Hardware inventory | `tsflab.benchmark.infra.hardware` | NVIDIA CLI when querying real CUDA devices |
-| GPU admission | `tsflab.benchmark.infra.resources` | `Resources`, a lease directory, inventory provider |
-| Storage inspection | `tsflab.benchmark.infra.retention` | An existing directory and optional `Storage` |
-| State recovery | `tsflab.benchmark.infra.checkpoint` | PyTorch training state; external state hooks when needed |
-| Result comparison | `tsflab.benchmark.infra.comparison` | Result records and optional planned cells |
-| Queue bookkeeping | `tsflab.benchmark.infra.queue` | Local queue records; execution can be injected |
-| Experiment orchestration | `tsflab.benchmark.infra.execution` | Resolved experiment configs and manifests |
-| Cluster transport | `tsflab.benchmark.infra.slurm` | Prepared experiment, Slurm and shared filesystem |
+| Local records and locks | `tsflab.experiments.infra.storage` | A local filesystem; locks use POSIX |
+| Scientific identity | `tsflab.experiments.infra.fingerprints` | Config or repository/installed-code context |
+| External spending | `tsflab.experiments.infra.accounting` | A ledger directory and optional `Budget` |
+| Metrics | `tsflab.experiments.infra.tracking` | A directory and run label; mirrors are optional |
+| Hardware inventory | `tsflab.experiments.infra.hardware` | NVIDIA CLI when querying real CUDA devices |
+| GPU admission | `tsflab.experiments.infra.resources` | `Resources`, a lease directory, inventory provider |
+| Storage inspection | `tsflab.experiments.infra.retention` | An existing directory and optional `Storage` |
+| State recovery | `tsflab.experiments.infra.checkpoint` | PyTorch training state; external state hooks when needed |
+| Result comparison | `tsflab.experiments.infra.comparison` | Result records and optional planned cells |
+| Queue bookkeeping | `tsflab.experiments.infra.queue` | Local queue records; execution can be injected |
+| Experiment orchestration | `tsflab.experiments.infra.execution` | Resolved experiment configs and manifests |
+| Cluster transport | `tsflab.experiments.infra.slurm` | Prepared experiment, Slurm and shared filesystem |
 
 The orchestrator composes services; low-level services do not require it. The
 `ExecutionPolicy` groups module settings for the CLI, but independent services
@@ -370,7 +370,7 @@ source of scientific metadata; interface discovery only lists callable exports.
 ### Standalone metrics, spending and storage
 
 ```python
-from tsflab.benchmark.infra.api import Budget, Storage, Tracker, UsageLedger, storage_status
+from tsflab.experiments.infra.api import Budget, Storage, Tracker, UsageLedger, storage_status
 
 with Tracker("output/metrics", run_id="my-script") as metrics:
     metrics.log({"loss": 0.25}, step=1)
@@ -392,7 +392,7 @@ a managed run and explicit application; generic storage inspection never deletes
 ### Standalone resource admission
 
 ```python
-from tsflab.benchmark.infra.api import Resources, lease_gpus
+from tsflab.experiments.infra.api import Resources, lease_gpus
 
 with lease_gpus(Resources(gpus=["0"]), directory="output/gpu-leases") as devices:
     # Run work using the assigned device UUIDs.
@@ -420,7 +420,7 @@ For in-process integration, `enqueue(..., validate=callable)` accepts an explici
 input validator and `run_job(job_directory, executor=callable)` accepts an executor
 with signature `executor(directory, *, cancelled)`, returning a mapping with `ok`.
 The validator must reject unsuitable inputs; the executor must honor cancellation
-and own its cleanup. The structural interfaces are in `tsflab.benchmark.infra.contracts`.
+and own its cleanup. The structural interfaces are in `tsflab.experiments.infra.contracts`.
 They require no base class or plugin registration. To use the same executor in
 both in-process and detached modes, persist its importable reference with
 `enqueue(..., executor="my_package.jobs:execute")`; the CLI accepts
@@ -458,7 +458,7 @@ matrices, use a research round for machine-enforced budget state and references
 to important evidence; do not duplicate the whole conversation there.
 
 ```python
-from tsflab.benchmark.infra.api import create_round, add_event, prepare_task
+from tsflab.experiments.infra.api import create_round, add_event, prepare_task
 
 # Optional: inspect a reusable task without creating files or launching work.
 suggestion = prepare_task("autoresearch", {"question": "Does this ablation help?"})

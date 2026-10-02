@@ -1,6 +1,6 @@
 """Runtime specification for FreqMoE."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.freqmoe.model import Model
 
 """Validated parameters for FreqMoE."""

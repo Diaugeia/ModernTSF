@@ -1,6 +1,6 @@
 """Runtime specification for PULSE."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.pulse.model import Model
 from pydantic import BaseModel
 

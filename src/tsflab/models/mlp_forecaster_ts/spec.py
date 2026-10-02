@@ -1,6 +1,6 @@
 """Runtime specification for MLPForecasterTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.mlp_forecaster_ts.model import Model
 from pydantic import BaseModel
 

@@ -6,12 +6,12 @@ import tomllib
 
 import pytest
 
-from tsflab.benchmark import cli
-from tsflab.benchmark.commands.catalog_resources import _extract_kind
-from tsflab.benchmark.commands.data_results import _extract_from
-from tsflab.benchmark.commands.execution import _extract_backend
-from tsflab.scaffold import extras_for, init_project, render_agents_md, sync_command
-from tsflab.tsf_core.modules import CHAIN, find_project, module_skills, parse_modules
+from tsflab.cli import main as cli
+from tsflab.cli.commands.catalog_resources import _extract_kind
+from tsflab.cli.commands.data_results import _extract_from
+from tsflab.cli.commands.execution import _extract_backend
+from tsflab.agent.scaffold import extras_for, init_project, render_agents_md, sync_command
+from tsflab.agent.modules import CHAIN, find_project, module_skills, parse_modules
 
 COMMANDS = {
     "catalog", "data", "model", "run", "env", "result", "realtime",

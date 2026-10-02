@@ -2,7 +2,7 @@
 """Build data/leaderboard.json from submissions/ (+ a curated overlay).
 
 Validation and aggregation are the shared TSF-Core implementation
-(``tsflab.tsf_core.leaderboard``); this script only adds the site's
+(``tsflab.core.leaderboard``); this script only adds the site's
 presentation layer:
 
   1. map canonical (track, dataset_id) keys to the site's display keys;
@@ -27,7 +27,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT.parent.parent / "src"))
 
-from tsflab.tsf_core.leaderboard import PRIMARY_METRIC, aggregate, load_submissions  # noqa: E402
+from tsflab.core.leaderboard import PRIMARY_METRIC, aggregate, load_submissions  # noqa: E402
 
 BOARD = ROOT / "data" / "leaderboard.json"
 REALTIME = ROOT / "data" / "realtime"

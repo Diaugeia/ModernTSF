@@ -56,7 +56,7 @@ concurrency:
 env:
   UV_TORCH_BACKEND: cpu
   # Paths an agent change or a contributor PR may never alter automatically.
-  PROTECTED: ".github .agents AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts src/tsflab/benchmark/commands/gate.py tests/test_repo_check.py"
+  PROTECTED: ".github .agents AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts src/tsflab/cli/commands/gate.py tests/test_repo_check.py"
 
 jobs:
   watch:
@@ -530,7 +530,7 @@ jobs:
           number, sha = os.environ["NUMBER"], os.environ["SHA"]
           view = json.loads(gh("pr", "view", number, "--json", "headRefOid,files,state").stdout)
           prefixes = (".github/ .agents/ AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts/ "
-                      "src/tsflab/benchmark/commands/gate.py tests/test_repo_check.py").split()
+                      "src/tsflab/cli/commands/gate.py tests/test_repo_check.py").split()
           touched = [f["path"] for f in view["files"] if f["path"].startswith(tuple(prefixes))]
           findings = "\n".join(f"- {x}" for x in json.loads(os.environ["FINDINGS"]))
           approve = os.environ["APPROVE"] == "true"

@@ -12,9 +12,9 @@ import torch
 import torch.nn as nn
 
 from tsflab import hub
-from tsflab.benchmark.model_artifacts import fetch_artifact
-from tsflab.benchmark.registry.models import ModelArtifact, ModelSpec
-from tsflab.scaffold import init_project
+from tsflab.catalog.model_artifacts import fetch_artifact
+from tsflab.catalog.registry.models import ModelArtifact, ModelSpec
+from tsflab.agent.scaffold import init_project
 
 REPO = "Diaugeia/TSFLab-Weights"
 REV = "0123abcd"
@@ -139,7 +139,7 @@ def test_pack_then_load_state_dict_round_trips(tmp_path: Path, monkeypatch) -> N
 
 
 def test_init_project_scaffolds_and_inherits_package_configs(tmp_path: Path) -> None:
-    from tsflab.benchmark.config.loader import _resolve_extends
+    from tsflab.experiments.config.loader import _resolve_extends
 
     written = init_project(tmp_path / "proj")
     assert (tmp_path / "proj" / "configs" / "runs" / "example.toml") in written
@@ -156,7 +156,7 @@ def test_init_project_scaffolds_and_inherits_package_configs(tmp_path: Path) -> 
 def test_hub_owner_comes_from_the_environment(monkeypatch) -> None:
     import importlib
 
-    from tsflab.hub import uri
+    from tsflab.release.hub import uri
 
     monkeypatch.setenv("TSFLAB_HUB_OWNER", "someone")
     try:

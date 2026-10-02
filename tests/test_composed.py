@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from tsflab.benchmark.catalog.composition import compose_command, validate_composition
-from tsflab.benchmark.commands.result_board import board
+from tsflab.research.composition import compose_command, validate_composition
+from tsflab.cli.commands.result_board import board
 from tsflab.models._slots.registry import OPTIONS, check_assignment, resolve_assignment
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +41,7 @@ def _assignment(**over):
 
 
 def test_every_adapter_component_is_cataloged():
-    from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+    from tsflab.catalog.components import COMPONENT_CATALOG
 
     for options in OPTIONS.values():
         for option in options.values():
@@ -103,7 +103,7 @@ def test_write_config_is_a_runnable_config(tmp_path):
     assert cfg["model"]["params"]["temporal"] == "channel_wise_linear" and cfg["model"]["params"]["hidden"] == 8
     assert cfg["training"]["loss"] == "mae" and cfg["task"]["pred_len"] == 12
     params = cfg["model"]["params"]
-    from tsflab.benchmark.registry.models import MODEL_CATALOG
+    from tsflab.catalog.registry.models import MODEL_CATALOG
 
     assert MODEL_CATALOG.get("Composed").validate_params(params)["enc_in"] == 6
 
@@ -140,7 +140,7 @@ def test_register_scaffolds_a_package_and_dry_run_writes_nothing(tmp_path):
     assert "quantile-output" in (package / "spec.py").read_text()
     assert "[models.QRevLinear]" in (root / "verification/models.toml").read_text()
     assert (root / "configs/models/QRevLinear.toml").is_file()
-    from tsflab.benchmark.cards.models import _composition_problems
+    from tsflab.catalog.cards.models import _composition_problems
 
     fields = dict(line.split(": ", 1) for line in card.split("---")[1].strip().splitlines())
     assert not _composition_problems(json.loads(fields["composition"]), "QRev")
@@ -199,7 +199,7 @@ def test_probabilistic_pipelines_emit_their_output_kind():
 def test_params_schema_rejects_invalid_slot_combinations():
     from pydantic import ValidationError
 
-    from tsflab.benchmark.registry.models import MODEL_CATALOG
+    from tsflab.catalog.registry.models import MODEL_CATALOG
 
     spec = MODEL_CATALOG.get("Composed")
     with pytest.raises(ValidationError, match="mixer_block"):

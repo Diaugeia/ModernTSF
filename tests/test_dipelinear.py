@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import torch
 
 from component_reference import assert_reference
-from tsflab.benchmark.registry.losses import get_loss
-from tsflab.benchmark.runner.trainer import _forward_training
+from tsflab.catalog.registry.losses import get_loss
+from tsflab.experiments.runner.trainer import _forward_training
 from tsflab.models._components.fft_extrapolation_conv import FFTExtrapolationConv
 from tsflab.models._components.weight_set_router import WeightSetRouter, mix_weight_sets
 from tsflab.models.dipelinear.model import Model

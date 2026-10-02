@@ -1,6 +1,6 @@
 """Runtime specification for PatchTSMixer."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.patchtsmixer.model import Model
 
 """Validated parameters for PatchTSMixer."""

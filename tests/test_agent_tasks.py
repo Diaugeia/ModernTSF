@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from tsflab.benchmark.cli import main
-from tsflab.tsf_core.agent_tasks import (
+from tsflab.cli.main import main
+from tsflab.agent.tasks import (
     AgentTaskError,
     audit_tasks,
     list_tasks,

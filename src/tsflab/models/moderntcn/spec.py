@@ -1,6 +1,6 @@
 """Runtime specification for ModernTCN."""
 from pydantic import BaseModel, Field, model_validator
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.moderntcn.model import Model
 
 class ModelParameterConfig(BaseModel):

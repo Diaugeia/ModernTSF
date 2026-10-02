@@ -5,7 +5,7 @@ from __future__ import annotations
 import torch
 import torch.nn.functional as F
 
-from tsflab.benchmark.runner.objective import TrainingBatch
+from tsflab.experiments.runner.objective import TrainingBatch
 from tsflab.models.samformer.model import Model
 from tsflab.models.samformer.spec import SPEC, training_objective
 

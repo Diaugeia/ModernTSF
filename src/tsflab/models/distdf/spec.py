@@ -1,6 +1,6 @@
 """Model specification for DistDF."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.distdf.model import Model
 from pydantic import BaseModel, Field
 

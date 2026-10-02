@@ -1,5 +1,5 @@
 """Runtime specification for AirFormer."""
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.airformer.model import Model
 from pydantic import BaseModel, Field, model_validator
 

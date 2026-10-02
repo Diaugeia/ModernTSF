@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.calendar import node_calendar
 from tsflab.data.schemas.datasets.realtime_panel import DatasetParameterConfig
 

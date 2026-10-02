@@ -1,6 +1,6 @@
 """Runtime specification for DPWMixer."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.dpwmixer.model import Model
 
 """Validated parameters for DPWMixer."""

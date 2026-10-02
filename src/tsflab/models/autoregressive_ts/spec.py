@@ -1,6 +1,6 @@
 """Runtime specification for AutoRegressiveTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.autoregressive_ts.model import Model
 from pydantic import BaseModel
 

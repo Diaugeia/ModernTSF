@@ -16,7 +16,7 @@ from typing import Tuple
 import numpy as np
 from torch.utils.data import Dataset
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.schemas.datasets.synthetic_st import DatasetParameterConfig
 
 

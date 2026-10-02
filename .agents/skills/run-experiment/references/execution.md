@@ -1,7 +1,7 @@
 # Optional execution controls
 
 Load this reference only for budgets, queueing, tracking, cancellation, or recovery.
-Discover APIs through `tsflab.benchmark.infra.api.describe_modules()` or the optional
+Discover APIs through `tsflab.experiments.infra.api.describe_modules()` or the optional
 `tsf agent interface` adapter. The Agent owns decisions; services own atomic state and
 execution constraints. CLI examples below do not mandate a subprocess hop.
 

@@ -18,7 +18,7 @@ from typing import Tuple
 import numpy as np
 from torch.utils.data import Dataset
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.calendar import node_calendar
 from tsflab.data.ultratraffic_store import load_panel
 from tsflab.data.schemas.datasets.ultratraffic import DatasetParameterConfig

@@ -176,7 +176,7 @@ def test_head_flattens_patch_major_and_matches_unfold_patching() -> None:
 
 
 def test_training_objective_updates_costs_and_returns_criterion_loss() -> None:
-    from tsflab.benchmark.runner.objective import TrainingBatch
+    from tsflab.experiments.runner.objective import TrainingBatch
 
     model = tiny().train()
     x, y = torch.randn(3, 24, 4), torch.randn(3, 24 + 6, 4)

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from tsflab.benchmark.commands.gate import affected_smoke_configs, select_steps
-from tsflab.tsf_core.paths import repository_root
+from tsflab.cli.commands.gate import affected_smoke_configs, select_steps
+from tsflab.core.paths import repository_root
 
 ROOT = repository_root()
 
@@ -28,7 +28,7 @@ class GateSelectionTests(unittest.TestCase):
         self.assertNotIn("smoke-affected", names("changed", ["docs/en/models.md"]))
 
     def test_runner_change_uses_representative_set(self) -> None:
-        configs = affected_smoke_configs(["src/tsflab/benchmark/cli.py"], ROOT)
+        configs = affected_smoke_configs(["src/tsflab/experiments/runner/run_one.py"], ROOT)
         self.assertEqual(len(configs), 3)
 
     def test_model_change_maps_to_its_smoke_config(self) -> None:

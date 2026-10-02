@@ -128,4 +128,4 @@ jobs:
       - name: Check pinned dataset files
         run: |
           pip install --quiet "pydantic==2.12.5"
-          PYTHONPATH=src python -m tsflab.benchmark.cli dataset download --check
+          PYTHONPATH=src python -m tsflab.cli.main dataset download --check

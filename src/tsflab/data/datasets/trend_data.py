@@ -6,7 +6,7 @@ from typing import Tuple
 
 import numpy as np
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.datasets.base import ForecastingDataset
 from tsflab.data.schemas.datasets.trend import DatasetParameterConfig
 

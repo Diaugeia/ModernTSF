@@ -1,6 +1,6 @@
 """Runtime specification for TCNForecasterTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.tcn_forecaster_ts.model import Model
 from pydantic import BaseModel
 

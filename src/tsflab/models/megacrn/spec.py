@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.megacrn.model import Model
 
 from pydantic import BaseModel
@@ -12,7 +12,7 @@ class ModelParameterConfig(BaseModel):
     """Validated MegaCRN parameters supplied via ``model.params``.
 
     ``num_nodes`` and ``adj_mx`` are *injected* by the runner from the dataset
-    (see ``src/tsflab/benchmark/runner/run_one.py``) and need not be declared in TOML.
+    (see ``src/tsflab/experiments/runner/run_one.py``) and need not be declared in TOML.
     """
 
     enc_in: int  # number of spatial nodes N (required)

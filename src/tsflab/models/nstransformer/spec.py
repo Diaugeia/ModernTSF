@@ -1,6 +1,6 @@
 """Runtime specification for NSTransformer."""
 from pydantic import BaseModel, Field, model_validator
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.nstransformer.model import Model
 class ModelParameterConfig(BaseModel):
     enc_in:int=Field(gt=0); d_model:int=Field(128,gt=0); n_heads:int=Field(8,gt=0); e_layers:int=Field(2,gt=0)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from tsflab.benchmark.model_contracts import audit_model_contracts
+from tsflab.catalog.model_contracts import audit_model_contracts
 
 
 class StrictModelContractTests(unittest.TestCase):

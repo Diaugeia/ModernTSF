@@ -1,6 +1,6 @@
 """Runtime specification for ExpSmoothingTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.exp_smoothing_ts.model import Model
 from pydantic import BaseModel
 

@@ -24,11 +24,11 @@ import sys
 
 import pandas as pd
 
-from tsflab.hub.uri import default_repo
+from tsflab.release.hub.uri import default_repo
 from tsflab.realtime import rounds as R
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import get_track, list_tracks
-from tsflab.tsf_core.realtime import ForecastSubmission
+from tsflab.core.realtime import ForecastSubmission
 
 SUMMARY_DIR = Path("apps") / "web" / "data" / "realtime"
 

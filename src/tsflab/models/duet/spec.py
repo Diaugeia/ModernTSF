@@ -1,6 +1,6 @@
 """Runtime specification for DUET."""
 from pydantic import BaseModel, Field, model_validator
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.duet.model import Model
 class ModelParameterConfig(BaseModel):
     enc_in:int=Field(gt=0); d_model:int=Field(64,gt=0); n_heads:int=Field(4,gt=0); e_layers:int=Field(2,gt=0)

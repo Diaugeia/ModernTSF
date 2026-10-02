@@ -20,7 +20,7 @@ import pandas as pd
 
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import TrackSpec
-from tsflab.tsf_core.realtime import ForecastSubmission, RoundScore, RoundSpec
+from tsflab.core.realtime import ForecastSubmission, RoundScore, RoundSpec
 
 ROUNDS_ROOT = Path("apps") / "web" / "submissions" / "realtime"
 

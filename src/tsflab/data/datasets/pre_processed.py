@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import Dataset
 
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.schemas.datasets.pre_processed import PreProcessedParameterConfig
 
 _FLAG_TO_FILE = {"train": "train.npz", "val": "val.npz", "test": "test.npz"}

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from tsflab.benchmark.runner.objective import TrainingBatch
+from tsflab.experiments.runner.objective import TrainingBatch
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.mmpd.model import Model
 from pydantic import BaseModel
 

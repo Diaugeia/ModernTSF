@@ -1,6 +1,6 @@
 """Runtime specification for PENGUIN."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.penguin.model import Model
 
 """Validated parameters for PENGUIN."""

@@ -1,6 +1,6 @@
 """Runtime specification for ElasticNetTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.elastic_net_ts.model import Model
 from pydantic import BaseModel
 

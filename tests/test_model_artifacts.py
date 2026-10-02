@@ -9,8 +9,8 @@ import pytest
 from pydantic import BaseModel
 import torch.nn as nn
 
-from tsflab.benchmark.model_artifacts import artifact_status, fetch_artifact, require_artifacts
-from tsflab.benchmark.registry.models import ModelArtifact, ModelSpec
+from tsflab.catalog.model_artifacts import artifact_status, fetch_artifact, require_artifacts
+from tsflab.catalog.registry.models import ModelArtifact, ModelSpec
 
 
 class _Params(BaseModel):

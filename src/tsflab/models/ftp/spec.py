@@ -1,6 +1,6 @@
 """Model specification for FTP."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.ftp.model import Model
 from pydantic import BaseModel, Field
 

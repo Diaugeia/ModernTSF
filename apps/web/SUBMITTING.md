@@ -101,7 +101,7 @@ submissions/realtime/<track>/rounds/<round_id>/
 
 To take part, open a pull request that adds `forecasts/<YourModel>.json` for an
 open round **before its `deadline`**. The file is a `ForecastSubmission`
-(`src/tsflab/tsf_core/schema/forecast_submission.schema.json`):
+(`src/tsflab/core/schema/forecast_submission.schema.json`):
 `predictions` has shape `(len(target_timestamps), len(channels))` in the
 round's raw units. CI checks the shape and rejects the file if the pull request
 was last updated after the deadline, so forecasts always precede their truth.

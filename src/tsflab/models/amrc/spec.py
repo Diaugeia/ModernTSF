@@ -1,6 +1,6 @@
 """Model specification for AMRC."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.amrc.model import Model
 from pydantic import BaseModel, Field
 

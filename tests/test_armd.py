@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 import torch
 
-from tsflab.benchmark.runner.objective import TrainingBatch
+from tsflab.experiments.runner.objective import TrainingBatch
 from tsflab.models.armd.model import Model, cosine_beta_schedule, linear_beta_schedule
 from tsflab.models.armd.spec import SPEC, training_objective
 

@@ -1,5 +1,5 @@
 """Model specification for CoRA."""
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.cora.model import Model
 from pydantic import BaseModel, Field
 

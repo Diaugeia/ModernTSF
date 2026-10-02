@@ -5,8 +5,8 @@ from typing import Literal
 import torch
 from pydantic import BaseModel, ConfigDict, Field
 
-from tsflab.benchmark.registry.models import ModelSpec
-from tsflab.benchmark.runner.objective import TrainingBatch
+from tsflab.catalog.registry.models import ModelSpec
+from tsflab.experiments.runner.objective import TrainingBatch
 from tsflab.models.mambats.model import Model
 
 

@@ -159,7 +159,7 @@ Exact command options stay in `tsf <command> --help`.
 
 | Path | Contents |
 | --- | --- |
-| `src/tsflab/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
+| `src/tsflab/` | One package per module, mirrored by the CLI: `catalog` (cards, registries, verification), `data`, `models` (flat catalog, `_components`, `_slots`), `experiments` (config, runner, evaluation, execution), `release` (Hub, submissions), `realtime`, `research` (rounds, recombination), `agent` (assets, tasks, `tsf init`), `core` (contracts), `cli` |
 | `configs/`, `catalog/`, `verification/` | Run, model, and dataset presets, real-time track configs, `configs/fixtures/` (smoke and synthetic test inputs, not datasets), dataset cards, verification evidence |
 | `dataset/` | Local dataset bytes fetched with `tsf data download` (not packaged) |
 | `apps/web/` | TSFLab Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |

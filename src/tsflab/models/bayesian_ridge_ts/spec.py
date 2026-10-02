@@ -1,6 +1,6 @@
 """Runtime specification for BayesianRidgeTS."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.bayesian_ridge_ts.model import Model
 from pydantic import BaseModel
 

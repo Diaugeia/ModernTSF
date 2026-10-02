@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.frets.model import Model
 
 

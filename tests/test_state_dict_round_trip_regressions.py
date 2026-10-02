@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 import torch
 
-from tsflab.benchmark.model_contracts import audit_model_contracts
+from tsflab.catalog.model_contracts import audit_model_contracts
 from tsflab.models.fedformer.model import FrequencyEnhancedAttention, FrequencyEnhancedBlock
 from tsflab.models.koopa.model import Model as Koopa
 from tsflab.models.pcdcnet.model import Model as PCDCNet

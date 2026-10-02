@@ -7,7 +7,7 @@ from typing import Tuple
 import numpy as np
 
 from tsflab.data.schemas.datasets.periodic import DatasetParameterConfig
-from tsflab.benchmark.registry import DATASET_REGISTRY
+from tsflab.catalog.registry import DATASET_REGISTRY
 from tsflab.data.datasets.base import ForecastingDataset
 
 

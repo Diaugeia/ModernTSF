@@ -13,7 +13,7 @@ import pandas as pd
 
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import TrackSpec
-from tsflab.tsf_core.realtime import ForecastSubmission, RoundSpec
+from tsflab.core.realtime import ForecastSubmission, RoundSpec
 
 
 def _history(spec: RoundSpec, store: PanelStore, steps: int) -> np.ndarray:

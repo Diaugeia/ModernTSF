@@ -23,7 +23,7 @@ import pandas as pd
 from tsflab.data.calendar import node_calendar
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import TrackSpec
-from tsflab.tsf_core.realtime import ForecastSubmission, RoundSpec
+from tsflab.core.realtime import ForecastSubmission, RoundSpec
 
 # Constructor parameters that always equal the number of channels (or nodes).
 _WIDTH_PARAMS = ("enc_in", "dec_in", "c_out", "num_nodes", "n_vars", "node_num", "num_node")
@@ -66,7 +66,7 @@ def export_bundle(spec: RoundSpec, store: PanelStore, track: TrackSpec, director
 
 def _run_config(spec: RoundSpec, model: str, bundle: Path, layout: dict, work_dir: Path,
                 overrides: dict) -> Path:
-    from tsflab.benchmark.registry.models import MODEL_CATALOG
+    from tsflab.catalog.registry.models import MODEL_CATALOG
 
     catalog = MODEL_CATALOG.get(model)
     mode = "spatiotemporal" if spec.mode == "spatiotemporal" and "spatiotemporal" in catalog.capabilities else "time_series"
@@ -95,10 +95,10 @@ def forecast_with_model(spec: RoundSpec, store: PanelStore, track: TrackSpec, mo
                         submitter: str | None = None) -> ForecastSubmission:
     import torch
 
-    from tsflab.benchmark.config.loader import load_config
-    from tsflab.benchmark.runner.evaluator import _point_reduce, _resolve_output_kind
-    from tsflab.benchmark.runner.model_io import call_forecaster, make_decoder_input
-    from tsflab.benchmark.runner.run_one import _build_device, _build_loaders, _build_model, run_one
+    from tsflab.experiments.config.loader import load_config
+    from tsflab.experiments.runner.evaluator import _point_reduce, _resolve_output_kind
+    from tsflab.experiments.runner.model_io import call_forecaster, make_decoder_input
+    from tsflab.experiments.runner.run_one import _build_device, _build_loaders, _build_model, run_one
 
     work_dir = work_root / spec.track / spec.round_id
     bundle = work_dir / "bundle"

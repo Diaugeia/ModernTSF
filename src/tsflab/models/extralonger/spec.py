@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.extralonger.model import Model
 
 from pydantic import BaseModel, ConfigDict
@@ -12,7 +12,7 @@ class ModelParameterConfig(BaseModel):
     """Validated Extralonger parameters supplied via ``model.params``.
 
     ``num_nodes`` and ``adj_mx`` are injected by the runner from the dataset
-    (see ``src/tsflab/benchmark/runner/run_one.py``) and need not be declared in the
+    (see ``src/tsflab/experiments/runner/run_one.py``) and need not be declared in the
     TOML. ``enc_in`` (the node count ``N``) is the only required field and is
     used as the fallback node count. Defaults are modest for fast CPU smoke
     runs; the paper's PEMS04/PEMS08/SEATTLE presets use much wider embeddings

@@ -1,6 +1,6 @@
 """Runtime specification for AMD."""
 
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.amd.model import Model
 
 """Validated parameters for AMD."""

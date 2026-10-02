@@ -8,7 +8,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
-from tsflab.benchmark.infra.api import (
+from tsflab.experiments.infra.api import (
     Budget,
     Storage,
     Tracker,
@@ -27,13 +27,13 @@ import sys
 from pathlib import Path
 class Boundary(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
-        forbidden = ('torch', 'wandb', 'tensorboard', 'tsflab.benchmark.runner',
-                     'tsflab.benchmark.infra.execution', 'tsflab.benchmark.infra.environment',
-                     'tsflab.benchmark.infra.runs')
+        forbidden = ('torch', 'wandb', 'tensorboard', 'tsflab.experiments.runner',
+                     'tsflab.experiments.infra.execution', 'tsflab.experiments.infra.environment',
+                     'tsflab.experiments.infra.runs')
         if any(fullname == name or fullname.startswith(name + '.') for name in forbidden):
             raise AssertionError('unwanted dependency: ' + fullname)
 sys.meta_path.insert(0, Boundary())
-from tsflab.benchmark.infra.api import (Tracker, UsageLedger, Budget, Storage,
+from tsflab.experiments.infra.api import (Tracker, UsageLedger, Budget, Storage,
     Resources, lease_gpus, storage_status, describe_modules, enqueue, run_job)
 root = Path(sys.argv[1])
 with Tracker(root / 'metrics', 'standalone') as tracker:
@@ -69,7 +69,7 @@ def test_tracking_has_explicit_idempotent_lifecycle(tmp_path):
 
 
 def test_injected_queue_execution_has_independent_cancellation(tmp_path):
-    from tsflab.benchmark.infra.queue import enqueue, run_job, cancel_job, jobs
+    from tsflab.experiments.infra.queue import enqueue, run_job, cancel_job, jobs
 
     root = tmp_path / "queue"
     items = [
@@ -115,7 +115,7 @@ def test_module_discovery_matches_real_exports_and_schema():
         [
             sys.executable,
             "-m",
-            "tsflab.benchmark.cli",
+            "tsflab.cli.main",
             "agent",
             "interface",
             "schema",
@@ -162,7 +162,7 @@ def test_ledger_facade_keeps_limits_across_instances(tmp_path):
 
 
 def test_agent_task_preparation_is_optional_and_nonpersistent(tmp_path, monkeypatch):
-    from tsflab.benchmark.infra.api import prepare_task
+    from tsflab.experiments.infra.api import prepare_task
 
     target = tmp_path / "workspace"
     monkeypatch.setenv("TSF_WORK_DIR", str(target))
@@ -177,9 +177,9 @@ def test_agent_api_and_cli_share_persistent_budget_service(
     tmp_path, monkeypatch, capsys
 ):
     import pytest
-    from tsflab.benchmark.infra.api import prepare_task, load_round
-    from tsflab.benchmark.research_round import claim_run, ResearchRoundError
-    from tsflab.benchmark.cli import main
+    from tsflab.experiments.infra.api import prepare_task, load_round
+    from tsflab.research.rounds import claim_run, ResearchRoundError
+    from tsflab.cli.main import main
 
     monkeypatch.setenv("TSF_WORK_DIR", str(tmp_path))
     prepared = prepare_task(

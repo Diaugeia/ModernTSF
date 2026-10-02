@@ -12,11 +12,11 @@ from types import SimpleNamespace
 import torch
 import torch.nn as nn
 
-from tsflab.benchmark.registry.losses import get_loss
-from tsflab.benchmark.registry.models import MODEL_CATALOG
-from tsflab.benchmark.runner.callbacks import Callback
-from tsflab.benchmark.runner.objective import TrainingBatch
-from tsflab.benchmark.runner.trainer import _forward_training, train
+from tsflab.catalog.registry.losses import get_loss
+from tsflab.catalog.registry.models import MODEL_CATALOG
+from tsflab.experiments.runner.callbacks import Callback
+from tsflab.experiments.runner.objective import TrainingBatch
+from tsflab.experiments.runner.trainer import _forward_training, train
 
 ROOT = Path(__file__).resolve().parents[1]
 

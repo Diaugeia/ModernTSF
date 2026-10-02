@@ -1,5 +1,5 @@
 """Model specification for HN_MVTS."""
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.hn_mvts.model import Model
 from pydantic import BaseModel, Field
 

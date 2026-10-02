@@ -1,5 +1,5 @@
 """Runtime specification for DeepAir."""
-from tsflab.benchmark.registry.models import ModelSpec
+from tsflab.catalog.registry.models import ModelSpec
 from tsflab.models.deepair.model import Model
 from pydantic import BaseModel, Field
 

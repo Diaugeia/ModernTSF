@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tsflab.hub.fetch import sha256_file
-from tsflab.hub.uri import default_repo
+from tsflab.release.hub.fetch import sha256_file
+from tsflab.release.hub.uri import default_repo
 from tsflab.realtime.store import PanelStore
 
 DEFAULT_DATASET_REPO = default_repo("TSFLab-RealTime")

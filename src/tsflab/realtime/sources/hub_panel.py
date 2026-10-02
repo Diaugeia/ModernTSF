@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from tsflab.hub import fetch
+from tsflab.release.hub import fetch
 from tsflab.realtime.tracks import TrackSpec
 
 

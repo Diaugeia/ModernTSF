@@ -8,11 +8,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-from tsflab.benchmark.catalog.composition import validate_composition
-from tsflab.benchmark.cards.metadata import model_records
-from tsflab.benchmark.commands import dataset_analyze
-from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
+from tsflab.catalog.components import COMPONENT_CATALOG
+from tsflab.research.composition import validate_composition
+from tsflab.catalog.cards.metadata import model_records
+from tsflab.cli.commands import dataset_analyze
+from tsflab.catalog.registry.losses import LOSS_NAME_MAP
 from tsflab.data import profile as prof
 
 ROOT = Path(__file__).resolve().parents[1]

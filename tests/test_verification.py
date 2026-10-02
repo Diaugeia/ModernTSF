@@ -9,15 +9,15 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from tsflab.benchmark.verification import (
+from tsflab.catalog.verification import (
     VerificationEvidence,
     evidence_state,
     load_manifest,
     rebuild_index,
 )
-from tsflab.benchmark.verification.evidence import file_sha256
-from tsflab.benchmark.verification.common import verification_subject_sha256
-from tsflab.benchmark.commands.verification import _load_existing, _materially_changed
+from tsflab.catalog.verification.evidence import file_sha256
+from tsflab.catalog.verification.common import verification_subject_sha256
+from tsflab.cli.commands.verification import _load_existing, _materially_changed
 
 
 def _check(status: str = "passed") -> dict[str, object]:
@@ -179,13 +179,13 @@ class VerificationTests(unittest.TestCase):
         payload = _payload("a" * 64)
         payload["checks"]["backward"] = _check("not-applicable")
         payload["checks"]["active_parameter_gradients"] = _check("not-applicable")
-        with patch("tsflab.benchmark.verification.evidence._is_inference_only", return_value=True):
+        with patch("tsflab.catalog.verification.evidence._is_inference_only", return_value=True):
             evidence = VerificationEvidence.model_validate(payload)
             self.assertEqual(evidence.status, "passed")
 
         payload["checks"]["forward"] = _check("not-applicable")
         with (
-            patch("tsflab.benchmark.verification.evidence._is_inference_only", return_value=True),
+            patch("tsflab.catalog.verification.evidence._is_inference_only", return_value=True),
             self.assertRaisesRegex(ValueError, "required verification check"),
         ):
             VerificationEvidence.model_validate(payload)
@@ -201,8 +201,8 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(evidence.status, "failed")
 
     def test_repository_manifest_exactly_covers_the_catalog(self) -> None:
-        from tsflab.benchmark.cards.metadata import model_records
-        from tsflab.tsf_core.paths import repository_root
+        from tsflab.catalog.cards.metadata import model_records
+        from tsflab.core.paths import repository_root
 
         root = repository_root()
         names = {str(record["name"]) for record in model_records(root)}
