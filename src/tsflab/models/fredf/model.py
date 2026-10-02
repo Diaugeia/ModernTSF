@@ -23,14 +23,33 @@ from tsflab.models._components.revin import RevIN
 
 
 
+class _ContiguousGrad(torch.autograd.Function):
+    """Identity whose backward hands a contiguous gradient to the preceding FFT.
+
+    oneMKL rejects strided buffers in the FFT backward pass ("Inconsistent
+    configuration parameters"); this keeps the computation identical.
+    """
+
+    @staticmethod
+    def forward(ctx, tensor: torch.Tensor) -> torch.Tensor:  # noqa: D401
+        return tensor.view_as(tensor)
+
+    @staticmethod
+    def backward(ctx, grad: torch.Tensor) -> torch.Tensor:
+        return grad.contiguous()
+
+
 def _rfft_time(values: torch.Tensor) -> torch.Tensor:
-    """Orthonormal rFFT over axis 1, computed on the last axis (MKL-safe in backward)."""
-    return torch.fft.rfft(values.transpose(1, -1).contiguous(), dim=-1, norm="ortho").transpose(1, -1)
+    """Orthonormal rFFT over axis 1, computed on the last axis (MKL-safe)."""
+    spectrum = torch.fft.rfft(values.transpose(1, -1).contiguous(), dim=-1, norm="ortho")
+    return _ContiguousGrad.apply(spectrum).transpose(1, -1)
 
 
 def _irfft_time(spectrum: torch.Tensor, length: int) -> torch.Tensor:
     """Inverse of :func:`_rfft_time` with ``length`` output steps."""
-    return torch.fft.irfft(spectrum.transpose(1, -1).contiguous(), n=length, dim=-1, norm="ortho").transpose(1, -1)
+    values = torch.fft.irfft(spectrum.transpose(1, -1).contiguous(), n=length, dim=-1, norm="ortho")
+    return _ContiguousGrad.apply(values).transpose(1, -1)
+
 
 class FrequencyDynamicFusionBlock(nn.Module):
     """One FDBlock over ``[batch, length, d_model]`` with ``K = length // 2 + 1`` bins."""

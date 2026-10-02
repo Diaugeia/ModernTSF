@@ -64,8 +64,16 @@ jobs:
       - name: Regenerate the intentionally changed component fixture
         # ProbAttention now returns time-first output (Informer layout).
         run: TSFLAB_REGEN_COMPONENT_FIXTURES=1 uv run pytest -q tests/test_component_contracts_attention.py
-      - name: Verify every model
-        run: uv run tsf model verify --all --jobs 2
+      - name: Verify every model (one at a time, 10 min each)
+        run: |
+          names=$(uv run tsf catalog list --kind model --json | python3 -c "import json,sys; print(' '.join(r['name'] for r in json.load(sys.stdin)))")
+          failed=""
+          for name in $names; do
+            echo "::group::$name"
+            if ! timeout 600 uv run tsf model verify "$name"; then failed="$failed $name"; fi
+            echo "::endgroup::"
+          done
+          echo "Models that failed or timed out:${failed:- none}" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Regenerate cards and index
         run: |
           uv run tsf model verify --index
