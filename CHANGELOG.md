@@ -10,12 +10,19 @@ All notable changes to ModernTSF are documented here. The format loosely follows
 - `tsf dataset analyze <preset|--path FILE>`: split-aware dataset profile (JSON and
   markdown) with lookback candidates and a data-driven profile-to-catalog rule table.
 - `tsf component compose <spec.toml>`: dry-run validation of a recombination spec.
+- Real-time tracks on public, mostly non-Chinese sources: `weather_openmeteo_temp`,
+  `solar_openmeteo_ghi` (Open-Meteo), `air_airnow_us` (EPA AirNow files, no key),
+  `air_openaq_us` / `air_openaq_eu` (OpenAQ reference monitors), `grid_ercot`
+  (ERCOT public files), `grid_eia_us` / `solar_eia_us` (EIA-930), and
+  `stock_sp500`.
 
 ### Changed
 
 - `run-autoresearch` is profile-driven (analyze, hypotheses, baseline panel,
   slot-based recombination, leakage guards, registration of winners) with detail in
   skill references; the `autoresearch` task template follows.
+- `stock_nasdaq100` reads the Nasdaq API first, then the Yahoo chart API (both
+  split-adjusted); Sina stays as the last resort.
 
 ## [1.0.0rc2] — 2026-09-30 (release candidate)
 

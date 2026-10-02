@@ -6,8 +6,10 @@ name: realtime-weekly
 #   open    — open this week's round on the new release and submit the baselines
 # Results land as a pull request (rounds, forecasts, scores, summaries).
 #
-# Secrets: HF_TOKEN (dataset writes), PEMS_USER / PEMS_PASSWORD, OPENAQ_API_KEY.
-# A track whose credentials are missing is skipped; the others still run.
+# Secrets: HF_TOKEN (dataset writes), PEMS_USER / PEMS_PASSWORD (PeMS account),
+# OPENAQ_API_KEY (air_openaq_*), EIA_API_KEY (grid_eia_us, solar_eia_us). Stock,
+# AirNow, Open-Meteo, and ERCOT tracks need no secret. A track whose credentials
+# are missing is skipped; the others still run.
 
 on:
   schedule:
@@ -16,7 +18,7 @@ on:
     inputs:
       tracks:
         description: "Space-separated track ids"
-        default: "stock_hs300 stock_nasdaq100 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn"
+        default: "stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us"
 
 permissions:
   contents: write
@@ -37,6 +39,7 @@ jobs:
       PEMS_USER: ${{ secrets.PEMS_USER }}
       PEMS_PASSWORD: ${{ secrets.PEMS_PASSWORD }}
       OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
+      EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -47,7 +50,7 @@ jobs:
       - name: Run the weekly cycle
         run: |
           status=0
-          for track in ${{ inputs.tracks || 'stock_hs300 stock_nasdaq100 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn' }}; do
+          for track in ${{ inputs.tracks || 'stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us' }}; do
             echo "::group::$track"
             python -m moderntsf.realtime weekly --track "$track" --pull --push || status=$?
             echo "::endgroup::"

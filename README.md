@@ -8,7 +8,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Models: 199](https://img.shields.io/badge/models-199-orange.svg)](docs/en/models.md)
-[![Real-time tracks: 6](https://img.shields.io/badge/real--time%20tracks-6-purple.svg)](docs/en/realtime.md)
+[![Real-time tracks: 16](https://img.shields.io/badge/real--time%20tracks-16-purple.svg)](docs/en/realtime.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Every forecasting method, one interface, one protocol, evaluated on the data
@@ -99,9 +99,15 @@ no model, including ours, can have seen its evaluation data.
 | Track | Data | Setting | Horizon |
 | --- | --- | --- | --- |
 | `stock_hs300` | CSI-300 constituents, daily log returns (AKShare) | time series | 5 trading days |
-| `stock_nasdaq100` | NASDAQ-100 constituents, daily log returns (Sina via AKShare, Nasdaq fallback) | time series | 5 trading days |
+| `stock_nasdaq100` | NASDAQ-100 constituents, daily log returns (Nasdaq API, Yahoo fallback) | time series | 5 trading days |
+| `stock_sp500` | S&P 500 constituents, daily log returns (Nasdaq API, Yahoo fallback) | time series | 5 trading days |
 | `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS Districts 4, 7, 3, 8: hourly flow at 2,472 / 1,926 / 801 / 1,105 stations | spatiotemporal | 24 h |
 | `air_openaq_cn` | OpenAQ hourly PM2.5, government monitors in China | spatiotemporal | 24 h |
+| `air_openaq_{us,eu}` | OpenAQ hourly PM2.5, US / European reference monitors | spatiotemporal | 24 h |
+| `air_airnow_us` | EPA AirNow hourly PM2.5, US monitors (no key) | spatiotemporal | 24 h |
+| `weather_openmeteo_temp`, `solar_openmeteo_ghi` | Open-Meteo hourly temperature at 82 US/EU cities, irradiance at 55 PV sites | spatiotemporal | 24 h |
+| `grid_ercot` | ERCOT hourly load in 8 weather zones | spatiotemporal | 24 h |
+| `grid_eia_us`, `solar_eia_us` | EIA-930 hourly demand / solar generation per US balancing authority | spatiotemporal | 24 h |
 
 ```bash
 uv run tsf realtime forecast --track traffic_pems_sb --model DLinear   # produce a forecast
