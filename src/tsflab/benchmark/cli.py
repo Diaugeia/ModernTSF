@@ -14,7 +14,7 @@ Catalog and resource operations:
     dataset          add, prepare, inspect, analyze, or plot a dataset
     catalog          search models, components, and datasets (ranked L0 lines)
     result           aggregate, rank, plot, or report results
-    repo             audit, diagnose, or regenerate cards for the repository
+    repo             check (mergeable gate), audit, diagnose, or regenerate cards
     verify           run or inspect unified model verification
     agent            list, inspect, validate, render, or start bounded Agent tasks
 

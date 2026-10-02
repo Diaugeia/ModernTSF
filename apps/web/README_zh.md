@@ -93,7 +93,7 @@ git add submissions/…/submission.json && git push  # CI:校验 → 聚合 → 
 
 ```
 push main
-  └─ .github/workflows/web-deploy.yml
+  └─ .github/workflows/ci.yml (web + deploy)
        ├ python3 pipeline/build_leaderboard.py   校验 → 聚合 submissions/ → data/leaderboard.json
        ├ bun run build                           Next 静态导出 → out/
        └ out/ 部署到:

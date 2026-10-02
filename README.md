@@ -96,7 +96,7 @@ See [docs/en/workflows.md](docs/en/workflows.md#reading-the-catalog).
 
 ## 📈 Rolling real-time evaluation
 
-Each week the `realtime-weekly` workflow releases new observations (versioned on
+Each week the `weekly` workflow releases new observations (versioned on
 the Hugging Face Hub), scores the rounds whose target window is now observed, and
 opens a new round. Forecasts must be submitted **before** their targets exist, so
 no model, including ours, can have seen its evaluation data.
@@ -125,19 +125,19 @@ Each track is also a frozen static dataset (`rt_<track>`, `tsf dataset list`). S
 
 ## 🤝 Contributing
 
-There are three ways to take part, all through pull requests:
+There are three ways to take part:
 
-1. **Propose a method** — open a *Submit a new model* issue. An agent triages it
-   and posts its decision; accepted requests are implemented, independently
-   verified, reviewed by a second agent pass, and merged by the `paper-intake`
-   workflow.
+1. **Propose a method or report a problem** — open an *Add a paper* or *Report a
+   problem or ask a question* issue. An agent triages it; accepted papers and
+   reproducible fixes are checked with `tsf repo check`, reviewed by a second agent
+   pass, and merged by the `agent` workflow.
 2. **Submit results** — add a `submission.json` under `apps/web/submissions/`
    (see [SUBMITTING.md](apps/web/SUBMITTING.md)); CI validates it against the
    contract before it can reach the leaderboard.
 3. **Forecast a real-time round** — add `forecasts/<YourModel>.json` to an open
    round before its deadline.
 
-The literature is also scanned weekly by the `paper-intake` workflow. See
+The literature is also scanned weekly by the `agent` workflow. See
 [CONTRIBUTING.md](CONTRIBUTING.md) for code contributions.
 
 ---

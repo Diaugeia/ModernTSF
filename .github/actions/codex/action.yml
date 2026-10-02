@@ -28,6 +28,12 @@ inputs:
     default: ""
   codex-home:
     default: ""
+  sandbox:
+    description: "workspace-write | read-only"
+    default: workspace-write
+  network:
+    description: "Allow network access in the sandbox (true | false)"
+    default: "true"
 
 outputs:
   final-message:
@@ -45,9 +51,9 @@ runs:
         prompt-file: ${{ inputs.prompt-file }}
         model: ${{ inputs.model }}
         output-schema: ${{ inputs.output-schema }}
-        # Needs network for papers and official code; commits are made by the workflow.
-        sandbox: workspace-write
-        codex-args: --config sandbox_workspace_write.network_access=true
+        # Network defaults on for papers and official code; commits are made by the workflow.
+        sandbox: ${{ inputs.sandbox }}
+        codex-args: --config sandbox_workspace_write.network_access=${{ inputs.network }}
 
     - if: inputs.provider == 'huggingface'
       uses: actions/setup-node@v4
@@ -63,6 +69,8 @@ runs:
         PROMPT_FILE: ${{ inputs.prompt-file }}
         SCHEMA: ${{ inputs.output-schema }}
         BILL_TO: ${{ inputs.hf-bill-to }}
+        SANDBOX: ${{ inputs.sandbox }}
+        NETWORK: ${{ inputs.network }}
       run: |
         test -n "$HF_ROUTER_TOKEN" || { echo "::error::HF inference token is not set"; exit 1; }
         npm install --global --silent @openai/codex
@@ -78,9 +86,9 @@ runs:
           echo 'wire_api = "responses"'
           if [ -n "$BILL_TO" ]; then echo "http_headers = { \"X-HF-Bill-To\" = \"$BILL_TO\" }"; fi
           echo '[sandbox_workspace_write]'
-          echo 'network_access = true'
+          echo "network_access = $NETWORK"
         } > "$CODEX_HOME/config.toml"
-        args=(exec --sandbox workspace-write --output-last-message "$RUNNER_TEMP/codex-final.txt")
+        args=(exec --sandbox "$SANDBOX" --output-last-message "$RUNNER_TEMP/codex-final.txt")
         if [ -n "$SCHEMA" ]; then
           printf '%s' "$SCHEMA" > "$RUNNER_TEMP/codex-schema.json"
           args+=(--output-schema "$RUNNER_TEMP/codex-schema.json")

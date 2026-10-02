@@ -13,7 +13,7 @@ adding a dataset, and reporting issues.
   only when a candidate is promoted to `v1.0.0`. Fixes for an RC land on `dev`
   through pull requests like any other change.
 - **`main` is release-only and versioned.** It is protected (a PR is required to
-  merge, the `schema-check` status check must pass, force-pushes and deletion are
+  merge, the `ci` checks (`gate`, `wheel`, `web`) must pass, force-pushes and deletion are
   blocked). `main` normally advances only by promoting `dev` → `main`, and
   **every `main` update bumps the version (`pyproject.toml`) and
   ships a tagged GitHub Release** (`vX.Y.Z`, [semver](https://semver.org/)):
@@ -37,19 +37,39 @@ CPU/macOS installs. The backend is selected via `UV_TORCH_BACKEND`.
 
 ## Reporting issues
 
-Open an issue from the templates — **Submit a new model**, **Report a bug**, or
-**Ask for a feature**. The forms require the context we need (repro config,
-environment, official-source license, …); issues without it may be closed.
+Open an issue from one of two templates: **Add a paper** or **Report a problem
+or ask a question**. An agent classifies it and replies. A reproducible problem
+gets a fix through the same check, review, and merge path as any other change;
+include the command, config, traceback, and environment so it can be reproduced.
 
 ## Proposing a method (no code required)
 
-Open a **Submit a new model** issue with the paper link. The `paper-intake`
-workflow has an agent triage it and post the decision on the issue. An accepted
-paper is implemented by a coding agent as a catalog model; the workflow then
-re-runs verification, audits, and tests independently, a second read-only agent
-reviews the card against the code and paper, and the pull request is merged
-when both pass (repository variable `INTAKE_AUTOMERGE=false` turns merging back
-over to maintainers). The same workflow scans the literature weekly.
+Open an **Add a paper** issue with the paper link; the agent chooses the model
+name. `agent.yml` triages it and posts the decision. An accepted paper is
+implemented as a catalog model; the workflow independently runs
+`tsf repo check`, a second read-only agent reviews the change, and the pull
+request is merged when both pass (`INTAKE_AUTOMERGE=false` leaves merging to
+maintainers). The same workflow scans the literature weekly.
+
+## CI and the agent maintainer
+
+Three workflows, organized by module:
+
+- `ci.yml`: on every push and pull request, `tsf repo check` (the single
+  definition of mergeable: schema, agent assets, cards, verification staleness,
+  repository audit, web submissions, pytest, and the affected-model smoke run on
+  pull requests), the wheel check, and the web build. A push to the deploy branch
+  (`DEPLOY_BRANCH`, default `main`) deploys the site; a `v*` tag builds, creates
+  the GitHub release, and publishes to PyPI.
+- `agent.yml`: weekly paper discovery, issue handling, and contributor pull
+  request review. Every merge needs `tsf repo check` to pass and an agent
+  approval; issue and PR text is treated as untrusted data. Pull requests that
+  touch workflows, agent assets, dependencies, scripts, or the check itself are
+  left for a maintainer. Set `AGENT_PAUSED=true` to stop every agent job.
+- `weekly.yml`: the real-time cycle (merged after `tsf repo check`) and the
+  pinned-data link check.
+
+Run `uv run tsf repo check --scope changed` before opening a pull request.
 
 ## Submitting results and real-time forecasts
 

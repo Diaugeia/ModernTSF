@@ -36,15 +36,20 @@ def regenerate_cards(args: list[str]) -> int:
 
 def repository_command(args: list[str]) -> int:
     """Audit static repository contracts and optionally execute all model contracts."""
-    usage = "usage: tsf repo {audit,doctor,cards} [--forward | --backward | --strict]"
+    usage = "usage: tsf repo {check,audit,doctor,cards} [--forward | --backward | --strict]"
     if not args or args[0] in {"-h", "--help", "help"}:
         print(usage)
+        print("  check  the single mergeable gate: [--scope full|changed] [--json]")
         print("  cards  regenerate component/dataset cards and the model documentation index")
         return 0
     action, rest = args[0], args[1:]
-    if action not in {"audit", "doctor", "cards"}:
+    if action not in {"check", "audit", "doctor", "cards"}:
         print(usage, file=sys.stderr)
         return 2
+    if action == "check":
+        from tsflab.benchmark.commands.gate import check_command
+
+        return check_command(rest)
     if action == "cards":
         return regenerate_cards(rest)
     if action == "audit" and rest:
