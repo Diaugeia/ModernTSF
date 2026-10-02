@@ -1062,3 +1062,9 @@ structure = ['reversible instance normalization', 'lossless single-level Haar DW
 profile = 'standard'
 test = 'tests/test_frequency_wavelet_attention_forecasters.py'
 structure = ['PatchTST-style patch embedding', 'stage-1 compress-to-sensor cross-attention', 'stage-2 sensor-broadcast cross-attention', 'flatten forecast head']
+
+[models.FreDF]
+profile = 'standard'
+test = 'tests/test_fredf_structure.py'
+reference_test = 'tests/test_fredf_structure.py'
+reference_sources = ['https://github.com/Zh-XY22/FreDF/blob/43ba9576f8ef7ccc75e046c8deca08baa7eb0384/models/FreDF.py']

@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -63,6 +63,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `FeTS` | [`configs/models/FeTS.toml`](../../configs/models/FeTS.toml) | time-series | [README](../../src/tsflab/models/fets/README.md) |
 | `FiLM` | [`configs/models/FiLM.toml`](../../configs/models/FiLM.toml) | time-series | [README](../../src/tsflab/models/film/README.md) |
 | `FITS` | [`configs/models/FITS.toml`](../../configs/models/FITS.toml) | time-series | [README](../../src/tsflab/models/fits/README.md) |
+| `FreDF` | [`configs/models/FreDF.toml`](../../configs/models/FreDF.toml) | time-series | [README](../../src/tsflab/models/fredf/README.md) |
 | `Fredformer` | [`configs/models/Fredformer.toml`](../../configs/models/Fredformer.toml) | time-series | [README](../../src/tsflab/models/fredformer/README.md) |
 | `FreqMoE` | [`configs/models/FreqMoE.toml`](../../configs/models/FreqMoE.toml) | time-series | [README](../../src/tsflab/models/freqmoe/README.md) |
 | `FreTS` | [`configs/models/FreTS.toml`](../../configs/models/FreTS.toml) | time-series | [README](../../src/tsflab/models/frets/README.md) |

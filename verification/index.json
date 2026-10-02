@@ -406,6 +406,13 @@
       "subject_sha256": "3032bf46e70b78d1e7da4da6ad7af48b13c4c2e1a4f50ca8c09931ac234b472a",
       "verified_at": "2026-10-02T18:27:39.122140Z"
     },
+    "FreDF": {
+      "evidence": "verification/evidence/FreDF.json",
+      "sha256": "984e13a7f668c8a09ad8fb1c6d2df4e6b995bf61aa4882a19bec9790956c9a46",
+      "status": "passed",
+      "subject_sha256": "4df5d0744eff7deb50f28283f9589a0b33b92bb5eb50fa26a29e6b4e3b6b0d96",
+      "verified_at": "2026-10-02T18:53:25.705706Z"
+    },
     "FreTS": {
       "evidence": "verification/evidence/FreTS.json",
       "sha256": "cdc2c1297a6c5991b4eea65836385f58c2e01b33dac619996821e1c52babb96f",
