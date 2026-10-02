@@ -185,7 +185,7 @@ def audit_model_card_body(card_path: Path) -> list[str]:
     if actual != rendered:
         problems.append(
             f"{card_path.relative_to(ROOT)} canonical body is stale; "
-            "run `python -m benchmark.model_cards --write`"
+            "run `tsf repo cards`"
         )
     block = actual.removeprefix(START).removesuffix(END)
     positions: list[int] = []

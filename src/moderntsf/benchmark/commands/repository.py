@@ -21,6 +21,14 @@ def regenerate_cards(args: list[str]) -> int:
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 2
+    from moderntsf.benchmark.model_cards import update_model_card
+
+    models = sorted(
+        card for card in (root / "src" / "moderntsf" / "models").glob("*/README.md")
+        if not card.parent.name.startswith("_")
+    )
+    changed = sum(update_model_card(card) for card in models)
+    print(f"Regenerated model card bodies: {changed} of {len(models)} changed")
     count = write_resource_cards(root)
     print(f"Generated {count} component and dataset cards")
     return passthrough("check_docs.py", ["--write"])

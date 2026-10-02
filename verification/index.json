@@ -191,10 +191,10 @@
     },
     "CoRe": {
       "evidence": "verification/evidence/CoRe.json",
-      "sha256": "8c5cd76e61dd4810c1dbb24d0f2ffdcadaa70db12cd59b439751df366c9bdb6e",
+      "sha256": "fd74057bff4b12b48d2331e88902aee7bc8080043dcf2dd5b7a1ae921b289abf",
       "status": "passed",
-      "subject_sha256": "6eaa3a2a183067d0de0bfc3ea7bec78302e54c08a9f70b8731182f93f2c20c3e",
-      "verified_at": "2026-10-02T15:53:40.599518Z"
+      "subject_sha256": "b35533b889e422820d10efac6a40cdb02fb7c6ef439374665c64a721977c8eb4",
+      "verified_at": "2026-10-02T16:05:16.430736Z"
     },
     "CrossGNN": {
       "evidence": "verification/evidence/CrossGNN.json",

@@ -113,6 +113,7 @@ def _run(work: Path) -> str:
 
 
 def test_pack_then_load_state_dict_round_trips(tmp_path: Path, monkeypatch) -> None:
+    pytest.importorskip("safetensors", reason="needs the `hub` extra")
     run_id = _run(tmp_path)
     record, checkpoint = hub.find_run(run_id, tmp_path)
     bundle = tmp_path / "bundle"
