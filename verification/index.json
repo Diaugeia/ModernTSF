@@ -7,6 +7,13 @@
       "subject_sha256": "efa760b510a2ef94abd87972f3d9141cd972bebdf9e309d0bee37260295054d6",
       "verified_at": "2026-10-02T18:16:31.428230Z"
     },
+    "AMD": {
+      "evidence": "verification/evidence/AMD.json",
+      "sha256": "eba8379e1b8d4e4747a1661a0a310f149038f8429d3f21e81b3731f913071804",
+      "status": "passed",
+      "subject_sha256": "01237330ad5d0c7f18e943c81cbdd8ca75b9e6537cea1816a49cb2fc3c4539e8",
+      "verified_at": "2026-10-02T18:56:58.633839Z"
+    },
     "AMRC": {
       "evidence": "verification/evidence/AMRC.json",
       "sha256": "8b13d3edcf8a6f2c1e2e20bb8d410e18f0e40caf90a2e21d771c437605d2343e",
@@ -979,6 +986,13 @@
       "status": "passed",
       "subject_sha256": "3807dc5f9494faa4174c305737c671d9e9aca878d41af31eb166d94a38f32674",
       "verified_at": "2026-10-02T18:17:24.233150Z"
+    },
+    "SAMformer": {
+      "evidence": "verification/evidence/SAMformer.json",
+      "sha256": "ce7b765b7a27eb2253de0f78bdb54e4b98263090b6bf31204ccf3fa85a85a681",
+      "status": "passed",
+      "subject_sha256": "f61b2b9bd72de9edb26d629c5cb33f66bebb5bc729d93d140847fceb56ddd0c1",
+      "verified_at": "2026-10-02T18:53:08.687702Z"
     },
     "SCINet": {
       "evidence": "verification/evidence/SCINet.json",
