@@ -9,6 +9,12 @@ test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_mo
 reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
 structure = ['node-adaptive graph convolution', 'adaptive graph GRU', 'learned node embeddings', 'autoregressive decoder']
 
+[models.AdaMSHyper]
+profile = 'standard'
+test = 'tests/test_adamshyper_structure.py'
+reference_test = 'tests/test_adamshyper_structure.py'
+reference_sources = ['https://github.com/shangzongjiang/Ada-MSHyper/blob/8efd34c8737b0e4dafbd247794213d0278e1dc06/models/ASHyper.py']
+
 [models.AirCade]
 profile = 'standard'
 test = 'tests/test_air_quality_forecasters.py'
@@ -620,6 +626,18 @@ reference_sources = ['https://github.com/TangPeiwang/PatchMLP/blob/b36bbc92ecfc4
 profile = 'standard'
 test = 'tests/test_transformer_patch_forecasters_a.py'
 reference_test = 'tests/test_transformer_patch_forecasters_a.py'
+
+[models.PENGUIN]
+profile = 'standard'
+test = 'tests/test_penguin_structure.py'
+reference_test = 'tests/test_penguin_structure.py'
+reference_sources = ['https://github.com/ysygMhdxw/AISTATS2026_PENGUIN/blob/d9a2b84f9fa214c91c4c1c51e5a7f95fb451cefb/models/PENGIUN.py', 'https://github.com/ysygMhdxw/AISTATS2026_PENGUIN/blob/d9a2b84f9fa214c91c4c1c51e5a7f95fb451cefb/layers/SelfAttention_Family.py']
+
+[models.PatchTSMixer]
+profile = 'standard'
+test = 'tests/test_patchtsmixer_structure.py'
+reference_test = 'tests/test_patchtsmixer_structure.py'
+reference_sources = ['https://github.com/huggingface/transformers/blob/3693f8d26311305e914735a6373fb03468d6aaa0/src/transformers/models/patchtsmixer/modeling_patchtsmixer.py']
 
 [models.Pathformer]
 profile = 'standard'

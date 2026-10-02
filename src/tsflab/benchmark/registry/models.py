@@ -375,4 +375,7 @@ MODEL_CATALOG = ModelCatalog({
     "SAMformer": "tsflab.models.samformer.spec",
     "AMD": "tsflab.models.amd.spec",
     "MoU": "tsflab.models.mou.spec",
+    "PatchTSMixer": "tsflab.models.patchtsmixer.spec",
+    "AdaMSHyper": "tsflab.models.adamshyper.spec",
+    "PENGUIN": "tsflab.models.penguin.spec",
 })

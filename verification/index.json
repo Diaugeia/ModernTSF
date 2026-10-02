@@ -875,6 +875,13 @@
       "subject_sha256": "df785d76dbe419a03beeecade55557e37b5b48ec530b32edc589f4a4dbdd20bd",
       "verified_at": "2026-10-02T18:17:24.233150Z"
     },
+    "PatchTSMixer": {
+      "evidence": "verification/evidence/PatchTSMixer.json",
+      "sha256": "49cfb11cba9f451c498d13610cd2977e59c21a38a982d8f371ac0120acfafcac",
+      "status": "passed",
+      "subject_sha256": "8bca14c303afe0c01e8640ad34c4060ee2f1920e4b95967ee8ae4ced86abf8af",
+      "verified_at": "2026-10-02T18:55:08.665262Z"
+    },
     "PatchTST": {
       "evidence": "verification/evidence/PatchTST.json",
       "sha256": "e137d24847ad31091a14f795877f477b52904e26b5c0a2a277edeace3ab286a8",
