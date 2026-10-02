@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "APN",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "f870f5f4b225653cdd2c41706bc0c12d5e9c7571d65d480a3c39093eb5e9a365",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "294e74e55e40e91e5dd57244b39c2d4fe9ae136586b59ca41ff248dc0468984b",
   "paper": {
     "title": "Rethinking Irregular Time Series Forecasting: A Simple yet Effective Baseline",
     "venue": "AAAI 2026",

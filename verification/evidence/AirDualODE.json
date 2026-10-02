@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "AirDualODE",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "a212aa71c54fc2a2ce19b759bfaf75aa72ad45dbd33e2624840100d1366cedce",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "f692e91f16293a4364a3dce0fefdbb4a9c8a6e2c870ff248c13dc684e41e89a4",
   "paper": {
     "title": "Air Quality Prediction with Physics-Guided Dual Neural ODEs in Open Systems",
     "venue": "ICLR 2025",

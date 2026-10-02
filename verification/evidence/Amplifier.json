@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Amplifier",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "664bab46d02a3f6f2674e7e160baab759df52f8539da899c81bc2c37768dc24e",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "ca813151b24178e8d350524bc7cb8c3156972a39d8fcff39a885d50ea30ba218",
   "paper": {
     "title": "Amplifier: Bringing Attention to Neglected Low-Energy Components in Time Series Forecasting",
     "venue": "AAAI 2025",

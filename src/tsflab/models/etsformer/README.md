@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "230805fe9f451b61e34b96116d995b417e343ac0"
 license: "MIT"
+tagline: "Level/growth/seasonality decomposition with exponential-smoothing attention and top-k Fourier frequency attention."
+tags: ["transformer", "decomposition", "frequency", "attention-variant", "exponential-smoothing"]
+composition: ["normalization=none", "decomposition=local:level-growth-seasonality-decomposition", "temporal=local:exponential-smoothing-attention+local:frequency-attention", "channel=local:circular-conv-channel-embedding", "head=local:damped-growth-seasonality-extrapolation-with-level", "loss=loss:mse"]
 ---
 # ETSformer
 
-ETSformer is a time series forecasting model that combines classical exponential smoothing principles with the Transformer architecture to address limitations of vanilla Transformers for long-term forecasting. It introduces two novel attention mechanisms—exponential smoothing attention (ESA) and frequency attention (FA)—to replace standard self-attention, and redesigns the Transformer with modular decomposition blocks that learn to separate time series into interpretable components: level, growth, and seasonality.
+## Key ideas
+
+- `FrequencyAttention` keeps the top-k amplitude Fourier bases (excluding DC) of the residual and extrapolates them over the history and horizon as seasonality.
+- `ExponentialSmoothing` (exponential smoothing attention) smooths the first difference with learnable per-feature alpha to extract growth.
+- Each `ETSLayer` removes seasonality and growth from the residual in turn; damped growth (`damping_logit`) is extrapolated for the horizon.
+- A level recurrence with learnable alpha (`_level`) adds the final level to the projected seasonality and growth forecasts; timestamp marks are not used.
 
 <!-- model-card:canonical:start -->
 ## Input and output

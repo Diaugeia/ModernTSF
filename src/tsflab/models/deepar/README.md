@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "79641b1c75246ab2d8c53bb52f2ac72588be0cdc"
 license: "Apache-2.0"
+tagline: "Autoregressive LSTM emitting Gaussian parameters per step, fed back its own mean at inference; shared across series."
+tags: ["rnn", "probabilistic", "autoregressive", "covariates", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:autoregressive-lstm", "channel=local:channel-independent-shared-weights", "head=component:gaussian_parameter_head", "loss=loss:nll_gaussian"]
 ---
 # DeepAR
 
-DeepAR is an autoregressive recurrent neural network designed for probabilistic time-series forecasting. It trains a single global LSTM-based model over many related time series and outputs a learned probability distribution over the forecast horizon rather than a point prediction, making it well-suited to the standard univariate and multivariate time-series forecasting setting.
+## Key ideas
+
+- A single global LSTM (`recurrent`) is shared by all channels, each treated as its own series, and embeds scalar values plus optional covariates from time marks.
+- `gaussian_parameter_head` outputs location and positive scale at each step; the model returns `[batch, pred_len, channels, 2]` (output type `distribution`).
+- Decoding is autoregressive: after encoding history, the likelihood mean is fed back as the next input (deterministic, no ancestral sampling).
+- Trained with Gaussian negative log-likelihood (`nll_gaussian`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "Cache-attention: stations attend a small learnable coarse-region cache in linear cost, then propagate future covariates."
+tags: ["transformer", "spatiotemporal", "covariates", "attention-variant", "linear-attention", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:linear-history-summaries", "channel=local:cache-attention-over-stations", "head=local:linear-horizon-decoder", "loss=loss:mse"]
 ---
 # CauAir
 
-CauAir uses learnable coarse-region caches to model causal association between station AQI and weather at linear complexity in the number of stations. This entry is a local implementation from the IJCAI paper; the unlicensed author repository is reference-only and was inspected at the pinned revision; no external source code was copied.
+## Key ideas
+
+- `CacheAttention` assigns stations to a few learnable cache slots per head, aggregates values in that coarse view, and broadcasts back, costing O(P*N*d) rather than O(N^2).
+- `CachLormer` mixes cache-attention and a `SwiGLU` feed-forward in parallel with softmax-learned weights.
+- AQI and weather history are summarized by station-shared linear maps and joined into a past association, refined by `past_cachlormer`.
+- A second `future_cachlormer` propagates that association through future covariates (derived from calendar marks) and a linear `decoder` maps to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

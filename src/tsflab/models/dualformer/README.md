@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/Akira-221/Dualformer"
 revision: "ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19"
 license: "NOASSERTION"
+tagline: "Time and frequency Transformer branches fed depth-specific bands, fused by a harmonic-energy periodicity gate."
+tags: ["transformer", "frequency", "attention-variant", "multi-scale", "normalization", "covariates"]
+composition: ["normalization=component:revin", "decomposition=component:frequency_band_sampler", "temporal=component:transformer_encdec+component:self_attention_family+local:auto-correlation-attention-frequency-branch", "channel=component:forecast_embedding", "head=component:harmonic_energy_gate+local:last-step-linear-projection", "loss=loss:mse"]
 ---
 # Dualformer
 
-Dualformer is a dual-branch Transformer for long-term time series forecasting that processes time and frequency domains in parallel. A hierarchical frequency-sampling module allocates a different, depth-indexed frequency band to each encoder layer so shallow layers keep high-frequency detail while deep layers specialize on low-frequency trend, and a periodicity-aware harmonic-energy gate fuses the two branches per channel.
+## Key ideas
+
+- `frequency_band_sampler` (`HierarchicalFrequencySampler`) gives each encoder depth its own contiguous frequency band: shallow layers keep high-frequency detail, deep layers low-frequency trend.
+- A time branch uses ordinary `FullAttention` encoder layers; a frequency branch uses a local `AutoCorrelationAttention` (FFT top-lag aggregation) in the same `transformer_encdec` layers.
+- Layers are truly stacked on the running state, unlike the pinned official code where only the last layer contributes.
+- `harmonic_energy_gate` weights the branches by periodicity evidence; only the last fused step is projected to the horizon. `revin` and `forecast_embedding` (values plus calendar marks) frame the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

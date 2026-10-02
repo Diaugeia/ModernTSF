@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/wxie9/CARD"
 revision: "ca6d34bcf26355bfdb6fc05f49c66e7601817f66"
 license: "NOASSERTION"
+tagline: "Patch Transformer that blends EMA-aligned temporal-token attention with cross-channel attention over aligned tokens."
+tags: ["transformer", "patching", "channel-mixing", "attention-variant"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:ema-aligned-patch-token-attention", "channel=local:channel-aligned-cross-channel-attention", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # CARD
 
-CARD (Channel Aligned Robust Blend Transformer) is a Transformer-based model for multivariate long-term and short-term time series forecasting. It addresses the limitations of channel-independent Transformers by introducing a channel-aligned attention structure that jointly captures temporal correlations and cross-variable dependencies, a token blend module for multi-scale feature extraction, and a robust uncertainty-weighted loss function to reduce overfitting.
+## Key ideas
+
+- `ChannelAlignedBlock` runs two attentions per layer: over patch tokens of each channel (queries/keys from `exponential_smooth`, a causal EMA over tokens) and across channels at each patch position.
+- A learned sigmoid gate (`blend`) mixes the temporal and cross-channel outputs token by token.
+- Overlapping patches (length 16, stride 8) are linearly projected with learned positions; an optional statistics token (`use_statistic`) is available.
+- A flatten linear head forecasts all channels; the paper's robust training loss and low-rank attention approximation are omitted.
 
 <!-- model-card:canonical:start -->
 ## Input and output

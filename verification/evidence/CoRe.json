@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CoRe",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "d4925bb99ef746b98d8328ea9021d5234cf55efc7fe06c5dfd5b855baba36b1c",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "151928324da87aa474704b85cff21f412e663bd6fb97768c0a997a4a132f6d70",
   "paper": {
     "title": "Correction-space Cross-variate Interaction for Test-time Adaptation in Time Series Forecasting",
     "venue": "arXiv",

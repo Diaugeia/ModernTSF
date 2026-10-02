@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/yoshall/airformer"
 revision: "ef7d3933768490e3a06921b8eb0f837c61741194"
 license: "NOASSERTION"
+tagline: "Air-quality Transformer: causal windowed temporal attention, dartboard regional spatial attention, stochastic latents."
+tags: ["transformer", "spatiotemporal", "covariates", "attention-variant", "probabilistic", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:causal-windowed-temporal-attention", "channel=local:dartboard-region-spatial-attention", "head=local:temporal-linear-head+local:linear-output-head", "loss=loss:mse"]
 ---
 # AirFormer
 
-AirFormer factorizes nationwide air-quality learning into deterministic causal-temporal and dartboard-spatial attention, followed by a top-down latent hierarchy for uncertainty. This implementation is independently derived from the AAAI paper.
+## Key ideas
+
+- `CausalTemporalAttention` (CT-MSA) uses a growing causal window per block (`min(seq_len, 2 ** (index + 1))`).
+- `DartboardSpatialAttention` (DS-MSA) lets each station attend to a few aggregated regions given by an explicit `(node, region, node)` dartboard projection, instead of all stations.
+- A top-down stochastic stage samples a Gaussian latent at every block during training and uses the mean at evaluation.
+- A linear map over time (`temporal_head`) turns history length into horizon length before the output head.
 
 <!-- model-card:canonical:start -->
 ## Input and output

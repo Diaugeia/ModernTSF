@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Aurora",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "209426770b33770bf79c068d380c1a19d8743cf661003cbfcc4c3bea8a92c0b3",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "cccdc37df12e33e2fe3792cdcb5a3f54892717726abca694c47ce5bfc7ba0ce1",
   "paper": {
     "title": "Aurora: Towards Universal Generative Multimodal Time Series Forecasting",
     "venue": "ICLR 2026",

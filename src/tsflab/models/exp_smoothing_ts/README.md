@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1016/j.ijforecast.2003.09.015"
 paper_title: "Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages"
 venue: "International Journal of Forecasting"
 year: 2004
+tagline: "Simple exponential smoothing with one learned smoothing coefficient per channel; forecast repeats the final level."
+tags: ["statistical", "baseline", "lightweight", "channel-independent", "exponential-smoothing"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:simple-exponential-smoothing-level", "channel=local:channel-independent-per-channel-alpha", "head=local:repeat-final-level", "loss=loss:mse"]
 ---
 # ExpSmoothingTS
 
-ExpSmoothingTS is a differentiable simple-exponential-smoothing baseline. It learns one smoothing coefficient per channel, recursively updates the level, and repeats the final level across the forecast horizon.
+## Key ideas
+
+- Updates a level recursively as alpha * x_t + (1 - alpha) * level, with a sigmoid-bounded `alpha` learned per channel by gradient descent.
+- The forecast is the last level repeated over the horizon: no trend or seasonal state (no Holt-Winters).
+- Has `enc_in` parameters in total, making it the smallest baseline in the collection of neural-wrapped statistical models.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/decisionintelligence/CoRA"
 revision: "1292f7b114e26d477675291004acb018e81896ca"
 license: "NOASSERTION"
+tagline: "Plug-in channel-correlation adapter: Pearson prior plus polynomial low-rank dynamics gate a residual on a linear base."
+tags: ["linear", "channel-mixing", "adapter", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:linear-base-forecaster", "channel=local:dynamic-polynomial-low-rank-correlation+local:pearson-prior", "head=local:gated-residual-fusion-head", "loss=loss:mse"]
 ---
 # CoRA
 
-CoRA is a time series forecasting model that acts as a lightweight, plug-and-play correlation-aware adapter for multivariate forecasting. It augments time series foundation models (which typically use channel-independent modeling) by explicitly capturing three types of inter-channel correlations: time-varying dynamic correlations (via learnable polynomials), heterogeneous correlations (positive and negative), and partial correlations among subsets of channels (via a dual contrastive learning approach). The adapter requires only fine-tuning with the base foundation model and adds no extra complexity at inference time.
+## Key ideas
+
+- `dynamic_correlation` adds a time-varying low-rank term (polynomial coefficients from an encoding of each channel, shared time-invariant composition matrices) to the batch Pearson correlation.
+- Positive and negative correlations are separated: each side is softmax-normalized and aggregates values projected by `_HeterogeneousProjection`.
+- The fused context gives a correction that is gated (`gate`) and added to a `base` linear forecast.
+- A small local linear forecaster stands in for the paper's pre-trained foundation model; the H-PCorr contrastive loss is not implemented.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DGCRN",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "7bbedc90f3b04f18e55ac2c2e1fbe28d35c51a123ec091ede6324458305ee6fd",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "f97fdec11caf9f79b24bd858e77424f931e0eec5687eb3bfb8652d7308afcd0f",
   "paper": {
     "title": "Dynamic Graph Convolutional Recurrent Network for Traffic Prediction: Benchmark and Solution",
     "venue": "ACM TKDD 2023",

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DSFormer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "a897b7c09953784cfe5ab06ad1efbfd1545f9de489ec806ded21cee1ce2d1575",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "2de0f6ee252141edf5cea1732305982fa9939e4706ddee64f6f2c7076bcb0aaf",
   "paper": {
     "title": "DSformer: A Double Sampling Transformer for Multivariate Time Series Long-term Prediction",
     "venue": "CIKM 2023",

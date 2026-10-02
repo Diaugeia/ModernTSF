@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CMoS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "f40e5fe92c544075b7fab08db3db680a7bd7294ff45165b6d469fb8aaabbc449",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "8ea6e61ffa5b1e829be422ee56f46be08d77778a57e17417b6a935e21bd4c2cf",
   "paper": {
     "title": "CMoS: Rethinking Time Series Prediction Through the Lens of Chunk-wise Spatial Correlations",
     "venue": "ICML 2025",

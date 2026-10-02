@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/decisionintelligence/DTAF"
 revision: "9d12aa4061c771b419c5a5bba9f2bf95d9419c41"
 license: "NOASSERTION"
+tagline: "Patch Transformer branches: MoE subtraction of nuisance patterns plus top-k spectral-change frequency modeling, fused."
+tags: ["transformer", "patching", "frequency", "mixture-of-experts", "channel-independent", "non-stationary"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:temporal-stabilizing-fusion-moe+local:frequency-wave-modeling", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # DTAF
 
-DTAF first patchifies each normalized channel. Its Temporal Stabilizing Fusion subtracts a routed mixture of nuisance experts and combines causal history with a gated current token. In parallel, Frequency Wave Modeling selects Fourier bins with the strongest adjacent-amplitude changes and refines them with attention. A residual fusion joins both paths before the horizon head.
+## Key ideas
+
+- `TemporalStabilizingFusion` routes each patch token over small expert MLPs and subtracts the weighted output as nuisance (non-stationary) content, then fuses causal history with a gated current token.
+- `FrequencyWaveModeling` keeps only the DC bin and the `top_k` bins with the largest adjacent-bin amplitude change, reconstructs the series, and applies self-attention.
+- `DTAFBlock` concatenates and fuses the two branches residually.
+- Channels share weights through patch tokens (`patchify`); a flatten linear head forecasts, and the input is standardized per window.
 
 <!-- model-card:canonical:start -->
 ## Input and output

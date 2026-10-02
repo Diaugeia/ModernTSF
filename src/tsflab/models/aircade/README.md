@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/AirCade"
 revision: "179067f5b9fbc05f894022809e0b1c83e9f61fd8"
 license: "NOASSERTION"
+tagline: "Air-quality Transformer with four-path domain-knowledge attention decoupling AQI-weather causality in past and future."
+tags: ["transformer", "spatiotemporal", "covariates", "attention-variant", "causal", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dk-msa-temporal-cade-cadi", "channel=local:dk-msa-spatial-attention-over-stations", "head=local:history-to-future-linear+local:linear-predictor", "loss=loss:mse"]
 ---
 # AirCade
 
-AirCade explicitly separates synchronous AQI--weather causality from its propagation through uncertain future weather. This entry is a clean-room paper implementation; the unlicensed reference repository was inspected at the pinned revision; no external source code was copied while producing it.
+## Key ideas
+
+- `DomainKnowledgeAttention` mixes four paths (direct, inverse, and two adaptive-graph attention matrices) with learnable multi-environment intervention masks.
+- Cade layers (`temporal_cade`, `spatial_cade`) use historical weather as query/key and pollutant values as value to decouple synchronous AQI-weather causality.
+- A linear map from history to horizon length feeds Cadi layers (`temporal_cadi`, `spatial_cadi`) that condition on future weather covariates built from calendar marks.
+- Learnable time and station prompts are concatenated to the value and weather embeddings.
 
 <!-- model-card:canonical:start -->
 ## Input and output

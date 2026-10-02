@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/GestaltCogTeam/DSformer"
 revision: "ccdbc354603e7842a89603649b0e33a8142c7701"
 license: "NOASSERTION"
+tagline: "Double sampling (piecewise and interval views) with temporal-variable attention, gated fusion, channel decoder."
+tags: ["transformer", "channel-mixing", "attention-variant", "multi-scale", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:double-sampling-views+local:temporal-attention", "channel=local:variable-attention-gated-cross-fusion", "head=local:decoder-attention-linear-head", "loss=loss:mse"]
 ---
 # DSFormer
 
-DSFormer (Double Sampling Transformer) is a Transformer-based model for multivariate long-term time series forecasting. It combines a Double Sampling (DS) block — which applies down-sampling and piecewise sampling to capture global and local temporal information — with a Temporal Variable Attention (TVA) block that mines both temporal and inter-variable dependencies, feeding a generative MLP decoder to produce multi-horizon forecasts.
+## Key ideas
+
+- `dual_sampling` reshapes each series into a piecewise view (contiguous segments, local information) and an interval view (strided samples, global information).
+- `TVABlock` runs temporal attention within each channel and variable attention across channels, then blends them with a sigmoid cross gate and a feed-forward layer.
+- The two views are processed by separate block stacks, concatenated and mixed linearly (`node_mix`), refined by `decoder_attention`, and mapped to the horizon; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1111/j.1467-9868.2005.00503.x"
 paper_title: "Regularization and Variable Selection via the Elastic Net"
 venue: "Journal of the Royal Statistical Society, Series B"
 year: 2005
+tagline: "Shared linear lag regression trained with an L1/L2 elastic-net weight penalty added through aux_loss."
+tags: ["statistical", "linear", "baseline", "channel-independent", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:elastic-net-weight-penalty"]
 ---
 # ElasticNetTS
 
-ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`.
+## Key ideas
+
+- A single `nn.Linear(seq_len, pred_len)` maps each channel's lags to all horizons, with coefficients shared across channels.
+- The forward pass sets `aux_loss = penalty * (l1_ratio * ||w||_1 + 0.5 (1 - l1_ratio) ||w||_2^2)`, the elastic-net penalty.
+- It is gradient-trained: no least-squares solution path or variable-selection procedure.
 
 <!-- model-card:canonical:start -->
 ## Input and output

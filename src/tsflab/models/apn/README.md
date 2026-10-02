@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/decisionintelligence/APN"
 revision: "f0d6eeb7a2ee2d7c76475bf725b7ea25f98af3f4"
 license: "NOASSERTION"
+tagline: "Learns soft temporal window boundaries per channel to aggregate observations into patches, then decodes at query times."
+tags: ["mlp", "patching", "irregular-sampling", "attention-variant", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:time-aware-soft-window-patch-aggregation", "channel=local:channel-query-attention-pooling", "head=local:query-time-mlp-decoder", "loss=loss:mse"]
 ---
 # APN
 
-APN (Adaptive Patching Network) is a general and efficient framework for forecasting irregular multivariate time series (IMTS) in a multivariate time-series forecasting setting. It introduces a Time-Aware Patch Aggregation (TAPA) module that learns dynamically adjustable patch boundaries and a time-aware weighted averaging strategy to transform raw irregular observations into high-quality regularized representations, avoiding the need for resampling or interpolation.
+## Key ideas
+
+- `patch_weights` builds differentiable windows from per-channel learned offsets, log-widths and temperatures (product of sigmoids), so patch boundaries adapt (Time-Aware Patch Aggregation).
+- Observations are augmented with a learned time embedding and aggregated by normalized weighted averaging into `num_patches` patches per channel.
+- A learned query per channel pools the patches with attention into one context vector.
+- An MLP decodes the context concatenated with future-time embeddings, one step per horizon; dense inputs use regular timestamps unless observation times are passed.
 
 <!-- model-card:canonical:start -->
 ## Input and output

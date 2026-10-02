@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/MazelTovy/AMRC"
 revision: "c0d742c6dad73c2fa5ed1c40ae57affc6740f40e"
 license: "NOASSERTION"
+tagline: "Training objective adding adaptive prefix-masking loss and embedding-similarity penalty to a compact linear forecaster."
+tags: ["mlp", "normalization", "channel-independent", "masking", "loss-function", "representation-learning"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:linear-embedding-encoder", "channel=local:channel-independent-shared-weights", "head=local:linear-predictor", "loss=loss:mse+local:adaptive-masking-loss+local:embedding-similarity-penalty"]
 ---
 # AMRC
 
-AMRC is a training-time method for suppressing redundant history features and preserving representation geometry; it does not prescribe a forecasting backbone.
+## Key ideas
+
+- AMRC is an optimization method; the forecaster is a compact carrier (linear encoder with `GELU` and `LayerNorm`, then a linear predictor) applied per channel, wrapped by `revin`.
+- `adaptive_masking_loss` masks the oldest prefix of the lookback at several lengths, keeps the best-performing mask per sample, and pulls the unmasked embedding toward its embedding, weighted by the relative improvement.
+- `embedding_similarity_penalty` matches pairwise embedding distances to pairwise target distances within a batch.
+- `training_objective` sums MSE with these two terms (`lambda_aml`, `lambda_esp`); plain `forward` is point forecasting only.
 
 <!-- model-card:canonical:start -->
 ## Input and output

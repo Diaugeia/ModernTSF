@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/ACAT-SCUT/CycleNet"
 revision: "d807e51fc2dcd143885ee639d97965a7ab0926f4"
 license: "Apache-2.0"
+tagline: "Subtracts a learnable recurrent cycle by timestamp phase, forecasts the residual linearly, adds the cycle back."
+tags: ["linear", "decomposition", "periodicity", "normalization", "channel-independent", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=local:learnable-recurrent-cycle-removal", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=local:cycle-restoration", "loss=loss:mse"]
 ---
 # CycleNet
 
-CycleNet is a long-term time-series forecasting model that explicitly models periodic patterns in the input sequence via a Residual Cycle Forecasting (RCF) technique. It separates learnable recurrent cycle components from the residual signal and predicts on the residuals, achieving state-of-the-art accuracy in electricity, weather, and energy domains with over 90% fewer parameters than competing approaches.
+## Key ideas
+
+- `cycle_pattern` is a learnable `[cycle, channels]` parameter (zero-initialized) selected by the timestamp phase (hour, weekday, or hour-of-week for cycles 24, 7, 168).
+- The aligned cycle is removed from the normalized history and the future cycle is added back after forecasting (Residual Cycle Forecasting).
+- The residual is forecast by one shared `channel_wise_linear` map, or a small MLP when `model_type='mlp'`.
+- Non-affine `revin` is optional; missing timestamps fall back to phase zero.
 
 <!-- model-card:canonical:start -->
 ## Input and output

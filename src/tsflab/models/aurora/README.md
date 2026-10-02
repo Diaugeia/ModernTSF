@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/decisionintelligence/Aurora"
 revision: "a247760abbc9d17a861bc365c032368d317815f2"
 license: "NOASSERTION"
+tagline: "Patch Transformer guided by distilled text/image tokens, decoding via prototype retrieval and flow integration."
+tags: ["transformer", "patching", "multimodal", "frequency", "retrieval", "flow-matching", "channel-independent"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-transformer-encoder+local:modality-guided-attention", "channel=local:channel-independent-shared-weights", "head=local:prototype-retrieval-flow-decoder", "loss=loss:mse"]
 ---
 # Aurora
 
-The paper's Aurora is a pretrained generative multimodal foundation model. This repository provides a compact paper-structured rewrite for ordinary forecasting, not the released pretrained system.
+## Key ideas
+
+- Patches each channel (`patch_len`) into tokens and runs them through a pre-norm `TransformerEncoder`, wrapped by `revin`.
+- Learnable-query attention distils text and image tokens (optional dense embeddings; otherwise a domain token and an FFT magnitude token) which then guide temporal tokens through `text_guider` and `image_guider`, mixed by `guide_gate`.
+- Future queries cross-attend the encoded history to form per-step conditions.
+- `prototype_retriever` picks from a bank of sinusoidal-initialized prototypes, then `flow_network` integrates a deterministic velocity field for `flow_steps` steps.
 
 <!-- model-card:canonical:start -->
 ## Input and output

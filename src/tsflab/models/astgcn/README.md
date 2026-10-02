@@ -8,10 +8,18 @@ year: 2019
 code: "https://github.com/guoshnBJTU/ASTGCN-2019-pytorch"
 revision: "2e7a4faa2a6f89da8d1cb37acb7e267c9bc87296"
 license: "NOASSERTION"
+tagline: "Spatial and temporal attention modulating Chebyshev graph convolution plus gated temporal conv; recent branch only."
+tags: ["gnn", "cnn", "attention-variant", "spatiotemporal", "covariates", "graph-given"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-attention+local:gated-temporal-convolution", "channel=component:graph_spectral+local:attention-modulated-chebyshev-conv", "head=local:conv-history-to-horizon-projection", "loss=loss:mse"]
 ---
 # ASTGCN
 
-The ASTGCN paper proposes a graph traffic forecaster with spatial-temporal attention, Chebyshev graph convolution, temporal convolution, and a learned fusion of recent, daily-periodic, and weekly-periodic branches. This clean-room implementation realizes one recent-history branch with learned spatial/temporal attention, attention-modulated Chebyshev filters, gated temporal convolution, and direct horizon projection.
+## Key ideas
+
+- `SpatialTemporalAttention` learns dense node-by-node and step-by-step attention matrices from the input of each block.
+- `AttentionChebyshevConvolution` multiplies each Chebyshev support (`chebyshev_supports` from `graph_spectral`) elementwise by the spatial attention before propagating features.
+- `ASTGCNBlock` follows with a gated (tanh x sigmoid) temporal convolution, a residual projection and `LayerNorm`.
+- Only the recent-history branch is implemented (no daily or weekly branches); a final convolution treats history steps as channels to emit the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

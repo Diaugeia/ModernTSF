@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Autoformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "540cefce5dd7adbeb2cda30ce79c493188ea49dce8c04c0a4ec0b0107cc3d3e0",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "d3a8180b20206579bc0c9d551cf3efa3ee0319cca25eb82ef70dfac5a518f98d",
   "paper": {
     "title": "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting",
     "venue": "NeurIPS 2021",

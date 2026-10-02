@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/CSTCloudOps/CMoS"
 revision: "b696a0c33b5ad8f03ad483d43b95fcb5564aa939"
 license: "NOASSERTION"
+tagline: "Super-light: per-channel softmax mixture of K shared chunk-correlation matrices; optional periodic initialization."
+tags: ["linear", "lightweight", "normalization", "chunking", "channel-independent"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:shared-chunk-correlation-matrices", "channel=local:per-channel-correlation-mixture", "head=local:chunk-to-horizon-correlation-map", "loss=loss:mse"]
 ---
 # CMoS
 
-CMoS is a super-lightweight multivariate time series forecasting model for the standard time-series setting. Rather than learning shape embeddings, it directly models spatial correlations between different time-series chunks using a Correlation Mixing strategy that captures diverse channel dependencies with minimal parameters, and an optional Periodicity Injection technique for faster convergence — achieving competitive accuracy at up to 100x the parameter efficiency of DLinear.
+## Key ideas
+
+- Splits the series into chunks and learns `num_map` shared chunk-by-chunk correlation matrices (`correlations`) mapping input chunks to output chunks.
+- A per-channel strided `Conv1d` summary feeds a shared `allocator` linear layer; its softmax mixes the K matrices for each channel (`CorrelationMixer`).
+- Optional `period` initializes the first matrix with periodic peaks (`periodic_correlation_initialization`).
+- Wrapped by `revin`; there is no separate decoder or nonlinearity, hence the very small parameter count.
 
 <!-- model-card:canonical:start -->
 ## Input and output

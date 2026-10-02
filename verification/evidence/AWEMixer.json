@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "AWEMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "1d445c043238875bd0457af4907949090393980dae9da97a2176a74458f0ab7d",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "270a6932ad7c1df1b1a732e616095a2dd18656bb554461ef14150580144586cf",
   "paper": {
     "title": "AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting",
     "venue": "arXiv",

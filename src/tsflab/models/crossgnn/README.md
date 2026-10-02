@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/hqh0728/CrossGNN"
 revision: "0407abd085ee8342abe0bbe6de5b2ab17c44373c"
 license: "NOASSERTION"
+tagline: "Linear-complexity GNN on multi-resolution views: FFT-period pooling, scale-aware temporal graph, signed variable graph."
+tags: ["gnn", "multi-scale", "frequency", "graph-learning", "channel-mixing", "normalization"]
+composition: ["normalization=component:last_value_center", "decomposition=local:fft-period-average-pooling-multi-scale", "temporal=local:scale-sensitive-temporal-graph", "channel=local:signed-variable-graph", "head=local:channel-collapse-and-temporal-linear-head", "loss=loss:mse"]
 ---
 # CrossGNN
 
-CrossGNN is a multivariate time-series forecasting model that tackles noise and inter-variable heterogeneity through a linear-complexity graph neural network framework. It uses an adaptive multi-scale identifier to build cleaner multi-resolution views of the input, a Cross-Scale GNN to capture trend information at the most informative scale, and a Cross-Variable GNN to jointly model homogeneity and heterogeneity between channels — all while maintaining O(L) time and space complexity with respect to sequence length.
+## Key ideas
+
+- `AdaptiveMultiScaleIdentifier` picks the dominant FFT periods of the batch (`dominant_periods`) and average-pools the series at each period, concatenating the scales.
+- `SparseCrossGraphLayer` learns a temporal adjacency over all scale nodes, keeping top-k neighbours per scale plus adjacent steps, to propagate trend information across scales.
+- A learned variable graph passes positive messages from top-k similar channels and negative messages from least similar ones.
+- Series are centered on the last value (`last_value_center`), features are collapsed per channel, resized to `seq_len`, and mapped to the horizon by a temporal linear head.
 
 <!-- model-card:canonical:start -->
 ## Input and output

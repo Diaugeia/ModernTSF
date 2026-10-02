@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/tsinghua-fib-lab/Traffic-Benchmark"
 revision: "b9f8e40b4df9b58f5ad88432dc070cbbbcdc0228"
 license: "MIT"
+tagline: "Graph-GRU encoder-decoder whose directed graphs are regenerated each step by hypernetworks from hidden state."
+tags: ["rnn", "gnn", "graph-learning", "spatiotemporal", "covariates", "autoregressive-decoding"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dynamic-graph-gru-encoder-decoder", "channel=local:hypernetwork-dynamic-directed-graphs+local:static-forward-reverse-transitions", "head=local:linear-projection-autoregressive-decoder", "loss=loss:mse"]
 ---
 # DGCRN
 
-The DGCRN paper uses hyper-networks to generate time-varying graph filters and combines the resulting dynamic adjacency with a predefined graph inside a recurrent encoder-decoder. This clean-room implementation generates directed graphs from hidden state and node embeddings at every step, mixes dynamic and static propagation in graph-GRU gates, and uses known time marks without future targets.
+## Key ideas
+
+- `DynamicGraphGenerator` is a hypernetwork that maps the current hidden state plus source/target node embeddings to forward and backward row-normalized graphs at every step.
+- `DynamicGraphConvolution` mixes predefined forward/reverse transitions with those dynamic graphs over multiple hops inside the gates of `DynamicGraphGRUCell`.
+- The same cell encodes history and decodes autoregressively, feeding back `projection` output; a known time driver comes from marks and no future targets are used.
 
 <!-- model-card:canonical:start -->
 ## Input and output

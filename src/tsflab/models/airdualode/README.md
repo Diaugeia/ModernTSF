@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/decisionintelligence/Air-DualODE"
 revision: "3accfef5d3ab40f685ea29f302f76287706ba821"
 license: "NOASSERTION"
+tagline: "Dual neural ODE: boundary-aware diffusion-advection physics plus masked-attention latent ODE, fused on the graph."
+tags: ["hybrid", "gnn", "spatiotemporal", "covariates", "physics-informed", "neural-ode"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:euler-rk4-dual-ode-rollout", "channel=local:geographic-graph-diffusion-advection+local:masked-attention-graph-state", "head=local:graph-fusion-decoder", "loss=loss:mse"]
 ---
 # AirDualODE
 
-Air-DualODE models an open pollutant system with a physical BA-DAE branch and a separate data-driven latent ODE, then fuses both node representations on the geographic graph. This is a paper-derived local implementation; the unlicensed reference code was inspected at the pinned revision; no external source code was copied.
+## Key ideas
+
+- `BoundaryAwareDynamics` implements the open-system diffusion-advection equation with source/sink correction; a GRU estimates its coefficients from history.
+- `DataDrivenDynamics` is a latent ODE field using attention masked by the geographic graph to model dependencies the physics omits.
+- Both states roll out one step per forecast horizon with Euler or RK4 (`ode_method`).
+- Physics and latent states are concatenated and fused over the geographic graph in `graph_fusion` before the linear decoder.
 
 <!-- model-card:canonical:start -->
 ## Input and output

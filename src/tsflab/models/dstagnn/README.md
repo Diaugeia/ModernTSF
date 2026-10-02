@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/SYLan2019/DSTAGNN"
 revision: "10da0e08ec3cf8845841741b8434fd76fd48ff84"
 license: "NOASSERTION"
+tagline: "Temporal and spatial attention modulating Chebyshev graph convolution, plus kernel 3/5/7 gated temporal convs."
+tags: ["gnn", "transformer", "cnn", "attention-variant", "multi-scale", "spatiotemporal"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-multi-head-attention+local:multi-scale-gated-temporal-conv", "channel=component:graph_spectral+local:attention-modulated-chebyshev-conv", "head=local:conv-history-to-horizon-projection", "loss=loss:mse"]
 ---
 # DSTAGNN
 
-The DSTAGNN paper combines a data-derived pattern-aware graph, spatial-temporal attention with residual attention, Chebyshev graph convolution, and multi-scale gated temporal convolution. This clean-room implementation couples dense temporal and spatial multi-head attention to attention-modulated Chebyshev filtering and three gated temporal receptive fields.
+## Key ideas
+
+- `AxisAttention` applies multi-head attention over time for each node and over nodes for each step; the spatial attention matrices are kept dense.
+- `DynamicChebyshevConvolution` scales each Chebyshev support (`chebyshev_supports`, order 3) by the per-sample spatial attention before propagation.
+- `MultiScaleGatedTemporalConvolution` fuses three gated convolutions with receptive fields 3, 5 and 7.
+- Only the value stream is used (no timestamp marks); the pattern-aware adjacency of the paper is not reproduced.
 
 <!-- model-card:canonical:start -->
 ## Input and output

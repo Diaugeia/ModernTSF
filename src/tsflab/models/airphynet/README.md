@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/kethmih/AirPhyNet"
 revision: "e77576cfea777e8cd07f2ae198c560a8790f4b91"
 license: "MIT"
+tagline: "Graph neural ODE with gated diffusion-advection vector field, evolved from a sampled GRU initial state."
+tags: ["hybrid", "rnn", "gnn", "spatiotemporal", "covariates", "physics-informed", "neural-ode"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:euler-rk4-latent-ode-rollout", "channel=local:distance-laplacian-and-directed-flow-operators", "head=local:shared-mlp-decoder", "loss=loss:mse"]
 ---
 # AirPhyNet
 
-AirPhyNet embeds diffusion and directed wind advection in a graph differential equation, using a GRU posterior for the initial latent state and a shared future decoder. This implementation was written from the ICLR paper equations, not from the former CauAir-derived file.
+## Key ideas
+
+- A per-station GRU encodes pollutant and covariate history into a reparameterized Gaussian initial latent state (sampled only in training).
+- `PhysicsVectorField` follows dz/dt = -alpha k tanh(Lz) - (1-alpha) tanh(Mz), with L the distance-graph Laplacian and M a directed flow operator.
+- The latent state is integrated one step per horizon with Euler or RK4 and a shared MLP decoder maps each state to concentration.
 
 <!-- model-card:canonical:start -->
 ## Input and output

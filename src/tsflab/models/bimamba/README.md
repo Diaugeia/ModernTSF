@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/Huangmr0719/BiMamba"
 revision: "78db48cc5251235e47465c63d3701a9e5fd6fcb1"
 license: "NOASSERTION"
+tagline: "Bidirectional Mamba+ (forget-gated selective scan) over patch tokens, blending independent and mixing channel paths."
+tags: ["ssm", "patching", "bidirectional", "channel-independent", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=component:mamba+local:bidirectional-mamba-plus-encoder", "channel=local:series-relation-gated-blend-of-independent-and-mixing-tokenization", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # BiMamba
 
-BiMamba is a bidirectional state-space model (SSM) for long-term multivariate time-series forecasting. It extends the Mamba selective SSM with a forget gate (Mamba+) and runs it in both the forward and backward directions, enabling the model to capture long-range temporal dependencies without the quadratic cost of Transformer attention. A series-relation-aware decider automatically selects between channel-independent and channel-mixing tokenisation strategies depending on the dataset.
+## Key ideas
+
+- `MambaPlus` wraps the shared `mamba` selective-scan block with a complementary forget/new-feature gate; `BiMambaPlusEncoder` runs it forward and on the flipped sequence and fuses both.
+- Patch tokens (`patchify`, length 16 stride 8) are encoded two ways: per channel (`independent_encoder`) or with channels concatenated per patch (`mixing_encoder`).
+- `SeriesRelationDecider` turns average positive soft-rank correlation between channels into a sigmoid gate that blends the two forecasts.
+- Flatten heads map patch tokens to the horizon; input is standardized per window and denormalized at the output.
 
 <!-- model-card:canonical:start -->
 ## Input and output

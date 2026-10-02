@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/hit636/AWEMixer"
 revision: "8e660f93c2535e6eb64ba47647babf21f3dbacfa"
 license: "Apache-2.0"
+tagline: "Router weights undecimated wavelet subbands by spectral descriptors; temporal anchors absorb them via gated attention."
+tags: ["hybrid", "wavelet", "frequency", "multi-scale", "attention-variant", "normalization", "channel-independent"]
+composition: ["normalization=component:revin", "decomposition=component:wavelet", "temporal=local:multi-scale-conv-anchors+local:coherent-gated-fusion", "channel=local:channel-independent-shared-weights", "head=local:linear-head", "loss=loss:mse"]
 ---
 # AWEMixer
 
-AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head.
+## Key ideas
+
+- `wavelet` (`UndecimatedWaveletTransform`) splits each channel into `wavelet_level + 1` same-length subbands, each embedded linearly.
+- `FrequencyRouter` softmax-weights subbands from four z-scored descriptors: FFT band energy, wavelet energy, peak local burst energy, and spectral entropy.
+- `MultiScaleTemporalEmbedding` makes one anchor per scale from convolutions of kernel `2s+1` with global pooling.
+- `CoherentGatedFusion` lets anchors cross-attend the weighted frequency features and injects them through a sigmoid gate; `CrossScaleMixer` mixes scales, then a linear `head` forecasts, wrapped by `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output
