@@ -254,10 +254,10 @@
     },
     "DLinear": {
       "evidence": "verification/evidence/DLinear.json",
-      "sha256": "a3294c04b72949572b571aa200b73aa424820ad34f0631cedd1985f3837aefc5",
+      "sha256": "5abf3363835325b44fc4b2dad6d8a75918509bb700faf9481beace4e24da1d27",
       "status": "passed",
-      "subject_sha256": "8d45409526ed5eef555d5eb1334909c76293495f275b6552f1461ae58af54927",
-      "verified_at": "2026-10-02T17:47:26.052728Z"
+      "subject_sha256": "a2ce37623f865f6db303b05883516f313c5c95be4751b0ae592c208ec41b95b1",
+      "verified_at": "2026-10-02T18:19:32.702437Z"
     },
     "DPWMixer": {
       "evidence": "verification/evidence/DPWMixer.json",
@@ -870,10 +870,10 @@
     },
     "PatchTST": {
       "evidence": "verification/evidence/PatchTST.json",
-      "sha256": "07fa6224ca29f255704cf220886ffd8c18b0db1b5ee1ed2f31a0ae291421a39e",
+      "sha256": "e137d24847ad31091a14f795877f477b52904e26b5c0a2a277edeace3ab286a8",
       "status": "passed",
-      "subject_sha256": "20db4f26005a549c5ad2844a02947b35b09913f5b4d3fbde269600519bfb52bf",
-      "verified_at": "2026-10-02T16:17:44.836160Z"
+      "subject_sha256": "6c783ee46555b1836c8a4796371dffacd03671989008732bc8f399fc853c0c4f",
+      "verified_at": "2026-10-02T18:19:32.702437Z"
     },
     "Pathformer": {
       "evidence": "verification/evidence/Pathformer.json",

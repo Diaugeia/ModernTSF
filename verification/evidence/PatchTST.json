@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PatchTST",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "20db4f26005a549c5ad2844a02947b35b09913f5b4d3fbde269600519bfb52bf",
+  "verified_at": "2026-10-02T18:19:32.702437Z",
+  "subject_sha256": "6c783ee46555b1836c8a4796371dffacd03671989008732bc8f399fc853c0c4f",
   "paper": {
     "title": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers",
     "venue": "ICLR 2023",
