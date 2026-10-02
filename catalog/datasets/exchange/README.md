@@ -38,7 +38,7 @@ Exchange-rate holds the daily exchange rates of eight countries' currencies, col
 
 ## Provenance and license
 
-- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data. The repository has no license file and does not name the underlying rate source, so the license and redistribution terms are `unknown`.
+- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data. Checked: the GitHub API reports no license, and the README only says "the collection of the daily exchange rates of eight foreign countries ... ranging from 1990 to 2016" without naming the rate provider or terms. With no original provider to read terms from, `license` and `redistribution` stay `unknown`.
 - Cite: Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018), https://arxiv.org/abs/1703.07015.
 - This preset points to `dataset/exchange_rate/exchange_rate.csv`, which is not shipped.
 

@@ -8,8 +8,8 @@ source: "California Department of Transportation (Caltrans PeMS); packaged by La
 source_url: "http://pems.dot.ca.gov"
 citation: "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018)"
 citation_url: "https://arxiv.org/abs/1703.07015"
-license: "unknown"
-redistribution: "unknown"
+license: "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
+redistribution: "conditional"
 frequency: "hourly (1h)"
 time_span: "2015-01-01 00:00:01 to 2016-12-31 23:00:01"
 length: 17544
@@ -38,8 +38,8 @@ Traffic is the hourly road occupancy rate (the fraction of time a sensor is occu
 
 ## Provenance and license
 
-- Source system: Caltrans Performance Measurement System (PeMS), http://pems.dot.ca.gov. Its Conditions of Use say information on the site is "in the public domain" unless otherwise indicated; this is a generic site policy, not a dataset license.
-- Packaging: Lai et al. 2018, https://github.com/laiguokun/multivariate-time-series-data, which carries no license file. The preprocessed copy has no explicit terms, so `license` is `unknown` and redistribution is not assumed.
+- Source system: Caltrans Performance Measurement System (PeMS), http://pems.dot.ca.gov. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
+- Packaging: Lai et al. 2018, https://github.com/laiguokun/multivariate-time-series-data, which has no license file (GitHub API: none) and no data terms in its README; the preprocessed copy therefore carries no license of its own. Raw source and packaging are separate: the PeMS public-domain policy applies to the raw data, but redistribute the LSTNet copy only after weighing both, hence `conditional`.
 - Cite LSTNet (SIGIR 2018) and credit Caltrans PeMS.
 
 ## Structure and statistics

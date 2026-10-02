@@ -39,7 +39,8 @@ Solar (solar/W) is the GIFT-Eval series collection built from solar power produc
 
 - Original source: NREL Solar Power Data for Integrated Variable Generation via LSTNet (Lai et al.); https://github.com/laiguokun/multivariate-time-series-data.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
-- License of the underlying data: `unknown`; no explicit terms were found, so redistribution is not assumed.
+- GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
+- Underlying data terms: not stated. The NREL/NLR page (https://www.nlr.gov/grid/solar-power-data) has no license or terms, the NLR disclaimer (https://www.nlr.gov/disclaimer.html) grants none, and the LSTNet repository (https://github.com/laiguokun/multivariate-time-series-data) has no license file; `license` and `redistribution` stay `unknown`.
 - Bytes are not bundled; download them with `tsf dataset gift-download`.
 
 ## Structure and statistics

@@ -5,11 +5,11 @@ summary: "GIFT-Eval Bitbrains fastStorage at hourly frequency: 1,250 series, 2 v
 domain: "Web/CloudOps"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "multivariate", "web-cloudops", "hourly", "cloud", "cpu", "virtual-machines", "bitbrains"]
 source: "Bitbrains traces, Grid Workloads Archive (Shen et al., 2015)"
-source_url: "http://gwa.ewi.tudelft.nl/datasets/gwa-t-12-bitbrains"
+source_url: "https://atlarge-research.com/gwa-t-12/"
 citation: "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url: "https://arxiv.org/abs/2410.10393"
-license: "unknown"
-redistribution: "unknown"
+license: "Custom: free use with mandatory acknowledgement of Bitbrains and citation of Shen et al. 2015 (GWA-T-12 copyright note)"
+redistribution: "conditional"
 frequency: "hourly (1h)"
 time_span: "varies by series; not recorded in the GIFT-Eval metadata used here"
 length: 721
@@ -39,7 +39,8 @@ Bitbrains fastStorage (bitbrains_fast_storage/H) is the GIFT-Eval series collect
 
 - Original source: Bitbrains traces, Grid Workloads Archive (Shen et al., 2015); http://gwa.ewi.tudelft.nl/datasets/gwa-t-12-bitbrains.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
-- License of the underlying data: `unknown`; no explicit terms were found, so redistribution is not assumed.
+- GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
+- Underlying data terms: the GWA-T-12 page (https://atlarge-research.com/gwa-t-12/, formerly gwa.ewi.tudelft.nl) says: "This trace was graciously provided by Bitbrains IT Services Inc. To use this traces, you must include an acknowledgement to the source of the data in any published material that refers to the data. Please refer to the CCGrid 2015 paper, and please also consider referring to the Grid Workloads Archive in the acknowledgements." No SPDX license is given and redistribution is not explicitly addressed, so it is `conditional` on that acknowledgement.
 - Bytes are not bundled; download them with `tsf dataset gift-download`.
 
 ## Structure and statistics

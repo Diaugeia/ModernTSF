@@ -5,7 +5,7 @@ summary: "GIFT-Eval SZ-Taxi at hourly frequency: 156 series of Transport data, m
 domain: "Transport"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "transport", "hourly", "traffic", "taxi", "shenzhen", "libcity"]
 source: "LibCity / SZ-Taxi (Zhao et al., T-GCN)"
-source_url: "https://github.com/LibCity/Bigscity-LibCity"
+source_url: "https://github.com/lehaifeng/T-GCN"
 citation: "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url: "https://arxiv.org/abs/2410.10393"
 license: "unknown"
@@ -39,7 +39,8 @@ SZ-Taxi (SZ_TAXI/H) is the GIFT-Eval series collection built from taxi-derived r
 
 - Original source: LibCity / SZ-Taxi (Zhao et al., T-GCN); https://github.com/LibCity/Bigscity-LibCity.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
-- License of the underlying data: `unknown`; no explicit terms were found, so redistribution is not assumed.
+- GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
+- Underlying data terms: not stated. The SZ-Taxi data (Zhao et al., T-GCN) live in https://github.com/lehaifeng/T-GCN, which has no LICENSE file (GitHub API: none) and no data terms in its README; LibCity (Apache-2.0 code) redistributes it without adding terms. `license` and `redistribution` stay `unknown`.
 - Bytes are not bundled; download them with `tsf dataset gift-download`.
 
 ## Structure and statistics

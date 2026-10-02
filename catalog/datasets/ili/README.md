@@ -8,8 +8,8 @@ source: "US Centers for Disease Control and Prevention (FluView ILINet); package
 source_url: "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
 citation: "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting (Wu et al., NeurIPS 2021)"
 citation_url: "https://arxiv.org/abs/2106.13008"
-license: "unknown"
-redistribution: "unknown"
+license: "US federal public domain; attribution to CDC and a no-endorsement disclaimer required (CDC Use of Agency Materials; raw source only, the Autoformer package states no data license)"
+redistribution: "conditional"
 frequency: "weekly (1w)"
 time_span: "2002 to 2020 (file dates 2002-01-01 to 2020-06-30; Autoformer says 2002-2021)"
 length: 966
@@ -38,8 +38,8 @@ ILI (national_illness) is the weekly record of influenza-like-illness surveillan
 
 ## Provenance and license
 
-- Source: US CDC FluView, https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html. The dashboard states no dataset license. CDC's general site policy says most information is not subject to copyright and may be freely used, with attribution, a no-endorsement disclaimer, and no change to the substantive content; this is a general policy, not a dataset license, so `license` stays `unknown`.
-- Packaging: Wu et al. 2021 (Autoformer), https://arxiv.org/abs/2106.13008.
+- Source: US CDC FluView ILINet, https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html (the dashboard itself states no dataset license). CDC's Use of Agency Materials policy (https://www.cdc.gov/other/agencymaterials.html) says: "Most of the information on the CDC and ATSDR websites is not subject to copyright, is in the public domain, and may be freely used or reproduced without obtaining copyright permission", subject to attribution to CDC, a disclaimer that CDC does not endorse the use, and no change to the substantive content; some pages carry third-party or state/local material that may be copyrighted. Applying that to ILINet is an inference from CDC's general policy, not a dataset license.
+- Packaging: Wu et al. 2021 (Autoformer), https://arxiv.org/abs/2106.13008; repository https://github.com/thuml/Autoformer is MIT (code), and the data files state no separate terms. Redistribution of the packaged `national_illness.csv` is therefore `conditional` on CDC attribution and disclaimer.
 - This preset points to `dataset/illness/national_illness.csv`, which is not shipped.
 
 ## Structure and statistics

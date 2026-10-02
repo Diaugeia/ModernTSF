@@ -8,8 +8,8 @@ source: "Caltrans PeMS District 7; processed by Song et al. (STSGCN) and Guo et 
 source_url: "https://github.com/Davidham3/STSGCN"
 citation: "Spatial-Temporal Synchronous Graph Convolutional Networks (Song et al., AAAI 2020)"
 citation_url: "https://ojs.aaai.org/index.php/AAAI/article/view/5438"
-license: "unknown"
-redistribution: "unknown"
+license: "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
+redistribution: "conditional"
 frequency: "5-minute (5min)"
 time_span: "2017-05-01 to 2017-08-31"
 length: "not verified (28,224 is commonly cited; the stated dates imply 35,424)"
@@ -38,7 +38,7 @@ PEMS07 is a spatiotemporal traffic benchmark: 883 sensors recording traffic flow
 
 ## Provenance and license
 
-- Producer: Caltrans PeMS District 7 data, processed by Song et al. (STSGCN, https://github.com/Davidham3/STSGCN) and Guo et al. (ASTGCN, https://github.com/Davidham3/ASTGCN, AAAI 2019). Neither repository carries a license, so the packaged data's license is `unknown`; PeMS's Conditions of Use call site information public domain unless otherwise indicated (generic policy).
+- Producer: Caltrans PeMS District 7 data, processed by Song et al. (STSGCN, https://github.com/Davidham3/STSGCN) and Guo et al. (ASTGCN, https://github.com/Davidham3/ASTGCN, AAAI 2019). Neither repository carries a license (GitHub API reports none for STSGCN; ASTGCN redirects to a repository without one), so the packaged files have no stated license. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
 - Cite Spatial-Temporal Synchronous Graph Convolutional Networks (Song et al., AAAI 2020), https://ojs.aaai.org/index.php/AAAI/article/view/5438, and the ASTGCN paper (https://ojs.aaai.org/index.php/AAAI/article/view/3881).
 - TSFLab does not ship the data (the STSGCN files are distributed through Baidu Pan); convert with `tsf dataset convert-traffic`.
 

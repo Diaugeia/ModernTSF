@@ -39,7 +39,8 @@ Restaurant (restaurant) is the GIFT-Eval series collection built from daily visi
 
 - Original source: Recruit Restaurant Visitor Forecasting (Kaggle, Howard et al., 2017); https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
-- License of the underlying data: `unknown`; no explicit terms were found, so redistribution is not assumed.
+- GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
+- Underlying data terms: not verified. The Kaggle competition (https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting) distributes Recruit Holdings data (Hot Pepper Gourmet, AirREGI) under its own competition rules, but those pages render only with JavaScript and could not be read here, and no separate dataset license was found; `license` and `redistribution` stay `unknown`.
 - Bytes are not bundled; download them with `tsf dataset gift-download`.
 
 ## Structure and statistics

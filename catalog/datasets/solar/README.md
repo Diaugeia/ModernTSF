@@ -39,7 +39,7 @@ Solar-Energy contains the simulated power output of 137 photovoltaic plants in A
 ## Provenance and license
 
 - Producer: NREL (the site now resolves under nlr.gov), Solar Power Data for Integration Studies, https://www.nlr.gov/grid/solar-power-data. The page states no license; it warns that the data are for specific years and are not representative of typical radiation levels or for site-specific project development.
-- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data (no license file). Redistribution terms are therefore `unknown`.
+- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data (no license file per GitHub API). Checked the NREL/NLR data page (no license, terms, or citation statement) and the NLR disclaimer (https://www.nlr.gov/disclaimer.html), which says only that NLR-authored documents are DOE-sponsored, that the Government keeps a license to reproduce and distribute them, and that use of documents "may be subject to U.S. and foreign Copyright Laws"; it grants no dataset license. Redistribution terms are therefore `unknown`.
 - Contradiction to be aware of: NREL describes simulated 5-minute data, while the LSTNet README calls the series records sampled every 10 minutes.
 
 ## Structure and statistics
