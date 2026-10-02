@@ -57,6 +57,9 @@ __all__ = [
     "ReportArtifact",
     "SubmissionManifest",
     "SubmissionReport",
+    "ForecastSubmission",
+    "RoundScore",
+    "RoundSpec",
     "iter_models",
     "export_schemas",
 ]

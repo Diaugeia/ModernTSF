@@ -15,7 +15,7 @@ adding a dataset, and reporting issues.
 - **`main` is release-only and versioned.** It is protected (a PR is required to
   merge, the `schema-check` status check must pass, force-pushes and deletion are
   blocked). `main` normally advances only by promoting `dev` → `main`, and
-  **every `main` update bumps the version (`pyproject.toml` + `CHANGELOG.md`) and
+  **every `main` update bumps the version (`pyproject.toml`) and
   ships a tagged GitHub Release** (`vX.Y.Z`, [semver](https://semver.org/)):
   bug-fix-only promotions bump the patch, new models/features bump the minor.
 - A maintainer may push an urgent hot-fix straight to `main` (admin bypass), but

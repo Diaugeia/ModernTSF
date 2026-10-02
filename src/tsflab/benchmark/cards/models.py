@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tsflab.tsf_core.paths import repository_root, require_checkout
 
-from tsflab.benchmark.catalog_metadata import declared_model_fields, read_model_card
+from tsflab.benchmark.cards.metadata import declared_model_fields, read_model_card
 
 
 ROOT = repository_root()

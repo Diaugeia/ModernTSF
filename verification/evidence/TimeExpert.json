@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeExpert",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "d1ba3cf79e4883a69795749c32b36d688c82c278476c032ea15772dd21254034",
+  "verified_at": "2026-10-02T17:47:39.454985Z",
+  "subject_sha256": "c07650ac718ef22cbfee7e708abd660aa33b314dd5e2a3607d5f2b411ef2430d",
   "paper": {
     "title": "TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts",
     "venue": "arXiv",

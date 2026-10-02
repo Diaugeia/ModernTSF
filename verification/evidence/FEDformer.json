@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "FEDformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "3cdc0012392f92f939e6c35c95209969d578cbb206894ebdb29839042d2841c5",
+  "verified_at": "2026-10-02T17:47:28.995508Z",
+  "subject_sha256": "c809fdbd3b432c581ea9df5c674816479503c91aeae9059466484204419b37c6",
   "paper": {
     "title": "FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting",
     "venue": "ICML 2022",

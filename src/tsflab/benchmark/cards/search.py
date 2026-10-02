@@ -14,8 +14,7 @@ from pathlib import Path
 import re
 import sys
 
-from tsflab.benchmark.card_depth import (
-    Card,
+from tsflab.benchmark.cards.depth import (
     card_l0,
     l0_line,
     l0_record,
@@ -32,7 +31,7 @@ def _terms(text: str) -> set[str]:
 
 
 def _model_resources(root: Path) -> list[tuple[dict[str, object], dict[str, str], dict]]:
-    from tsflab.benchmark.catalog_metadata import model_records
+    from tsflab.benchmark.cards.metadata import model_records
 
     resources = []
     for fields in model_records(root):
@@ -57,13 +56,13 @@ def _model_resources(root: Path) -> list[tuple[dict[str, object], dict[str, str]
 def _card_resources(root: Path, kind: str) -> list[tuple[dict[str, object], dict[str, str], dict]]:
     if kind == "component":
         from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-        from tsflab.benchmark.component_cards import component_card_path
+        from tsflab.benchmark.cards.components import component_card_path
 
         entries = [
             (spec.name, component_card_path(root, spec.name), spec) for spec in COMPONENT_CATALOG.specs()
         ]
     else:
-        from tsflab.benchmark.resource_cards import dataset_card_path, dataset_records
+        from tsflab.benchmark.cards.resources import dataset_card_path, dataset_records
 
         entries = [
             (record.name, dataset_card_path(root, record.name), record)

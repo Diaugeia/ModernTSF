@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import torch
 from torch import nn
 
 from tsflab.models._components.dlinear import DLinearBackbone

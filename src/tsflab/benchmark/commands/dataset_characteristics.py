@@ -39,9 +39,6 @@ from tsflab.benchmark.registry.datasets import DATASET_REGISTRY, register_datase
 from tsflab.data.series_stats import (
     _HAS_STATSMODELS,
     dominant_period as _dominant_period,
-    moving_average as _moving_average,
-    seasonal_component as _seasonal_component,
-    strength as _strength,
     trend_and_seasonal_strength as _trend_and_seasonal_strength,
     stationarity as _stationarity,
     shifting as _shifting,

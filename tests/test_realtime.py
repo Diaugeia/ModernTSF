@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import replace
 import gzip
-import json
 from pathlib import Path
 
 import numpy as np

@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-import re
 import sys
 
 from tsflab.benchmark.command_runtime import ROOT, passthrough
@@ -37,8 +36,8 @@ def dataset_command(args: list[str]) -> int:
         return 0
     action, rest = args[0], args[1:]
     if action in {"list", "show", "search", "audit"}:
-        from tsflab.benchmark.dataset_cards import dataset_facts, search_text
-        from tsflab.benchmark.resource_cards import audit_resource_cards, dataset_records
+        from tsflab.benchmark.cards.datasets import dataset_facts
+        from tsflab.benchmark.cards.resources import audit_resource_cards, dataset_records
 
         records = dataset_records(ROOT)
         if action == "list":
@@ -54,8 +53,8 @@ def dataset_command(args: list[str]) -> int:
                     print(f"{record['name']}\t{record['loader']}\t{modes}\t{record['alias']}")
             return 0
         if action == "show":
-            from tsflab.benchmark.catalog_show import existing, parse_show, show_card
-            from tsflab.benchmark.resource_cards import dataset_card_path
+            from tsflab.benchmark.cards.show import existing, parse_show, show_card
+            from tsflab.benchmark.cards.resources import dataset_card_path
 
             parsed = parse_show("tsf dataset show", "dataset preset name", rest)
             selected = next((record for record in records if record.name == parsed.name), None)
@@ -90,7 +89,7 @@ def dataset_command(args: list[str]) -> int:
             )
             return show_card(ROOT, card_path, parsed, facts=facts, paths=paths, legacy=legacy)
         if action == "search":
-            from tsflab.benchmark.catalog_search import search_command
+            from tsflab.benchmark.cards.search import search_command
 
             by_name = {record.name: record for record in records}
 

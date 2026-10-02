@@ -41,13 +41,13 @@ LOSS_REGISTRY = LossRegistry()
 LOSS_NAME_MAP = {
     "mse": "tsflab.benchmark.losses",
     "mae": "tsflab.benchmark.losses",
-    "freq_mae": "tsflab.benchmark.losses_external",
-    "freq_weighted_mae": "tsflab.benchmark.losses_external",
-    "masked_mae": "tsflab.benchmark.losses_masked",
-    "masked_mse": "tsflab.benchmark.losses_masked",
-    "masked_rmse": "tsflab.benchmark.losses_masked",
-    "quantile": "tsflab.benchmark.losses_prob",
-    "nll_gaussian": "tsflab.benchmark.losses_prob",
+    "freq_mae": "tsflab.benchmark.losses.external",
+    "freq_weighted_mae": "tsflab.benchmark.losses.external",
+    "masked_mae": "tsflab.benchmark.losses.masked",
+    "masked_mse": "tsflab.benchmark.losses.masked",
+    "masked_rmse": "tsflab.benchmark.losses.masked",
+    "quantile": "tsflab.benchmark.losses.probabilistic",
+    "nll_gaussian": "tsflab.benchmark.losses.probabilistic",
 }
 
 _REGISTERED_LOSSES: set[str] = set()

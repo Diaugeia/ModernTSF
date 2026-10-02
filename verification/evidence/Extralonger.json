@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Extralonger",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "6b0364914e08f883bea87851b1d4f88d1580c4fbbe689a134e74edc76bb6e708",
+  "verified_at": "2026-10-02T17:47:27.404798Z",
+  "subject_sha256": "8b311a2ea07f1d756b17320948df7d4fa11404a1aebb974de7f53d46aa4e1251",
   "paper": {
     "title": "Extralonger: Toward a Unified Perspective of Spatial-Temporal Factors for Extra-Long-Term Traffic Forecasting",
     "venue": "NeurIPS 2024 Workshop",

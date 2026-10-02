@@ -102,7 +102,7 @@ def _environment() -> dict[str, object]:
 
 def _execute(names: list[str], jobs: int) -> dict[str, dict[str, str] | None]:
     """Run declared checks and atomically refresh canonical evidence."""
-    from tsflab.benchmark.catalog_metadata import model_records
+    from tsflab.benchmark.cards.metadata import model_records
     from tsflab.benchmark.verification import (
         VerificationEvidence,
         evidence_state,
@@ -110,7 +110,7 @@ def _execute(names: list[str], jobs: int) -> dict[str, dict[str, str] | None]:
         rebuild_index,
         write_evidence,
     )
-    from tsflab.benchmark.verification_common import verification_subject_sha256
+    from tsflab.benchmark.verification.common import verification_subject_sha256
 
     root = repository_root()
     fields = {str(record["name"]): record for record in model_records(root)}
@@ -257,7 +257,7 @@ def _records(
     run_contracts: bool,
     known_contracts: dict[str, dict[str, str] | None] | None = None,
 ) -> list[dict[str, object]]:
-    from tsflab.benchmark.catalog_metadata import model_records
+    from tsflab.benchmark.cards.metadata import model_records
     from tsflab.benchmark.verification import evidence_state, load_manifest
 
     root = repository_root()
@@ -345,7 +345,7 @@ def verification_command(args: list[str]) -> int:
     if parsed.jobs < 1:
         parser.error("--jobs must be positive")
 
-    from tsflab.benchmark.catalog_metadata import model_records
+    from tsflab.benchmark.cards.metadata import model_records
 
     catalog_names = [str(record["name"]) for record in model_records(repository_root())]
     names = parsed.names if action == "model" else catalog_names

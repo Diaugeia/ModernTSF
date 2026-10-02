@@ -10,7 +10,7 @@ import pytest
 
 from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
 from tsflab.benchmark.catalog.composition import validate_composition
-from tsflab.benchmark.catalog_metadata import model_records
+from tsflab.benchmark.cards.metadata import model_records
 from tsflab.benchmark.commands import dataset_analyze
 from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
 from tsflab.data import profile as prof

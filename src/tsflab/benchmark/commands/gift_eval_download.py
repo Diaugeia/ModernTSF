@@ -24,7 +24,6 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-from pathlib import Path
 
 # All 53 dataset/freq combinations in GIFT-EVAL
 ALL_DATASETS = [

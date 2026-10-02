@@ -16,7 +16,7 @@ from tsflab.benchmark.verification import (
     rebuild_index,
 )
 from tsflab.benchmark.verification.evidence import file_sha256
-from tsflab.benchmark.verification_common import verification_subject_sha256
+from tsflab.benchmark.verification.common import verification_subject_sha256
 from tsflab.benchmark.commands.verification import _load_existing, _materially_changed
 
 
@@ -201,14 +201,14 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(evidence.status, "failed")
 
     def test_repository_manifest_exactly_covers_the_catalog(self) -> None:
-        from tsflab.benchmark.catalog_metadata import model_records
+        from tsflab.benchmark.cards.metadata import model_records
         from tsflab.tsf_core.paths import repository_root
 
         root = repository_root()
         names = {str(record["name"]) for record in model_records(root)}
         manifest = load_manifest(root, names)
         self.assertEqual(set(manifest.models), names)
-        self.assertEqual(len(names), 199)
+        self.assertEqual(len(names), len([p for p in (root / "src" / "tsflab" / "models").glob("*/spec.py") if not p.parent.name.startswith("_")]))
         self.assertTrue(all(item.test for item in manifest.models.values()))
         saved = json.loads((root / "verification/index.json").read_text(encoding="utf-8"))
         self.assertEqual(set(saved["models"]), names)

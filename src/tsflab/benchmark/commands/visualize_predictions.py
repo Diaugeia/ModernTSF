@@ -30,7 +30,6 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import numpy as np
 import torch
 
 from tsflab.benchmark.config import load_config

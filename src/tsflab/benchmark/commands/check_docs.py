@@ -10,11 +10,10 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-from pathlib import Path
 
 from tsflab.tsf_core.paths import repository_root, require_checkout
 
-from tsflab.benchmark.catalog_metadata import model_records
+from tsflab.benchmark.cards.metadata import model_records
 
 ROOT = repository_root()
 DOC_DIR = ROOT / "docs" / "en"
@@ -129,7 +128,6 @@ def _relative_link_problems() -> list[str]:
     paths = [
         ROOT / "README.md",
         ROOT / "CONTRIBUTING.md",
-        ROOT / "CHANGELOG.md",
         ROOT / "THIRD_PARTY_NOTICES.md",
     ]
     paths.extend(DOC_DIR.glob("*.md"))

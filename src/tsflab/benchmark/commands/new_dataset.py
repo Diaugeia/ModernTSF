@@ -57,7 +57,6 @@ def _config_single(name, path, target) -> str:
 
 
 def _schema_single(name) -> str:
-    cls = "".join(p.capitalize() for p in name.split("_"))
     return (
         f'"""Parameter schema for the {name} dataset."""\n\n'
         "from pydantic import Field\n\n"
@@ -190,7 +189,7 @@ def main() -> None:
     if args.pattern == "single":
         status = _insert_name_map(name)
 
-    from tsflab.benchmark.resource_cards import write_resource_cards
+    from tsflab.benchmark.cards.resources import write_resource_cards
 
     write_resource_cards(ROOT)
 

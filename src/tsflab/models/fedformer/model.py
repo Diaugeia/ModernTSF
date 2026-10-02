@@ -6,7 +6,6 @@ import math
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from tsflab.models._components.forecast_embedding import ForecastEmbedding
 from tsflab.models._components.series_decomposition import SeriesDecomposition

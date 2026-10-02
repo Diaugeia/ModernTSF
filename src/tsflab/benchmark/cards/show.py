@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from tsflab.benchmark.card_depth import (
+from tsflab.benchmark.cards.depth import (
     DEPTH_HELP,
     DEPTHS,
     card_payload,

@@ -1,6 +1,5 @@
 """Clean-room Non-stationary Transformer for forecasting."""
 from __future__ import annotations
-import math
 import torch
 from torch import nn
 

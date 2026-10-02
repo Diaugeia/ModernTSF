@@ -16,7 +16,6 @@ from __future__ import annotations
 from typing import Tuple
 
 import numpy as np
-import pandas as pd
 from torch.utils.data import Dataset
 
 from tsflab.benchmark.registry import DATASET_REGISTRY

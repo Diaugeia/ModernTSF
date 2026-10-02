@@ -13,7 +13,7 @@ def regenerate_cards(args: list[str]) -> int:
     if args:
         print("tsf repo cards takes no arguments", file=sys.stderr)
         return 2
-    from tsflab.benchmark.resource_cards import write_resource_cards
+    from tsflab.benchmark.cards.resources import write_resource_cards
     from tsflab.tsf_core.paths import require_checkout
 
     try:
@@ -21,7 +21,7 @@ def regenerate_cards(args: list[str]) -> int:
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    from tsflab.benchmark.model_cards import update_model_card
+    from tsflab.benchmark.cards.models import update_model_card
 
     models = sorted(
         card for card in (root / "src" / "tsflab" / "models").glob("*/README.md")
@@ -85,7 +85,7 @@ def repository_command(args: list[str]) -> int:
         strict = False
 
     from tsflab.tsf_core.agent_assets import main as audit_agent_assets
-    from tsflab.benchmark.resource_cards import audit_resource_cards
+    from tsflab.benchmark.cards.resources import audit_resource_cards
     from tsflab.tsf_core.paths import repository_root
 
     def audit_cards() -> int:

@@ -55,7 +55,7 @@ jobs:
           flags=""
           case "$GITHUB_REF_NAME" in *rc*|*a[0-9]*|*b[0-9]*) flags="--prerelease";; esac
           gh release create "$GITHUB_REF_NAME" dist/* --title "TSFLab $GITHUB_REF_NAME" \
-            --notes "See CHANGELOG.md for this release." $flags
+            --generate-notes $flags
 
   pypi:
     needs: build

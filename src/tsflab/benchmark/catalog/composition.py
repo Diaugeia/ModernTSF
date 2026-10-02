@@ -42,7 +42,7 @@ _NAME = re.compile(r"^[A-Za-z][A-Za-z0-9]*$")
 def validate_composition(spec: dict[str, Any], root: Path) -> dict[str, Any]:
     """Return ``{"ok", "errors", "warnings", ...}`` for a parsed composition spec."""
     from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-    from tsflab.benchmark.catalog_metadata import model_records
+    from tsflab.benchmark.cards.metadata import model_records
     from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
 
     errors: list[str] = []

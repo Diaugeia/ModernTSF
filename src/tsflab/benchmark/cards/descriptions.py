@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from tsflab.benchmark.catalog_metadata import read_model_card
+from tsflab.benchmark.cards.metadata import read_model_card
 
 
 @dataclass(frozen=True)

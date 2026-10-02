@@ -10,12 +10,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-from tsflab.benchmark.component_cards import (  # noqa: F401  (re-exported public names)
+from tsflab.benchmark.cards.components import (  # noqa: F401  (re-exported public names)
     audit_component_cards,
     component_card_path,
     update_component_card,
 )
-from tsflab.benchmark.dataset_cards import (  # noqa: F401  (re-exported public names)
+from tsflab.benchmark.cards.datasets import (  # noqa: F401  (re-exported public names)
     DatasetRecord,
     audit_dataset_cards,
     dataset_card_path,

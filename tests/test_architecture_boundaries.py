@@ -15,7 +15,7 @@ import torch
 from pydantic import ValidationError
 from torch import nn
 
-from tsflab.benchmark.catalog_metadata import model_records
+from tsflab.benchmark.cards.metadata import model_records
 from tsflab.benchmark.config.schema.evaluation import EvaluationConfig
 from tsflab.benchmark.config.schema.runtime import ExperimentRuntimeConfig
 from tsflab.benchmark.config.schema.training import TrainConfig
@@ -57,11 +57,13 @@ class BlockModelRuntime(importlib.abc.MetaPathFinder):
 sys.meta_path.insert(0, BlockModelRuntime())
 from tsflab.benchmark.cli import main
 from tsflab.benchmark.registry.models import MODEL_CATALOG
-assert len(MODEL_CATALOG.names()) == 199
+from tsflab.tsf_core.paths import repository_root
+expected = len([p for p in (repository_root() / 'src' / 'tsflab' / 'models').glob('*/spec.py') if not p.parent.name.startswith('_')])
+assert len(MODEL_CATALOG.names()) == expected
 output = io.StringIO()
 with redirect_stdout(output):
     assert main(["model", "list", "--json"]) == 0
-assert len(json.loads(output.getvalue())) == 199
+assert len(json.loads(output.getvalue())) == expected
 """
         result = subprocess.run(
             [sys.executable, "-c", script],

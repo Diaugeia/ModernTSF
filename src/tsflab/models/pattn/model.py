@@ -8,7 +8,6 @@ omitting positional embeddings and the Transformer feed-forward sublayer.
 
 from __future__ import annotations
 
-import torch
 from torch import nn
 from torch.nn import functional as F
 

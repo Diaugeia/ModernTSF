@@ -11,7 +11,7 @@ import sys
 
 from tsflab.benchmark.catalog.component_audit import components_used_by
 from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-from tsflab.benchmark.catalog_metadata import declared_model_fields, read_model_card
+from tsflab.benchmark.cards.metadata import declared_model_fields, read_model_card
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.benchmark.verification import load_manifest
 from tsflab.tsf_core.paths import repository_root, require_checkout

@@ -74,7 +74,6 @@ class GlobalLocalGraphAttention(nn.Module):
             Tensor shaped ``(..., L_q, model_dim)``.
         """
         *batch_shape, len_q, _ = query.shape
-        len_kv = key.shape[-2]
         q = self._split_heads(self.fc_q(query))
         k = self._split_heads(self.fc_k(key))
         v = self._split_heads(self.fc_v(value))

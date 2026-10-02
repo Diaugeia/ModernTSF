@@ -10,9 +10,9 @@ from pathlib import Path
 
 from tsflab.tsf_core.paths import repository_root
 
-from tsflab.benchmark.catalog_metadata import declared_model_fields
-from tsflab.benchmark.descriptions import read_model_card_description
-from tsflab.benchmark.model_cards import audit_model_card_body
+from tsflab.benchmark.cards.metadata import declared_model_fields
+from tsflab.benchmark.cards.descriptions import read_model_card_description
+from tsflab.benchmark.cards.models import audit_model_card_body
 from tsflab.benchmark.registry.models import MODEL_CATALOG
 from tsflab.benchmark.catalog.component_audit import components_used_by
 
@@ -173,8 +173,7 @@ def check() -> list[str]:
                 problems.append(f"{config_file.relative_to(ROOT)} declares model.name={config_name!r}, expected {name!r}")
         card_file = ROOT / str(model_card)
         if card_file.is_file():
-            card_text = card_file.read_text(encoding="utf-8")
-            from tsflab.benchmark.catalog_metadata import read_model_card
+            from tsflab.benchmark.cards.metadata import read_model_card
 
             try:
                 metadata = read_model_card(card_file)

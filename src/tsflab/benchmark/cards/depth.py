@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import re
 
-from tsflab.benchmark.catalog_metadata import read_front_matter
+from tsflab.benchmark.cards.metadata import read_front_matter
 
 DEPTHS = (0, 1, 2, 3)
 DEPTH_HELP = (

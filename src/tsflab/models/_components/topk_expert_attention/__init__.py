@@ -12,7 +12,6 @@ context is never fully discarded.
 from __future__ import annotations
 
 import torch
-import torch.nn.functional as F
 from torch import nn
 
 
@@ -38,7 +37,6 @@ def gather_experts(index: torch.Tensor, weight: torch.Tensor, kv: torch.Tensor) 
     ``index, weight: (n, m, topk)``, ``kv: (n, m, c)`` -> ``(n, m, topk, c)``.
     """
     n, m, c = kv.shape
-    topk = index.size(-1)
     expanded_kv = kv.unsqueeze(1).expand(-1, m, -1, -1)
     expanded_index = index.unsqueeze(-1).expand(-1, -1, -1, c)
     selected = torch.gather(expanded_kv, dim=2, index=expanded_index)

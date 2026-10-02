@@ -9,7 +9,6 @@ import sys
 from tsflab.benchmark.research_round import (
     EVENT_KINDS,
     STATUSES,
-    ResearchRoundError,
     add_event,
     create_round,
     claim_iteration,

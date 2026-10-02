@@ -84,13 +84,13 @@ def model_command(args: list[str]) -> int:
         if any(arg not in {"--details", "--json"} for arg in rest) or len(rest) > 1:
             print("usage: tsf model list [--details | --json]", file=sys.stderr)
             return 2
-        from tsflab.benchmark.catalog_metadata import model_records
+        from tsflab.benchmark.cards.metadata import model_records
 
         fields_by_name = model_records(ROOT)
         if not rest:
             print("\n".join(sorted(str(fields["name"]) for fields in fields_by_name)))
             return 0
-        from tsflab.benchmark.descriptions import read_model_card_description
+        from tsflab.benchmark.cards.descriptions import read_model_card_description
 
         records = []
         for fields in fields_by_name:
@@ -120,8 +120,8 @@ def model_command(args: list[str]) -> int:
                 print(f"{record['name']}\n  {record['summary']}")
         return 0
     if action == "show":
-        from tsflab.benchmark.catalog_metadata import model_records
-        from tsflab.benchmark.catalog_show import existing, parse_show, show_card
+        from tsflab.benchmark.cards.metadata import model_records
+        from tsflab.benchmark.cards.show import existing, parse_show, show_card
         from tsflab.benchmark.registry.models import MODEL_CATALOG
 
         parsed = parse_show("tsf model show", "public model name", rest)
@@ -232,12 +232,12 @@ def model_command(args: list[str]) -> int:
                 print(f"{record['name']}\t{state}\t{record['path']}")
         return 0
     if action == "search":
-        from tsflab.benchmark.catalog_search import search_command
+        from tsflab.benchmark.cards.search import search_command
 
         return search_command(ROOT, rest, prog="tsf model search", kind="model")
     if action == "audit":
         import argparse
-        from tsflab.benchmark.catalog_metadata import model_records
+        from tsflab.benchmark.cards.metadata import model_records
 
         parser = argparse.ArgumentParser(
             prog="tsf model audit",
@@ -303,7 +303,6 @@ def component_command(args: list[str]) -> int:
     """List, match, or describe shared components and their consumers."""
     from tsflab.benchmark.catalog.component_audit import components_used_by
     from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
-    from pathlib import Path
 
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
@@ -323,7 +322,7 @@ def component_command(args: list[str]) -> int:
         if rest:
             print("tsf component audit takes no arguments", file=sys.stderr)
             return 2
-        from tsflab.benchmark.resource_cards import audit_resource_cards
+        from tsflab.benchmark.cards.resources import audit_resource_cards
         from tsflab.benchmark.catalog.component_audit import audit_components
         from tsflab.tsf_core.paths import repository_root
 
@@ -338,8 +337,8 @@ def component_command(args: list[str]) -> int:
         print(f"Component catalog/cards: {'PASS' if not failures else 'FAIL'} ({total} components)")
         return 1 if failures else 0
     if action == "list" and (not rest or rest == ["--json"]):
-        from tsflab.benchmark.card_depth import card_l0, l0_line, read_card
-        from tsflab.benchmark.component_cards import component_card_path
+        from tsflab.benchmark.cards.depth import card_l0, l0_line, read_card
+        from tsflab.benchmark.cards.components import component_card_path
 
         records = []
         for spec in COMPONENT_CATALOG.specs():
@@ -356,8 +355,8 @@ def component_command(args: list[str]) -> int:
                 print(l0_line(record))
         return 0
     if action == "show":
-        from tsflab.benchmark.catalog_show import existing, parse_show, show_card
-        from tsflab.benchmark.component_cards import component_card_path
+        from tsflab.benchmark.cards.show import existing, parse_show, show_card
+        from tsflab.benchmark.cards.components import component_card_path
 
         parsed = parse_show("tsf component show", "component name", rest)
         try:
@@ -400,7 +399,7 @@ def component_command(args: list[str]) -> int:
             ROOT, component_card_path(ROOT, spec.name), parsed, facts=facts, paths=paths, legacy=legacy
         )
     if action in {"match", "search"}:
-        from tsflab.benchmark.catalog_search import search_command
+        from tsflab.benchmark.cards.search import search_command
 
         def augment(record: dict[str, object]) -> dict[str, object]:
             spec = COMPONENT_CATALOG.get(str(record["name"]))
@@ -435,6 +434,6 @@ def catalog_command(args: list[str]) -> int:
             "`tsf <kind> show <name> --depth 1|2|3`."
         )
         return 0 if not args or args[0] in {"-h", "--help", "help"} else 2
-    from tsflab.benchmark.catalog_search import search_command
+    from tsflab.benchmark.cards.search import search_command
 
     return search_command(ROOT, args[1:], prog="tsf catalog search")

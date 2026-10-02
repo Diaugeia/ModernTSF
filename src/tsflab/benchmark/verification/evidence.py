@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from tsflab.benchmark.verification_common import ExecutionEnvironment, verification_subject_sha256
+from tsflab.benchmark.verification.common import ExecutionEnvironment, verification_subject_sha256
 
 
 SCHEMA_VERSION = 1
@@ -81,7 +81,7 @@ class VerificationChecks(_StrictModel):
 
 def _is_inference_only(model: str) -> bool:
     """Read the admitted model capability without importing its runtime."""
-    from tsflab.benchmark.catalog_metadata import declared_model_fields
+    from tsflab.benchmark.cards.metadata import declared_model_fields
     from tsflab.benchmark.registry.models import MODEL_CATALOG
     from tsflab.tsf_core.paths import repository_root
 

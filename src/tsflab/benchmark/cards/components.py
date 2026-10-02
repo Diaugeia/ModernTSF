@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 import re
 
-from tsflab.benchmark.card_depth import read_card, split_sections
+from tsflab.benchmark.cards.depth import read_card, split_sections
 from tsflab.benchmark.catalog.component_audit import components_used_by
 from tsflab.benchmark.catalog.components import COMPONENT_CATALOG, ComponentSpec
 

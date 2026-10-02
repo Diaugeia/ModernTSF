@@ -7,7 +7,6 @@ import gc
 import io
 import tomllib
 from dataclasses import dataclass
-from pathlib import Path
 
 from tsflab.tsf_core.paths import repository_root
 from types import SimpleNamespace

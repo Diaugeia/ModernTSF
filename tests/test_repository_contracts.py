@@ -14,13 +14,13 @@ import torch
 import torch.nn.functional as F
 
 from tsflab.benchmark.command_runtime import module_slug as cli_module_slug
-from tsflab.benchmark.catalog_metadata import model_records, read_front_matter
+from tsflab.benchmark.cards.metadata import model_records, read_front_matter
 from tsflab.benchmark.cli import main as cli_main
 from tsflab.benchmark.commands.check_registry import check as check_model_catalog
 from tsflab.benchmark.model_contracts import audit_model_contracts
-from tsflab.benchmark.model_cards import REQUIRED_SECTIONS, audit_model_card_body
+from tsflab.benchmark.cards.models import REQUIRED_SECTIONS, audit_model_card_body
 from tsflab.benchmark.verification.reference import compare_model_reference
-from tsflab.benchmark.resource_cards import audit_resource_cards, dataset_records
+from tsflab.benchmark.cards.resources import audit_resource_cards, dataset_records
 from tsflab.benchmark.commands.new_model import (
     _model as scaffold_model,
     _module_slug as scaffold_module_slug,
@@ -54,6 +54,10 @@ from tsflab.models._components.series_decomposition import (
 from tsflab.tsf_core.agent_assets import audit_agent_assets
 from tsflab.tsf_core.paths import is_packaged_root, repository_root, require_checkout
 
+
+
+# Every model package on disk; registry, cards, evidence, and audits must agree with it.
+EXPECTED_MODELS = len([p for p in (Path(__file__).resolve().parents[1] / "src" / "tsflab" / "models").glob("*/spec.py") if not p.parent.name.startswith("_")])
 
 class RepositoryContractTests(unittest.TestCase):
     def test_repository_resources_resolve_to_the_checkout(self) -> None:
@@ -210,13 +214,15 @@ class RepositoryContractTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 self.assertEqual(cli_main([resource, "audit"]), 0)
-            self.assertIn("48 components" if resource == "component" else "89/89", output.getvalue())
+            expected = (f"{len(COMPONENT_CATALOG.names())} components" if resource == "component"
+                        else f"{len(dataset_records(Path(__file__).resolve().parents[1]))}/{len(dataset_records(Path(__file__).resolve().parents[1]))}")
+            self.assertIn(expected, output.getvalue())
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["model", "list", "--json"]), 0)
         records = json.loads(output.getvalue())
-        self.assertEqual(len(records), 199)
+        self.assertEqual(len(records), EXPECTED_MODELS)
         self.assertTrue(all(record["summary"] for record in records))
 
         output = io.StringIO()
@@ -268,13 +274,13 @@ class RepositoryContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["model", "audit", "--summary"]), 0)
         audit = json.loads(output.getvalue())
-        self.assertEqual(audit["models"], 199)
+        self.assertEqual(audit["models"], EXPECTED_MODELS)
         self.assertNotIn("implementation", audit)
         self.assertNotIn("failed_by_implementation", audit)
         self.assertEqual(audit["failed"], 0)
         self.assertEqual(audit["blockers"], {})
-        self.assertEqual(audit["verification"], {"passed": 199})
-        self.assertEqual(sum(audit["verification"].values()), 199)
+        self.assertEqual(audit["verification"], {"passed": EXPECTED_MODELS})
+        self.assertEqual(sum(audit["verification"].values()), EXPECTED_MODELS)
         self.assertEqual(
             audit["complete_codebase"],
             sum(record["codebase"] is not None for record in model_records(Path(__file__).resolve().parents[1])),
@@ -299,7 +305,7 @@ class RepositoryContractTests(unittest.TestCase):
     def test_model_cards_are_the_only_descriptive_metadata_source(self) -> None:
         root = Path(__file__).resolve().parents[1]
         records = model_records(root)
-        self.assertEqual(len(records), 199)
+        self.assertEqual(len(records), EXPECTED_MODELS)
         self.assertTrue(all("implementation" not in record for record in records))
         self.assertTrue(
             all(
@@ -340,7 +346,7 @@ class RepositoryContractTests(unittest.TestCase):
             for card in (root / "src" / "tsflab" / "models").glob("*/README.md")
             if not card.parent.name.startswith("_")
         )
-        self.assertEqual(len(cards), 199)
+        self.assertEqual(len(cards), EXPECTED_MODELS)
         self.assertEqual(REQUIRED_SECTIONS[0], "Input and output")
         self.assertEqual(
             [problem for card in cards for problem in audit_model_card_body(card)],
