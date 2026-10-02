@@ -53,10 +53,10 @@ Paper and official code (pinned revision `5a73fd7`, `layers/MoU_backbone.py`, `l
 
 ## Shared components
 
-- [`revin`](../_components/revin/README.md)
+- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
 - [`mamba`](../_components/mamba/README.md)
 - [`positional_encoding`](../_components/positional_encoding/README.md)
-- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
+- [`revin`](../_components/revin/README.md)
 
 ## Configuration constraints
 
