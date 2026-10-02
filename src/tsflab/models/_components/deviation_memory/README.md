@@ -38,27 +38,36 @@ current and a historical window. The component names no spatiotemporal axis:
 `num_prototypes >= 2` (needed for top-2), else `ValueError`. Parameters (the only
 state-dict keys): `prototypes` `[num_prototypes, prototype_dim]` and `query_proj`
 `[query_dim, prototype_dim]`, both Xavier-normal. No buffers. `forward(h)` requires
-`h.shape[-1] == query_dim` (`ValueError` otherwise) and returns a
+`h.shape[-1] == query_dim` (`ValueError` otherwise; any leading shape, including none, and
+any floating dtype/device matching the parameters) and returns a
 `PrototypeRetrieval` dataclass (`value`, `query`, `nearest`, `second_nearest`,
 `indices`; trailing axis `prototype_dim`, or 2 for `indices`). `query` and `value`
 carry gradients; `nearest`/`second_nearest` are gathered by index, so gradients reach
 the selected prototype rows but not the selection itself. Stateless, no memory
 update rule: prototypes are trained only by whatever loss the caller builds.
 
-`deviation_score(current, reference) -> Tensor`: last axes must match (`ValueError`),
-leading axes broadcast; returns `[...]`. The value is the sum of
+`deviation_score(current, reference) -> Tensor`: last axes must be equal (`ValueError`),
+leading axes broadcast; differentiable, no parameters; returns `[...]`. The value is the sum of
 absolute differences over the last axis (`.sum(dim=-1)`), not a mean, so it
 scales with `D`.
 
 ## Invariants and equivalence evidence
 
-- no fixture: no tensor fixture exists.
+- `tests/test_component_contracts_graph.py` (`test_prototype_memory_contract`,
+  `test_deviation_score`) checks the state-dict keys (`prototypes`, `query_proj`),
+  the output types and shapes (indices are `long`, the two indices differ), that
+  `indices`, `nearest` and `value` equal the Purpose formulas recomputed from
+  `query` and `prototypes`, a 1-D `h` giving `[prototype_dim]` outputs, gradients
+  reaching `h` and every parameter, the `ValueError` cases, and the L1-sum value
+  `[6, 0]` of `deviation_score` with its zero-for-identical and gradient behavior.
+  Numerical regression against `tests/fixtures/components/deviation_memory.pt`
+  (`value`, `query`, `indices`).
 - `tests/test_local_graph_forecasters.py`
-  (`test_st_ssdl_prototype_memory_retrieval_shapes`) pins all five output shapes for
+  (`test_st_ssdl_prototype_memory_retrieval_shapes`) pins the five output shapes for
   `h: [B, N, query_dim]`, `deviation_score(x, x) == 0` exactly and
-  `deviation_score >= 0`. The same file checks `st_ssdl`'s contrastive and deviation
-  losses are finite and that the deviation loss is about 0 for an identical history.
-- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/deviation_memory.pt`.
+  `deviation_score >= 0`; `test_st_ssdl_prototype_memory_deviation_reacts_to_input_perturbation`
+  checks `st_ssdl`'s contrastive and deviation losses are finite, the deviation
+  loss is about 0 for an identical history and larger for a perturbed one.
 
 ## Variants and options
 
@@ -76,8 +85,10 @@ general retrieval store over real training samples (see `periodic_query_bank`).
 
 ## Related components
 
-`periodic_query_bank` (learned bank queried by phase), `regularized_adaptive_graph_conv`
-(extracted in the same intake batch).
+`periodic_query_bank` (also a learned bank, but indexed by integer phase with no
+attention or nearest-prototype lookup; this one is queried by content),
+`regularized_adaptive_graph_conv` (extracted in the same intake batch; no functional
+overlap, only the shared consumer `st_ssdl`).
 
 <!-- component-card:generated:start -->
 ## Public API

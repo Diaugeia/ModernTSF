@@ -8,7 +8,7 @@ input: "source [nodes, dim] or [..., nodes, dim]; target (optional) [dim, nodes]
 output: "adjacency [nodes, nodes] (or [..., nodes, nodes]), each row sums to 1"
 origin: "Self-adaptive adjacency of Graph WaveNet (Wu et al., IJCAI 2019) with the single-embedding self-similarity form of AGCRN (Bai et al., NeurIPS 2020); the exact origin of each call site is the consumer model, not recorded per-formula in history"
 origin_models: ["gwnet", "dfdgcn", "d2stgnn", "agcrn", "himnet"]
-tags: ["adaptive", "adjacency", "embedding", "graph", "node", "softmax", "relu", "row-stochastic"]
+tags: ["adaptive", "adjacency", "embedding", "graph", "node", "softmax", "relu", "row-stochastic", "self-adaptive", "graph-wavenet", "agcrn"]
 ---
 
 # adaptive_node_embedding_adjacency
@@ -27,7 +27,7 @@ random-walk style support (`A @ x`) or as a basis element in a polynomial expans
 
 ## Origin and granularity
 
-Five spatiotemporal models carried a verbatim copy of this three-operation block;
+Five spatiotemporal models (`origin_models`) carried a verbatim copy of this three-operation block;
 commit `dd8d8196` ("refactor(components): gated_dilated_conv and
 adaptive_node_embedding_adjacency") extracted it from `gwnet`, `dfdgcn`, `himnet`,
 `d2stgnn` and `agcrn`. The dual-embedding form is the Graph WaveNet self-adaptive
@@ -38,8 +38,8 @@ repository only verifies the model list. The cut stops at the adjacency: how the
 embeddings are parameterised and initialised (e.g. `himnet` passes a batched
 per-sample "meta" embedding), identity/Chebyshev bases stacked on the adjacency
 (`agcrn`, `himnet`), and how the adjacency is mixed with static or dynamic
-supports stay model-local. `mtgnn` has a different graph constructor and was
-deliberately left out of the extraction.
+supports stay model-local. `mtgnn` has a different graph constructor (frozen reference `_RefGraphConstructor`) and was
+deliberately left out of the extraction. `adamshyper` and `stdmae` consume it too.
 
 ## Interface
 
@@ -51,31 +51,36 @@ parameters, buffers, or state):
   transpose, so it must already be `[..., dim, nodes]` (e.g. `gwnet` stores its
   target table as `[dim, nodes]`). Omit it for the self-similarity form.
 - Returns `[..., nodes, nodes]` (or `[..., nodes, target_nodes]` if the target has a
-  different node count) in the dtype/device of the inputs; rows sum to 1.
+  different node count, as in `adamshyper`, which passes a `[dim, hyper_nodes]` target) in the dtype/device of the inputs; rows sum to 1.
 - It does no validation: shape mismatches surface as torch matmul errors.
 - Differentiable w.r.t. both embeddings. Rows whose scores are all non-positive
   become uniform (`relu` gives zeros), not zero rows.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/adaptive_node_embedding_adjacency.pt`.
+- `tests/test_component_contracts_graph.py`: `test_adaptive_adjacency_contract` checks
+  the `[6, 6]` shape and dtype, row sums of 1, non-negativity, the batched `[2, 6, 4]`
+  self-form giving `[2, 6, 6]`, that the dual form equals
+  `softmax(relu(e @ t), -1)` with `t` used as supplied, that the single form equals
+  the dual form with `e.T`, and seeded values against
+  `tests/fixtures/components/adaptive_node_embedding_adjacency.pt`;
+  `test_adaptive_adjacency_gradient` checks non-zero gradients to both embeddings.
+  There is no error-path test (the function does not validate).
 - `tests/test_component_extraction_graph.py` holds frozen verbatim pre-extraction
   copies of `gwnet`, `dfdgcn`, `himnet`, `d2stgnn` and `agcrn` and asserts identical
-  state-dict keys and shapes, identical eval outputs (`atol=1e-6`) and identical
+  state-dict keys and values, identical eval outputs (`atol=1e-6`) and identical
   gradients for each (`test_gwnet_gated_dilated_conv_and_adaptive_adjacency_equivalence`,
   `test_dfdgcn_gated_dilated_conv_and_adaptive_adjacency_equivalence`,
   `test_himnet_adaptive_adjacency_equivalence`,
   `test_d2stgnn_adaptive_adjacency_equivalence`,
-  `test_agcrn_adaptive_adjacency_equivalence`).
-- no fixture: there is no `.pt` fixture and no dedicated unit test of the function
-  itself; the equivalence tests above are the only coverage.
-- Row-stochasticity follows from the final softmax and was confirmed on a small
-  CPU tensor.
+  `test_agcrn_adaptive_adjacency_equivalence`). `adamshyper` and `stdmae` adopted the
+  component later and have no frozen pre-extraction copy.
 
 ## Variants and options
 
 - Dual form (`target` given): independent source/target tables, asymmetric
-  adjacency (`gwnet`, `dfdgcn`, `d2stgnn`).
+  adjacency (`gwnet`, `dfdgcn`, `d2stgnn`, `stdmae`, `adamshyper`; the last gives a
+  rectangular `[nodes, hyper_nodes]` result).
 - Single form (`target=None`): symmetric scores before the softmax, supports
   batched embeddings (`agcrn`, `himnet`).
 - There is no temperature, top-k sparsification, or normalization variant; those
@@ -92,10 +97,12 @@ top-k asymmetric one is intended.
 
 ## Related components
 
-`diffusion_conv` (consumes such adjacencies as supports), `graph_utils` (static
+`diffusion_conv` (consumes such adjacencies as supports),
+`graph_utils` (static
 supports mixed with this learned one), `regularized_adaptive_graph_conv` (linear-time
 node-embedding graph), `gated_dilated_conv` (co-extracted in the same commit),
 `sparse_connection_router` (learned sparse adjacency over positions).
+- `adj_norm`: normalizes the support this component produces.
 
 <!-- component-card:generated:start -->
 ## Public API

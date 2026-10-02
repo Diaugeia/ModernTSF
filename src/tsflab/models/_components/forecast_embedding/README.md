@@ -26,31 +26,36 @@ no position term and no convolutional token embedding.
 
 ## Origin and granularity
 
-Extracted in commit `db5b2970` ("extract reusable forecast contracts") from an
-identical model-local `CalendarEmbedding` + `ForecastEmbedding` pair in
-`autoformer`; `fedformer` and later `dualformer` (commit `dd63af6c`) consume the
-same class. The original docstring says it embeds the six raw columns "without
-source helpers"; which reference-implementation embedding it stands in for is not
-recorded in history. Whether the exact constants (2100, 12, 31, 6, 23, 59) match any paper
-is not recorded; they are the column ranges of the repository's timestamp. Cut
-at the embedding boundary; decomposition, attention, and heads stay local.
+Extracted from an identical model-local calendar-embedding plus forecast-embedding
+pair in `autoformer`; `fedformer` and `dualformer` consume the same classes. Which
+reference-implementation embedding it stands in for is not recorded, and the
+constants (2100, 12, 31, 6, 23, 59) are not tied to any paper: they are the column
+ranges of the repository's raw timestamp contract (`[year, month, day, weekday,
+hour, minute]`, see `marks`). Cut at the embedding boundary; decomposition,
+attention, and heads stay local.
 
 ## Interface
 
 Public symbols: `RawCalendarEmbedding`, `ForecastEmbedding`.
 
 - `RawCalendarEmbedding(d_model: int)`: parameter `projection.weight` `[d_model, 6]`. `forward(marks [B, T, 6]) -> [B, T, d_model]`; raises `ValueError` when `marks.ndim != 3` or the last dim is not 6. The scale vector is created on `marks`' dtype/device each call; no buffers.
-- `ForecastEmbedding(channels: int, d_model: int, dropout: float)`: submodules `value` (`Linear(channels, d_model)` with bias), `calendar`, `dropout`. `forward(values [B, T, channels], marks [B, T, 6]) -> [B, T, d_model]`; raises `ValueError` for `values.ndim != 3` or when `marks` and `values` differ in batch or time. Marks are required (no `None` path). Float tensors on one device; `channels` must equal `values.shape[-1]`.
+- `ForecastEmbedding(channels: int, d_model: int, dropout: float)`: submodules `value` (`Linear(channels, d_model)` with bias), `calendar`, `dropout`. `forward(values [B, T, channels], marks [B, T, 6]) -> [B, T, d_model]`; raises `ValueError` for `values.ndim != 3` or when `marks` and `values` differ in batch or time. Marks are required (no `None` path). `values` and `marks` must be on the parameter device and match the parameter dtype after scaling (float32 by default; float64 marks would fail against float32 weights); `channels` must equal `values.shape[-1]` (not checked beyond the `nn.Linear` error), `dropout` in `[0, 1]` (checked by `nn.Dropout`).
 - State-dict keys: `value.weight`, `value.bias`, `calendar.projection.weight`. Stateless apart from dropout.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/forecast_embedding.pt`.
-no fixture. `test_shared_channel_alignment_and_forecast_embedding_contracts` in
-`tests/test_repository_contracts.py` checks the `[2, 5, 8]` output shape and the
-`ValueError` on a time-axis mismatch. Behavioural identity with the pre-extraction
-autoformer class is by identical source (see the diff of `db5b2970`), not by a
-frozen fixture.
+- `test_forecast_embedding_contract_and_reference` in
+  `tests/test_component_contracts_basic.py` checks the state-dict keys
+  (`value.weight`, `value.bias`, `calendar.projection.weight`), output shape and dtype,
+  that the calendar term equals `projection(marks / [2100, 12, 31, 6, 23, 59] - 0.5)`,
+  gradients on input and all parameters, and `ValueError` for marks of width 5, 2-D
+  marks, 2-D values, and mismatched time length. Reference values:
+  `tests/fixtures/components/forecast_embedding.pt`.
+- `test_shared_channel_alignment_and_forecast_embedding_contracts` in
+  `tests/test_repository_contracts.py` checks the `[2, 5, 8]` output shape and the
+  `ValueError` on a time-axis mismatch.
+- The fixture was recorded from the extracted class; equivalence with the
+  pre-extraction `autoformer` class rests on identical source, not a frozen fixture.
 
 ## Variants and options
 
@@ -64,12 +69,14 @@ exist.
 Use for models consuming the repository's raw six-column marks at both encoder
 and decoder (`x_mark_enc`, `x_mark_dec`) with a plain value projection. Do not use
 when positions or circular-conv token embedding are required (`embed`'s
-`DataEmbedding`), when marks have another width, or when marks may be `None`.
+`DataEmbedding`), when marks have another width or are already normalized or
+encoded (the fixed scales assume raw calendar values), or when marks may be `None`.
 
 ## Related components
 
-`embed` (Time-Series-Library style embeddings), `marks` (mark adapters),
+`embed` (Time-Series-Library style embeddings: also value plus calendar, but with a circular-conv token embedding, positional encoding, and `timeF` mark widths; this one has neither a position term nor a conv and takes raw marks), `marks` (defines the raw six-column layout and mark adapters),
 `series_decomposition` (decomposition used by the consuming models).
+- `channel_alignment`: channel-width adapter.
 
 <!-- component-card:generated:start -->
 ## Public API

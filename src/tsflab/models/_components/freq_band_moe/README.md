@@ -2,13 +2,13 @@
 name: "freq_band_moe"
 kind: "component"
 module: "tsflab.models._components.freq_band_moe"
-summary: "Instance-normalizes a series, splits its rfft into expert_num contiguous bands at sorted sigmoid boundaries, recombines bands with softmax gating, and rescales."
+summary: "Instance-normalizes a [B, C, T] series, splits its rfft into expert_num contiguous bands at sorted sigmoid boundaries, mixes bands with input-conditioned softmax gates, and rescales."
 category: "decomposition"
 input: "x [batch, channels, seq_len]"
-output: "combined [batch, channels, seq_len]; boundaries [expert_num + 1]; gating_scores [batch, expert_num]"
+output: "(combined [batch, channels, seq_len], boundaries [expert_num + 1], gating_scores [batch, expert_num])"
 origin: "Frequency-band decomposition mixture of experts of FreqMoE, Enhancing Time Series Forecasting through Frequency Decomposition Mixture of Experts (arXiv 2501.15125, AISTATS 2025)"
 origin_models: ["freqmoe"]
-tags: ["band", "decomposition", "experts", "frequency", "gating", "mixture", "rfft", "instance-normalization", "stateless-output"]
+tags: ["band", "decomposition", "experts", "frequency", "gating", "mixture", "rfft", "instance-normalization", "straight-through", "fixed-length"]
 ---
 
 # freq_band_moe
@@ -22,8 +22,9 @@ gated recombination of frequency bands. For `x [B, C, T]`:
    (unbiased variance), `z = (x - mu) / sqrt(v)`.
 2. `F = rfft(z)` (`T//2 + 1` bins).
 3. Boundaries: `sort(sigmoid(band_boundaries))`, padded with 0 and 1, scaled by
-   the bin count and cast to integers; band `e` is the half-open bin range
-   `[idx[e], idx[e+1])` (the last index is forced to the bin count).
+   the bin count and truncated to integers (floor); band `e` is the half-open bin range
+   `[idx[e], idx[e+1])` (the last index is forced to the bin count). With
+   `expert_num == 1` the raw (empty) buffer is used and the boundaries are `[0, 1]`.
 4. Gate: `g = softmax(MLP(mean_c |F|))` with an MLP
    `Linear(F, F) -> ReLU -> Linear(F, expert_num)`, so `g` is `[B, expert_num]`.
 5. `out = irfft(sum_e g[b, e] * (F masked to band e), n=T) * sqrt(v) + mu`.
@@ -58,7 +59,9 @@ boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_score
   length raises `ValueError`. Returns `(combined, boundaries, gating_scores)`:
   `combined` same shape as `x`; `boundaries` shape `[expert_num + 1]` in
   `[0, 1]` (0 first, 1 last); `gating_scores` `[batch, expert_num]`, rows sum to 1.
-- Stateless between calls (no cached tensors in the module).
+- Stateless between calls (no cached tensors in the module). No dropout. Input
+  must be a real floating tensor (`rfft`); the gate and masks follow its dtype and
+  device. `torch.var` is the unbiased estimate, so `seq_len == 1` yields NaN.
 
 ## Invariants and equivalence evidence
 
@@ -67,11 +70,16 @@ boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_score
   boundary vector length and monotonicity, and gate rows summing to 1.
 - no fixture: no pre-refactor tensor fixture; consumer-level behaviour is
   covered by the `freqmoe` model tests in the same file.
-- `tests/test_component_numeric_fixes.py`: the default module is bit-identical
-  to the former implementation (checked once against the pre-change code, with
-  the old state dict loaded); `band_boundaries` is a buffer with no gradient and
-  round-trips through `state_dict`; with `learnable_boundaries=True` the forward
-  output equals the fixed module's and `band_boundaries.grad` is finite and nonzero.
+- `tests/test_component_numeric_fixes.py`:
+  `test_band_boundaries_default_is_buffer_and_loads_old_checkpoint` (default
+  `band_boundaries` is a buffer with no gradient, round-trips through
+  `state_dict`, and a learnable module's checkpoint loads into the default one),
+  `test_learnable_boundaries_receive_gradient_with_identical_forward` (forward
+  output, boundaries and gates equal the fixed module's; `band_boundaries.grad`
+  is finite and nonzero), and `test_single_expert_has_no_boundaries`
+  (`expert_num == 1` returns `[0.0, 1.0]`, finite output). No fixture compares the
+  default forward against the pre-change implementation; that was a one-off
+  manual check and is not reproducible from the repository.
 - Paper vs code: the paper (Sec. on the frequency-decomposition MoE) says the
   boundaries are learned end-to-end, but the official code casts them to integers,
   which blocks every gradient. The default follows the official code (fixed,
@@ -93,15 +101,24 @@ spectrum.
 ## When to use and when not to use
 
 Use as a front-end that gates frequency bands of a `[B, C, T]` window with a
-fixed window length. Pass `learnable_boundaries=True` when the boundaries should be learned. Do not use when the sequence length varies, or when the
-normalization should be handled by a shared `revin` (this module normalizes
-internally and restores scale itself).
+fixed window length. Pass `learnable_boundaries=True` when the boundaries should
+be learned. Do not use when the sequence length varies, or when the normalization
+should be handled by a shared `revin` (this module normalizes internally and
+restores scale itself). Note it expects channels on axis 1 (`[B, C, T]`), unlike
+the `[B, T, C]` layout of most components, so permute first (as `freqmoe` does).
 
 ## Related components
 
-`frequency_band_sampler` (deterministic depth-indexed bands), `revin`
-(external reversible normalization), `series_decomposition` (time-domain
-decomposition), `topk_expert_router` (routing over experts without a spectrum).
+- `frequency_band_sampler`: deterministic depth-indexed bands over an FFT axis;
+  no gate, no learned boundaries, no recombination.
+- `revin`: external reversible normalization; this module normalizes and restores
+  scale internally with its own (non-affine) statistics.
+- `series_decomposition`: time-domain trend/residual split; here the split is
+  spectral and recombined by gates.
+- `topk_expert_router`: input-conditioned routing over experts that is not tied to
+  a spectrum; this module's gate is dense softmax (no top-k).
+- `wavelet`, `haar_dwt1d`: alternative multi-band decompositions (fixed filter
+  banks) instead of learned rfft band edges.
 
 <!-- component-card:generated:start -->
 ## Public API

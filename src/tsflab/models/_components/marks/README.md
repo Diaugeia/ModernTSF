@@ -8,7 +8,7 @@ input: "values [batch, time, nodes]; marks raw [batch, time, 6] = [year, month, 
 output: "normalized_time_features [batch, time, 2]; to_spatiotemporal [batch, time, nodes, 1 + F]; future_time_features [batch, time, nodes, F]; adapt_tslib_marks [batch, time, k]"
 origin: "TSFLab's own input contract; the value-plus-normalized-calendar layout follows the BasicTS / LargeST tensor convention as stated in the module docstring"
 origin_models: []
-tags: ["calendar", "covariate", "spatiotemporal", "timestamp", "time-in-day", "day-in-week", "adapter", "time-series-library"]
+tags: ["calendar", "covariate", "spatiotemporal", "timestamp", "time-in-day", "day-in-week", "adapter", "time-series-library", "time-feature", "marks"]
 ---
 
 # marks
@@ -57,13 +57,22 @@ Public symbols: `TIME_FEATURES`, `TSLIB_TIME_FEATURE_DIMS`,
 
 ## Invariants and equivalence evidence
 
-`test_shared_spatiotemporal_adapter_shape` in
-`tests/test_repository_contracts.py` checks `[2, 12, 4, 3]` output and that channel 0
-equals the values. `tests/test_component_extraction_graph.py` runs many graph
-consumers on `to_spatiotemporal` output and uses `normalized_time_features` in a
-decoder reference model. The TSLib adapter functions have no current model consumer in `src/`.
-
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/marks.pt`.
+- `tests/test_component_contracts_signal.py` (`test_marks_constants_and_dimension`,
+  `test_normalized_time_features`, `test_to_spatiotemporal_variants`,
+  `test_future_time_features_and_coerce`, `test_adapt_tslib_marks`) checks the constants
+  and case-insensitive width lookup, the `[0, 1)` range and exact values of the two
+  normalized features, the 3-D/4-D/`None` branches of `to_spatiotemporal` (zero features
+  for `None`), the `to_calendar_spatiotemporal` rejection of a 5-channel covariate,
+  `future_time_features` and `coerce_time_length` (truncate, pad by repeating the last
+  step, identity returns the same object), and `adapt_tslib_marks` (drop year, pass-through
+  of preprocessed widths, hourly `timeF` conversion with the Feb-29 day-of-year value,
+  the three `ValueError` cases), plus a seeded regression against
+  `tests/fixtures/components/marks.pt` (`normalized`, `spatiotemporal`, `tslib_hourly`).
+- `tests/test_repository_contracts.py` (`test_shared_spatiotemporal_adapter_shape`) checks the
+  `[2, 12, 4, 3]` output and that channel 0 equals the values.
+  `tests/test_component_extraction_graph.py` runs graph consumers on `to_spatiotemporal`
+  output and uses `normalized_time_features` in a decoder reference model.
+- The TSLib adapter (`adapt_tslib_marks`, `tslib_time_feature_dimension`) is used by `fredf` and `pgn`.
 
 ## Variants and options
 
@@ -81,8 +90,10 @@ validate marks; most functions assume the layout.
 
 ## Related components
 
-`embed` (consumes TSLib-layout marks), `forecast_embedding` (embeds raw six-column
-marks directly), `graph_utils` (graph supports used by the same consumers).
+`embed` (consumes the TSLib-layout marks `adapt_tslib_marks` produces; its
+`TemporalEmbedding` expects five columns without year), `forecast_embedding` (embeds raw
+six-column marks directly with its own scaling, not the normalized calendar features here),
+`graph_utils` (graph supports used by the same consumers).
 
 <!-- component-card:generated:start -->
 ## Public API

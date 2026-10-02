@@ -3,12 +3,12 @@ name: "harmonic_energy_gate"
 kind: "component"
 module: "tsflab.models._components.harmonic_energy_gate"
 summary: "Per-channel share of spectral energy carried by the dominant low-frequency fundamental and its first harmonics, used as a periodicity gate in [0, 1]."
-category: "fusion"
+category: "frequency"
 input: "x [batch, length, channels]"
 output: "[batch, 1, channels], values in [0, 1]"
 origin: "Harmonic-energy weighting of Dualformer, Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting (arXiv 2601.15669, 2026)"
 origin_models: ["dualformer"]
-tags: ["energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting", "non-differentiable-selection"]
+tags: ["energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting", "non-differentiable-selection", "dualformer", "fft", "rfft", "dual-branch", "harmonics"]
 ---
 
 # harmonic_energy_gate
@@ -28,7 +28,8 @@ A channel whose energy sits on one fundamental and its harmonics scores near
 
 ## Origin and granularity
 
-Extracted from `dualformer` (commit `dd63af6c`, automated intake). The
+Introduced with `dualformer` as a standalone module (commit `dd63af6c`, automated
+intake of SDMixer, SEMixer, LSINet and Dualformer). The
 consumer applies it to the embedded sequence `[B, L, d_model]` and mixes
 `freq_state * w + time_state * (1 - w)`; the code comment calls this the paper's
 periodicity-aware gate. Cut at the ratio itself; the two branches, the fusion
@@ -48,16 +49,24 @@ parameter-free.
 - No parameters, buffers, or state. The argmax selection is not differentiable;
   gradient flows only through the amplitudes at the selected bins and the total.
 - Quirk: when `nb // num_harmonics <= low_freq_guard` the candidate range is
-  empty, `f0` falls back to bin 0, and the output is about 0 (DC removed), so
+  empty, every candidate is zero, `f0` is the tied argmax (index 0 in practice), and the output is about 0 (DC removed), so
   short inputs or many harmonics silently yield a zero gate.
 
 ## Invariants and equivalence evidence
 
-- The `dualformer` model tests also exercise it indirectly.
-- CPU check: a pure sinusoid with 4 cycles over length 32 returns exactly 1.0.
-- The ratio is at most 1 up to the `1e-5` stabilizer, because harmonics are
-  confined to bins below `nb` and counted once each unless clamped.
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/harmonic_energy_gate.pt`.
+- `tests/test_component_contracts_signal.py`:
+  `test_harmonic_gate_contract` checks an empty state dict, the `[2, 1, 3]` shape and
+  dtype, outputs in `[0, 1 + 1e-6]`, a pure 4-cycle sinusoid over length 64 scoring above
+  0.99, white noise scoring below it, and seeded values against
+  `tests/fixtures/components/harmonic_energy_gate.pt`;
+  `test_harmonic_gate_errors` checks the `ValueError`s (non-positive constructor
+  arguments, rank not 3, too-short sequence);
+  `test_harmonic_gate_dtype_double_and_grad` checks float64 output and finite gradients.
+- The ratio never exceeds 1 up to the `1e-5` stabilizer: the fundamental is below
+  `nb // num_harmonics`, so `num_harmonics * f0 <= nb - 1`, the `clamp` never fires, and
+  each harmonic bin is distinct and counted once.
+- A pure sinusoid scores just under 1 (`E / (E + 1e-5)`), not exactly 1.
+- `tests/test_dualformer_forecaster.py` exercises the gate through the `dualformer` model.
 
 ## Variants and options
 
@@ -75,7 +84,9 @@ the low-frequency fundamental is ambiguous, or when a learned gate is needed
 ## Related components
 
 `dominant_periods` (explicit period discovery), `gated_fusion` (learned fusion
-gates), `frequency_band_sampler` (the other Dualformer frequency component).
+gates; this component is parameter-free and spectrum-driven), `frequency_band_sampler`
+(the other Dualformer frequency component), `spectral_descriptor` (per-window spectral
+entropy and band-energy ratios, a different spectral summary), `energy_frequency_pooling`.
 
 <!-- component-card:generated:start -->
 ## Public API

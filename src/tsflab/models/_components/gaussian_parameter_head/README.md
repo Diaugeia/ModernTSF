@@ -8,7 +8,7 @@ input: "[..., in_features]"
 output: "(loc, scale), each [..., out_features]"
 origin: "Gaussian likelihood parameter layer of DeepAR (Salinas et al., Int. J. Forecasting 2020); consumed by deepar and gaussian_mlp"
 origin_models: ["deepar", "gaussian_mlp"]
-tags: ["distribution", "gaussian", "location", "probabilistic", "scale", "softplus"]
+tags: ["distribution", "gaussian", "location", "probabilistic", "scale", "softplus", "positive-scale", "likelihood", "deepar", "mean-variance"]
 ---
 
 # gaussian_parameter_head
@@ -44,12 +44,19 @@ autoregressive sampling, and scale normalization of covariates remain in the mod
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/gaussian_parameter_head_softplus.pt`, `tests/fixtures/components/gaussian_parameter_head_log1pexp.pt`.
-no fixture. `test_gaussian_parameter_head_preserves_both_scale_formulas` in
-`tests/test_repository_contracts.py` checks both transforms against their formulas
-plus `eps`, strict positivity, and gradient finiteness.
-`tests/test_probabilistic_forecasters.py` checks the `GaussianMLP` Gaussian
-parameter equation and positive scale and the output shape through the model.
+- `tests/test_component_contracts_basic.py`: `test_gaussian_parameter_head_contract_and_reference`
+  (both transforms) checks the four state-dict keys, `[2, 5, 3]` output shapes and dtype,
+  `scale >= eps`, the softplus formula, gradients to the input and all parameters, and
+  seeded values against `tests/fixtures/components/gaussian_parameter_head_softplus.pt` and
+  `tests/fixtures/components/gaussian_parameter_head_log1pexp.pt`;
+  `test_gaussian_parameter_head_errors` checks the `eps` and `scale_transform` `ValueError`s
+  and that softplus stays finite for a raw scale of 1000.
+- `tests/test_repository_contracts.py`
+  (`test_gaussian_parameter_head_preserves_both_scale_formulas`) checks both transforms
+  against their explicit formulas plus `eps`, strict positivity, and gradient finiteness.
+- `tests/test_probabilistic_forecasters.py` (`test_gaussian_parameter_equation_and_positive_scale`)
+  checks the `GaussianMLP` head equations through the model.
+- The `log1pexp` overflow for large raw scales stated in the Interface is not covered by a test.
 
 ## Variants and options
 
@@ -64,8 +71,10 @@ bounded targets, or when scale should be tied across horizons.
 
 ## Related components
 
-`quantile_head` (alternative probabilistic output), `flatten_forecast_head` (point
-forecast head with a different output type).
+`quantile_head` (distribution-free alternative probabilistic output: input-conditioned
+non-crossing quantiles instead of Gaussian `loc`/`scale`), `flatten_forecast_head` (point
+forecast head with a different output type). `composed` lists this head in its `head`
+schema literal but rejects it at validation (point output only), so it is not a working consumer.
 
 <!-- component-card:generated:start -->
 ## Public API

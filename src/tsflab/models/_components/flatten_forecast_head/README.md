@@ -6,9 +6,9 @@ summary: "Flatten the last two axes of [batch, channels, d, patches] and project
 category: "head"
 input: "[batch, n_vars, d_model, patches] (any [batch, n_vars, ..., ...] whose last two axes flatten to nf)"
 output: "[batch, n_vars, target_window]"
-origin: "PatchTST flatten head (Nie et al., ICLR 2023, A Time Series is Worth 64 Words); extracted from the patchtst backbone and four model-local copies"
+origin: "PatchTST flatten head (Nie et al., ICLR 2023, A Time Series is Worth 64 Words); extracted from the PatchTST backbone component and four model-local copies"
 origin_models: ["patchtst", "hdmixer", "moderntcn", "timexer", "umixer"]
-tags: ["channel-wise", "flatten", "forecast", "head", "linear", "patch", "individual"]
+tags: ["channel-wise", "flatten", "forecast", "head", "linear", "patch", "individual", "patchtst", "point-forecast", "linear-head", "shared-head"]
 ---
 
 # flatten_forecast_head
@@ -24,13 +24,15 @@ The last two axes are flattened in their existing order (`D` major, `P` minor).
 ## Origin and granularity
 
 Extracted in commit `d38451c3` ("extract flatten forecast head") from the
-`patchtst` backbone and local copies in `hdmixer`, `moderntcn`, `timexer`, and
-`umixer`, which all used the PatchTST-style flatten-then-linear head. The commit
-does not name the paper; PatchTST (Nie et al., ICLR 2023) is the standard source of
-that head, and `patchtst` is the first listed origin. Now also used by `gateformer`,
-`srsnet`, `semixer`, `sensorformer`, `lsinet`, `timeexpert`. Cut at the head
-only: the preceding encoder, the normalization, and any reshape into
-`[B, C, D, P]` stay model-local.
+`patchtst` backbone component (`_components/patchtst`) and from local copies in the
+`hdmixer`, `moderntcn`, `timexer`, and `umixer` models, which all used the
+PatchTST-style flatten-then-linear head (`origin_models` lists these as the historical
+sources; the commit does not name the paper, and PatchTST, Nie et al., ICLR 2023, is
+the standard source of that head). Those four models no longer import the head; the
+current direct consumers are the generated list below, and `quantile_patchtst`
+reaches it through the `patchtst` component. The `patchtst` model keeps its own head
+code. Cut at the head only: the preceding encoder, the normalization, and any reshape
+into `[B, C, D, P]` stay model-local.
 
 ## Interface
 
@@ -46,13 +48,21 @@ only: the preceding encoder, the normalization, and any reshape into
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/flatten_forecast_head_shared.pt`, `tests/fixtures/components/flatten_forecast_head_ind.pt`.
-no fixture. `test_flatten_forecast_head_shared_and_individual_contracts` in
-`tests/test_repository_contracts.py` checks that shared output equals
-`linear(flatten(x))`, that individual output equals the stack of per-channel linears, the
-`[2, 3, 7]` shapes, and gradient finiteness. Extraction equivalence for the
-consumers was verified at commit time through their contract tests; no frozen
-pre-extraction fixture exists.
+- `tests/test_component_contracts_basic.py`:
+  `test_flatten_forecast_head_contract_and_reference` (shared and individual) checks the
+  exact state-dict keys, the `[2, 3, 5]` output and dtype, gradients to the input and all
+  parameters, leading axes preserved in shared mode (`[7, 2, 3, 5]`), the `RuntimeError`
+  for a feature-width mismatch, and seeded values and input gradient against
+  `tests/fixtures/components/flatten_forecast_head_shared.pt` and
+  `tests/fixtures/components/flatten_forecast_head_ind.pt`;
+  `test_flatten_forecast_head_dropout_eval_deterministic` checks that eval mode with
+  `head_dropout=0.5` is deterministic.
+- `tests/test_repository_contracts.py`
+  (`test_flatten_forecast_head_shared_and_individual_contracts`) checks that shared
+  output equals `linear(flatten(x))`, that individual output equals the stack of
+  per-channel linears, and the `[2, 3, 7]` shapes.
+- No frozen pre-extraction fixture exists; extraction equivalence for the original
+  consumers is not recorded as a test.
 
 ## Variants and options
 
@@ -69,9 +79,12 @@ run time (`nf` is fixed), or when channel mixing is required in the head.
 
 ## Related components
 
-`channel_wise_linear` (per-channel linear over time), `patchtst` (backbone that
-composes this head), `embed` (`PatchEmbedding` produces the tokens such heads read),
-`dlinear` (alternative linear forecaster).
+`channel_wise_linear` (per-channel linear over the time axis of `[B, L, C]`; this head
+instead flattens a feature-by-patch grid), `patchtst` (backbone component that composes
+this head), `embed` (`PatchEmbedding` produces the tokens such heads read), `dlinear`
+(alternative linear forecaster), `quantile_head` and `gaussian_parameter_head`
+(probabilistic output heads; this one emits a point forecast).
+- `fft_extrapolation_conv`: frequency-domain history-to-horizon alternative.
 
 <!-- component-card:generated:start -->
 ## Public API

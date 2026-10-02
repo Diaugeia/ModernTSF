@@ -61,7 +61,11 @@ component.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/series_decomposition.pt`.
+- `tests/test_component_contracts_basic.py` (`test_series_decomposition_contract_and_reference`)
+  checks the empty state dict, shape and dtype, `residual + trend == x`, the hand-computed
+  first-step trend, a constant series unchanged, gradients, `kernel_size > length`,
+  `stride=2` giving length 5 from 10, kernel 1, the `ValueError` cases (kernel 0, -3, 4;
+  stride 0), and a seeded regression in `tests/fixtures/components/series_decomposition.pt`.
 - `test_edge_padded_series_decomposition_matches_reference` in
   `tests/test_repository_contracts.py`: output equals explicit edge padding plus
   `avg_pool1d`, `residual + trend == x`, gradients finite, even kernel
@@ -70,10 +74,11 @@ component.
   `tests/test_transformer_patch_forecasters_a.py` checks the hand-computed trend
   `[5/3, 3, 13/3]` for `[1, 3, 5]` with kernel 3.
 - `tests/fixtures/component_extraction_batch7.pt` with
-  `tests/test_component_extraction_batch7.py` pins the migrated `timemixer`
+  `tests/test_component_extraction_batch7.py`
+  (`test_timemixer_moving_average_decomposition_matches_reference`) pins the migrated `timemixer`
   (outputs, state dict, gradients) against pre-refactor values.
-- `tests/test_component_extraction_moe.py` documents (and tests) why DUET's
-  moving average was not extracted.
+- `tests/test_component_extraction_moe.py` (`TestDuetMovingAverageStaysLocal`) pins that the
+  shared component rejects even kernels while DUET's local helper accepts them.
 
 ## Variants and options
 
@@ -92,9 +97,11 @@ must be learned.
 
 ## Related components
 
-`dlinear` (composes it with two projections), `channel_wise_linear`,
-`haar_dwt1d` and `wavelet` (frequency-based splits), `revin`,
-`last_value_center`.
+`dlinear` (composes it with two projections), `haar_dwt1d` and `wavelet`
+(frequency-based splits of the same trend/detail kind, not moving-average), `revin` and
+`last_value_center` (other ways of removing level from a series before the model, with no
+trend/residual pair).
+- `freq_band_moe`: learned spectral band split instead of a moving-average trend.
 
 <!-- component-card:generated:start -->
 ## Public API

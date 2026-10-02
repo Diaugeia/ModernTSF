@@ -34,7 +34,7 @@ statistics. The module is a stateful pair: `denorm` is only valid after `norm`.
 The block is the standard RevIN layer used by many forecasters; it was
 consolidated from near-identical model-local copies (commit `61451843`,
 "consolidate reversible normalization", replaced local copies in crib, glocalib,
-mgsfformer, mofo, pathformer, timealign, timekan, and timemixer) and the
+mgsfformer, mofo, pathformer, timealign, timefilter, timekan, and timemixer) and the
 `patchtst` backbone. It is cut at the layer boundary: normalization statistics,
 affine parameters, and inversion. Model-specific uses stay local: where `norm`
 and `denorm` are called, forecast-length handling, other normalizations
@@ -64,14 +64,29 @@ variants that do not store state (use `last_value_center` for those).
   example the forecast horizon) because the cached statistics broadcast over it.
 - Returns a tensor of the same shape and dtype/device as `values`.
 - Raises `ValueError` for `ndim < 3`, a channel-width mismatch, or an unknown
-  mode; `RuntimeError` when `denorm` precedes any `norm`.
+  mode; `RuntimeError` when `denorm` precedes any `norm`. All of these checks are
+  skipped when `enabled=False`. Constructor: `ValueError` for `num_features < 1`
+  or `eps <= 0`.
+- Rank > 3 quirk: the mean and variance reduce over every middle axis, but
+  `subtract_last=True` takes the last step along axis 1 only (shape
+  `[B, 1, ..., C]` by `select(1, -1)`), so for rank > 3 the center is not the last
+  value over all middle axes. Only rank 3 is the documented contract.
 - Cached `_center` and `_scale` are plain attributes (not buffers): they are not
   in the state dict, follow whichever instance last called `norm`, and make an
   instance unsafe to share across concurrent forward passes.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/revin_10.pt`, `tests/fixtures/components/revin_00.pt`, `tests/fixtures/components/revin_11.pt`.
+- `test_revin_contract_and_reference` in `tests/test_component_contracts_basic.py`
+  (parametrized over `affine`/`subtract_last` = (T,F), (F,F), (T,T)) checks the
+  state-dict keys, zero mean and unit variance when neither option is set, a zero
+  last step for `subtract_last`, the `denorm(norm(x))` round trip, a different
+  horizon length at `denorm`, gradient to the input and affine parameters, and the
+  rank-4 shape; `test_revin_errors_and_disabled` checks the `RuntimeError` and
+  `ValueError` cases and the identity of the disabled module. Reference values are in
+  `tests/fixtures/components/revin_10.pt` (affine, mean), `tests/fixtures/components/revin_00.pt`
+  (no affine) and `tests/fixtures/components/revin_11.pt` (affine, last-value); the
+  suffix is `<affine><subtract_last>`.
 - Round trip: `denorm(norm(x)) == x` up to float error for the default,
   `subtract_last=True`, and disabled configurations; checked by
   `test_revin_round_trip` in `tests/test_repository_contracts.py`.
@@ -103,9 +118,13 @@ specifies non-detached or patch-wise statistics.
 
 ## Related components
 
-`last_value_center` (stateless last-value centering, no scaling), `adain_style_norm`
-(rescale to externally supplied statistics), `series_decomposition` (often
-applied after normalization), `patchtst` (backbone that composes RevIN).
+- `last_value_center`: stateless last-value centering, no scaling; the caller keeps
+  the level instead of the module.
+- `adain_style_norm`: rescales to externally supplied statistics.
+- `series_decomposition`: often applied after normalization (trend/residual split).
+- `patchtst`: backbone that composes RevIN.
+- `freq_band_moe`: a block that instance-normalizes internally (non-affine, not
+  invertible by the caller), so do not stack it with RevIN unintentionally.
 
 <!-- component-card:generated:start -->
 ## Public API

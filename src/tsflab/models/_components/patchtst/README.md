@@ -2,13 +2,13 @@
 name: "patchtst"
 kind: "component"
 module: "tsflab.models._components.patchtst"
-summary: "PatchTSTBackbone: RevIN, per-channel patching with unfold, linear patch embedding, position table, TSTEncoder, flatten head; channel-independent direct multi-horizon forecast."
+summary: "Channel-independent PatchTST forecaster: RevIN, per-channel unfold patching, linear patch embedding, position table, TSTEncoder, flatten head, RevIN denorm; direct multi-horizon output."
 category: "backbone"
 input: "[batch, context_window, channels]"
 output: "[batch, target_window, channels]"
 origin: "PatchTST, Nie et al., ICLR 2023 (A Time Series is Worth 64 Words: Long-term Forecasting with Transformers)"
 origin_models: ["patchtst"]
-tags: ["backbone", "channel-independent", "patch", "transformer", "forecasting", "composite"]
+tags: ["backbone", "channel-independent", "patch", "transformer", "forecasting", "composite", "revin", "flatten-head"]
 ---
 
 # patchtst
@@ -31,7 +31,8 @@ For input `x [B, L, C]`:
 
 ## Origin and granularity
 
-Implements PatchTST (Nie et al., ICLR 2023). It was a shared component from the
+Implements PatchTST (Nie et al., ICLR 2023); `origin_models` lists `patchtst`
+as the source design although that model no longer imports this component. It was a shared component from the
 initial refactors and was rewritten as a clean-room composition in `fba5fa99`
 ("finish clean-room shared forecasting layer"); the flatten head was split out
 in `d38451c3`. The cut keeps the composition (normalize, patch, embed, encode,
@@ -61,14 +62,28 @@ positional arguments (for example marks) are ignored. Returns `[B, target_window
 c_in]`. Raises `ValueError` for bad shape/length, `patch_len`/`stride`, unsupported
 `padding_patch`, or `head_type != "flatten"` (plus errors from the sub-components).
 State-dict prefixes: `normalizer.*` (RevIN affine), `patch_projection.*`,
-`position` (the table parameter), `encoder.layers.*`, `head.*`. The module is
-stateful during a forward pass only through the RevIN statistics cache and the
-encoder's BatchNorm running statistics, so do not share one instance across
-concurrent forwards.
+`position` (the table, an `nn.Parameter` with `requires_grad=learn_pe`),
+`encoder.layers.layers.*` and `encoder.layers.norm.*` (an `nn.TransformerEncoder`
+wrapped by `TSTEncoder`, with `norm="BatchNorm"` adding running-statistics buffers),
+`head.*`. Dropout: `TSTEncoder` collapses `attn_dropout`, `res_dropout`,
+`ffn_dropout` and `proj_dropout` into one rate, their maximum
+(so they are not independently tunable); `res_dropout` also drops the embedded
+tokens, `head_dropout` the flattened features. The module is stateful during a
+forward pass through the RevIN statistics cache (detached, so no gradient flows
+through the instance mean/std) and the encoder's BatchNorm running statistics;
+do not share one instance across concurrent forwards. `denorm` is only valid
+after a `norm` in the same forward, which the module guarantees.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/patchtst_end_shared.pt`, `tests/fixtures/components/patchtst_nopad_ind.pt`.
+- `test_patchtst_backbone` in `tests/test_component_contracts_attention.py`
+  (parametrized over end-padding/shared head and no padding/individual head)
+  checks output shape and dtype, the state-dict prefixes above, that extra
+  positional arguments are ignored, finite input gradients and parameter gradients;
+  reference outputs are in `tests/fixtures/components/patchtst_end_shared.pt` and
+  `tests/fixtures/components/patchtst_nopad_ind.pt`. `test_patchtst_channel_independence_and_validation`
+  in the same file checks channel-permutation equivariance with `revin=False` and the
+  `ValueError` cases (wrong length, `head_type`, `padding_patch`, `patch_len > context_window`).
 - `tests/test_repository_contracts.py` pins the dependency closure of `patchtst`
   to `flatten_forecast_head`, `patchtst`, `positional_encoding`, `revin`,
   `tst_transformer`.
@@ -79,7 +94,8 @@ concurrent forwards.
   not on this backbone directly; the backbone shares the same channel-folding
   structure.
 - no fixture: no numeric fixture compares this backbone with the original PatchTST
-  code.
+  code or with the model-local `patchtst` model; the only fixtures are seeded
+  self-references.
 
 ## Variants and options
 
@@ -98,8 +114,15 @@ to reproduce the model-local `patchtst` numerics.
 
 ## Related components
 
-`revin`, `positional_encoding`, `tst_transformer`, `flatten_forecast_head`,
-`quantile_head` (used with it in `quantile_patchtst`).
+- `revin`, `positional_encoding`, `tst_transformer`, `flatten_forecast_head`: the
+  pieces this composition wires together; use them directly for variants.
+- `quantile_head`: probabilistic output layer used with it in `quantile_patchtst`;
+  the backbone itself is point-forecast only.
+- `dlinear`, `channel_wise_linear`: linear channel-independent point backbones
+  with no patching or attention; `global_patch_compression_attention`: patch
+  attention that mixes channels, unlike this channel-independent encoder.
+- `mixer_block`: an MLP-mixer alternative to patch attention (`patchtst`'s
+  encoder is a TST attention stack).
 
 <!-- component-card:generated:start -->
 ## Public API

@@ -50,15 +50,21 @@ buffers or state of its own; no dtype handling beyond the convs'.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/gated_dilated_conv.pt`.
+- `tests/test_component_contracts_graph.py` (`test_causal_pad_and_gated_conv`) checks
+  `causal_pad` shapes for rank 3 and 4, that the left pad is zero and the rest is the
+  input, kernel 1 adds no padding, rank 2 raises `ValueError`; `gated_dilated_conv`
+  length preservation with `Conv1d` and `Conv2d` `(1, k)`, dtype, `|y| < 1`,
+  gradients to input and both convs, causality (perturbing future steps leaves earlier
+  outputs unchanged), and a seeded regression against
+  `tests/fixtures/components/gated_dilated_conv.pt`.
 - `tests/test_component_extraction_graph.py`:
   `test_wavenet_gated_dilated_conv_equivalence`,
   `test_gwnet_gated_dilated_conv_and_adaptive_adjacency_equivalence`,
   `test_dfdgcn_gated_dilated_conv_and_adaptive_adjacency_equivalence` and
   `test_mtgnn_gated_dilated_conv_equivalence` compare each refactored model against
   an in-test copy of the pre-extraction reference (same state-dict names, outputs,
-  gradients, atol 1e-6). no fixture: those references live in the test file, not as
-  `.pt` files.
+  gradients, atol 1e-6). These references live in the test file; there is no `.pt`
+  fixture for them.
 
 ## Variants and options
 
@@ -75,8 +81,12 @@ non-causal context is wanted, or for other gating forms (GLU, see `gated_fusion`
 
 ## Related components
 
-`diffusion_conv`, `adaptive_node_embedding_adjacency` (extracted in the same
-commit), `gated_fusion`.
+`diffusion_conv` (the graph-mixing step that follows the gated unit in Graph WaveNet;
+it mixes over nodes, this one over time), `adaptive_node_embedding_adjacency` (extracted
+in the same commit; supplies the adjacency, not temporal gating), `gated_fusion`
+(a learned sigmoid blend of two tensors, not a tanh x sigmoid temporal conv).
+`composed` also reaches this component through its slot registry.
+- `softmax_gate`: softmax feature gate on one tensor, not a tanh x sigmoid temporal convolution.
 
 <!-- component-card:generated:start -->
 ## Public API

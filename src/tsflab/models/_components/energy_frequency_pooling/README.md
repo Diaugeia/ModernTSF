@@ -8,7 +8,7 @@ input: "spectrum complex [batch, tokens, freq]"
 output: "complex [batch, tokens, freq]; the same value for every token at each frequency"
 origin: "Energy-based key-frequency pooling of ReFocus, Reinforcing Mid-Frequency and Key-Frequency Modeling for Multivariate Time Series Forecasting (arXiv 2502.16890, 2025)"
 origin_models: ["refocus"]
-tags: ["energy", "frequency", "key-frequency", "pooling", "softmax", "stochastic", "complex", "train-eval-difference"]
+tags: ["energy", "frequency", "key-frequency", "pooling", "softmax", "stochastic", "complex", "token-axis", "selection", "train-eval-difference"]
 ---
 
 # energy_frequency_pooling
@@ -56,7 +56,14 @@ and the choice of what the token axis is stay in `refocus`.
 - `test_energy_based_frequency_pooling_picks_the_higher_energy_token` in
   `tests/test_frequency_wavelet_attention_forecasters.py` checks, in eval, that
   both tokens receive the higher-energy token's value.
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/energy_frequency_pooling.pt`.
+- `tests/test_component_contracts_signal.py` (`test_energy_pooling_shape_and_broadcast_eval`,
+  `test_energy_pooling_train_samples_existing_tokens_and_grads`,
+  `test_energy_pooling_rejects_bad_input`) checks in eval that the output keeps shape and
+  complex dtype, has an empty state dict, is identical across tokens and equals the
+  argmax-energy token per bin; in train that every pooled value equals one of the
+  token values and gradients reach the input; and both `ValueError` cases. A seeded
+  numerical regression of the eval output uses `tests/fixtures/components/energy_frequency_pooling.pt`.
+  The training-mode sampling distribution itself is not tested statistically.
 
 ## Variants and options
 
@@ -74,8 +81,11 @@ is a sample), or when the input is real-valued.
 
 ## Related components
 
-`freq_band_moe` (frequency-domain gating by band), `frequency_band_sampler`,
-`revin` (ReFocus normalizes with it before this block).
+`harmonic_energy_gate` (also energy-driven, but gates harmonic bins of a series rather than
+selecting one token per bin), `freq_band_moe` (splits one series into frequency bands and
+softmax-mixes them; no cross-token selection), `frequency_band_sampler` (slices a fixed
+bin range; no energy). `revin` is only the normalization `refocus` applies before this block.
+- `spectral_descriptor`: window-level entropy and band ratios rather than token selection.
 
 <!-- component-card:generated:start -->
 ## Public API

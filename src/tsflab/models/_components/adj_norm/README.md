@@ -31,24 +31,31 @@ node has Laplacian diagonal 1, transition row 0).
 
 The math is the published standard; the module docstring records that the
 definitions are also used by BasicTS `adjacent_matrix_norm.py` (Apache-2.0). It
-entered the repository with the "Batch A" commit (`b91231b9`, metrics, masked
-losses, adjacency-norm utilities) as `models/_external/adj_norm.py`, and was
-later moved under the shared components (`fba5fa99`, `33ea2050`). No model package
-consumes it directly. Its consumer is the `graph_utils` component, which
-composes it into named supports (`normlap`, `symadj`, `transition`,
-`doubletransition`). Input validation of finite values, the choice among
-normalization types, torch conversion, and the eigenvalue-based scaled
-Laplacian stay in `graph_utils` / `graph_spectral`. No origin model is recorded.
+began as an external utility module and now sits among the shared components. No
+model package imports it directly and no origin model is recorded; the component
+audit exempts it from the "has a consumer" rule for that reason. It has two
+consumers. The `graph_utils` component uses `symmetric_normalized_laplacian`,
+`transition_matrix`, and `reverse_transition_matrix` to build the named supports
+`normlap`, `symadj` (`I - L`), `transition`, and `doubletransition`.
+`gcn_norm` and `lambda_rescaled_laplacian` are not used by `graph_utils`. The
+experiment runner (`src/tsflab/experiments/runner/run_one.py`, `_normalize_adj`)
+applies any of the five functions to a data-derived adjacency when the dataset
+parameter `adj_norm` is set. Input validation of finite values, the choice among
+normalization types, float32 and torch conversion, and the eigenvalue-based scaled
+Laplacian stay in `graph_utils` / `graph_spectral`.
 
 ## Interface
 
 All functions take `adj` as any array-like convertible to a square 2-D array.
 They return a new dense `[N, N]` `float64` numpy array and are stateless.
 `ValueError` is raised for non-2-D or non-square input. NaN/inf in `adj` are not
-checked. Non-symmetric inputs are allowed and not symmetrized.
+checked, and negative row sums are not handled (a negative degree gives NaN under
+`D^{-1/2}`). Non-symmetric inputs are allowed and not symmetrized. The input is
+never modified.
 
 - `symmetric_normalized_laplacian(adj)`: degrees from row sums.
-- `lambda_rescaled_laplacian(adj, lambda_max=2.0)`: `lambda_max` (float, nonzero) is
+- `lambda_rescaled_laplacian(adj, lambda_max=2.0)`: `lambda_max` (float, nonzero; zero raises
+  `ZeroDivisionError`) is
   supplied by the caller; the default 2 gives `L - I`. It does not compute
   the eigenvalue and does not symmetrize.
 - `gcn_norm(adj)`: adds self-loops (identity) before degrees, so existing
@@ -60,15 +67,20 @@ checked. Non-symmetric inputs are allowed and not symmetrized.
 
 ## Invariants and equivalence evidence
 
+- `test_adj_norm_contract_and_invariants` in `tests/test_component_contracts_graph.py`
+  checks that all five outputs are `[N, N]` `float64` and finite, transition rows
+  sum to 1 except zero-degree rows (0), `reverse_transition_matrix(A) ==
+  transition_matrix(A.T)`, `lambda_rescaled_laplacian` equals `L - I` at the default and
+  `0.5 L - I` at `lambda_max=4`, the Laplacian of a symmetric graph is symmetric,
+  `gcn_norm` of an all-zero graph is the identity, and non-square input raises
+  `ValueError`. Reference values: `tests/fixtures/components/adj_norm.pt`.
 - `test_shared_adjacency_normalizers_are_finite` in
   `tests/test_repository_contracts.py` checks `gcn_norm` and `transition_matrix`
   are finite on a graph with an isolated node, and that `adj_to_supports`
   returns `transition_matrix(A)` and `transition_matrix(A.T)` as float32.
-- no fixture: no pre-refactor tensor fixture exists. The Laplacian, scaled
-  Laplacian, and reverse-transition functions are only covered indirectly
-  through `graph_utils` consumers (`dcrnn`, `gwnet`, `d2stgnn`, `dfdgcn`,
-  `st_ssdl`) that run in the contract tests.
-- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/adj_norm.pt`.
+- No pre-refactor fixture exists, so the `graph_utils` supports used by graph
+  models (`dcrnn`, `gwnet`, `d2stgnn`, `dfdgcn`, `st_ssdl`) are covered only
+  through their own contract tests.
 
 ## Variants and options
 
@@ -89,7 +101,8 @@ float32, ready-made support list is wanted (use `graph_utils`).
 ## Related components
 
 `graph_utils` (the consumer that builds supports), `graph_spectral`
-(eigenvalue-scaled Laplacian and Chebyshev supports), `diffusion_conv`,
+(eigenvalue-scaled Laplacian and Chebyshev supports), `diffusion_conv` (consumes
+the resulting supports),
 `adaptive_node_embedding_adjacency` (learned adjacency, already normalized by
 softmax).
 

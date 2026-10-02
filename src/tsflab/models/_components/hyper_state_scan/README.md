@@ -24,10 +24,10 @@ channel's state with its spatial neighbours.
 
 ## Origin and granularity
 
-Added in commit `b94ed873` ("add TQNet, TimePro, Gateformer, CANet", automated
-intake) together with `timepro`, which is the only consumer. TimePro scans over the
+Added with `timepro` (automated intake), which is the only consumer. TimePro scans over the
 variate axis with a scalar state, reshapes the state to a (time-patch, variate)
-grid, mixes it locally, then reads it out. The module docstring states that
+grid (patch-position height, variate width, patch features as channels), mixes
+it locally, then reads it out. The module docstring states that
 `GridStateMixer` replaces offset-based deformable convolution (DCNv4, needs a
 custom CUDA kernel) by a fixed local receptive field, losing the learned sampling
 offsets. Origin of the scan: Mamba (see `mamba`); the cut isolates only the two
@@ -37,10 +37,10 @@ parameters, the `C` read-out, the grid reshape, normalization and bidirectionali
 ## Interface
 
 `diagonal_selective_scan(u, delta, a, b) -> Tensor`: `u`, `delta`, `b` all
-`[batch, channels, length]` with identical shapes; `a` is `[channels]` (already
+`[batch, channels, length]` with identical shapes and `length >= 1` (an empty length axis fails in the initial-state indexing); `a` is `[channels]` (already
 negative, i.e. `-exp(a_log)`). Returns `[batch, channels, length]`; `h[..., t]` is
 the state after position `t`. Raises `ValueError` if `u`, `delta`, `b` shapes differ or
-`a` is not 1-D with length `channels`. Pure function, sequential Python loop over
+`a` is not 1-D with length `channels`. Pure function; `u`, `delta`, `a`, `b` must share dtype and device; sequential Python loop over
 `length`, differentiable, no parameters.
 
 `GridStateMixer(channels, kernel_size=3)`: `channels >= 1`, `kernel_size` positive
@@ -56,8 +56,16 @@ never mix with one another.
 - `tests/test_2025_query_gate_hyperstate_forecasters.py`:
   `test_diagonal_selective_scan_matches_manual_recurrence` checks the scan against
   an explicit loop; `test_grid_state_mixer_preserves_grid_shape` checks the shape;
-  `test_timepro_forward_and_gradient` runs it inside `timepro` (with `d_state=1`).
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/hyper_state_scan.pt` and `hyper_state_scan_mixer.pt`.
+  `test_timepro_forward_and_gradient` runs both inside `timepro` (with `d_state=1`).
+- `tests/test_component_contracts_signal.py` (`test_diagonal_scan_recurrence_and_shape`,
+  `test_diagonal_scan_errors_and_grad`, `test_grid_state_mixer`) checks shape and
+  dtype, the recurrence step by step, zero input giving zero state, `ValueError` for
+  mismatched `u`/`b` shapes and a wrong-length `a`, gradients to `u` and `a`, the
+  mixer's state-dict keys and `groups == channels`, channel independence
+  (depthwise), and invalid `(channels, kernel_size)` pairs. Reference values:
+  `tests/fixtures/components/hyper_state_scan.pt` (scan) and
+  `tests/fixtures/components/hyper_state_scan_mixer.pt` (mixer).
+- Equivalence with the `mamba` scan at `d_state=1` is not tested.
 
 ## Variants and options
 
@@ -75,8 +83,10 @@ is required.
 
 ## Related components
 
-`mamba` (multi-state kernel-free selective scan), `gated_fusion`,
-`periodic_query_bank` (the other components extracted with `timepro`'s intake batch).
+`mamba` (multi-state kernel-free selective scan with `C` read-out and `D` skip; this
+module is the `d_state=1`, raw-state variant, not a replacement), `diffusion_conv`
+and `graph_masked_attention` (other ways to mix over a variate axis, but with
+supports or masks rather than a local conv grid).
 
 <!-- component-card:generated:start -->
 ## Public API

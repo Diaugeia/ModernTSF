@@ -2,13 +2,13 @@
 name: "quantile_head"
 kind: "component"
 module: "tsflab.models._components.quantile_head"
-summary: "Non-crossing quantile head: median anchor from Linear(base) plus cumulative softplus gaps to ascending/descending quantile levels, input-conditioned."
+summary: "Non-crossing quantile head: a median anchor Linear(base) plus cumulative softplus gaps above and below it give an ascending [B, L, C, Q] grid; interval width depends on the input."
 category: "head"
 input: "[batch, pred_len, channels, in_features]"
 output: "[batch, pred_len, channels, Q] ascending along the last axis, ordered like quantile_levels"
 origin: "TSFLab probabilistic-forecasting rail (commit b9946b39, 'probabilistic forecasting', #20); monotone-gap construction is the repo's own design, no paper recorded"
 origin_models: ["quantile_dlinear", "quantile_patchtst", "mqrnn", "tirex"]
-tags: ["monotone", "non-crossing", "probabilistic", "quantile", "softplus", "cumulative"]
+tags: ["monotone", "non-crossing", "probabilistic", "quantile", "softplus", "cumulative", "pinball", "median-anchor", "quantile-levels", "prediction-interval"]
 ---
 
 # quantile_head
@@ -42,28 +42,35 @@ Public symbols: `QuantileHead`, `validate_quantile_levels`, `DEFAULT_QUANTILE_LE
 
 - `DEFAULT_QUANTILE_LEVELS = (0.1, 0.2, ..., 0.9)`.
 - `validate_quantile_levels(values)`: `None` returns the defaults as a list; otherwise returns the list after checking it is non-empty, each level strictly inside (0, 1), and strictly increasing; raises `ValueError` otherwise.
-- `QuantileHead(quantile_levels: list[float], in_features: int = 1)`: levels are validated as above. `in_features` is the trailing width of `base` (use 1 for a scalar anchor per step, after `unsqueeze(-1)`). Attributes `q`, `median_idx`, `in_features`.
-- `forward(base [B, L, C, in_features]) -> [B, L, C, Q]` (any leading shape also works because only the last axis is projected, but the output is documented for rank 4). `Q == 1` returns just the anchor. Raises the `Linear` shape error when the trailing width mismatches.
+- `QuantileHead(quantile_levels: list[float], in_features: int = 1)`: levels are validated as above (`None` is also accepted and means the defaults, though the annotation says list; `in_features` is not range-checked). `in_features` is the trailing width of `base` (use 1 for a scalar anchor per step, after `unsqueeze(-1)`). Attributes `q`, `median_idx`, `in_features`.
+- `forward(base [B, L, C, in_features]) -> [B, L, C, Q]` (any leading shape also works because only the last axis is projected, but the output is documented for rank 4). `Q == 1` returns just the anchor (`offset_proj` is then an empty `[0, F]` Linear that still appears in the state dict). Raises the `Linear` shape error when the trailing width mismatches.
 - Parameters and state-dict keys: `anchor_proj.weight/bias` (`[1, F]`), `offset_proj.weight/bias` (`[Q-1, F]`). The levels are a non-persistent buffer `_levels` and are not in the state dict, so the checkpoint does not record the levels.
-- Even-length level lists with 0.5 absent pick the level closest to 0.5 (ties go to the lower index) as the anchor; the anchor is then not an exact median.
+- Even-length level lists with 0.5 absent pick the level closest to 0.5 (ties go to the lower index, up to float32 rounding of the stored levels) as the anchor; the anchor is then not an exact median.
 
 ## Invariants and equivalence evidence
 
-`test_quantile_head_is_monotone_and_differentiable` in
-`tests/test_repository_contracts.py` checks the `[2, 8, 3, 3]` output shape,
-`output[..., 1:] >= output[..., :-1]`, gradient finiteness, the default median
-level, and rejection of invalid level lists. `tests/test_probabilistic_forecasters.py`
-checks that `mqrnn` equals `quantile_head(local_decoder(...))` and its
-`[2, 3, 2, 9]` output shape.
-
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/quantile_head.pt`.
+- `tests/test_component_contracts_signal.py`: `test_quantile_levels_validation` checks
+  the `None` default and the rejected level lists;
+  `test_quantile_head_monotone_and_median_anchor` (levels with Q = 5, 3, 1, 2) checks
+  shape and dtype, ascending order, `output[..., median_idx] == anchor_proj(base)`,
+  the median index being the level closest to 0.5, and `_levels` absent from the state
+  dict; `test_quantile_head_grad_and_reference` checks input and parameter gradients,
+  the four state-dict keys, and seeded values against
+  `tests/fixtures/components/quantile_head.pt`.
+- `tests/test_repository_contracts.py`
+  (`test_quantile_head_is_monotone_and_differentiable`) checks the `[2, 8, 3, 3]`
+  output, monotonicity, gradient finiteness, the default median level, and rejected
+  level lists.
+- `tests/test_probabilistic_forecasters.py` checks that `mqrnn` equals
+  `quantile_head(local_decoder(...))`, ascending quantiles, and its `[2, 3, 2, 9]` output.
+- The tie rule for even level lists is not covered by a test.
 
 ## Variants and options
 
 The level set is configurable (any strictly increasing set in (0, 1)); odd
 `Q` with 0.5 included makes the anchor the exact median. Not covered: crossing
-heads that fit each level independently, heteroscedastic Gaussian heads, or
-learned level embeddings (see `gaussian_parameter_head`).
+heads that fit each level independently, heteroscedastic Gaussian heads (see
+`gaussian_parameter_head`), or learned level embeddings.
 
 ## When to use and when not to use
 
@@ -74,9 +81,12 @@ the distribution is parametric, or when levels must be stored with the checkpoin
 
 ## Related components
 
-`gaussian_parameter_head` (parametric probabilistic output), `dlinear` and
+`gaussian_parameter_head` (parametric Gaussian `loc`/`scale` output scored by NLL; this
+head is distribution-free, emits a non-crossing quantile grid, and is scored by pinball
+loss), `dlinear` and
 `patchtst` (backbones feeding the anchor in the quantile consumers),
-`flatten_forecast_head` (point-forecast head).
+`flatten_forecast_head` (point-forecast head). `composed` names this head in its
+`head` literal but rejects it (point output only).
 
 <!-- component-card:generated:start -->
 ## Public API

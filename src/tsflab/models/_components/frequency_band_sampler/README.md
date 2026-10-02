@@ -25,8 +25,9 @@ num_layers`, layer `i`:
   `[0, n)` exactly (no gaps, no overlap, layer 0 ends at `n`, layer `L-1` starts at 0)
   whenever `n >= L`.
 - sliding regime (`alpha > 1/L`): `start = int(n * (1 - alpha) * (1 - i/(L-1)))`,
-  `end = start + ceil(alpha * n)` (rounded up so layer 0 reaches the last bin);
-  adjacent layers overlap.
+  `end = start + ceil(alpha * n - 1e-9)` (rounded up, with a 1e-9 float guard, so
+  layer 0 reaches the last bin and layer `L-1` starts at bin 0); adjacent layers
+  overlap. `alpha=1.0` gives every layer the full range `[0, n)`.
 - `end` is clipped to `n` and to at least `start + 1`; the range is `[start, end)`.
   With `n < L` the tiling cannot avoid empty bands, so each band keeps one bin and
   bands overlap.
@@ -50,21 +51,23 @@ the fusion with the time branch.
   full-width windows (every layer gets all bins).
 - `band(num_bins, layer_idx) -> (start, end)`: `num_bins >= 1` and
   `0 <= layer_idx < num_layers`, else `ValueError`. Pure Python ints.
-- `sample(spectrum, layer_idx) -> Tensor`: `spectrum.ndim >= 2` with the
+- `sample(spectrum, layer_idx) -> Tensor`: any real or complex `spectrum.ndim >= 2` (typically `rfft` output) with the
   frequency axis at dim 1; returns `spectrum[:, start:end]` (a view, dtype and
   device preserved). `ValueError` for `ndim < 2`.
 - No parameters, buffers, or state; attributes `num_layers`, `alpha`.
 - Examples for 17 bins: `L=3, alpha=0.3` gives `(11,17), (5,11), (0,5)`;
-  `L=2, alpha=0.3` gives `(8,17), (0,8)`. (Before the fix these were
-  `(11,16), (5,10), (0,5)` and `(8,16), (0,8)`, leaving bins 10 and 16 uncovered.)
+  `L=2, alpha=0.3` gives `(8,17), (0,8)`.
 
 ## Invariants and equivalence evidence
 
 - `tests/test_component_numeric_fixes.py` checks exact tiling (union equals every
   bin, adjacent bands meet, layer 0 ends at `n`) over many bin and layer counts, and
-  that sliding windows reach both ends. The default `alpha=1.0` (full-width windows)
-  is unchanged. Consumer-level behaviour is covered by the `dualformer` model tests.
-- no fixture.
+  that sliding windows reach both ends (`alpha` in 0.3, 0.55, 1.0), plus the
+  `alpha=1.0` full-width case. The `n < num_layers` fallback, argument validation,
+  and `sample` are not directly unit-tested.
+- `tests/test_dualformer_forecaster.py` checks that `dualformer` records distinct
+  per-layer bands with layer 0 at higher frequency than the last layer.
+- no fixture: this is integer band arithmetic with no numerical reference tensor.
 
 ## Variants and options
 
@@ -80,8 +83,13 @@ or when the frequency axis is not dim 1.
 
 ## Related components
 
-`freq_band_moe` (gated band decomposition), `harmonic_energy_gate` (the other
-Dualformer frequency component), `wavelet` (multi-resolution alternative).
+`freq_band_moe` (also splits an rfft into contiguous bands, but with learned
+boundaries and gated mixing inside one block, whereas this one is fixed
+arithmetic that assigns one band per depth), `harmonic_energy_gate` (the other
+Dualformer frequency component), `energy_frequency_pooling` (energy-driven
+selection over tokens rather than fixed bins), `wavelet` (multi-resolution
+alternative).
+- `dominant_periods`: period selection rather than band sampling.
 
 <!-- component-card:generated:start -->
 ## Public API

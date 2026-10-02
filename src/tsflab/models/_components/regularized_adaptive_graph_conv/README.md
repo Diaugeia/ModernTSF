@@ -6,7 +6,7 @@ summary: "Row-swap regularizer for an embedding table plus a linear-in-nodes ada
 category: "graph"
 input: "StochasticSharedEmbedding: embeddings [nodes, C]; EfficientCosineGraphConv: x [batch, nodes, hidden_dim]; node_embedding [nodes, spatial_dim]"
 output: "StochasticSharedEmbedding: [nodes, C]; EfficientCosineGraphConv: [batch, nodes, hidden_dim]"
-origin: "RAGC, 'Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution' (arXiv 2025): stochastic shared embedding and Efficient Cosine Operator"
+origin: "RAGC, 'Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution' (arXiv 2506.07179, 2025): stochastic shared embedding and Efficient Cosine Operator"
 origin_models: ["ragc"]
 tags: ["adaptive", "adjacency", "cosine", "embedding", "graph", "linear-complexity", "node", "regularization", "stochastic"]
 ---
@@ -29,8 +29,7 @@ Output is `Linear(concat[x, hop_1(x), .., hop_order(x)])` (no bias) with optiona
 
 ## Origin and granularity
 
-Added in commit `6663e2e0` (automated intake of VisiFold, Extralonger, ST-SSDL, RAGC)
-as new shared code from the `ragc` port; no earlier copies were consolidated. The
+Added as new shared code with the `ragc` port; no earlier copies were consolidated. The
 docstring names the paper's "Efficient Cosine Operator" and a "stochastic shared
 embedding" regularizer. The cut is these two modules because both operate on a bare
 node-embedding table and carry no spatiotemporal assumptions beyond a node axis.
@@ -59,14 +58,24 @@ and the auxiliary losses.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/regularized_adaptive_graph_conv.pt` and `stochastic_shared_embedding.pt`.
+- `test_stochastic_shared_embedding` and `test_efficient_cosine_graph_conv` in
+  `tests/test_component_contracts_graph.py` check: empty state dict for the
+  regularizer, identity in eval or at `p=0`, every output row being an original row,
+  gradient flow at `p=1`, `ValueError` for `p=1.5`; for the convolution, state-dict keys
+  `gate_weight`, `filter_weight`, `out_weight`, `out_weight` shape `[H, (order + 1) H]`,
+  support rows of unit L2 norm, output shape and dtype, the kernelized hop equal to the
+  explicit `D^{-1} A x` (atol 1e-4), gradients to `x`, the embedding and all
+  parameters, `ValueError` for a wrong `spatial_dim`, wrong `hidden_dim`, `order=0` and
+  `hidden_dim=0`, and `dropout > 0` selecting `nn.Dropout`. Reference values:
+  `tests/fixtures/components/regularized_adaptive_graph_conv.pt` and
+  `tests/fixtures/components/stochastic_shared_embedding.pt`.
 - `tests/test_local_graph_forecasters.py`
   (`test_ragc_efficient_cosine_operator_matches_dense_adjacency_matmul`) checks one
   kernelized hop equals the dense `(A x) / (A 1 + 1e-6)` computation at `atol=1e-5`;
   `test_ragc_stochastic_shared_embedding_regularizes_only_in_training` checks eval is
   identity and train output rows are always original rows.
-- no fixture: no `.pt` fixture or pre-refactor copy exists; the component was created
-  directly for `ragc`.
+- The fixtures were recorded from the extracted code; no official-code comparison is
+  cited, so the match with the paper's operator is by structure only.
 
 ## Variants and options
 
@@ -87,9 +96,12 @@ symmetric), per-sample dynamic graphs (one support for the batch), or per-time-s
 
 ## Related components
 
-`adaptive_node_embedding_adjacency` (dense softmax adjacency from embeddings),
-`diffusion_conv` (dense static-support diffusion), `sparse_connection_router`,
-`graph_utils`.
+`adaptive_node_embedding_adjacency` (same "adjacency from node embeddings" responsibility, but it materializes a dense row-softmax `[N, N]` adjacency in `O(N^2)`; this one never forms it, uses a gated-cosine support, and also applies the diffusion),
+`diffusion_conv` (dense static-support diffusion), `sparse_connection_router`
+(sparse learned adjacency over positions, in contrast with this implicit dense
+kernelized one), `graph_utils` (static supports that a model may combine with this learned
+one), `node_visibility` (another way `visifold`-style models cut node-attention cost;
+random subsampling, not a graph operator).
 
 <!-- component-card:generated:start -->
 ## Public API

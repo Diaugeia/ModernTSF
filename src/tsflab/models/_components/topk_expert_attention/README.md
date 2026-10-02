@@ -8,7 +8,7 @@ input: "x [batch, tokens, dim]"
 output: "[batch, tokens, dim]"
 origin: "Temporal Mix of Experts (TMOE) of TimeExpert, arXiv 2509.23145 (2025); local implementation in TSFLab"
 origin_models: ["timeexpert"]
-tags: ["attention", "expert", "mixture-of-experts", "routing", "top-k", "sparse", "stateful-debug"]
+tags: ["attention", "expert", "mixture-of-experts", "routing", "top-k", "sparse", "sparse-attention", "last-route-weight", "temporal-moe"]
 ---
 
 # topk_expert_attention
@@ -31,13 +31,13 @@ Added with TimeExpert in the automated model intake (`d73cf9d0`); the only
 consumer is `timeexpert`, which wraps it in `TMOEBlock` (attention plus
 pre-norm feed-forward) over patch tokens. The cut contains the router, the
 gather helper and the attention operator; patching, residual/FFN blocks, and
-the head stay in the model. The model paper and `timeexpert` README are the
-source for the method; I could not verify the official-code details beyond
-what `timeexpert` states.
+the head stay in the model. The `timeexpert` README (paper and pinned official code) is the
+source for the method; this card makes no claim about official-code details beyond it.
+`LocalExpertRouter` is not the same thing as `topk_expert_router` (see Related components).
 
 ## Interface
 
-`LocalExpertRouter(qk_dim, topk, scale=None)`: `forward(query, key)` with
+`LocalExpertRouter(qk_dim, topk, scale=None)` (no parameters; `qk_dim` only sets the default scale): `forward(query, key)` with
 `[n, m, c]` tensors returns `(weight, index)` each `[n, m, topk]`;
 `scale` defaults to `qk_dim ** -0.5`. `torch.topk` raises `RuntimeError` if
 `topk > m`.
@@ -46,11 +46,12 @@ what `timeexpert` states.
 -> `[n, m, topk, c]`, selected rows already multiplied by `weight`.
 
 `TopKExpertAttention(dim, num_heads=8, topk=4, shared=False, qk_dim=None, dropout=0.0)`:
-`dim % num_heads == 0` else `ValueError`; `qk_dim` defaults to `dim` (the
-per-head qk width `qk_dim // num_heads`; not validated for divisibility);
-`topk >= 0` (and `<= tokens` at call time, else `RuntimeError`); `dropout` is
-applied to the attention weights. `forward(x)`: float `[batch, tokens, dim]`
--> same shape. Parameters/state-dict keys: `positional.weight/bias`
+`dim % num_heads == 0` else `ValueError`; `qk_dim` defaults to `dim` (per-head qk width is
+`qk_dim // num_heads`; divisibility is not validated, so a non-divisible `qk_dim` fails later in
+`forward` with a view `RuntimeError`);
+`topk >= 0` (a negative value is not rejected and silently behaves like `topk=0`, dense attention; `topk <= tokens` is required at call time, else `RuntimeError` from `torch.topk`); `dropout` in `[0, 1]` is
+applied to the attention weights after the softmax over the selected set. `forward(x)`: float `[batch, tokens, dim]`
+-> same shape (dtype and device follow the parameters; no padding or mask). Parameters/state-dict keys: `positional.weight/bias`
 (depthwise conv), `qkv.weight/bias` (`dim -> 2*qk_dim + dim`), `out_proj.weight/bias`;
 no `router` parameters (none exist), and no router at all when `topk == 0`.
 
@@ -63,12 +64,27 @@ re-softmaxed.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/topk_expert_attention_k0_plain.pt`, `tests/fixtures/components/topk_expert_attention_k0_shared.pt`, `tests/fixtures/components/topk_expert_attention_k2_plain.pt`, `tests/fixtures/components/topk_expert_attention_k2_shared.pt`, `tests/fixtures/components/topk_expert_attention_router.pt`.
-- `tests/test_timeexpert_structure.py`: routing weights sum to one with `topk=2,
+- `tests/test_component_contracts_attention.py` (`test_local_expert_router_and_gather`,
+  `test_topk_expert_attention` for `(topk, shared)` in `{(2, T), (2, F), (0, F), (0, T)}`,
+  `test_topk_expert_attention_errors`) checks: router state dict empty, `[n, m, topk]` shapes,
+  weights sum to 1, int64 indices in range, default scale, `gather_experts` rows equal to
+  `w * kv[idx]`, `RuntimeError` for `topk > tokens`; attention state-dict keys, output
+  shape and dtype, `last_route_weight` shape `[batch*heads, tokens, topk]` with unit sums
+  (`None` and no `router` attribute when `topk == 0`), finite input and parameter gradients,
+  and the `dim % num_heads` `ValueError`. Seeded regressions use
+  `tests/fixtures/components/topk_expert_attention_k0_plain.pt`,
+  `tests/fixtures/components/topk_expert_attention_k0_shared.pt`,
+  `tests/fixtures/components/topk_expert_attention_k2_plain.pt`,
+  `tests/fixtures/components/topk_expert_attention_k2_shared.pt` and
+  `tests/fixtures/components/topk_expert_attention_router.pt`.
+- `tests/test_timeexpert_structure.py` (`test_timeexpert_routes_queries_to_topk_local_experts`,
+  `test_topk_zero_falls_back_to_full_attention`,
+  `test_forward_backward_active_parameters_and_round_trip`): routing weights sum to one with `topk=2,
   shared=True`; `topk=0` falls back to full attention with finite output;
   forward/backward gives finite gradients for every parameter (including
   `qkv`, `positional`, `out_proj`) and a strict state-dict round trip.
-- no fixture: no numeric fixture against the official TimeExpert code.
+- No fixture compares against the official TimeExpert code; the fixtures above are
+  regressions of this implementation only.
 
 ## Variants and options
 
@@ -85,9 +101,13 @@ topk`.
 
 ## Related components
 
-`self_attention_family` (dense and ProbSparse cores), `differential_attention`,
-`global_patch_compression_attention`, `soft_tree` (other differentiable
-routing).
+`self_attention_family` (dense and ProbSparse cores: ProbSparse keeps a subset of queries,
+whereas here every query keeps its own top-k keys and re-weights them), `differential_attention`
+and `global_patch_compression_attention` (dense, no routing), `topk_expert_router` (a gating
+MLP plus top-k mixing of independent expert outputs, unlike this in-attention key/value
+selection), `sparse_connection_router` (input-independent learned top-k connectivity, not
+per-query), `soft_tree` (other differentiable routing).
+- `graph_masked_attention`: sparsifies attention with a fixed graph rather than learned routing.
 
 <!-- component-card:generated:start -->
 ## Public API
