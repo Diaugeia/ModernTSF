@@ -16,14 +16,13 @@ name: weekly
 # are missing is skipped; the others still run.
 
 on:
-  schedule:
-    - cron: "0 3 * * 1"   # Mondays 03:00 UTC
+  # Manual only until secrets and repository settings are configured; the
+  # schedule trigger returns then (see git history).
   workflow_dispatch:
     inputs:
       tracks:
         description: "Space-separated track ids"
         default: "stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us"
-
 permissions:
   contents: read
 

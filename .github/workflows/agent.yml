@@ -30,8 +30,8 @@ name: agent
 # Inference Providers" only). Never store a ChatGPT auth.json in secrets.
 
 on:
-  schedule:
-    - cron: "0 4 * * 1"   # Mondays 04:00 UTC
+  # Manual only until secrets and repository settings are configured; the
+  # schedule, issue, and CI-completion triggers return then (see git history).
   workflow_dispatch:
     inputs:
       since:
@@ -40,12 +40,6 @@ on:
       max_implement:
         description: "Implement at most this many top candidates (0 = scan only)"
         default: "10"
-  issues:
-    types: [opened]
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
-
 permissions:
   contents: read
 

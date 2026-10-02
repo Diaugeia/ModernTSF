@@ -53,6 +53,12 @@ maintainers). The same workflow scans the literature weekly.
 
 ## CI and the agent maintainer
 
+> **Current state:** CI runs the static checks and the test suite on every push
+> and pull request; model verification (`ci.yml` → *Run workflow* → `verify`),
+> deployment, release, and the agent and weekly workflows are started manually
+> until their secrets are configured. The rest of this section describes the
+> full setup they return to.
+
 Three workflows, organized by module:
 
 - `ci.yml`: on every push and pull request, `tsf repo check` (the single

@@ -1,276 +1,90 @@
 name: ci
 
-# Everything that runs on code: the mergeable check, packaging, the site build,
-# the site deploy, and the release. Jobs, not files:
+# Simplified while the reorganized code base is first exercised in CI.
 #
-#   gate     every push / PR  `tsf repo check` (CPU; scope `changed` on PRs)
-#   wheel    every push / PR  sdist -> wheel, packaged catalog and Agent resources
-#   web      every push / PR  leaderboard rebuild + static site build
-#   deploy   push to DEPLOY_BRANCH (variable, default main), or manual dispatch
-#            -> Hugging Face Space (+ optional legacy Cloudflare Pages)
-#   release  tag v*           build, smoke-test, GitHub release, PyPI
+#   check   every push / PR   static checks and the test suite (CPU)
+#   verify  manual dispatch   re-run the verification battery for every model and
+#                             open a pull request with the refreshed evidence
 #
-# Secrets (deploy only): HF_TOKEN; optional CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID.
-# PyPI: trusted publisher for project `tsflab`, owner `Diaugeia`, repository
-# `TSFLab`, workflow `ci.yml`, environment `pypi`. No token is stored.
-# Pull requests run contributor code with no secrets and a read-only token.
+# Deployment, release, and the agent and weekly automation are manual until their
+# secrets are configured; the full pipeline is in git history (ci.yml before
+# the simplification) and returns once `verify` has produced current evidence.
 on:
   push:
     branches: [main, dev]
-    tags: ["v*"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      verify:
+        description: "Re-run verification for every model and open a PR with the evidence"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
   group: ci-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 env:
   UV_TORCH_BACKEND: cpu
 
 jobs:
-  gate:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
       - name: Install TSFLab (CPU)
         run: uv sync --python 3.12 --frozen
-      - name: Mergeable check
+      - name: Static checks
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch --no-tags origin "${{ github.base_ref }}"
-            uv run tsf repo check --scope changed --base "origin/${{ github.base_ref }}"
-          else
-            uv run tsf repo check --scope full
-          fi
-      - name: Pinned dataset links (when configs/hub changed)
-        if: github.event_name == 'pull_request'
-        run: |
-          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -q '^configs/hub/'; then
-            uv run tsf data download --check
-          fi
-      - name: Validate real-time forecast submissions
-        if: github.event_name == 'pull_request'
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
-          # Trusted arrival time: when GitHub last saw this PR change. A forecast
-          # pushed after a round's deadline therefore fails even if its
-          # self-reported submitted_at is earlier.
-          RECEIVED_AT: ${{ github.event.pull_request.updated_at }}
-          AUTHOR: ${{ github.event.pull_request.user.login }}
-        run: |
-          changed=$(git diff --name-only "$BASE" "$HEAD" -- 'apps/web/submissions/realtime/')
-          [ -z "$changed" ] && { echo "no real-time changes"; exit 0; }
-          forecasts=$(echo "$changed" | grep -E '/rounds/[^/]+/forecasts/[^/]+\.json$' || true)
-          protected=$(echo "$changed" | grep -E '/rounds/[^/]+/(round|scores)\.json$' || true)
-          if [ -n "$protected" ] && [ "$AUTHOR" != "github-actions[bot]" ]; then
-            echo "::error::round.json and scores.json are written only by the weekly workflow:"
-            echo "$protected"
-            exit 1
-          fi
-          existing=$(for f in $forecasts; do [ -f "$f" ] && echo "$f"; done)
-          [ -z "$existing" ] && exit 0
-          if [ "$AUTHOR" = "github-actions[bot]" ]; then
-            uv run python -m tsflab.realtime validate $existing
-          else
-            uv run python -m tsflab.realtime validate $existing --received-at "$RECEIVED_AT"
-          fi
+          uv run python -m compileall -q src tests
+          uvx ruff check src tests --select F
+          uv run tsf repo check --only schema-export agent-assets agent-tasks dataset-cards component-cards
+          uv run tsf repo check --audit
+      - name: Tests
+        run: uv run pytest -q -m "not e2e"
 
-  wheel:
+  verify:
+    if: github.event_name == 'workflow_dispatch' && inputs.verify
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Build wheel through the source distribution
-        run: |
-          python -m pip install build pydantic
-          python -m build --sdist --outdir dist
-          mkdir sdist-source
-          tar -xzf dist/*.tar.gz -C sdist-source
-          python -m build --wheel --outdir wheelhouse sdist-source/tsflab-*
-      - name: Verify installed catalog and Agent resources
-        run: |
-          python -m pip install --no-deps wheelhouse/*.whl
-          export EXPECTED_MODELS="$(ls src/tsflab/models/*/spec.py | wc -l)"
-          cd "$RUNNER_TEMP"
-          python - <<'PY'
-          import contextlib
-          import io
-          import json
-          import os
-
-          from tsflab.cli.main import main
-          from tsflab.agent.assets import audit_agent_assets
-          from tsflab.agent.tasks import audit_tasks
-          from tsflab.core.paths import is_packaged_root
-
-          assert is_packaged_root()
-          assert audit_agent_assets() == []
-          assert audit_tasks() == []
-          from tsflab.core.paths import repository_root
-          assert not (repository_root() / "src" / "tsflab.egg-info").exists()
-          output = io.StringIO()
-          with contextlib.redirect_stdout(output):
-              assert main(["model", "list", "--json"]) == 0
-          expected = int(os.environ["EXPECTED_MODELS"])
-          assert len(json.loads(output.getvalue())) == expected
-          output = io.StringIO()
-          with contextlib.redirect_stdout(output):
-              assert main(["model", "audit", "--summary"]) == 0
-          summary = json.loads(output.getvalue())
-          assert summary["passed"] == expected and summary["failed"] == 0
-          PY
-          tsf agent task validate
-
-  web:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: oven-sh/setup-bun@v2
-      - name: Rebuild leaderboard from submissions
-        run: |
-          pip install --quiet "pydantic==2.12.5" huggingface_hub
-          PYTHONPATH=../../src python3 pipeline/build_leaderboard.py
-      - name: Install and build the static site
-        run: |
-          bun install --frozen-lockfile
-          bun run build   # sync:data + next build -> out/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: site
-          path: apps/web/out
-          include-hidden-files: true
-          retention-days: 3
-
-  deploy:
-    needs: [gate, wheel, web]
-    if: >-
-      github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') &&
-      github.ref_name == (vars.DEPLOY_BRANCH || 'main')
-    runs-on: ubuntu-latest
-    concurrency:
-      group: web-deploy
-      cancel-in-progress: true
-    env:
-      SPACE_ID: ${{ vars.HUB_OWNER || 'Diaugeia' }}/TSFLab
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/download-artifact@v4
-        with:
-          name: site
-          path: apps/web/out
-      - name: Deploy to Hugging Face Space
-        if: env.HF_TOKEN != ''
-        working-directory: apps/web
-        run: |
-          pip install --quiet huggingface_hub
-          cp hf-space/README.md out/README.md   # keep the Space's static-SDK config
-          python - <<'PY'
-          import os, time
-          from huggingface_hub import HfApi
-          api = HfApi(token=os.environ["HF_TOKEN"])
-          for attempt in range(5):
-              try:
-                  api.upload_folder(
-                      repo_id=os.environ["SPACE_ID"], repo_type="space",
-                      folder_path="out", path_in_repo=".",
-                      delete_patterns=["*"],  # mirror out/ exactly (README included above)
-                      commit_message=f"ci: deploy {os.environ.get('GITHUB_SHA','')[:7]}",
-                  )
-                  break
-              except Exception as e:  # transient 429 / rate limits
-                  if attempt == 4:
-                      raise
-                  print(f"HF upload retry {attempt+1} after error: {e}")
-                  time.sleep(30 * (attempt + 1))
-          PY
-          echo "Deployed: https://huggingface.co/spaces/$SPACE_ID" >> "$GITHUB_STEP_SUMMARY"
-      - uses: oven-sh/setup-bun@v2
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-      - name: Deploy to Cloudflare Pages (legacy, optional)
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        working-directory: apps/web
-        run: bunx wrangler@latest pages deploy out --project-name tseval --branch main --commit-dirty=true
-      - name: Report a missing deploy token
-        if: env.HF_TOKEN == ''
-        run: echo "::warning::HF_TOKEN is not set; the site was built but not deployed."
-
-  release-build:
-    needs: [gate, wheel]
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Build and check that the tag matches the package version
-        run: |
-          python -m pip install --quiet build pydantic
-          python -m build --outdir dist
-          version="$(python -c 'import tomllib;print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')"
-          tag="${GITHUB_REF_NAME#v}"
-          normalized="$(python -c "from packaging.version import Version;print(Version('$tag'))")"
-          test "$normalized" = "$version" || { echo "::error::tag $tag != version $version"; exit 1; }
-      - name: Smoke-test the wheel
-        run: |
-          python -m pip install --quiet --no-deps dist/*.whl
-          cd "$RUNNER_TEMP" && tsf agent task validate && tsf model audit --summary
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-  github-release:
-    needs: release-build
-    runs-on: ubuntu-latest
+    timeout-minutes: 180
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - name: Create the GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - uses: astral-sh/setup-uv@v6
+      - name: Install TSFLab (CPU)
+        run: uv sync --python 3.12 --frozen
+      - name: Regenerate the intentionally changed component fixture
+        # ProbAttention now returns time-first output (Informer layout).
+        run: TSFLAB_REGEN_COMPONENT_FIXTURES=1 uv run pytest -q tests/test_component_contracts_attention.py
+      - name: Verify every model
+        run: uv run tsf model verify --all --jobs 4
+      - name: Regenerate cards and index
         run: |
-          flags=""
-          case "$GITHUB_REF_NAME" in *rc*|*a[0-9]*|*b[0-9]*) flags="--prerelease";; esac
-          gh release create "$GITHUB_REF_NAME" dist/* --title "TSFLab $GITHUB_REF_NAME" \
-            --generate-notes $flags
-
-  pypi:
-    needs: release-build
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
+          uv run tsf model verify --index
+          uv run tsf repo cards
+      - name: End-to-end AutoResearch chain (fixtures)
+        continue-on-error: true
+        run: uv run pytest -q -m e2e
+      - name: Open a pull request with the refreshed evidence
+        uses: peter-evans/create-pull-request@v7
         with:
-          name: dist
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+          branch: ci/verification-evidence
+          base: ${{ github.ref_name }}
+          commit-message: "chore(verification): refresh evidence for every model"
+          title: "Refresh verification evidence"
+          add-paths: |
+            verification/**
+            tests/fixtures/components/**
+            catalog/**
+            src/**/README.md
+            docs/en/models.md
+          body: |
+            Evidence regenerated by `tsf model verify --all` in CI after the package
+            reorganization. Review failures in the job log before merging.
