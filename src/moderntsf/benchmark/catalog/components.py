@@ -167,6 +167,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting"),
         ),
         ComponentSpec(
+            "spectral_descriptor",
+            "moderntsf.models._components.spectral_descriptor",
+            "Per-window spectral entropy and low/mid/high band-energy ratios of the channel-averaged power spectrum.",
+            ("SpectralDescriptor",),
+            ("band", "descriptor", "energy", "entropy", "fft", "power", "ratio", "spectral", "spectrum"),
+        ),
+        ComponentSpec(
             "mixer_block",
             "moderntsf.models._components.mixer_block",
             "Pre-normalized residual time mixing then residual feature mixing (TSMixer basic block).",

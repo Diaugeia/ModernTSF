@@ -208,7 +208,7 @@ class VerificationTests(unittest.TestCase):
         names = {str(record["name"]) for record in model_records(root)}
         manifest = load_manifest(root, names)
         self.assertEqual(set(manifest.models), names)
-        self.assertEqual(len(names), 198)
+        self.assertEqual(len(names), 199)
         self.assertTrue(all(item.test for item in manifest.models.values()))
         saved = json.loads((root / "verification/index.json").read_text(encoding="utf-8"))
         self.assertEqual(set(saved["models"]), names)

@@ -1,6 +1,6 @@
 # Models and methods
 
-ModernTSF exposes 198 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+ModernTSF exposes 199 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -31,6 +31,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `CauAir` | [`configs/models/CauAir.toml`](../../configs/models/CauAir.toml) | covariate | [README](../../src/moderntsf/models/cauair/README.md) |
 | `CMoS` | [`configs/models/CMoS.toml`](../../configs/models/CMoS.toml) | time-series | [README](../../src/moderntsf/models/cmos/README.md) |
 | `CoRA` | [`configs/models/CoRA.toml`](../../configs/models/CoRA.toml) | time-series | [README](../../src/moderntsf/models/cora/README.md) |
+| `CoRe` | [`configs/models/CoRe.toml`](../../configs/models/CoRe.toml) | test-time-adaptation, time-series | [README](../../src/moderntsf/models/core/README.md) |
 | `COSA` | [`configs/models/COSA.toml`](../../configs/models/COSA.toml) | test-time-adaptation, time-series | [README](../../src/moderntsf/models/cosa/README.md) |
 | `CRIB` | [`configs/models/CRIB.toml`](../../configs/models/CRIB.toml) | missing-values, time-series | [README](../../src/moderntsf/models/crib/README.md) |
 | `Crossformer` | [`configs/models/Crossformer.toml`](../../configs/models/Crossformer.toml) | time-series | [README](../../src/moderntsf/models/crossformer/README.md) |

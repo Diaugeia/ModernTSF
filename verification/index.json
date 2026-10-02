@@ -189,6 +189,13 @@
       "subject_sha256": "b547d80dda59b164c22d4e2b4e1acd543421d1a3edd70813ba6a1f866b78660a",
       "verified_at": "2026-09-28T18:37:08.769655Z"
     },
+    "CoRe": {
+      "evidence": "verification/evidence/CoRe.json",
+      "sha256": "8c5cd76e61dd4810c1dbb24d0f2ffdcadaa70db12cd59b439751df366c9bdb6e",
+      "status": "passed",
+      "subject_sha256": "6eaa3a2a183067d0de0bfc3ea7bec78302e54c08a9f70b8731182f93f2c20c3e",
+      "verified_at": "2026-10-02T15:53:40.599518Z"
+    },
     "CrossGNN": {
       "evidence": "verification/evidence/CrossGNN.json",
       "sha256": "e15e803a411e2a1eddf1ff46d10a277fba2d535176a4aa7cc96bbd52ab631db8",

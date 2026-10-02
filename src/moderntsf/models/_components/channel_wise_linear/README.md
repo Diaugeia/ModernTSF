@@ -41,6 +41,7 @@ Retrieval terms: `channel-wise`, `forecast`, `individual`, `linear`, `projection
 
 ## Current model consumers
 
+- [`core`](../../core/README.md)
 - [`cosa`](../../cosa/README.md)
 - [`cyclenet`](../../cyclenet/README.md)
 - [`distdf`](../../distdf/README.md)
