@@ -72,6 +72,6 @@ SPEC = ModelSpec(
     model_card="src/tsflab/models/mou/README.md",
     smoke_config="configs/runs/smoke_mou.toml",
     capabilities=frozenset({'time-series'}),
-    components=('revin', 'mamba', 'positional_encoding', 'flatten_forecast_head'),
+    components=('flatten_forecast_head', 'mamba', 'positional_encoding', 'revin'),
     contract_task={"seq_len": 96, "pred_len": 12, "label_len": 0},
 )
