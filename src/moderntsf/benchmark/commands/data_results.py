@@ -27,7 +27,7 @@ def dataset_command(args: list[str]) -> int:
     """Route dataset scaffolding, preparation, inspection, and plotting."""
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
-            "usage: tsf dataset {add,list,show,search,audit,prepare,inspect,plot,"
+            "usage: tsf dataset {add,list,show,search,audit,prepare,inspect,analyze,plot,"
             "convert-traffic,convert-ultratraffic,download,publish,gift-download} [args...]"
         )
         return 0
@@ -98,6 +98,7 @@ def dataset_command(args: list[str]) -> int:
         "add": "new_dataset.py",
         "prepare": "pre_process.py",
         "inspect": "dataset_characteristics.py",
+        "analyze": "dataset_analyze.py",
         "plot": "visual_data.py",
         "convert-traffic": "convert_traffic.py",
         "gift-download": "gift_eval_download.py",
