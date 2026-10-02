@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 202 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -162,6 +162,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `SRSNet` | [`configs/models/SRSNet.toml`](../../configs/models/SRSNet.toml) | time-series | [README](../../src/tsflab/models/srsnet/README.md) |
 | `ST-SSDL` | [`configs/models/ST-SSDL.toml`](../../configs/models/ST-SSDL.toml) | spatiotemporal | [README](../../src/tsflab/models/st_ssdl/README.md) |
 | `STAEformer` | [`configs/models/STAEformer.toml`](../../configs/models/STAEformer.toml) | spatiotemporal | [README](../../src/tsflab/models/staeformer/README.md) |
+| `STDMAE` | [`configs/models/STDMAE.toml`](../../configs/models/STDMAE.toml) | spatiotemporal | [README](../../src/tsflab/models/stdmae/README.md) |
 | `STDN` | [`configs/models/STDN.toml`](../../configs/models/STDN.toml) | spatiotemporal | [README](../../src/tsflab/models/stdn/README.md) |
 | `StemGNN` | [`configs/models/StemGNN.toml`](../../configs/models/StemGNN.toml) | spatiotemporal | [README](../../src/tsflab/models/stemgnn/README.md) |
 | `STGCN` | [`configs/models/STGCN.toml`](../../configs/models/STGCN.toml) | spatiotemporal | [README](../../src/tsflab/models/stgcn/README.md) |

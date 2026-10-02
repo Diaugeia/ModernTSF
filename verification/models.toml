@@ -813,6 +813,13 @@ test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_mo
 reference_test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'
 structure = ['raw value embedding', 'time and day embeddings', 'adaptive spatiotemporal embedding', 'alternating temporal and spatial attention']
 
+[models.STDMAE]
+profile = 'standard'
+test = 'tests/test_stdmae.py'
+reference_test = 'tests/test_stdmae.py'
+reference_sources = ['https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/stdmae.py', 'https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/mask/mask.py', 'https://github.com/Jimmy-7664/STD-MAE/blob/29fba76216f7ff9f2b51d097786cb5c91a8dae8b/stdmae/stdmae_arch/graphwavenet/model.py']
+structure = ['temporal masked-autoencoder encoder over patch tokens', 'spatial masked-autoencoder encoder across nodes', '2-D sinusoidal node-patch position', 'last-patch context injection into the Graph WaveNet skip path', 'valid dilated gated convolution with diffusion graph convolution']
+
 [models.STDN]
 profile = 'local-graph'
 test = 'tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation'

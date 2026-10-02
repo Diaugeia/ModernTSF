@@ -105,7 +105,7 @@ import tsflab.models._components.graph_utils
 
 `adjacency`, `chebyshev`, `graph`, `laplacian`, `support`
 
-## Current model consumers (5)
+## Current model consumers (6)
 
-`d2stgnn`, `dcrnn`, `dfdgcn`, `gwnet`, `st_ssdl`
+`d2stgnn`, `dcrnn`, `dfdgcn`, `gwnet`, `st_ssdl`, `stdmae`
 <!-- component-card:generated:end -->

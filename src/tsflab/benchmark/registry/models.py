@@ -373,4 +373,5 @@ MODEL_CATALOG = ModelCatalog({
     "CoRe": "tsflab.models.core.spec",
     "MambaTS": "tsflab.models.mambats.spec",
     "ARMD": "tsflab.models.armd.spec",
+    "STDMAE": "tsflab.models.stdmae.spec",
 })
