@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -11,6 +11,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `AirDualODE` | [`configs/models/AirDualODE.toml`](../../configs/models/AirDualODE.toml) | covariate | [README](../../src/tsflab/models/airdualode/README.md) |
 | `AirFormer` | [`configs/models/AirFormer.toml`](../../configs/models/AirFormer.toml) | covariate | [README](../../src/tsflab/models/airformer/README.md) |
 | `AirPhyNet` | [`configs/models/AirPhyNet.toml`](../../configs/models/AirPhyNet.toml) | covariate | [README](../../src/tsflab/models/airphynet/README.md) |
+| `AMD` | [`configs/models/AMD.toml`](../../configs/models/AMD.toml) | time-series | [README](../../src/tsflab/models/amd/README.md) |
 | `Amplifier` | [`configs/models/Amplifier.toml`](../../configs/models/Amplifier.toml) | time-series | [README](../../src/tsflab/models/amplifier/README.md) |
 | `AMRC` | [`configs/models/AMRC.toml`](../../configs/models/AMRC.toml) | time-series | [README](../../src/tsflab/models/amrc/README.md) |
 | `APN` | [`configs/models/APN.toml`](../../configs/models/APN.toml) | time-series | [README](../../src/tsflab/models/apn/README.md) |

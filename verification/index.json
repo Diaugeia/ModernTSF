@@ -7,6 +7,13 @@
       "subject_sha256": "efa760b510a2ef94abd87972f3d9141cd972bebdf9e309d0bee37260295054d6",
       "verified_at": "2026-10-02T18:16:31.428230Z"
     },
+    "AMD": {
+      "evidence": "verification/evidence/AMD.json",
+      "sha256": "eba8379e1b8d4e4747a1661a0a310f149038f8429d3f21e81b3731f913071804",
+      "status": "passed",
+      "subject_sha256": "01237330ad5d0c7f18e943c81cbdd8ca75b9e6537cea1816a49cb2fc3c4539e8",
+      "verified_at": "2026-10-02T18:56:58.633839Z"
+    },
     "AMRC": {
       "evidence": "verification/evidence/AMRC.json",
       "sha256": "8b13d3edcf8a6f2c1e2e20bb8d410e18f0e40caf90a2e21d771c437605d2343e",

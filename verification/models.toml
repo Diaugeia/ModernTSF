@@ -1068,3 +1068,9 @@ profile = 'standard'
 test = 'tests/test_samformer.py'
 reference_test = 'tests/test_samformer.py'
 reference_sources = ['https://github.com/romilbert/samformer/blob/71f10eaa696f2a098798779ee14b6ecd6b69bcd9/samformer_pytorch/samformer/samformer.py', 'https://github.com/romilbert/samformer/blob/71f10eaa696f2a098798779ee14b6ecd6b69bcd9/samformer_pytorch/samformer/utils/sam.py']
+
+[models.AMD]
+profile = 'standard'
+test = 'tests/test_amd.py'
+reference_test = 'tests/test_amd.py'
+reference_sources = ['https://github.com/TROUBADOUR000/AMD/blob/000d377a1ed8946aa817ff357cdf1de64b99abb9/models/tsAMD.py', 'https://github.com/TROUBADOUR000/AMD/blob/000d377a1ed8946aa817ff357cdf1de64b99abb9/models/common.py', 'https://github.com/TROUBADOUR000/AMD/blob/000d377a1ed8946aa817ff357cdf1de64b99abb9/models/tsmoe.py']
