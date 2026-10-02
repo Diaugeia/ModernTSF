@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tsflab"
-version = "1.0.0rc2"
+version = "1.0.0rc3"
 description = "TSFLab — Agent-first time-series forecasting with TOML configs and flat model/component catalogs."
 readme = "README.md"
 authors = [{ name = "ChengAo Shen", email = "chengao_shen@ieee.org" }]
