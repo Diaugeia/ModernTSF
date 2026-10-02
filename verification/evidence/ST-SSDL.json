@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ST-SSDL",
   "status": "passed",
-  "verified_at": "2026-10-02T18:33:37.793840Z",
-  "subject_sha256": "f0fa65f4422d9dc68e3ca35e79434a291e166e51b15bcbd483829fb74c8cc193",
+  "verified_at": "2026-10-02T18:35:57.615490Z",
+  "subject_sha256": "76850ad8d7d610ee3cbb0388710f2a0f36ee6433f962aa6311151e8fec9252fd",
   "paper": {
     "title": "How Different from the Past? Spatio-Temporal Time Series Forecasting with Self-Supervised Deviation Learning",
     "venue": "NeurIPS 2025",
