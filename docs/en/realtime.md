@@ -9,7 +9,7 @@ forecasts are made.
 
 ## Tracks
 
-Tracks are declared in `configs/realtime/<id>.toml`. Hourly tracks use a
+There are 16 tracks (`tsf realtime list`), each declared in `configs/realtime/<id>.toml`. Hourly tracks use a
 168-step input and a 24-step horizon (a week of context, one forecast day, the
 same as the PeMS and OpenAQ tracks); daily stock tracks use 20 and 5 trading
 days. All hourly stamps are naive in the track's `tz` (UTC unless noted).

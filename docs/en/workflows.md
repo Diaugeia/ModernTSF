@@ -55,12 +55,14 @@ Inspect compatibility with `tsf model show <Name>` and `tsf dataset show <preset
 The admission path is deliberately two-phase so a placeholder cannot become a
 catalog entry.
 
-1. Deduplicate the paper against `tsf model list --json` and `tsf model search`.
+1. Deduplicate the paper against `tsf model list --json` and `tsf catalog search --kind model`.
 2. Read the paper and supplement. Locate official code when available, record its
    license, and pin a revision. Use it to clarify omitted implementation details;
    do not copy or import its model source.
-3. Map every defining operation to an existing component, a justified new shared
-   component, or a model-local block. Start with:
+3. Decide the retrieval-layer facts first, since readers find a model through them:
+   a `tagline` (at most 120 characters), `tags` (with one architecture family), and
+   the six-slot `composition` (below). Map every defining operation to an existing
+   component, a justified new shared component, or a model-local block. Start with:
 
    ```bash
    uv run tsf component search "operation and tensor contract"
@@ -86,7 +88,8 @@ catalog entry.
    `--components none` only after matching found no equivalent. Select
    `--task-mode spatiotemporal` or `covariate` when required.
 5. Replace every scaffold marker, implement locally, preserve useful paper
-   equations/comments, complete the card, and add focused tests plus a declaration
+   equations/comments, complete the card (`tagline`, `tags`, `composition`, and a
+   `## Key ideas` section before the generated block), and add focused tests plus a declaration
    in `verification/models.toml`. Official code requires a reference-comparison
    test; absence of official code is recorded as `not-applicable`.
 6. Admit the entry:
@@ -95,9 +98,9 @@ catalog entry.
    uv run tsf model add --name MyModel
    ```
 
-   Admission temporarily registers the model, runs unified verification, the
-   focused model audit, strict runtime contracts, component audit, and repository
-   audit. Registration is rolled back if any gate fails.
+   Admission registers the model, regenerates the cards, runs unified
+   verification, the focused model audit, strict runtime contracts, the component
+   audit, and the repository audit. Registration is rolled back if any gate fails.
 
 ## Foundation models and artifacts
 
@@ -180,24 +183,48 @@ uv run tsf component show flatten_forecast_head --depth 1
 uv run tsf component audit
 ```
 
-### Reading the catalog by depth
+### Reading the catalog
 
-Models, components, and datasets share four depths, so you spend context only as
-needed. Search returns one line per result (`name`, `kind`, `summary`, `tags`);
-`show` takes `--depth` (default 1) and `--json` for structured output:
+Start at the entry view, then narrow. Each step costs more context than the last,
+so stop as soon as the decision is made:
+
+```bash
+uv run tsf catalog                       # counts per kind, then the next commands
+uv run tsf catalog search "reversible normalization" --kind component   # L0
+uv run tsf model show PatchTST           # L1
+uv run tsf component show revin --depth 2   # L2
+uv run tsf model show PatchTST --depth 3    # L3
+```
 
 | Depth | Content |
 | --- | --- |
-| 0 | the one-line summary |
-| 1 | front matter plus the interface and constraint sections |
+| 0 | one line: `name`, `kind`, `summary`, `tags` (what search returns) |
+| 1 | front matter plus the interface and constraint sections (default) |
 | 2 | the full card |
 | 3 | the source, config, test, and evidence paths to open |
 
-```bash
-uv run tsf catalog search "reversible normalization" --kind component
-uv run tsf component show revin --depth 2
-uv run tsf model show PatchTST --depth 3
-```
+`catalog search` ranks all three kinds; `--kind` restricts it, `--capability`
+(repeatable) filters models, `--limit` caps results, and `--json` gives
+structured output. The per-kind `search` and `show` commands return the same lines
+and cards.
+
+What each card records:
+
+- **Model:** a `tagline`, `tags` (one is the architecture family), and a
+  `composition` of six slots, `normalization`, `decomposition`, `temporal`,
+  `channel`, `head`, `loss`, each `component:<name>`, `local:<block>`,
+  `loss:<name>`, or `none`. A `## Key ideas` section lists what is distinctive. The
+  paper, venue, and (when it exists) official code, pinned revision, and license
+  come with it, and the body maps operations to local code and lists differences
+  from the paper and official code.
+- **Component:** `summary`, `category`, `input`/`output` shapes, `origin`, `tags`,
+  and the sections Purpose, Origin and granularity, Interface (every public symbol
+  with shapes and state), Invariants and equivalence evidence, Variants and
+  options, When to use and when not to use, and Related components.
+- **Dataset:** domain, source, citation, license, redistribution, frequency, time
+  span, length, channels, target, missing values, the TSFLab `protocol`, the
+  `literature_protocol` when the published one differs, lookbacks and horizons,
+  split, and whether the statistics were measured or source-reported. See Data.
 
 Paper-specific variants stay inside the model package. Named model packages must
 not import implementation code from another named model.
@@ -211,6 +238,14 @@ Data has three non-overlapping layers:
 - `catalog/datasets/`: one README card per runnable dataset preset, plus one family
   card for GIFT-Eval. Each card pairs curated facts (domain, source, license,
   statistics, protocol, pitfalls) with a generated runtime block.
+
+There are 84 dataset presets: 73 conventional `time_series` presets (including the
+GIFT-Eval series) and 11 spatiotemporal or covariate presets. Every dataset has
+exactly one TSFLab protocol, stated in its card (chronological split, scaling fitted
+on the training split only, lookbacks and horizons), so results on a dataset are
+comparable across models. Where the literature uses a different protocol, the card
+records it separately as `literature_protocol`. `configs/fixtures/` holds smoke and
+synthetic test inputs; they are not datasets and have no cards.
 
 Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
 (see [the Hub page](hub.md#benchmark-data)):
@@ -231,8 +266,8 @@ uv run tsf dataset audit            # required facts, no placeholders, generated
 
 Card front matter (short facts: `summary`, `domain`, `tags`, `source`, `license`,
 `redistribution`, `frequency`, `time_span`, `length`, `channels`, `target`,
-`missing_values`, `protocol`, `seq_lens`, `pred_lens`, `split`, `stats_basis`,
-`related`) is the quick reference; the body adds provenance, statistics, standard
+`missing_values`, `protocol`, `literature_protocol`, `seq_lens`, `pred_lens`, `split`, `stats_basis`,
+`related`, and optionally `realtime_track`) is the quick reference; the body adds provenance, statistics, standard
 protocol, and known pitfalls. `license: "unknown"` means no explicit terms were
 found, not that redistribution is allowed. `stats_basis` says whether numbers
 were measured from local files or reported by the source. `tsf repo cards`
@@ -253,7 +288,9 @@ uv run tsf dataset audit
 missingness, scale, periods, seasonality, trend, forecastability, cross-channel
 structure, outliers) plus train/validation shift, recommends lookback candidates, and
 maps findings to catalog components and models. Test-split shift is labelled
-diagnostic-only. Results go to `work_dirs/profiles/<name>/`.
+diagnostic-only. Results go to `work_dirs/profiles/<name>/` (`--out` changes it,
+`--json` prints the profile). For a file that has no preset, pass `--path FILE`
+with `--split-ratio TRAIN VAL TEST` and optionally `--freq`.
 
 `dataset prepare`, `convert-traffic`, and `gift-download` provide explicit
 conversion/download operations; inspect their `--help` before writing. Scaling
@@ -343,6 +380,48 @@ uv run tsf agent task start autoresearch --set 'question=<question>' --json
 
 `task start` prepares a round and a directly readable prompt. It deliberately
 does not launch or message an external Agent; the current Harness owns execution.
+
+## AutoResearch
+
+AutoResearch asks which design suits a dataset and tests it, instead of running a
+fixed benchmark. It composes three public pieces and needs no new state beyond an
+optional research round.
+
+1. **Profile the data.** `tsf dataset analyze <preset>` reports the training-split
+   statistics and the recommended lookbacks and catalog options (see Data).
+2. **Fill the slot grid.** A model is described by six slots, `normalization`,
+   `decomposition`, `temporal`, `channel`, `head`, and `loss`, plus at most one
+   bounded free-form block for something the catalog cannot express. Options are
+   `component:<name>`, `model:<Name>` (a donor design whose idea is borrowed;
+   models never import peers), or `loss:<name>`. Start from the best baseline,
+   screen one slot at a time, then combine the best compatible winners.
+3. **Dry-run the recombination.** Write a TOML spec and validate it:
+
+   ```toml
+   name = "SeasonalRevLinear"
+   summary = "RevIN and decomposition around a channel-wise linear map."
+   hypothesis = "strong seasonality: a period-aware split beats RLinear at equal lookback."
+   parents = ["RLinear", "DLinear"]
+   [slots]
+   normalization = ["component:revin"]
+   decomposition = ["component:series_decomposition"]
+   temporal = ["component:channel_wise_linear"]
+   loss = ["loss:mae"]
+   ```
+
+   ```bash
+   uv run tsf component compose spec.toml
+   ```
+
+   `compose` writes nothing. It checks that components, models, and the loss are
+   real, that component symbols import, and that the free-form budget (two blocks,
+   120 lines each) holds, then prints the `tsf model scaffold` command for a winner.
+   It does not prove shape compatibility; read the component cards.
+
+Many wins need no code: change `training.loss`, `task.seq_len`, or a model
+parameter in the run config. Register a new model only after it beats the baselines
+with confirmation seeds, through the normal path in
+[Add a model or method](#add-a-model-or-method).
 
 ## Verification and repository gates
 
