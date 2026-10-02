@@ -64,6 +64,7 @@ mean-centring only when that std is exactly 0. A table with a single element
   confirmed by running the factory on a tiny CPU snippet, and consumer model
   tests (for example `tests/test_transformer_patch_forecasters_a.py` for the
   model-local PatchTST) do not call this factory directly.
+- Contract and numerical regression: `tests/test_component_contracts_basic.py` with reference values in `tests/fixtures/components/positional_encoding.pt`.
 
 ## Variants and options
 

@@ -22,7 +22,7 @@ from tsflab.models._components.adaptive_node_embedding_adjacency import (
 from tsflab.models._components.adj_norm import (
     gcn_norm,
     reverse_transition_matrix,
-    scaled_laplacian as adj_scaled_laplacian,
+    lambda_rescaled_laplacian as adj_scaled_laplacian,
     symmetric_normalized_laplacian,
     transition_matrix,
 )

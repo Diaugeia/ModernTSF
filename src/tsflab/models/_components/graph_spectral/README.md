@@ -62,6 +62,7 @@ All three are module-level functions (no `__all__`); no parameters or state.
   `chebyshev_supports(.., 3)` has shape `(3, 3, 3)` and is finite, `order=0` raises.
 - no fixture: there is no `.pt` fixture; consumer-level behaviour is covered by the
   models' own contract tests rather than a frozen numerical reference.
+- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/graph_spectral.pt`.
 
 ## Variants and options
 

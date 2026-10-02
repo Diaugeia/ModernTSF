@@ -58,6 +58,7 @@ scales with `D`.
   `h: [B, N, query_dim]`, `deviation_score(x, x) == 0` exactly and
   `deviation_score >= 0`. The same file checks `st_ssdl`'s contrastive and deviation
   losses are finite and that the deviation loss is about 0 for an identical history.
+- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/deviation_memory.pt`.
 
 ## Variants and options
 

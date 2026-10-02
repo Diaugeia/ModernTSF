@@ -68,6 +68,7 @@ checked. Non-symmetric inputs are allowed and not symmetrized.
   Laplacian, and reverse-transition functions are only covered indirectly
   through `graph_utils` consumers (`dcrnn`, `gwnet`, `d2stgnn`, `dfdgcn`,
   `st_ssdl`) that run in the contract tests.
+- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/adj_norm.pt`.
 
 ## Variants and options
 
