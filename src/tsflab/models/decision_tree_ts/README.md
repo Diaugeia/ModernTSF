@@ -5,10 +5,17 @@ paper: "https://search.worldcat.org/title/1422106714"
 paper_title: "Classification and Regression Trees"
 venue: "Wadsworth, 1984"
 year: 1984
+tagline: "One differentiable soft binary tree (sigmoid routing, learned leaf values) over the flattened lag window."
+tags: ["tree", "soft-tree", "baseline", "normalization", "channel-mixing", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree", "channel=local:flattened-channel-mixing-input", "head=local:soft-tree-leaf-outputs", "loss=loss:mse"]
 ---
 # DecisionTreeTS
 
-DecisionTreeTS is an independent differentiable single-tree baseline over flattened lag windows.
+## Key ideas
+
+- `soft_tree` (`SoftDecisionTree`) routes the input through depth `tree_depth` with learned soft splits, so the whole tree trains by gradient descent.
+- Time and channels are flattened into one feature vector and the leaves output the full horizon for all channels.
+- `revin` normalizes and denormalizes. It is not CART: no greedy impurity splits or pruning.
 
 <!-- model-card:canonical:start -->
 ## Input and output

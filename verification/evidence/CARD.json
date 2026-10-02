@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CARD",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "70f5e5e2f77f163a3fb0ed0073ff970afbd962df3e5b71f2fa839ef827979e12",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "e9b3fa523559c5914fce6412faff365132d5d7ee9c6b17dbfa5d2dba01ee4397",
   "paper": {
     "title": "CARD: Channel Aligned Robust Blend Transformer for Time Series Forecasting",
     "venue": "ICLR 2024",

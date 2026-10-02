@@ -8,10 +8,17 @@ year: 2026
 code: "https://github.com/bigbases/COSA_ICLR2026"
 revision: "527c0feb9e997dd85af485ee027616b446e4ae77"
 license: "CC-BY-NC-4.0"
+tagline: "Test-time output-space adapter: a context-conditioned linear residual with a bounded tanh gate around a frozen forecast."
+tags: ["linear", "test-time-adaptation", "adapter", "lightweight", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=local:context-conditioned-gated-linear-residual", "loss=loss:mse"]
 ---
 # COSA
 
-COSA corrects a frozen forecast directly in output space using recently revealed context statistics; it is an adaptation method rather than a standalone backbone.
+## Key ideas
+
+- Corrects a frozen base forecast (last-value `channel_wise_linear` by default, or an external `base_forecast`) rather than retraining the backbone.
+- `correct` implements y = y0 + tanh(g) * W[y0 || context], with context the latest observed values or revealed-target means.
+- Only `residual` and the scalar `gate` are trainable (`adaptable_parameters`); the streaming buffer, delayed labels and adaptive learning rate are outside the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

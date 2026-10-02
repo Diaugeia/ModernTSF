@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "79641b1c75246ab2d8c53bb52f2ac72588be0cdc"
 license: "Apache-2.0"
+tagline: "Decouples diffusion and inherent signals with an estimation gate and residual backcasts on a dynamic graph."
+tags: ["gnn", "rnn", "cnn", "decomposition", "graph-learning", "spatiotemporal", "covariates"]
+composition: ["normalization=none", "decomposition=local:diffusion-inherent-estimation-gate-residual-decomposition", "temporal=local:gru-conv-inherent-branch", "channel=component:graph_utils+component:adaptive_node_embedding_adjacency+local:dynamic-hidden-state-graph", "head=local:accumulated-layer-forecasts-mlp", "loss=loss:mse"]
 ---
 # D2STGNN
 
-D2STGNN (Decoupled Dynamic Spatial-Temporal Graph Neural Network) is a spatiotemporal learning model designed for node-structured graph data such as road-sensor traffic networks. It explicitly separates traffic signals into diffusion signals (vehicles propagating through the network) and inherent signals (local non-diffusion patterns) via a learned estimation gate and residual decomposition, then processes each component with a dedicated module while a dynamic graph learning sub-network captures time-varying spatial topology.
+## Key ideas
+
+- `DecoupledLayer` splits each hidden state into a diffusion part (multi-step graph propagation over four graphs) and an inherent part (`GRU` plus temporal `Conv1d`), mixed by a sigmoid estimation gate.
+- The four graphs are forward and reverse transition supports (`graph_utils`), a self-adaptive graph (`adaptive_node_embedding_adjacency`) and a `DynamicGraphConstructor` graph built from the hidden state.
+- Each layer subtracts a `backcast` of both signals from the residual before the next layer, and emits a partial forecast from its last step.
+- Partial forecasts from all layers are concatenated and decoded by an MLP; time-of-day and day-of-week embeddings come from calendar marks.
 
 <!-- model-card:canonical:start -->
 ## Input and output

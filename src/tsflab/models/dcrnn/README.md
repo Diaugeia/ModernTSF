@@ -8,10 +8,18 @@ year: 2018
 code: "https://github.com/liyaguang/DCRNN"
 revision: "602afd9d767d3aa1c9b3eac51710d6aeee12c227"
 license: "MIT"
+tagline: "GRU encoder-decoder whose gates use bidirectional random-walk diffusion convolution on the sensor graph."
+tags: ["rnn", "gnn", "spatiotemporal", "covariates", "autoregressive-decoding", "graph-given"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dcgru-encoder-decoder", "channel=component:graph_utils+local:bidirectional-random-walk-diffusion-conv", "head=local:linear-projection-autoregressive-decoder", "loss=loss:mse"]
 ---
 # DCRNN
 
-The DCRNN paper combines bidirectional random-walk diffusion convolution with a recurrent encoder-decoder and scheduled sampling for multi-step graph traffic forecasting. This clean-room PyTorch implementation realizes dual random-walk Chebyshev diffusion inside every GRU gate and an autoregressive encoder-decoder without future-target leakage.
+## Key ideas
+
+- `DiffusionConvolution` applies Chebyshev-style K-step diffusion over forward and reverse random-walk supports (`adj_to_supports` from `graph_utils`).
+- `DCGRUCell` replaces the affine maps in the reset, update and candidate equations of a GRU with that diffusion convolution.
+- Two `RecurrentStack` instances form an encoder-decoder: the encoder reads history features, the decoder starts from zeros and feeds back its own `projection` output at each step, with no target leakage.
+- Scheduled sampling and teacher forcing are not part of this forecast-only implementation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

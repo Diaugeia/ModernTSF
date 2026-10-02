@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Graph GRU with node-embedding-generated filter weights and a self-learned adjacency; needs no predefined graph."
+tags: ["rnn", "gnn", "graph-learning", "spatiotemporal", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:node-adaptive-graph-gru", "channel=component:adaptive_node_embedding_adjacency+local:node-adaptive-chebyshev-conv", "head=local:horizon-embedding-mlp-readout", "loss=loss:mse"]
 ---
 # AGCRN
 
-AGCRN (Adaptive Graph Convolutional Recurrent Network) is a spatiotemporal learning model designed for node-structured or graph-structured data. It enhances standard Graph Convolutional Networks with two adaptive modules — Node Adaptive Parameter Learning (NAPL) and Data Adaptive Graph Generation (DAGG) — and wraps them inside a recurrent architecture to jointly capture node-specific spatial patterns and temporal dynamics without requiring any pre-defined graph structure.
+## Key ideas
+
+- Learns a row-normalized adjacency from trainable node embeddings (`adaptive_node_embedding_adjacency`), so no predefined graph is needed.
+- Node Adaptive Parameter Learning: `NodeAdaptiveConvolution` generates per-node Chebyshev filter weights and biases from the node embeddings through a shared weight bank.
+- Plugs these convolutions into GRU gates and candidate state (`AdaptiveGraphGRUCell`), encoding the history recurrently.
+- Decodes all horizons at once from the final hidden state plus a learned horizon embedding with an MLP readout.
 
 <!-- model-card:canonical:start -->
 ## Input and output

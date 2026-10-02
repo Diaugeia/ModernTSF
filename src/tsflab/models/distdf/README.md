@@ -8,10 +8,17 @@ year: 2026
 code: "https://github.com/Master-PLC/DistDF"
 revision: "21b050fc230d35c7e1c4507c8da3dcd81dc9e1b9"
 license: "MIT"
+tagline: "Training objective matching joint history-forecast Gaussian moments (Bures-Wasserstein) on a compact linear forecaster."
+tags: ["linear", "loss-function", "distribution-alignment", "normalization", "channel-independent", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=local:linear-forecast", "loss=loss:mse+local:joint-bures-wasserstein-distribution-loss"]
 ---
 # DistDF
 
-DistDF is a model-agnostic learning objective; it has no special inference architecture.
+## Key ideas
+
+- DistDF changes the loss, not the architecture: the forecaster is a shared `channel_wise_linear` map wrapped by `revin`.
+- `joint_distribution_discrepancy` forms joint samples [history, target] and [history, forecast] over batch-channel pairs, estimates Gaussian mean and covariance (with `covariance_eps` jitter), and computes the squared Bures-Wasserstein distance.
+- `training_objective` combines it with MSE as gamma * discrepancy + (1 - gamma) * MSE; plain `forward` is point forecasting.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/aikunyi/amplifier"
 revision: "6cc089312254a0eeda7767342f690fd4536a1758"
 license: "Apache-2.0"
+tagline: "Adds the mirrored spectrum to expose low-energy frequencies, then semi-channel mixing, decomposition, restoration."
+tags: ["mlp", "frequency", "decomposition", "normalization", "channel-mixing", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=component:series_decomposition", "temporal=local:seasonal-trend-mlp-forecasters", "channel=local:semi-channel-interaction", "head=local:complex-frequency-restoration", "loss=loss:mse"]
 ---
 # Amplifier
 
-Amplifier is a multivariate/univariate time-series forecasting model that addresses the common failure mode of existing models that overlook low-energy frequency components. It introduces an energy amplification technique — comprising an amplification block and a restoration block — integrated with a seasonal-trend decomposition backbone, and further augments it with a semi-channel interaction temporal relationship enhancement block that exploits both commonality and specificity across channels.
+## Key ideas
+
+- Energy amplification: adds the frequency-reversed one-sided FFT spectrum (`flipped_spectrum`) to the normalized input so low-energy components gain weight.
+- `SemiChannelInteraction` splits a learned cross-channel commonality from channel-specific residuals and refines each along time.
+- The amplified series is decomposed with `series_decomposition` and seasonal and trend parts are forecast by separate MLPs.
+- `ComplexFrequencyProjection` restores the amplification by subtracting the projected mirrored spectrum from the forecast spectrum; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

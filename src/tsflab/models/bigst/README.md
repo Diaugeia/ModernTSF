@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Linear-complexity global node attention via positive random features, with node and calendar embeddings."
+tags: ["transformer", "attention-variant", "linear-attention", "spatiotemporal", "covariates", "scalable"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:flattened-history-linear-projection", "channel=local:random-feature-linear-attention-over-nodes", "head=local:linear-horizon-head", "loss=loss:mse"]
 ---
 # BigST
 
-BigST is a spatiotemporal learning model designed for large-scale traffic forecasting on road networks. It models both temporal dynamics and spatial dependencies among nodes, scaling to graphs with up to one hundred thousand nodes by replacing the conventional quadratic-complexity graph attention with a linearized random-feature approximation and a pre-computable long-range temporal encoder.
+## Key ideas
+
+- Spatial attention over all nodes is linearized: positive features `elu(x)+1` of projected queries/keys give `phi(Q)(phi(K)^T V) / phi(Q)(phi(K)^T 1)`, cost linear in the number of nodes.
+- Queries and keys see the node's history summary concatenated with learned node (`node_source`, `node_target`) and time-of-day/day-of-week embeddings.
+- The supplied adjacency enters only as a scaled residual prior (`graph_prior`, `prior_scale`) on the values.
+- History is flattened per node and projected linearly; a linear head emits all horizons. The pretrained long-history extractor of the paper is omitted.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/dongbeank/CATS"
 revision: "58854fc759d608ce400f378be83f4513960e505d"
 license: "MIT"
+tagline: "Cross-attention-only Transformer: learned future-patch queries attend history patches, with query-adaptive masking."
+tags: ["transformer", "patching", "attention-variant", "channel-independent", "parameter-sharing"]
+composition: ["normalization=local:last-value-centering", "decomposition=none", "temporal=local:cross-attention-only-decoder", "channel=local:channel-independent-shared-weights", "head=local:linear-patch-projection", "loss=loss:mse"]
 ---
 # CATS
 
-CATS (Cross-Attention-only Time Series transformer) is a multivariate time series forecasting model that eliminates self-attention entirely from the Transformer architecture and relies solely on cross-attention mechanisms, using future horizon-dependent parameters as queries with enhanced parameter sharing to improve long-term forecasting accuracy while reducing parameter count and memory usage.
+## Key ideas
+
+- No self-attention at all: `CrossAttentionLayer` has learned `future_queries` (one per output patch) attend the embedded history patches.
+- The same embedding, attention and projection weights serve every horizon patch and every channel (`query_independence=False` shares queries across channels).
+- Query-adaptive masking randomly drops attention outputs in training with probability rising linearly from `QAM_start` to `QAM_end` across layers.
+- The series is centered on its last value (not detached, so gradients flow through the level) and the level is added back after the linear patch projection.
 
 <!-- model-card:canonical:start -->
 ## Input and output

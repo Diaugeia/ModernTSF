@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DPWMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "f37b547f0b6559793dec4d01402b83f618590de361986e342e39120a1a508fe5",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "b17790e5f4dba59e13e90d273935898b01768c2264af540d2d23dda9684514cb",
   "paper": {
     "title": "DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting",
     "venue": "arXiv",

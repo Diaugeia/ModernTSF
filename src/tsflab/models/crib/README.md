@@ -8,12 +8,18 @@ year: 2026
 code: "https://github.com/Muyiiiii/CRIB"
 revision: "a457672c7b0152f74c929858dba2a9c886405519"
 license: "NOASSERTION"
+tagline: "Forecasts from partially observed series: unified-variate patch attention, Gaussian bottleneck, consistency loss."
+tags: ["transformer", "patching", "channel-mixing", "missing-values", "information-bottleneck", "probabilistic", "normalization"]
+composition: ["normalization=local:observed-only-instance-standardization", "decomposition=none", "temporal=local:value-and-mask-conv-patch-embedding", "channel=local:unified-variate-self-attention", "head=local:gaussian-bottleneck-mlp-predictor", "loss=loss:mse+local:consistency-and-kl-aux-loss"]
 ---
 # CRIB
 
-CRIB forecasts directly from partially observed multivariate series. Missing
-entries use NaNs through the common four-input interface. Model-specific callers
-that already hold an explicit observation mask may use `forecast_masked`.
+## Key ideas
+
+- `PatchEmbedding` jointly convolves value and observation-mask patches, so NaNs or an explicit `mask` are handled without imputation; statistics use observed entries only (`observed_statistics`).
+- `UnifiedVariateEncoder` flattens all channel-patch tokens into one sequence for plain self-attention, with variable and temporal embeddings.
+- A diagonal Gaussian latent (`location`, `log_scale`) is sampled during training and its mean used at evaluation, then an MLP `predictor` forecasts.
+- Training adds `aux_loss`: KL compactness plus MSE consistency between the original and a randomly masked/noised view.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/GestaltCogTeam/DFDGCN"
 revision: "3105058512a9279c000e98046a49d1baf3469884"
 license: "MIT"
+tagline: "Dilated gated temporal conv backbone with a per-sample frequency-domain graph mixed with static and adaptive graphs."
+tags: ["gnn", "cnn", "frequency", "graph-learning", "spatiotemporal", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:gated_dilated_conv", "channel=component:graph_utils+component:adaptive_node_embedding_adjacency+local:frequency-domain-dynamic-graph", "head=local:skip-sum-conv-output-head", "loss=loss:mse"]
 ---
 # DFDGCN
 
-DFDGCN is a spatiotemporal learning model for node-structured graph data. It captures spatial dependencies in transportation networks by learning dynamic graphs in the frequency domain, mitigating time-shift effects via Fourier transform and combining identity and time embeddings with static predefined and self-adaptive graphs.
+## Key ideas
+
+- `FrequencyGraph` builds a directed per-sample graph from the FFT magnitude of each node's history concatenated with a node identity embedding, which reduces time-shift sensitivity.
+- `DynamicGraphMix` propagates features over four graphs (forward/reverse supports from `graph_utils`, a self-adaptive graph from `adaptive_node_embedding_adjacency`, and the frequency graph) and projects the stacked hops.
+- The temporal backbone stacks `gated_dilated_conv` layers with residual and skip connections; a conv head outputs all horizons.
+- Calendar marks give time-of-day and day-of-week input channels.
 
 <!-- model-card:canonical:start -->
 ## Input and output

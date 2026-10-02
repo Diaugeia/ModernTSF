@@ -8,10 +8,18 @@ year: 2018
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "Target-relative regional aggregation of neighbouring stations feeds five residual fusion nets merged per horizon."
+tags: ["mlp", "spatiotemporal", "covariates", "fusion", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:residual-fusion-nets-per-factor", "channel=local:spatial-partition-region-aggregation", "head=local:horizon-wise-weighted-sigmoid-merge", "loss=loss:mse"]
 ---
 # DeepAir
 
-DeepAir transforms sparse neighboring station readings into consistent target-relative regional features, then learns individual and holistic effects of heterogeneous air-quality factors. This implementation was written from the KDD paper and does not retain the former unlicensed CauAir derivative.
+## Key ideas
+
+- An explicit `(target, region, source)` projection (`spatial_projection`) turns sparse neighbouring readings into a consistent target-relative regional representation shared as the main feature.
+- Five `FusionNet` residual MLP branches handle historical weather, forecast weather, secondary pollutant context, meta properties (calendar and station embedding), and a holistic mix.
+- Branch outputs are merged per horizon step and station with learnable softmax weights, then a sigmoid (the paper assumes min-max-scaled targets).
+- Future weather covariates come from calendar marks via `marks`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

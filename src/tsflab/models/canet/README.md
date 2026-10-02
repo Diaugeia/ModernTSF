@@ -9,8 +9,18 @@ code: "https://github.com/mertsonmezer/CANet"
 revision: "8b5d9cbdbf091805de0d22fa57b41173c21df95e"
 license: "MIT"
 
+tagline: "Multi-patch-size branches with adaptive spectral filtering, non-stationary style restoration, and dual-path conv."
+tags: ["cnn", "patching", "frequency", "multi-scale", "normalization", "channel-independent"]
+composition: ["normalization=local:instance-standardization+component:adain_style_norm", "decomposition=none", "temporal=local:adaptive-spectral-block+local:interactive-convolutional-block+component:positional_encoding", "channel=local:channel-independent-shared-weights", "head=local:concat-branches-two-layer-mlp-head", "loss=loss:mse"]
 ---
 # CANet
+
+## Key ideas
+
+- One `CANetLayer` branch per patch size (default 8 and 64, half-stride overlapping patches), concatenated into one head.
+- `AdaptiveSpectralBlock` filters patch embeddings with learned complex weights and an energy-threshold high-pass mask using a straight-through estimator.
+- NSAN (`adain_style_norm`, `AdaptiveInstanceNorm1d`) restores per-sample mean/std style, blended from the window's own statistics and the patch statistics (`StyleBlendingGate`), instead of a fixed affine.
+- `InteractiveConvolutionalBlock` mixes patches with kernel-1 and kernel-3 convolution paths fused by cross-multiplication.
 
 <!-- model-card:canonical:start -->
 ## Input and output

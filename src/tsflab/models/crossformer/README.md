@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/Thinklab-SJTU/Crossformer"
 revision: "c10c8eadb153d1dd9798250967747ca3ebb81383"
 license: "Apache-2.0"
+tagline: "Segment-wise 2-D token array with two-stage attention (time, then router-based cross-variable) and hierarchical merging."
+tags: ["transformer", "patching", "channel-mixing", "attention-variant", "multi-scale", "hierarchical"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dsw-segment-embedding+local:hierarchical-segment-merging", "channel=local:two-stage-attention-router-cross-dimension", "head=local:per-scale-linear-heads-averaged", "loss=loss:mse"]
 ---
 # Crossformer
 
-Crossformer is a Transformer-based model for multivariate time series forecasting that explicitly models both temporal (cross-time) and inter-variable (cross-dimension) dependencies. It embeds the input series into a 2-D vector array via Dimension-Segment-Wise (DSW) embedding, applies a Two-Stage Attention (TSA) layer to efficiently capture both dependency types, and uses a Hierarchical Encoder-Decoder (HED) to leverage multi-scale temporal information for direct multi-step prediction.
+## Key ideas
+
+- `dsw_embed` cuts every variable into segments and projects each to a token, giving a channels-by-segments array with learned positions (Dimension-Segment-Wise embedding).
+- `TwoStageAttention` first attends across segments within each channel, then across variables through a small set of learned routers (sender then receiver attention), avoiding quadratic cross-variable cost.
+- `SegmentMerge` merges neighbouring segments between layers to build a hierarchy.
+- A linear head per level forecasts directly and the levels are averaged; this simplifies the paper's hierarchical decoder.
 
 <!-- model-card:canonical:start -->
 ## Input and output

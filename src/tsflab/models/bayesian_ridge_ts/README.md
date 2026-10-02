@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1162/neco.1992.4.3.415"
 paper_title: "Bayesian Interpolation"
 venue: "Neural Computation"
 year: 1992
+tagline: "Linear lag regression whose weights carry a learned Gaussian prior precision, trained as a differentiable MAP objective."
+tags: ["statistical", "linear", "probabilistic", "baseline", "channel-independent", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:gaussian-prior-map-penalty"]
 ---
 # BayesianRidgeTS
 
-BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation.
+## Key ideas
+
+- A shared `nn.Linear(seq_len, pred_len)` forecasts every channel from its own lags.
+- `log_weight_precision` is learned; the forward pass sets `aux_loss` to the Gaussian weight-prior negative log-density (0.5 precision ||w||^2 - 0.5 n log precision), turning training into MAP estimation.
+- It does not do evidence maximization, infer observation precision, or return predictive uncertainty.
 
 <!-- model-card:canonical:start -->
 ## Input and output

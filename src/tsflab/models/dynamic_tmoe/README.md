@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/andone-07/Dynamic-TMoE"
 revision: "3e4123530d40c8463cb9487992da49cd967fd9d7"
 license: "NOASSERTION"
+tagline: "Patch mixture of five heterogeneous experts routed by recurrent memory and RBF-MMD drift, plus cyclic channel relations."
+tags: ["hybrid", "mixture-of-experts", "patching", "non-stationary", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:topk_expert_router+local:drift-aware-memory-routed-heterogeneous-experts", "channel=local:cyclic-channel-relation-refinement", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # DynamicTMoE
 
-Dynamic TMoE models non-stationarity through drift perception, temporally coherent expert routing, heterogeneous inductive biases, and training-time expert-pool evolution.
+## Key ideas
+
+- Five fixed experts (identity, trend, seasonality via FFT gate, gated-conv fluctuation, drift MLP) process patch tokens; `topk_dense_mix` concentrates routing on `top_k` of them with a small floor.
+- Routing logits come from a GRU over pooled patches blended with an anomaly-memory repository (`anomaly_repository`, `memory_gate`).
+- `rbf_mmd` measures drift between the earlier and later patch windows, and boosts the drift expert's logit via `drift_bias` and a learnable threshold.
+- `channel_relation` combines a batch Pearson correlation with a learned prototype indexed by cycle phase (`cycle_relation`) to refine mixed tokens across channels; a flatten head forecasts and `revin` wraps.
 
 <!-- model-card:canonical:start -->
 ## Input and output

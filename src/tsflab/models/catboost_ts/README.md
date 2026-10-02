@@ -5,10 +5,18 @@ paper: "https://arxiv.org/abs/1706.09516"
 paper_title: "CatBoost: unbiased boosting with categorical features"
 venue: "NeurIPS 2018"
 year: 2018
+tagline: "Stack of soft symmetric (oblivious) trees where each stage sees the input minus a tanh context of the running forecast."
+tags: ["tree", "boosting", "normalization", "channel-mixing", "baseline"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree+local:ordered-context-boosting-stages", "channel=local:flattened-channel-mixing-input", "head=local:linear-base-plus-tree-residuals", "loss=loss:mse"]
 ---
 # CatBoostTS
 
-CatBoostTS is an independent differentiable baseline using symmetric soft trees and prior-stage forecast context.
+## Key ideas
+
+- `soft_tree` provides differentiable oblivious trees (`SoftObliviousTree`) of fixed depth, trained by gradient descent rather than greedy splits.
+- A linear `base` forecast is refined in `num_estimators` stages, each adding `learning_rate` times a tree output.
+- Each stage's tree input is the flattened series minus `tanh(context(forecast / stage))`, a differentiable stand-in for ordered-boosting prior context.
+- Channels and time are flattened into one feature vector; `revin` normalizes the input. CatBoost's permutation-based ordered boosting and target statistics are not implemented.
 
 <!-- model-card:canonical:start -->
 ## Input and output

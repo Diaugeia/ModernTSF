@@ -8,10 +8,18 @@ year: 2021
 code: "https://github.com/thuml/Autoformer"
 revision: "51c7d416ae120b805fd5beef2f4ccf7de496a6ff"
 license: "MIT"
+tagline: "Progressive series decomposition in every layer plus FFT auto-correlation attention aggregating top-k delays."
+tags: ["transformer", "decomposition", "frequency", "attention-variant", "covariates", "ltsf"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:auto-correlation-encoder-decoder", "channel=component:forecast_embedding", "head=local:seasonal-projection-plus-accumulated-trend", "loss=loss:mse"]
 ---
 # Autoformer
 
-Autoformer is a Transformer-based model for long-term multivariate time series forecasting that replaces the standard self-attention mechanism with an Auto-Correlation mechanism and incorporates a progressive series decomposition block as a core inner component of the deep network rather than a pre-processing step.
+## Key ideas
+
+- `AutoCorrelation` replaces dot-product attention: FFT correlation of query and key (`fft_autocorrelation`) finds the top-k delays, and time-rolled values are aggregated with softmax weights.
+- `series_decomposition` runs after every attention and feed-forward sublayer, so the encoder keeps only seasonal parts and the decoder accumulates trends progressively through `trend_projections`.
+- The decoder starts from a seasonal initialization (history tail plus zeros) and a trend initialization (history tail plus series mean).
+- `forecast_embedding` embeds values and calendar marks; the output is projected seasonal part plus accumulated trend.
 
 <!-- model-card:canonical:start -->
 ## Input and output

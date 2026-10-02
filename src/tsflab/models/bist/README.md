@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/BiST"
 revision: "dd94adf7721fcbb9e3feb5d1b44040305199a4cc"
 license: "NOASSERTION"
+tagline: "MLP forecaster with label-side residual correction: virtual-cluster context and adaptive diffusion refine a base."
+tags: ["mlp", "decomposition", "spatiotemporal", "graph-learning", "covariates", "lightweight"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:residual-mlp-forward-and-backward-representations", "channel=local:virtual-cluster-context-graph+local:adaptive-diffusion-kernel", "head=local:linear-base-and-correction-heads", "loss=loss:mse"]
 ---
 # BiST
 
-BiST is a spatiotemporal learning model for node-structured or graph-structured data that simultaneously captures temporal dynamics and spatial relationships between nodes. It challenges the standard input-label spatiotemporal consistency assumption by incorporating label information during training via a lightweight bidirectional MLP backbone with an adaptive graph, enabling strong predictive performance with a fraction of the training time and memory of existing methods.
+## Key ideas
+
+- `series_decomposition` splits stable and trend parts that are projected by separate linear maps, then concatenated with learned node, time-of-day and weekday prompts.
+- A stack of `ResidualMLP` layers makes the forward representation, and `base_head` produces the base forecast.
+- `node_queries` and `cluster_keys` define soft virtual clusters; their context graph separates common and personalized parts, from which a residual branch is built.
+- `_adaptive_kernel` diffuses the residual over a learned graph with node-wise alpha/beta; `correction_head` adds the result to the base forecast.
 
 <!-- model-card:canonical:start -->
 ## Input and output

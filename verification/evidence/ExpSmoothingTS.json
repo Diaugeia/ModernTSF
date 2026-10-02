@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ExpSmoothingTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "4495821e10c283257d27d686ffa643345b0c6c1bae7997150d3294999487971a",
+  "verified_at": "2026-10-02T18:16:31.428230Z",
+  "subject_sha256": "a46e0de88e4616525eb4b5465d92c50dc9e23a0081fb57196a2dbc30c007e26e",
   "paper": {
     "title": "Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages",
     "venue": "International Journal of Forecasting",

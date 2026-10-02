@@ -5,10 +5,18 @@ paper: "https://search.worldcat.org/title/Time-series-analysis-forecasting-and-c
 paper_title: "Time Series Analysis: Forecasting and Control"
 venue: "Holden-Day (book) / N/A (classical baseline)"
 year: 1970
+tagline: "Differentiable conditional ARIMA(p,1,q) recurrence with shared AR/MA coefficients fit by gradient descent."
+tags: ["statistical", "autoregressive", "baseline", "lightweight", "channel-independent"]
+composition: ["normalization=none", "decomposition=local:first-order-differencing", "temporal=local:conditional-arima-recurrence", "channel=local:channel-independent-shared-coefficients", "head=local:cumulative-sum-of-forecast-differences", "loss=loss:mse"]
 ---
 # ARIMATS
 
-ARIMATS is a differentiable conditional ARIMA(p,1,q) recurrence with shared coefficients, historical one-step innovations, and zero expected future innovations.
+## Key ideas
+
+- Differences the input once (d=1) and runs the ARMA recurrence over the differences, with learnable `ar_coefficients`, `ma_coefficients` and `drift`.
+- Historical one-step innovations are computed from the observed differences; future innovations are zero (conditional expectation).
+- Forecasts are the last observed value plus the cumulative sum of predicted differences.
+- Coefficients are shared across channels and fit by gradient descent, not likelihood; no order selection or seasonality.
 
 <!-- model-card:canonical:start -->
 ## Input and output

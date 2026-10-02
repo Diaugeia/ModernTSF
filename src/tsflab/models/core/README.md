@@ -8,8 +8,19 @@ year: 2026
 code: "https://github.com/yyddou/CoReTTA"
 revision: "7e3861f24e3aaece9fffc048fd585b3d283835d8"
 license: "unspecified (no LICENSE file at the pinned revision)"
+tagline: "Test-time adapter mixing variates in correction space via a shared-anchor bottleneck gated by spectral entropy."
+tags: ["linear", "test-time-adaptation", "channel-mixing", "frequency", "adapter", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:channel_wise_linear+local:frozen-last-value-base-forecaster", "channel=local:shared-anchor-correction-refinement+component:spectral_descriptor", "head=local:spectral-gated-correction-residual", "loss=loss:mse"]
 ---
 # CoRe
+
+## Key ideas
+
+- Works around a frozen forecaster (a last-value `ChannelWiseLinear` by default, or an external `base_forecast`); only the adapter, gates and bottleneck are adaptable (`adaptable_parameters`).
+- A COSA-style base adapter produces per-variate corrections Delta; `refine` concatenates each Delta with the cross-variate mean (anchor) and passes it through a rank-r tanh bottleneck (`scr_down`, `scr_up`), so variates interact in correction space, not prediction space.
+- `spectral_descriptor` computes per-window spectral entropy and low/mid/high band-energy ratios; a tanh gate (`scr_gate`) scales the refinement, starting closed.
+- Final forecast is Y_base + Delta + g * delta; the streaming update protocol is outside the model.
+
 <!-- model-card:canonical:start -->
 ## Input and output
 

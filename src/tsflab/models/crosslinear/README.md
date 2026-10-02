@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/mumiao2000/CrossLinear"
 revision: "d22366e2f59ced560a02b2b1c7cc673e3c02a13f"
 license: "MIT"
+tagline: "Linear forecaster with a time-invariant cross-variate conv embedding and patch projection for exogenous variables."
+tags: ["linear", "patching", "channel-mixing", "normalization", "lightweight", "exogenous-variables"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-projection-position-blend", "channel=local:cross-correlation-conv-embedding", "head=local:global-flatten-linear-head", "loss=loss:mse"]
 ---
 # CrossLinear
 
-CrossLinear is a linear-based time-series forecasting model designed for settings that include exogenous (external) variables. It incorporates a lightweight plug-and-play cross-correlation embedding module that captures time-invariant, direct variable dependencies between endogenous and exogenous channels while avoiding overfitting to time-varying or indirect dependencies. Patch-wise processing and a global linear head handle both short- and long-range temporal structure, serving the standard multivariate forecasting setting.
+## Key ideas
+
+- `CrossCorrelationEmbedding` blends the input with one direct Conv1d across variables using a learned alpha, capturing time-invariant endogenous-exogenous dependencies without a deep mixer.
+- `PatchForecastHead` projects patches with a small MLP and blends them with positional embeddings by a learned beta.
+- A single global linear layer over all patch embeddings gives the forecast; `revin` (non-affine) normalizes and denormalizes.
+- Weights are shared across variables, the many-to-many extension of the paper.
 
 <!-- model-card:canonical:start -->
 ## Input and output

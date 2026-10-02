@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/hit636/DPWMixer"
 revision: "0a787be2aeba845914bd4ea88428a1ddb982abad"
 license: "Apache-2.0"
+tagline: "Lossless Haar wavelet pyramid replaces pooling; each scale gets linear-trend plus patch-MLP paths, softmax-fused."
+tags: ["mlp", "wavelet", "multi-scale", "patching", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:wavelet", "temporal=local:dual-path-global-linear-and-patch-mlp-mixer", "channel=local:channel-independent-shared-weights", "head=local:softmax-multi-scale-fusion", "loss=loss:mse"]
 ---
 # DPWMixer
 
-DPWMixer replaces average-pooling multi-scale downsampling with a lossless Haar wavelet pyramid, forecasting every resolution with a dual-path (global-linear trend plus patch-MLP local) mixer and fusing the per-channel, per-scale forecasts with a learned softmax weighting.
+## Key ideas
+
+- `wavelet` (`DecimatedWaveletTransform`, Haar) is applied once per level, keeping the approximation signal to build a multi-resolution pyramid without average-pooling information loss.
+- `DualPathTrendMixer` forecasts each resolution by combining a global linear trend path with a patch-embedding MLP path, mixed by two learnable scalars (`path_weight`).
+- Per-scale, per-channel forecasts are fused by softmax over learned `fusion_weight` logits; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output
