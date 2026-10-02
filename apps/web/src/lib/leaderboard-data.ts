@@ -48,6 +48,18 @@ export interface RollingSummary {
   rank_stability: { consecutive_kendall_tau: number[]; mean: number | null };
 }
 
+/** Metadata of a real-time track, generated from configs/realtime/*.toml. */
+export interface RealtimeTrackMeta {
+  id: string;
+  domain: string;
+  title?: string;
+  mode?: string;
+  freq?: string;
+  seq_len?: number;
+  horizon?: number;
+  submission_hours?: number;
+}
+
 export interface LeaderboardData {
   schema_version: string;
   generated_at: string;
@@ -57,4 +69,6 @@ export interface LeaderboardData {
   tracks: Record<string, TrackBlock>;
   /** Rolling real-time rounds, keyed by real-time track id (schema >= 1.1). */
   realtime?: Record<string, RollingSummary>;
+  /** Every declared real-time track (schema >= 1.2); tracks without rounds still appear. */
+  realtime_tracks?: RealtimeTrackMeta[];
 }

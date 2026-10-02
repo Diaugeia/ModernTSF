@@ -1,5 +1,5 @@
 // Localized copy the leaderboard UI needs. Structurally identical to the host
-// site's `Dictionary["tseval"]`, so the host can pass `dict.tseval` directly
+// site's `Dictionary["tsflab"]`, so the host can pass `dict.tsflab` directly
 // without this package depending on the site's dictionary module.
 //
 // Metric abbreviations (MSE/MAE/Sharpe/Win Rate…) are intentionally NOT here —

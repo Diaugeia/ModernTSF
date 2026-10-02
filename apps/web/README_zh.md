@@ -98,7 +98,7 @@ push main
        ├ bun run build                           Next 静态导出 → out/
        └ out/ 部署到:
             └─► Hugging Face Space (static) →  Diaugeia/TSFLab
-                (旧 Space Diaugeia/TSEval 自动跳转到这里)
+                (原 TSEval:旧 Space Diaugeia/TSEval 与旧域名 tseval.diaugeia.ai 为遗留入口,均跳转到这里)
 ```
 
 - `pipeline/validate.py` —— TSF-Core 合约 schema + TSFLab 绑定校验。
