@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "moderntsf-web",
+      "name": "tsflab-web",
       "dependencies": {
         "echarts": "^6.1.0",
         "echarts-for-react": "^3.0.6",
