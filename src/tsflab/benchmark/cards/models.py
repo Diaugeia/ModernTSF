@@ -201,6 +201,7 @@ def audit_model_card_body(card_path: Path) -> list[str]:
             problems.append(f"{card_path.relative_to(ROOT)} has empty {marker!r}")
     if positions != sorted(positions):
         problems.append(f"{card_path.relative_to(ROOT)} canonical sections are out of order")
+    problems.extend(audit_retrieval_fields(card_path))
     return problems
 
 
@@ -246,3 +247,84 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# --------------------------------------------------------------------------
+# Retrieval fields: tagline (L0), tags, composition slots, and Key ideas (L1).
+# --------------------------------------------------------------------------
+
+#: Architecture families; every card names at least one so retrieval by family works.
+FAMILY_TAGS = frozenset({
+    "linear", "mlp", "transformer", "cnn", "rnn", "gnn", "ssm", "kan", "llm",
+    "foundation", "diffusion", "tree", "statistical", "hybrid",
+})
+#: The recombination slots shared with autoresearch, in this order.
+COMPOSITION_SLOTS = ("normalization", "decomposition", "temporal", "channel", "head", "loss")
+TAGLINE_CHARS = 120
+_PART = re.compile(r"^(component|local|loss):[A-Za-z0-9_.+/-]+$")
+
+
+def _composition_problems(entries: list[object], where: str) -> list[str]:
+    from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+    from tsflab.benchmark.registry.losses import LOSS_NAME_MAP
+
+    problems: list[str] = []
+    slots = [str(entry).split("=", 1)[0] for entry in entries]
+    if slots != list(COMPOSITION_SLOTS):
+        return [f"{where} composition must list slots {', '.join(COMPOSITION_SLOTS)} in order"]
+    components = set(COMPONENT_CATALOG.names())
+    losses = set(LOSS_NAME_MAP)
+    for entry in entries:
+        slot, _, value = str(entry).partition("=")
+        if value == "none":
+            continue
+        for part in value.split("+"):
+            if not _PART.match(part):
+                problems.append(f"{where} composition {slot}: {part!r} is not component:/local:/loss: or none")
+                continue
+            kind, name = part.split(":", 1)
+            if kind == "component" and name not in components:
+                problems.append(f"{where} composition {slot}: unknown component {name!r}")
+            if kind == "loss" and (slot != "loss" or name not in losses):
+                problems.append(f"{where} composition {slot}: {part!r} is not a registered loss in the loss slot")
+    return problems
+
+
+def audit_retrieval_fields(card_path: Path) -> list[str]:
+    """Check the fields agents retrieve first: tagline, tags, composition, Key ideas."""
+    where = str(card_path.relative_to(ROOT))
+    fields = read_model_card(card_path)
+    problems: list[str] = []
+    tagline = str(fields.get("tagline") or "")
+    if not tagline:
+        problems.append(f"{where} needs a one-line `tagline` (L0)")
+    elif len(tagline) > TAGLINE_CHARS or "\n" in tagline:
+        problems.append(f"{where} tagline must be one line of at most {TAGLINE_CHARS} characters")
+    tags = [str(tag) for tag in fields.get("tags") or []]
+    if len(tags) < 3:
+        problems.append(f"{where} needs at least three `tags`")
+    elif not FAMILY_TAGS & set(tags):
+        problems.append(f"{where} tags must include an architecture family: {', '.join(sorted(FAMILY_TAGS))}")
+    if any(tag != tag.lower() or " " in tag for tag in tags):
+        problems.append(f"{where} tags must be lower-case kebab-case")
+    composition = list(fields.get("composition") or [])
+    problems.extend(_composition_problems(composition, where))
+    from tsflab.benchmark.catalog.component_audit import (
+        component_dependency_closure, components_used_by,
+    )
+
+    used = set(component_dependency_closure(set(components_used_by(card_path.parent))))
+    named = {part.split(":", 1)[1] for entry in composition
+             for part in str(entry).partition("=")[2].split("+") if part.startswith("component:")}
+    for name in sorted(named - used):
+        problems.append(f"{where} composition names component {name!r} that the model does not import")
+    text = card_path.read_text(encoding="utf-8")
+    head = text.split(START, 1)[0]
+    if "## Key ideas" not in head:
+        problems.append(f"{where} needs a `## Key ideas` section before the canonical block")
+    else:
+        body = head.split("## Key ideas", 1)[1]
+        bullets = [line for line in body.splitlines() if line.startswith("- ")]
+        if not 2 <= len(bullets) <= 6:
+            problems.append(f"{where} Key ideas should be 2-6 bullets")
+    return problems

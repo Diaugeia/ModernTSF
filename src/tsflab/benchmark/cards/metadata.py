@@ -113,7 +113,7 @@ def read_model_card(path: Path) -> dict[str, object]:
     """
     fields = read_front_matter(path)
     required = {"name", "summary", "paper", "paper_title", "venue", "year"}
-    allowed = required | {"code", "revision", "license"}
+    allowed = required | {"code", "revision", "license", "tagline", "tags", "composition"}
     missing = sorted(required - fields.keys())
     if missing:
         raise ValueError(f"{path} missing front matter: {', '.join(missing)}")
@@ -129,6 +129,9 @@ def read_model_card(path: Path) -> dict[str, object]:
     return {
         "name": fields["name"],
         "summary": fields["summary"],
+        "tagline": fields.get("tagline", ""),
+        "tags": list(fields.get("tags") or []),
+        "composition": list(fields.get("composition") or []),
         "paper": {
             "title": fields["paper_title"],
             "venue": fields["venue"],

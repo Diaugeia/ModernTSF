@@ -2,7 +2,7 @@
 name: "ultratraffic_sb_cl"
 kind: "dataset"
 summary: "Hourly total flow per Caltrans PeMS station in District 8 (San Bernardino / Riverside) for 2023, 51 stations (continual-learning slice: stations first observed in 2023), with stations as nodes plus two calendar covariates."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "pems", "flow", "hourly", "california", "district-8", "ultratraffic", "stations", "2023", "continual-learning", "new-stations", "spatiotemporal", "covariate"]
 source: "Caltrans PeMS hourly total flow per station, as packaged in the UltraTraffic_CL archive (archive publisher not identified in the repository)"
 source_url: "http://pems.dot.ca.gov"

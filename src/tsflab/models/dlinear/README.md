@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/cure-lab/LTSF-Linear"
 revision: "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6"
 license: "Apache-2.0"
+tagline: "Moving-average trend/seasonal split with one linear map per component; the LTSF-Linear baseline."
+tags: ["linear", "decomposition", "channel-independent", "ltsf-linear", "baseline", "lightweight"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=component:dlinear", "channel=local:channel-independent-shared-weights", "head=component:dlinear", "loss=loss:mse"]
 ---
 # DLinear
 
-DLinear is a time series forecasting model that decomposes the input sequence into a trend component and a seasonal (remainder) component and applies two independent one-layer linear projections to produce the final forecast. It serves as the primary model in the LTSF-Linear family and demonstrates that embarrassingly simple linear architectures can consistently outperform sophisticated Transformer-based long-term forecasters on standard benchmarks.
+## Key ideas
+
+- Splits the lookback into a moving-average trend and a seasonal remainder (`series_decomposition`).
+- Forecasts each component with one linear map over time and sums them (`dlinear`), so every channel is a univariate series with shared weights unless `individual=True`.
+- Serves as the reference showing that simple linear maps match or beat many Transformer forecasters on LTSF benchmarks.
 
 <!-- model-card:canonical:start -->
 ## Input and output

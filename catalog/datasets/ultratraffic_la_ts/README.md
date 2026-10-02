@@ -2,7 +2,7 @@
 name: "ultratraffic_la_ts"
 kind: "dataset"
 summary: "Hourly total flow per Caltrans PeMS station in District 7 (Los Angeles / Ventura) for 2023, 1926 stations (all stations present in 2023), with stations flattened into channels."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "pems", "flow", "hourly", "california", "district-7", "ultratraffic", "stations", "2023", "real-time-backed", "time-series", "high-dimensional"]
 source: "Caltrans PeMS hourly total flow per station, as packaged in the UltraTraffic_CL archive (archive publisher not identified in the repository)"
 source_url: "http://pems.dot.ca.gov"

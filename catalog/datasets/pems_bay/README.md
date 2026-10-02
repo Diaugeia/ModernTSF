@@ -2,7 +2,7 @@
 name: "pems_bay"
 kind: "dataset"
 summary: "PEMS-BAY: 5-minute traffic speed from 325 Caltrans PeMS sensors in the San Francisco Bay Area (first half of 2017), packaged by the DCRNN authors."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems_bay", "speed", "bay-area", "dcrnn", "pems-bay"]
 source: "Caltrans PeMS; packaged by Li, Yu, Shahabi and Liu (DCRNN)"
 source_url: "https://github.com/liyaguang/DCRNN"

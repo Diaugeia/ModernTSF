@@ -74,12 +74,8 @@ def dataset_command(args: list[str]) -> int:
             legacy = _dataset_record_payload(
                 selected, dataset_facts(ROOT, [selected.name]).get(selected.name, {})
             )
-            facts = {
-                "config": selected.config,
-                "loader": selected.loader,
-                "task_modes": list(selected.task_modes),
-                "path": selected.path or "(loader-defined)",
-            }
+            # config, loader, and task modes are already in the card header.
+            facts = {"path": selected.path or "(loader-defined)"}
             card_path = dataset_card_path(ROOT, selected.name)
             paths = existing(
                 ROOT,

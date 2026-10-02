@@ -2,7 +2,7 @@
 name: "pems07"
 kind: "dataset"
 summary: "PEMS07: 5-minute traffic flow from 883 Caltrans PeMS District 7 sensors (2017-05-01 to 2017-08-31), the STSGCN/ASTGCN benchmark for spatiotemporal graph forecasting."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems07", "flow", "district-7", "stsgcn", "astgcn"]
 source: "Caltrans PeMS District 7; processed by Song et al. (STSGCN) and Guo et al. (ASTGCN)"
 source_url: "https://github.com/Davidham3/STSGCN"

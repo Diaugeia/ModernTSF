@@ -36,19 +36,21 @@ def _model_resources(root: Path) -> list[tuple[dict[str, object], dict[str, str]
     resources = []
     for fields in model_records(root):
         card = (root / str(fields["model_card"])).read_text(encoding="utf-8")
-        tags = sorted(set(fields.get("capabilities", ()))) + list(
-            fields.get("components", ())
-        )
+        tags = list(dict.fromkeys(
+            [*fields.get("tags", ()), *sorted(set(fields.get("capabilities", ()))),
+             *fields.get("components", ())]
+        ))
         paper = dict(fields["paper"])
         surfaces = {
             "name": str(fields["name"]).casefold(),
             "tags": " ".join(tags).casefold(),
-            "summary": str(fields["summary"]).casefold(),
+            "summary": f"{fields.get('tagline', '')} {fields['summary']}".casefold(),
             "paper": str(paper["title"]).casefold(),
             "card": card.casefold(),
         }
         resources.append(
-            (l0_record(str(fields["name"]), "model", str(fields["summary"]), tags), surfaces, fields)
+            (l0_record(str(fields["name"]), "model",
+                       str(fields.get("tagline") or fields["summary"]), tags), surfaces, fields)
         )
     return resources
 

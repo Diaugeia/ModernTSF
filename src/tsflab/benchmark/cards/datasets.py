@@ -61,6 +61,9 @@ REQUIRED_FAMILY_KEYS = (
     "license", "redistribution", "frequency", "protocol", "stats_basis",
 )
 REDISTRIBUTION = ("allowed", "conditional", "restricted", "unknown")
+#: Top-level domains; a card's ``domain`` is ``"<Top>"`` or ``"<Top> / <detail>"``.
+DOMAINS = ("Energy", "Transport", "Environment", "Weather", "Finance", "Healthcare",
+           "Nature", "Sales", "Web/CloudOps", "General")
 STATS_BASIS = ("measured", "source-reported", "mixed")
 CHANNEL_KINDS = ("channels", "nodes", "series", "stations")
 CURATED_SECTIONS = (
@@ -454,6 +457,8 @@ def _check_facts(label: str, front: dict[str, object], required: tuple[str, ...]
     if "tags" in front and (not isinstance(tags, list) or len(tags) < 3
                             or not all(_is_text(tag) for tag in tags)):
         errors.append(f"{label}: tags must list at least three retrieval terms")
+    if "domain" in front and str(front["domain"]).split(" / ", 1)[0] not in DOMAINS:
+        errors.append(f"{label}: domain must start with one of {', '.join(DOMAINS)}")
     if "redistribution" in front and front["redistribution"] not in REDISTRIBUTION:
         errors.append(f"{label}: redistribution must be one of {', '.join(REDISTRIBUTION)}")
     if str(front.get("license", "")).strip().lower() == "unknown" and front.get("redistribution") not in (None, "unknown"):

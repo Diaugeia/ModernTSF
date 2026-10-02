@@ -2,7 +2,7 @@
 name: "metr_la"
 kind: "dataset"
 summary: "METR-LA: 5-minute traffic speed from 207 loop detectors on Los Angeles County highways (March to June 2012), the standard speed benchmark from DCRNN."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "metr_la", "speed", "los-angeles", "dcrnn", "metr-la"]
 source: "Los Angeles County loop detectors (via Jagadish et al., 2014); packaged by Li, Yu, Shahabi and Liu (DCRNN)"
 source_url: "https://github.com/liyaguang/DCRNN"

@@ -366,7 +366,8 @@ def component_command(args: list[str]) -> int:
             return 2
         consumers = []
         for package in sorted((ROOT / "src" / "tsflab" / "models").iterdir()):
-            if package.is_dir() and spec.name in components_used_by(package):
+            if (package.is_dir() and not package.name.startswith("_")
+                    and spec.name in components_used_by(package)):
                 consumers.append(package.name)
         card = f"src/tsflab/models/_components/{spec.name}/README.md"
         legacy = {
@@ -424,16 +425,64 @@ def component_command(args: list[str]) -> int:
     return 2
 
 
+def _catalog_overview(as_json: bool) -> int:
+    """Print the entry view: what exists, grouped, and how to drill down."""
+    from collections import Counter
+
+    from tsflab.benchmark.cards.datasets import dataset_facts, dataset_records
+    from tsflab.benchmark.cards.depth import read_card
+    from tsflab.benchmark.cards.metadata import model_records
+    from tsflab.benchmark.cards.models import FAMILY_TAGS
+    from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+    from tsflab.benchmark.cards.components import component_card_path
+
+    models = model_records(ROOT)
+    families = Counter(tag for record in models for tag in record.get("tags", ()) if tag in FAMILY_TAGS)
+    modes = Counter(mode for record in models for mode in record.get("capabilities", ()))
+    categories = Counter(
+        str(read_card(component_card_path(ROOT, name)).front.get("category", "uncategorized"))
+        for name in COMPONENT_CATALOG.names()
+    )
+    records = dataset_records(ROOT)
+    facts = dataset_facts(ROOT)
+    domains = Counter(str(facts.get(r.name, {}).get("domain", "unknown")).split(" / ")[0] for r in records)
+    payload = {
+        "models": {"count": len(models), "families": dict(families.most_common()),
+                   "task_modes": dict(modes.most_common())},
+        "components": {"count": len(COMPONENT_CATALOG.names()), "categories": dict(categories.most_common())},
+        "datasets": {"count": len(records), "domains": dict(domains.most_common())},
+        "next": [
+            "tsf catalog search <terms> [--kind model|component|dataset]   # L0 lines",
+            "tsf <model|component|dataset> show <name>                      # L1 contract",
+            "tsf <model|component|dataset> show <name> --depth 2|3           # full card | files",
+        ],
+    }
+    if as_json:
+        print(json.dumps(payload, indent=2))
+        return 0
+    def fmt(counter: dict) -> str:
+        return ", ".join(f"{key} {value}" for key, value in counter.items()) or "(untagged)"
+    print(f"models      {len(models):>4}  families: {fmt(payload['models']['families'])}")
+    print(f"            capabilities: {fmt(payload['models']['task_modes'])}")
+    print(f"components  {payload['components']['count']:>4}  categories: {fmt(payload['components']['categories'])}")
+    print(f"datasets    {len(records):>4}  domains: {fmt(payload['datasets']['domains'])}")
+    print("\nNext:\n" + "\n".join(f"  {line}" for line in payload["next"]))
+    return 0
+
+
 def catalog_command(args: list[str]) -> int:
-    """Search all catalogs at once, returning ranked L0 lines."""
-    if not args or args[0] in {"-h", "--help", "help"} or args[0] != "search":
+    """Overview of all catalogs, or a ranked L0 search across them."""
+    if not args or args[0] == "overview":
+        return _catalog_overview("--json" in args)
+    if args[0] in {"-h", "--help", "help"} or args[0] != "search":
         print(
-            "usage: tsf catalog search <terms...> [--kind model|component|dataset] "
+            "usage: tsf catalog [overview] [--json]\n"
+            "       tsf catalog search <terms...> [--kind model|component|dataset] "
             "[--limit N] [--json]\n"
             "Each result is one L0 line: name, kind, summary, tags. Open one with\n"
             "`tsf <kind> show <name> --depth 1|2|3`."
         )
-        return 0 if not args or args[0] in {"-h", "--help", "help"} else 2
+        return 0 if args[0] in {"-h", "--help", "help"} else 2
     from tsflab.benchmark.cards.search import search_command
 
     return search_command(ROOT, args[1:], prog="tsf catalog search")

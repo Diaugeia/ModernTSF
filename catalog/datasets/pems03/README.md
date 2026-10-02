@@ -2,7 +2,7 @@
 name: "pems03"
 kind: "dataset"
 summary: "PEMS03: 5-minute traffic flow from 358 Caltrans PeMS District 3 sensors (2018-09-01 to 2018-11-30), the STSGCN/ASTGCN benchmark for spatiotemporal graph forecasting."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems03", "flow", "district-3", "stsgcn", "astgcn"]
 source: "Caltrans PeMS District 3; processed by Song et al. (STSGCN) and Guo et al. (ASTGCN)"
 source_url: "https://github.com/Davidham3/STSGCN"

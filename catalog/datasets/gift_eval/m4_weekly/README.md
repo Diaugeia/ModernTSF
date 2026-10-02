@@ -2,7 +2,7 @@
 name: "gift_eval/m4_weekly"
 kind: "dataset"
 summary: "GIFT-Eval M4 Weekly at weekly frequency: 359 series of Econ/Fin data, mean length 1,035 steps; short-term horizon 13."
-domain: "Econ/Fin"
+domain: "Finance / economics"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "econ-fin", "weekly", "m4", "competition", "monash"]
 source: "M4 Competition (Makridakis et al., 2018), via Monash"
 source_url: "https://forecastingdata.org/"

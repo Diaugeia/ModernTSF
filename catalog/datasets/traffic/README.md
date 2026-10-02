@@ -2,7 +2,7 @@
 name: "traffic"
 kind: "dataset"
 summary: "Hourly road occupancy rate (0 to 1) from 862 freeway sensors in the San Francisco Bay Area for 2015-2016, from Caltrans PeMS via the LSTNet/Autoformer packaging."
-domain: "Transportation / road traffic"
+domain: "Transport / road traffic"
 tags: ["traffic", "pems", "road", "occupancy", "california", "bay-area", "ltsf", "benchmark", "multivariate", "hourly", "lstnet", "high-dimensional"]
 source: "California Department of Transportation (Caltrans PeMS); packaged by Lai et al. (LSTNet)"
 source_url: "http://pems.dot.ca.gov"

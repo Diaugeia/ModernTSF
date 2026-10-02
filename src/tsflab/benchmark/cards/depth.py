@@ -3,7 +3,8 @@
 One depth model serves every catalog resource, so an agent can spend context
 only as needed:
 
-* L0 - one line: ``name``, ``kind``, ``summary``, ``tags``.
+* L0 - one line: ``name``, ``kind``, ``tagline`` (else the first sentence of
+  ``summary``), ``tags``.
 * L1 - front matter plus the interface/constraint sections of the card.
 * L2 - the full card.
 * L3 - the source, config, test, and evidence paths to open next.
@@ -28,7 +29,7 @@ DEPTH_HELP = (
 L0_SUMMARY_CHARS = 160
 # Sections shown at L1: how the resource is called and what limits composition.
 _L1_SECTION = re.compile(
-    r"input|output|interface|contract|constraint|when to use", re.IGNORECASE
+    r"key ideas|input|output|interface|contract|constraint|when to use", re.IGNORECASE
 )
 
 
@@ -52,6 +53,11 @@ class Card:
     @property
     def summary(self) -> str:
         return " ".join(str(self.front.get("summary", "")).split())
+
+    @property
+    def headline(self) -> str:
+        """The L0 text: the curated tagline when present, else the summary."""
+        return " ".join(str(self.front.get("tagline") or self.summary).split())
 
     @property
     def tags(self) -> tuple[str, ...]:
@@ -126,7 +132,12 @@ def l0_line(record: dict[str, object]) -> str:
 
 
 def card_l0(card: Card) -> dict[str, object]:
-    return l0_record(card.name, card.kind, card.summary, card.tags)
+    return l0_record(card.name, card.kind, card.headline, card.tags)
+
+
+def approx_tokens(text: str) -> int:
+    """Rough token count (characters / 4) used to price the next depth."""
+    return max(1, len(text) // 4)
 
 
 def front_matter_text(card: Card) -> str:
@@ -171,6 +182,10 @@ def render_text(
         )
     for title, body in l1_sections(card):
         parts.append(f"## {title}\n\n{body}")
+    parts.append(
+        f"Next: --depth 2 for the full card (~{approx_tokens(card.text)} tokens), "
+        "--depth 3 for the files to open."
+    )
     return "\n\n".join(parts) + "\n"
 
 

@@ -2,7 +2,7 @@
 name: "gift_eval"
 kind: "dataset-family"
 summary: "GIFT-Eval is Salesforce's zero-shot-oriented benchmark for general time series forecasting; this repository ships 53 of its dataset-frequency series as short-term presets."
-domain: "General (Econ/Fin, Energy, Healthcare, Nature, Sales, Transport, Web/CloudOps)"
+domain: "General / Energy, Finance, Healthcare, Nature, Sales, Transport, Web/CloudOps"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "multi-domain", "multi-frequency", "salesforce"]
 source: "Salesforce AI Research"
 source_url: "https://huggingface.co/datasets/Salesforce/GiftEval"
@@ -93,12 +93,12 @@ All numbers are source-reported (GIFT-Eval paper, Table 13, and the repository's
 | [`gift_eval/jena_weather`](jena_weather/README.md) | Nature | not recorded (the id has no frequency suffix) | 48 |
 | [`gift_eval/kdd_cup_2018_with_missing_D`](kdd_cup_2018_with_missing_D/README.md) | Nature | daily (1d) | 30 |
 | [`gift_eval/kdd_cup_2018_with_missing_H`](kdd_cup_2018_with_missing_H/README.md) | Nature | hourly (1h) | 48 |
-| [`gift_eval/m4_daily`](m4_daily/README.md) | Econ/Fin | daily (1d) | 14 |
-| [`gift_eval/m4_hourly`](m4_hourly/README.md) | Econ/Fin | hourly (1h) | 48 |
-| [`gift_eval/m4_monthly`](m4_monthly/README.md) | Econ/Fin | monthly (1mo) | 18 |
-| [`gift_eval/m4_quarterly`](m4_quarterly/README.md) | Econ/Fin | quarterly (1q) | 8 |
-| [`gift_eval/m4_weekly`](m4_weekly/README.md) | Econ/Fin | weekly (1w) | 13 |
-| [`gift_eval/m4_yearly`](m4_yearly/README.md) | Econ/Fin | yearly (1y) | 6 |
+| [`gift_eval/m4_daily`](m4_daily/README.md) | Finance / economics | daily (1d) | 14 |
+| [`gift_eval/m4_hourly`](m4_hourly/README.md) | Finance / economics | hourly (1h) | 48 |
+| [`gift_eval/m4_monthly`](m4_monthly/README.md) | Finance / economics | monthly (1mo) | 18 |
+| [`gift_eval/m4_quarterly`](m4_quarterly/README.md) | Finance / economics | quarterly (1q) | 8 |
+| [`gift_eval/m4_weekly`](m4_weekly/README.md) | Finance / economics | weekly (1w) | 13 |
+| [`gift_eval/m4_yearly`](m4_yearly/README.md) | Finance / economics | yearly (1y) | 6 |
 | [`gift_eval/restaurant`](restaurant/README.md) | Sales | daily (1d) | 30 |
 | [`gift_eval/saugeenday_D`](saugeenday_D/README.md) | Nature | daily (1d) | 30 |
 | [`gift_eval/saugeenday_M`](saugeenday_M/README.md) | Nature | monthly (1mo) | 12 |

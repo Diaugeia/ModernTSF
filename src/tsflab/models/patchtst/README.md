@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/yuqinie98/PatchTST"
 revision: "204c21efe0b39603ad6e2ca640ef5896646ab1a9"
 license: "Apache-2.0"
+tagline: "Channel-independent Transformer over overlapping patches of each series, with a flatten head."
+tags: ["transformer", "patching", "channel-independent", "revin", "ltsf"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-transformer-encoder", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # PatchTST
 
-PatchTST is a Transformer-based model for multivariate and univariate long-term time-series forecasting that segments each channel into subseries-level patches fed as input tokens, combined with a channel-independence strategy where each channel shares the same Transformer weights. This design retains local semantic information, drastically reduces attention-map memory, and allows the model to attend over a much longer historical context.
+## Key ideas
+
+- Cuts each channel's lookback into overlapping patches (length 16, stride 8) that become Transformer tokens, shortening attention and keeping local semantics.
+- Folds channels into the batch axis so all channels share one encoder (channel independence).
+- Flattens all patch tokens and maps them linearly to the horizon; reversible instance normalization (`revin`) wraps the model.
+- Keeps its own encoder rather than the shared `patchtst` backbone because initialization, dropout order, and state-dict keys differ (see Differences).
 
 <!-- model-card:canonical:start -->
 ## Input and output

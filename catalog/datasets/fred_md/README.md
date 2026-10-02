@@ -2,7 +2,7 @@
 name: "fred_md"
 kind: "dataset"
 summary: "FRED-MD monthly US macroeconomic indicators (McCracken and Ng, 2016) in the TFB packaging: 107 series, 728 months from 1959-01 to 2019-08."
-domain: "Economics / macroeconomics"
+domain: "Finance / macroeconomics"
 tags: ["fred-md", "macroeconomic", "fred", "monthly", "economics", "us", "tfb", "multivariate", "short-series", "high-dimensional"]
 source: "Michael W. McCracken and Serena Ng, Federal Reserve Bank of St. Louis; TFB packaging"
 source_url: "https://www.stlouisfed.org/research/economists/mccracken/fred-databases"

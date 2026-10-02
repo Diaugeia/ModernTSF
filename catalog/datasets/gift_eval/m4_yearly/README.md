@@ -2,7 +2,7 @@
 name: "gift_eval/m4_yearly"
 kind: "dataset"
 summary: "GIFT-Eval M4 Yearly at yearly frequency: 22,974 series of Econ/Fin data, mean length 37 steps; short-term horizon 6."
-domain: "Econ/Fin"
+domain: "Finance / economics"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "econ-fin", "yearly", "m4", "competition", "monash"]
 source: "M4 Competition (Makridakis et al., 2018), via Monash"
 source_url: "https://forecastingdata.org/"
