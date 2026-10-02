@@ -27,8 +27,7 @@ Cost `O(G^2 N d)` instead of `O(G^2 N^2 d)` for full cross-patch attention.
 
 ## Origin and granularity
 
-Added with Sensorformer in the automated model intake (`6b491e13`), whose paper
-describes the Sensor Attention Block; the only consumer is `sensorformer`,
+Added with Sensorformer, whose paper describes the Sensor Attention Block; the only consumer is `sensorformer`,
 which stacks `layers` copies. The cut is the block alone: the module docstring
 frames it as a paper-neutral "compress tokens, then attend through the
 compressed set" primitive. Patching, embedding and the flatten forecast head
@@ -39,7 +38,7 @@ inherited from the model description and is hard-coded here.
 
 `GlobalPatchCompressionAttention(d_model, n_heads, d_ff, dropout=0.0)`:
 `d_model`, `n_heads`, `d_ff` positive ints, `d_model % n_heads == 0` (else
-`ValueError`); `dropout` in `[0, 1)` applied in both `nn.MultiheadAttention`
+`ValueError`); `dropout` in `[0, 1]` (range enforced by torch, not here) applied in both `nn.MultiheadAttention`
 and both MLPs (`Linear-GELU-Dropout-Linear`).
 
 `forward(patches)`: float `[B, G, N, d_model]`; raises `ValueError` if
@@ -52,13 +51,21 @@ is the last patch, patch order within a group matters; `N >= 1` is required.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/global_patch_compression_attention.pt`.
+- `test_global_patch_compression_attention` and
+  `test_global_patch_compression_last_patch_is_query` in
+  `tests/test_component_contracts_attention.py`: state-dict key prefixes, output
+  shape and dtype, per-token zero mean after the final LayerNorm, finite input
+  gradient and parameter gradients, `ValueError` for 3-D input and for
+  `d_model` not divisible by `n_heads`, and that perturbing a non-last patch changes the
+  output.
+  Reference values: `tests/fixtures/components/global_patch_compression_attention.pt`.
 - `tests/test_frequency_wavelet_attention_forecasters.py`
   (`test_global_patch_compression_attention_shapes_and_last_patch_query`):
   output shape equals input shape and perturbing non-last patches changes the
   output (information flows through the shared summaries).
-- no fixture: no numeric fixture against the official Sensorformer code; the
-  model `sensorformer` is also exercised by the runtime tests in the same file.
+- No fixture against the official Sensorformer code exists, so equivalence with the
+  paper's block is by structure only; `sensorformer` is also exercised by the
+  runtime tests in the same file.
 
 ## Variants and options
 
@@ -77,7 +84,8 @@ last patch is not a sensible summary query.
 
 `patchtst` and `tst_transformer` (channel-independent encoders without
 cross-variable mixing), `topk_expert_attention` (routed alternative),
-`flatten_forecast_head` (the head `sensorformer` pairs with this block).
+`flatten_forecast_head` (the head `sensorformer` pairs with this block),
+`self_attention_family` (`FullAttention`: the quadratic full attention over all patches that this block replaces; it also offers other efficient variants that do not use a compression bottleneck).
 
 <!-- component-card:generated:start -->
 ## Public API

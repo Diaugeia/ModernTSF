@@ -8,7 +8,7 @@ input: "Encoder/EncoderLayer: x [batch, len, d_model]; Decoder/DecoderLayer: x [
 output: "Encoder: ([batch, len', d_model], list of attention maps); EncoderLayer: ([batch, len, d_model], attn); DecoderLayer: [batch, len_dec, d_model]; Decoder: [batch, len_dec, d_model] or projection output; ConvLayer: [batch, ~len/2, d_model]"
 origin: "Transformer (Vaswani et al., NeurIPS 2017) encoder/decoder layout with Informer (Zhou et al., AAAI 2021) distilling ConvLayer, in the Time-Series-Library layer API; upstream copy not recorded in history"
 origin_models: ["informer", "transformer"]
-tags: ["attention", "decoder", "encoder", "transformer", "post-norm", "distilling", "stateless"]
+tags: ["attention", "decoder", "encoder", "transformer", "post-norm", "distilling", "stateless", "encoder-decoder", "conv-ffn", "informer", "injected-attention", "vanilla-transformer"]
 ---
 
 # transformer_encdec
@@ -35,8 +35,8 @@ with distilling (`informer`).
 Present from the initial commit (`0b1fbf2e`) and moved with the other shared
 components (`33ea2050`, `02140040`). It was cut separately from the attention
 cores (`self_attention_family`) so models choose the attention per role while
-sharing the residual/norm/FFN skeleton. `informer`, `transformer` and
-`dualformer` (only `EncoderLayer`) consume it. Model-local: embeddings, mask
+sharing the residual/norm/FFN skeleton. `informer` and `transformer` use the full set; `dualformer` uses only
+`EncoderLayer`, and `gpht` uses `Encoder` and `EncoderLayer` (no decoder, no distilling). Model-local: embeddings, mask
 construction, the generative decoder input, the output projection choice.
 
 ## Interface
@@ -46,20 +46,28 @@ construction, the generative decoder input, the output projection choice.
   Uses `BatchNorm1d`, so it has running statistics buffers.
 - `EncoderLayer(attention, d_model, d_ff=None, dropout=0.1, activation="relu")`:
   `activation == "relu"` selects ReLU, any other string selects GELU (no
-  validation). `forward(x, attn_mask=None, tau=None, delta=None) -> (x, attn)`.
-  State-dict keys: `attention.*`, `conv1`, `conv2`, `norm1`, `norm2`.
+  validation). `forward(x, attn_mask=None, tau=None, delta=None) -> (x, attn)`; `attn` is the
+  attention module's second return value. State-dict keys: `attention.*`,
+  `conv1.*`, `conv2.*`, `norm1.*`, `norm2.*`. `dropout` in [0, 1) is not validated.
 - `Encoder(attn_layers, conv_layers=None, norm_layer=None)`:
   `forward(x, attn_mask=None, tau=None, delta=None) -> (x, attns)`. With
   `conv_layers` the loop zips them with `attn_layers`, so `n-1` conv layers
   pair with the first `n-1` layers; the last attention layer is then called once
-  more *without* `attn_mask`. `delta` is only given to the first layer.
-  `attns` has one entry per attention layer.
+  more *without* `attn_mask`. In that
+  distilling path `delta` is only given to the first layer; without `conv_layers`
+  it is passed to every layer. `attns` has one entry per attention layer and holds
+  whatever the attention returns (`None` unless it outputs weights). `conv_layers`
+  must have exactly `len(attn_layers) - 1` entries: more would skip trailing
+  attention layers, fewer would run the last one twice (no validation).
+  State-dict keys: `attn_layers.{i}.*`, `conv_layers.{i}.*`, `norm.*`.
 - `DecoderLayer(self_attention, cross_attention, d_model, d_ff=None, dropout=0.1,
   activation="relu")`: `forward(x, cross, x_mask=None, cross_mask=None, tau=None,
-  delta=None) -> x`. `tau` reaches both attentions, `delta` only the cross
+  delta=None) -> x`. State-dict keys: `self_attention.*`, `cross_attention.*`,
+  `conv1.*`, `conv2.*`, `norm1.*`, `norm2.*`, `norm3.*`. `tau` reaches both attentions, `delta` only the cross
   attention; attention maps are discarded.
 - `Decoder(layers, norm_layer=None, projection=None)`: same forward signature;
-  applies the final norm then the projection.
+  applies the final norm then the projection. State-dict keys: `layers.{i}.*`,
+  `norm.*`, `projection.*` (the last two only when supplied).
 
 Attention modules must follow `attn(q, k, v, attn_mask=, tau=, delta=) ->
 (out, attn)` over `[B, L, d_model]` (use `AttentionLayer`). Axis and dtype
@@ -68,13 +76,26 @@ No errors are raised here.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/transformer_encdec_decoder.pt`, `tests/fixtures/components/transformer_encdec_encoder.pt`.
-- `tests/test_local_attention_forecasters.py` asserts the `transformer` and
-  `informer` models assemble these layers with the expected attention cores,
-  `len(encoder.conv_layers) == e_layers - 1` for Informer distilling, and that
-  both models return only the forecast horizon.
-- `tests/test_dualformer_forecaster.py` constructs `EncoderLayer` inside `dualformer`.
-- no pre-refactor fixture exists; `ConvLayer`, `Decoder`, and `DecoderLayer` are covered by the contract test.
+- `tests/test_component_contracts_attention.py`: `test_conv_layer` checks the
+  state-dict keys (including `norm.running_mean`), the output length
+  `(L + 1) // 2 + 1` for `L` in {8, 11}, and finite gradients;
+  `test_encoder_layer_and_encoder` checks the `EncoderLayer` key groups, shape, that the
+  output is layer-normalized (post-norm), gradients, a 3-layer `Encoder` with a final
+  norm, a distilling `Encoder` with two `ConvLayer`s (three attention maps, shortened
+  length), the GELU option, and seeded values against
+  `tests/fixtures/components/transformer_encdec_encoder.pt`;
+  `test_decoder_layer_and_decoder` checks the `DecoderLayer` key groups, shape, that
+  later query positions do not change earlier outputs, gradients, `Decoder` with final
+  norm and projection (`[2, 5, 3]`), and seeded values against
+  `tests/fixtures/components/transformer_encdec_decoder.pt`.
+- `tests/test_local_attention_forecasters.py` asserts that `transformer` assembles
+  full-attention layers in the encoder, decoder self and cross roles (causal
+  self-attention only), that `informer` uses ProbSparse attention with
+  `len(encoder.conv_layers) == e_layers - 1` for distilling, and that both return
+  only the forecast horizon.
+- `tests/test_dualformer_forecaster.py` constructs `dualformer`, which uses `EncoderLayer`.
+- No pre-extraction fixture exists, and the `activation` fallback to GELU, the
+  `delta` routing, and the `conv_layers` length requirement are not tested.
 
 ## Variants and options
 
@@ -92,7 +113,11 @@ or decoders that must return attention maps (they are dropped).
 
 ## Related components
 
-`self_attention_family` (attention cores and `AttentionLayer`), `tst_transformer`, `masking`.
+`self_attention_family` (attention cores and `AttentionLayer`; required to supply the
+injected attention), `tst_transformer` (the other Transformer encoder component: a
+batch-first stack of torch `nn.TransformerEncoderLayer` for patch tokens with no
+decoder, no injected attention and no distilling, whereas this one is the injected-attention
+Layer API with conv-FFN and a decoder), `masking` (builds the `attn_mask`/`x_mask` inputs).
 
 <!-- component-card:generated:start -->
 ## Public API

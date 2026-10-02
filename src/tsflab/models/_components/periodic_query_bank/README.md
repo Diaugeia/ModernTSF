@@ -29,8 +29,8 @@ TimePro, Gateformer, CANet), where the retrieved window is transposed to
 (channel aggregation). The docstring says CycleNet's residual cycle uses the
 same table-and-offset idea; `cyclenet` does not import this component, so that
 is a documented similarity, not an equivalence. Model-local in `tqnet`: how the
-start phase is derived from calendar marks (`_start_phase`: weekday, or
-`weekday*24 + hour`, or hour depending on `cycle`), and what the window is used for.
+start phase is derived from the last input stamp (`_start_phase`: weekday, or
+`weekday*24 + hour`, or hour depending on `cycle`, plus one step, modulo `cycle`), and what the window is used for.
 
 ## Interface
 
@@ -49,12 +49,18 @@ start phase is derived from calendar marks (`_start_phase`: weekday, or
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/periodic_query_bank.pt`.
+- `tests/test_component_contracts_basic.py` (`test_periodic_query_bank_contract_and_reference`)
+  checks the single state-dict key `table` `[period, channels]` and zero init, output shape and
+  dtype, every output row against `table[(phase + t) % period]` including a negative phase and
+  `length > period`, gradients reaching `table`, the four `ValueError` cases (2-D phases,
+  `length < 1`, `period < 1`, `channels < 1`), and a seeded regression of output and gradient in
+  `tests/fixtures/components/periodic_query_bank.pt`.
 - `test_periodic_query_bank_gathers_wrapped_phase_windows` in
   `tests/test_2025_query_gate_hyperstate_forecasters.py` checks shape and
   wrap-around rows for `period=4, channels=2`, phases `[3, 0]`, length 3.
-- The `tqnet` forward test in the same file covers it as a consumer.
-- no fixture: no stored pre-refactor tensors exist for this component.
+- `test_tqnet_forward_uses_temporal_query_as_attention_query` in the same file covers
+  it as a consumer. No pre-extraction `tqnet` fixture exists, so state-dict and output
+  equivalence with the pre-refactor model is not tested.
 
 ## Variants and options
 
@@ -73,7 +79,11 @@ bank carries no information until trained.
 
 `dominant_periods` (discovers periods instead of assuming one), `marks`
 (calendar features from which a start phase can be computed),
-`positional_encoding` (fixed rather than learned position tables).
+`positional_encoding` (position tables indexed by token position, not by calendar phase),
+`periodic_alibi_bias` (periodic structure applied as an additive attention bias, no learned
+vectors), `deviation_memory` (a learned bank queried by content with attention, not by index).
+`cyclenet` keeps its own local cycle table and does not use this component (same indexing
+idea, not shared code).
 
 <!-- component-card:generated:start -->
 ## Public API

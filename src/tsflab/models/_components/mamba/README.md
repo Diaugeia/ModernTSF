@@ -2,12 +2,12 @@
 name: "mamba"
 kind: "component"
 module: "tsflab.models._components.mamba"
-summary: "Pure-PyTorch selective state-space (Mamba) mixer with causal depthwise conv and sequential scan, plus RMSNorm and a pre-norm residual wrapper."
+summary: "Kernel-free pure-PyTorch Mamba selective-SSM mixer (optional causal depthwise conv, sequential scan, optional x_dropout, reference dt init), plus RMSNorm and a pre-norm residual block."
 category: "state-space"
 input: "[batch, length, d_model]"
 output: "MambaBlock, MambaResidualBlock and RMSNorm: same shape as input [batch, length, d_model]"
 origin: "Mamba selective state space model, Gu and Dao, 2023 (arXiv 2312.00752); the portable scan follows the MambaSimple port in the Time-Series-Library (thuml)"
-origin_models: ["mambasimple", "s_mamba", "bimamba"]
+origin_models: ["mambasimple", "s_mamba", "bimamba", "mambats"]
 tags: ["mamba", "mixer", "rmsnorm", "ssm", "state-space", "selective-scan", "causal", "kernel-free"]
 ---
 
@@ -19,10 +19,12 @@ tags: ["mamba", "mixer", "rmsnorm", "ssm", "state-space", "selective-scan", "cau
 `x: [B, L, d_model]` it computes:
 
 1. `in_proj` (no bias) to `d_inner` signal `x'` and `d_inner` gate `res`.
-2. A causal depthwise `Conv1d` (kernel `d_conv`, `padding=d_conv-1`, output cropped to `L`)
-   over time on `x'`, then SiLU.
+2. When `use_conv=True` (default), a causal depthwise `Conv1d` (kernel `d_conv`,
+   `padding=d_conv-1`, output cropped to `L`) over time on `x'`, then SiLU;
+   otherwise `x'` goes straight to the scan.
 3. `ssm`: `A = -exp(A_log)` (`[d_inner, d_state]`); `x_proj` yields `delta_raw`
-   (`dt_rank`), `B`, `C` (each `d_state`) per step; `delta = softplus(dt_proj(delta_raw))`;
+   (`dt_rank`), `B`, `C` (each `d_state`) per step, passed through `Dropout(x_dropout)`
+   (identity when `x_dropout=0` or in eval mode); `delta = softplus(dt_proj(delta_raw))`;
    `selective_scan` runs `h_t = exp(delta_t A) * h_{t-1} + delta_t B_t u_t`,
    `y_t = C_t . h_t + D * u_t` with a Python loop over `t`.
 4. `out_proj(y * SiLU(res))`.
@@ -40,14 +42,18 @@ then `33ea2050` colocated it under the components package). The boundary is the
 mixer plus its normalization and residual wrapper. Model-local: tokenization or
 inverted embedding (`s_mamba`), forward/backward fusion, the forget/new-feature
 gate and FFN (`bimamba`'s `MambaPlus`), the horizon projection, and choosing
-`d_inner`, `dt_rank`, `d_conv`, `d_state`. The original extraction rationale is only
-recorded in the commit messages above.
+`d_inner`, `dt_rank`, `d_conv`, `d_state`. The `use_conv`, `x_dropout`, and
+`reference_dt_init` options were added for `mambats`. Direct consumers: `mambasimple`,
+`s_mamba`, `bimamba`, `mambats`, `mou`, `samba` (subclasses `MambaBlock` and overrides
+`forward`), `timemachine`, `penguin` (`RMSNorm` only), and the `composed` slot adapters;
+the generated block is the authoritative list.
 
 ## Interface
 
 `MambaBlock(d_model, d_inner, dt_rank, d_conv, d_state, *, use_conv=True,
 x_dropout=0.0, reference_dt_init=False)`, the five widths are positive ints with no
-defaults; the keyword-only options are described under Variants. `d_inner` is the expanded width (callers use `expand * d_model`),
+defaults and are not validated (invalid values fail inside torch); `x_dropout` must lie in
+`[0, 1)`, else `ValueError`. The keyword-only options are described under Variants. `d_inner` is the expanded width (callers use `expand * d_model`),
 `dt_rank` the low-rank width of the step-size path, `d_conv` the conv kernel,
 `d_state` the state size per channel. Methods: `forward(x)` for `[B, L, d_model]` to
 `[B, L, d_model]`; `ssm(x)` for `[B, L, d_inner]` to `[B, L, d_inner]`;
@@ -71,13 +77,18 @@ static `selective_scan(u, delta, a, b, c, d)` with `u, delta: [B, L, d_inner]`,
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_signal.py` pins the interface: state-dict keys and
+  default `A_log`/`D` init, `[B, L, d_model]` shape and dtype, causality (perturbing
+  steps `>= 4` leaves outputs `< 4` unchanged), gradient flow, `RMSNorm` unit
+  RMS, `selective_scan` against an explicit per-step loop of the recurrence, and a
+  seeded numerical regression against `tests/fixtures/components/mamba.pt`.
+- The same file pins the keyword options: identical state-dict keys with `x_dropout` and
+  `reference_dt_init`, no `conv1d.*` keys and unchanged output shape for `use_conv=False`,
+  `x_dropout=1.0` raising `ValueError`, `softplus(dt_proj.bias)` inside `[1e-4, 0.1]`,
+  `dt_proj.weight` bounded by `dt_rank**-0.5`, and `x_dropout` acting only in training mode.
 - `tests/test_ssm_sequence_forecasters.py` asserts `s_mamba` layers are instances
   of the shared `MambaBlock` and exercises `bimamba`'s `MambaPlus` wrapper around it.
-- Causality (outputs at positions before a perturbation are unchanged) and the
-  `[B, L, d_model]` shape were confirmed with a tiny CPU snippet while writing
-  this card; they are now pinned by the contract test below.
-- `tests/test_component_contracts_signal.py` also pins the keyword options (same keys as the default block apart from `use_conv=False`, the dt-init ranges, and train-only dropout).
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/mamba.pt`.
+- no fixture: there is no comparison against the official `mamba_ssm` kernels.
 
 ## Variants and options
 
@@ -102,8 +113,10 @@ fp16 training is required, or when a scalar-state variant is wanted.
 
 ## Related components
 
-`hyper_state_scan` (scalar-state scan plus grid mixing), `revin` (typical input
-normalization in front of SSM forecasters), `mixer_block`.
+`hyper_state_scan` (also a sequential-scan SSM, but with a scalar state and grid
+mixing rather than a per-channel `d_state` selective scan), `revin` (typical input
+normalization in front of SSM forecasters), `mixer_block` (MLP-style token/channel
+mixing, no recurrence).
 
 <!-- component-card:generated:start -->
 ## Public API

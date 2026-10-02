@@ -8,7 +8,7 @@ input: "[batch, input_dim] (rank-2 only)"
 output: "[batch, output_dim]; leaf_probabilities gives [batch, 2**depth]; binary_routes gives (nodes [2**depth, depth] long, right [2**depth, depth] bool)"
 origin: "origin not recorded in history; generic sigmoid-routed soft decision tree written for the repository tree baselines (decision tree, forest, extra trees, boosting)"
 origin_models: ["decision_tree_ts", "random_forest_ts", "extra_trees_ts", "gradient_boosting_ts", "catboost_ts", "lightgbm_ts", "xgboost_ts"]
-tags: ["decision", "ensemble", "leaf", "oblivious", "routing", "soft", "tree"]
+tags: ["decision", "ensemble", "leaf", "oblivious", "routing", "soft", "tree", "soft-tree", "differentiable-tree", "sigmoid-split", "leaf-interpolation", "gradient-boosting", "catboost", "random-forest"]
 ---
 
 # soft_tree
@@ -43,7 +43,7 @@ must keep at least one feature per node. `fixed_split_weight` `[2^D-1, F]` and
 `fixed_threshold` `[2^D-1]` must be given together; then they are buffers (frozen)
 and only `leaf_value` trains; otherwise `split_weight` (normal, std 1/sqrt(F)) and
 `threshold` (zeros) are parameters. State-dict keys: `split_weight`, `threshold`,
-`leaf_value` (`normal`, std 0.02), buffers `split_mask`, `route_nodes`,
+`leaf_value` (init normal, std 0.02), buffers `split_mask`, `route_nodes`,
 `route_right` (the last two are structural and are saved too; with fixed splits
 `split_weight`/`threshold` are buffers rather than parameters).
 `SoftObliviousTree(input_dim, output_dim, depth=3, temperature=1.0)`: keys
@@ -52,16 +52,26 @@ Both: `leaf_probabilities(x)` and `forward(x)` need `x` of shape `[batch, input_
 (otherwise `ValueError`); leaves are ordered by path bits, most significant bit
 first (leaf 0 is all-left). `binary_routes(depth)` returns heap node indices and
 right-branch flags for every leaf (`ValueError` for `depth < 1`). Mask is applied
-as `split_weight * split_mask` at every forward. No state across calls. Cost grows as `2^D`; keep depth small.
+as `split_weight * split_mask` at every forward. No state across calls. Cost grows as `2^D`; keep depth small. Buffers and parameters are float32, so a float64 input needs `.double()` on the module (otherwise the matmul raises).
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_signal.py`: `test_binary_routes` pins the depth-2
+  node and right-flag tables, dtypes, and the `depth=0` error;
+  `test_soft_tree_probabilities_and_grad` (both classes) checks `[4, 8]` leaf
+  probabilities that are non-negative and sum to 1, `[4, 3]` output, input and
+  parameter gradients, and the `ValueError`s for wrong input rank or width and for
+  invalid dimensions or temperature; `test_soft_tree_default_state_and_reference` checks
+  the exact state-dict keys of both classes, that the oblivious `route_right` equals
+  `binary_routes(2)[1]`, and seeded values against `tests/fixtures/components/soft_tree.pt`;
+  `test_soft_decision_tree_mask_and_fixed_split` checks that masked-out features do not
+  affect the output, the mask and fixed-split `ValueError`s, and that fixed splits leave
+  only `leaf_value` trainable while `split_weight`/`threshold` stay in the state dict.
 - `tests/test_tree_baselines.py`: `test_depth_one_tree_is_exact_sigmoid_leaf_interpolation`
   checks the depth-1 closed form with temperature 2 and that leaf probabilities
   sum to one; `test_oblivious_tree_shares_one_decision_per_depth` checks the
   level-shared tree; `test_named_models_keep_distinct_compositions` and
-  `test_complete_runtime_contract` run all seven consumers.
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/soft_tree.pt`.
+  `test_complete_runtime_contract` run the consumers.
 
 ## Variants and options
 
@@ -80,8 +90,11 @@ flattening, large depth (exponential leaves), or when a faithful tree algorithm
 
 ## Related components
 
-`topk_expert_router` (sparse mixture routing), `sparse_connection_router`, `revin`
-(consumers normalize with it).
+`topk_expert_router` (also routes by learned scores, but picks a sparse top-k set of
+experts per token; `soft_tree` is dense, every leaf gets a nonzero probability, and
+the routes are a fixed binary tree), `sparse_connection_router` (learned sparse
+connectivity over positions, not leaf interpolation), `revin` (all seven consumers
+normalize with it).
 
 <!-- component-card:generated:start -->
 ## Public API

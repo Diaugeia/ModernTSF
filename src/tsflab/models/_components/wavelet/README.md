@@ -8,7 +8,7 @@ input: "x [batch, channels, length]"
 output: "list of subband tensors [approx_L, detail_L, ..., detail_1]; decimated lengths shrink per level, undecimated keep length"
 origin: "Fixed Daubechies filter banks used by clean-room wavelet forecasters: WDformer (arXiv 2509.25231), DPWMixer (arXiv 2512.02070), AWEMixer (arXiv 2511.04722), all 2025 arXiv preprints; the transforms are standard wavelet analysis"
 origin_models: ["wdformer", "dpwmixer", "awemixer"]
-tags: ["dwt", "haar", "multi-resolution", "subband", "undecimated", "wavelet", "a-trous", "daubechies", "stateful"]
+tags: ["dwt", "haar", "multi-resolution", "subband", "undecimated", "wavelet", "a-trous", "daubechies", "decimated", "stateful"]
 ---
 
 # wavelet
@@ -20,7 +20,8 @@ Two channel-independent (grouped, per-channel) wavelet analysis modules over
 
 - `DecimatedWaveletTransform.decompose`: stride-2 filtering per level on the
   running approximation, returning `[approx_L, detail_L, ..., detail_1]`
-  (coarsest first, the `pywt.wavedec` order).
+  (coarsest first, the `pywt.wavedec` order; the boundary handling is not
+  pywt's, so coefficients are not numerically interchangeable with `pywt`).
 - `UndecimatedWaveletTransform`: a-trous stationary transform, dilation `2**i`
   at level `i`, stride 1, so every subband has length `L`; returns the same
   coarsest-first list `[approx_L, detail_L, ..., detail_1]`.
@@ -51,18 +52,21 @@ define wavelet code locally and do not use this component.
 - `wavelet` must be in `available_wavelets()` (else `ValueError`); `level >= 1`
   (else `ValueError`).
 - Buffers `low`, `high`, each `[1, 1, filter_len]`, float32 (they appear in the
-  state dict and follow `.to(device/dtype)`). No parameters.
+  state dict and follow `.to(device/dtype)`); inputs of another dtype need the
+  module cast with `.to(dtype)` first. No parameters. `x` must be 3-D (unpacked as
+  `batch, channels, length`); other ranks raise `ValueError` from unpacking.
 - `decompose(x)`: odd lengths are replicate-padded by one sample per level;
   filters longer than 2 taps additionally use circular padding of
   `filter_len - 2` each side. Haar lengths follow `ceil(L / 2)` per level; longer
-  filters give longer subbands (CPU-confirmed: db4 at `L=32` level 1 gives 19
-  samples, not 16). It records per-level odd-padding flags in `self._trims`.
+  filters give longer subbands (per level `floor((L' + 2*(filter_len - 2) -
+  filter_len) / 2) + 1` with `L'` the even padded length: db4 at `L=16` level 1
+  gives 11 samples, not 8; the test pins `[9, 9, 11]` for level 2). It records per-level odd-padding flags in `self._trims`.
 - `reconstruct(coeffs)`: only for two-tap filters (haar/db1), else
   `NotImplementedError`; `len(coeffs)` must be `level + 1` (else `ValueError`).
   It trims by the flags stored from the most recent `decompose` call, so it is
   stateful: reconstruct a signal only after decomposing one with the same
-  odd/even length pattern on this instance (CPU-confirmed round-trip error
-  about 1e-7 for haar level 2 at `L=10`). Using one instance for different
+  odd/even length pattern on this instance (round trip checked at `L=16` and
+  `L=15`, level 2). Using one instance for different
   lengths in alternation corrupts the trims; use separate instances (as
   `wdformer` does for embed and output).
 
@@ -71,15 +75,24 @@ define wavelet code locally and do not use this component.
 - Same validation and buffers. `forward(x)` returns the list described above, all
   `[B, C, L]`. Circular, left-only padding of `(filter_len - 1) * 2**i`; this is
   causal-style with wraparound, not the symmetric a-trous filter. If the pad
-  exceeds `L` torch raises `RuntimeError` (CPU-confirmed: db4 level 3 at `L=10`),
+  exceeds `L` torch raises `RuntimeError` (pinned for db4 level 3 at `L=16`),
   so require `L >= (filter_len - 1) * 2**(level - 1)`. No inverse is provided.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_wdformer_structure.py`, `tests/test_dpwmixer_structure.py` (a haar
-  decomposition on `[2, 4, 12]`) and `tests/test_awemixer_structure.py` (db2
-  level 2) exercise the transforms through their consumers.
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/wavelet.pt`.
+- `tests/test_component_contracts_signal.py`: `test_wavelet_names_and_errors`
+  (names, `ValueError` cases), `test_decimated_haar_round_trip` (haar level 2 at
+  `L=16` and odd `L=15`, state-dict keys `low`/`high`), `test_decimated_shapes_db4_and_no_reconstruct`
+  (db4 subband shapes `[9, 9, 11]`, `NotImplementedError`, wrong coefficient count),
+  `test_wavelet_filters_orthonormal` (unit norm and orthogonality of haar/db2/db4),
+  `test_undecimated_short_input_raises`, and `test_undecimated_shapes_reference_and_grad`
+  (equal-length subbands, dtype, input gradient, seeded reference values in
+  `tests/fixtures/components/wavelet.pt`).
+- Consumers: `tests/test_wdformer_structure.py`, `tests/test_dpwmixer_structure.py`
+  (a haar level-1 decomposition of `[2, 4, 12]` gives two `[2, 4, 6]` bands) and
+  `tests/test_awemixer_structure.py` (db2 level 2) exercise the transforms through
+  their models; none checks wavelet numerics against `pywt`, and no fixture
+  compares against a reference wavelet package.
 
 ## Variants and options
 
@@ -97,9 +110,14 @@ instance is called on varying lengths before `reconstruct`.
 
 ## Related components
 
-`haar_dwt1d` (stateless one-level Haar), `series_decomposition` (moving-average
-trend/seasonal split), `freq_band_moe` and `frequency_band_sampler`
-(frequency-domain band alternatives).
+- `haar_dwt1d`: stateless one-level Haar pair with an exact inverse for any length;
+  use it for a single level (this module's haar reconstruct is stateful and its
+  odd-length padding is replicate, versus the length argument of the Haar pair).
+- `series_decomposition`: moving-average trend/seasonal split in the time domain.
+- `freq_band_moe`, `frequency_band_sampler`: frequency-domain (rfft) band
+  decompositions; learned or depth-indexed instead of fixed wavelet filters.
+- `fft_extrapolation_conv`, `spectral_descriptor`: other spectral-domain tools; no
+  wavelet subbands.
 
 <!-- component-card:generated:start -->
 ## Public API

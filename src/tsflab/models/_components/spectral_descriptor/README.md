@@ -22,14 +22,16 @@ distributed. Per sample, with each channel's temporal mean removed:
 - `p = (P + eps) / (sum P + K * eps)`;
 - entropy `H = -sum p log(p + eps) / log(max(K, 2))`;
 - band ratios: sums of `p` over bins `[0, K//3]`, `[K//3 + 1, 2K//3]`,
-  `[2K//3 + 1, K - 1]`.
+  `[2K//3 + 1, K - 1]` (all inclusive).
 
-It returns `[H, low, mid, high]`; the three ratios sum to one. Low entropy
+It returns `[H, low, mid, high]`; the three ratios sum to one and `H` lies in
+`[0, 1]` up to `eps`-level rounding. For very short windows the upper bands can be empty and
+contribute zero (`K = 1`: mid and high; `K = 2` or `3`: high). Low entropy
 means energy is concentrated in few frequencies; the band ratios say where.
 
 ## Origin and granularity
 
-Extracted from `core` (CoRe, automated intake test). CoRe feeds the descriptor
+Extracted from `core` (CoRe). CoRe feeds the descriptor
 into a gate that scales its cross-variate correction. The cut is at the
 statistic itself: the gate network, the correction branch, and how the gate is
 applied stay in `core`. The existing `harmonic_energy_gate` and
@@ -56,7 +58,10 @@ entropy plus band ratios.
 - Differences from the official CoRe code are recorded in the `core` card:
   statistics are per sample (official: per batch) and band edges follow the
   paper's inclusive ranges (official: half-open thirds).
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/spectral_descriptor.pt`.
+- `tests/test_component_contracts_signal.py` pins the interface (empty state dict, shape and
+  dtype, entropy range, ratios summing to one, flat-spectrum entropy near 1 for constant
+  input, a low tone landing in the low band and a high tone in the high band, errors and
+  gradient flow) and a seeded numerical regression against `tests/fixtures/components/spectral_descriptor.pt`.
 
 ## Variants and options
 
@@ -73,9 +78,10 @@ physical frequencies.
 
 ## Related components
 
-`harmonic_energy_gate` (per-channel periodicity ratio), `frequency_band_sampler`
-(band index sampling), `dominant_periods` (explicit period discovery),
-`energy_frequency_pooling`.
+`harmonic_energy_gate` (per-channel periodicity ratio from harmonic bins),
+`frequency_band_sampler` (depth-indexed band bin ranges, no statistics),
+`dominant_periods` (explicit top-k period discovery rather than a distribution
+summary), `energy_frequency_pooling` (energy-driven bin selection across tokens).
 
 <!-- component-card:generated:start -->
 ## Public API

@@ -19,7 +19,8 @@ Prepares supports for Chebyshev graph convolution. For adjacency `A`, degree
 `D = rowsum(A)`, the normalized Laplacian is `L = I - D^{-1/2} A D^{-1/2}` (inverse
 root of zero degree set to 0) and the scaled Laplacian is
 `L~ = 2 L / lambda_max - I`, where `lambda_max` is the largest absolute eigenvalue of `L`
-(if `lambda_max < 1e-12`, `L~ = L - I`). The Chebyshev stack is
+(if `lambda_max < 1e-12`, `L~ = L - I`; this is the case for an identity or
+self-loop-only graph, where `L = 0` and `L~ = -I`). The Chebyshev stack is
 `T_0 = I, T_1 = L~, T_k = 2 L~ T_{k-1} - T_{k-2}`.
 
 ## Origin and granularity
@@ -45,7 +46,8 @@ All three are module-level functions (no `__all__`); no parameters or state.
   convertible to float64 `[N, N]`. Raises `ValueError` for non-square input or
   non-finite values. With `undirected=True` the adjacency is symmetrized with
   `max(A, A^T)` and `eigvalsh` is used; with `False`, row degrees of the directed matrix
-  and general `eigvals` are used (complex parts are dropped if not negligible).
+  and general `eigvals` are used (a non-negligible imaginary part is discarded when casting to float32, with a
+  NumPy `ComplexWarning`).
   `N = 0` returns an empty array. Returns float32.
 - `chebyshev_polynomials(matrix, order) -> np.ndarray`: exactly `order` matrices
   `[order, N, N]` in the dtype of `matrix`, starting with identity. Raises
@@ -60,9 +62,13 @@ All three are module-level functions (no `__all__`); no parameters or state.
   (`test_graph_spectral_supports_handle_degenerate_graphs`): identity graph gives a
   finite scaled Laplacian, `chebyshev_polynomials(.., 1)` has shape `(1, 3, 3)`,
   `chebyshev_supports(.., 3)` has shape `(3, 3, 3)` and is finite, `order=0` raises.
-- no fixture: there is no `.pt` fixture; consumer-level behaviour is covered by the
-  models' own contract tests rather than a frozen numerical reference.
-- Contract and numerical regression: `tests/test_component_contracts_graph.py` with reference values in `tests/fixtures/components/graph_spectral.pt`.
+- `tests/test_component_contracts_graph.py` (`test_graph_spectral_contract`): float32 symmetric
+  output for undirected input with spectrum in `[-1, 1]`, directed mode shape/dtype,
+  zero and `0 x 0` adjacency, `ValueError` for non-square and NaN input, the
+  recurrence `T_2 = 2 L~^2 - I`, `T_3 = 2 L~ T_2 - T_1`, `order=1` and `order=0` behaviour,
+  and a seeded numerical regression against `tests/fixtures/components/graph_spectral.pt`.
+- No pre-extraction fixture from the consumer models; their own contract tests cover
+  consumer-level behaviour.
 
 ## Variants and options
 
@@ -80,7 +86,9 @@ or for large `N` where a dense `[order, N, N]` stack is too big.
 
 ## Related components
 
-`graph_utils` (list-based support API, `scalap` mode wraps this), `diffusion_conv`
+`graph_utils` (list-based support API, `scalap` mode wraps this), `adj_norm` (cheaper
+fixed-`lambda_max` rescaling `lambda_rescaled_laplacian`, non-symmetrizing and not
+rejecting non-finite input; use this component when the true `lambda_max` matters), `diffusion_conv`
 (applies supports as repeated powers), `adaptive_node_embedding_adjacency` (learned
 adjacency to feed in).
 

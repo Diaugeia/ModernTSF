@@ -18,7 +18,7 @@ tags: ["graph", "grouping", "masking", "node", "sampling", "subgraph", "visibili
 Reduces the cost of all-pairs attention over `L` nodes (or any tokens) during
 training. The five functions compose into a pipeline on `[B, L, D]` tokens:
 
-1. `random_mask_tokens`: keep `max(1, int(L * (1 - mask_ratio)))` random positions
+1. `random_mask_tokens`: keep `max(1, int(L * (1 - mask_ratio)))` random positions (truncated, so floating-point rounding can drop one extra token)
    (sorted, shared across the batch).
 2. `shuffle_tokens`: independent random permutation per sample.
 3. `group_into_subgraphs`: right zero-pad to a multiple of `subgraph_size` and fold
@@ -28,8 +28,7 @@ training. The five functions compose into a pipeline on `[B, L, D]` tokens:
 
 ## Origin and granularity
 
-Added in commit `6663e2e0` (automated intake of VisiFold, Extralonger, ST-SSDL,
-RAGC) as a new shared component extracted from the `visifold` port; there was no
+Added with the `visifold` port as a new shared component; there was no
 earlier duplicated code to consolidate. The functions are generic over what `L` indexes
 (the docstring says nodes, patches, or any tokens), but `visifold` is the only consumer.
 Kept model-local in `visifold`: the token construction, the `self.training` gating (the
@@ -60,14 +59,21 @@ sampling uses the global torch RNG unless a `generator` is passed.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/node_visibility.pt`.
+- `test_node_visibility_contract` in `tests/test_component_contracts_graph.py` checks:
+  `kept == x[:, keep_indices]` with sorted, unique indices and the expected length;
+  `mask_ratio=0` returns `x` itself with `arange(L)`; `mask_ratio=0.99` keeps one token;
+  `mask_ratio` of `-0.1` or `1.0` raises `ValueError`; equal seeded generators give
+  equal indices; `perm` is a per-row permutation and `unshuffle_tokens(shuffle_tokens(x))`
+  returns `x`; grouping gives `[B * num_groups, subgraph_size, D]` with zero padding and
+  `ungroup_subgraphs` restores `x`; `subgraph_size >= L` passes `x` through; `subgraph_size=0`
+  raises `ValueError`; gradients through the full pipeline equal ones. Reference
+  values: `tests/fixtures/components/node_visibility.pt`.
 - `tests/test_local_graph_forecasters.py`
   (`test_visifold_node_visibility_masks_and_regroups_during_training`) runs `visifold` in
   training mode through the full pipeline and checks output shape `(2, 3, 4)` and
-  finiteness; the same file asserts `subgraph_size` wiring.
-- no fixture: there is no `.pt` fixture and no dedicated round-trip test of
-  `shuffle/unshuffle` or `group/ungroup`; round-trip behaviour follows from the
-  code (`argsort` inverse; reshape/slice) and is only exercised through `visifold`.
+  finiteness.
+- The fixture is seeded from the extracted functions; there was no earlier
+  implementation to compare against.
 
 ## Variants and options
 
@@ -89,7 +95,10 @@ padding tokens must not take part in attention.
 ## Related components
 
 `graph_masked_attention` (dense/local node attention that benefits from smaller sets),
-`self_attention_family`, `sparse_connection_router` (alternative learned sparsification).
+`self_attention_family` (the attention that runs on the grouped tokens),
+`sparse_connection_router` (a learned, input-independent sparsification of node
+interactions; this module is random, training-time subsampling and partitioning of
+the token set instead).
 
 <!-- component-card:generated:start -->
 ## Public API

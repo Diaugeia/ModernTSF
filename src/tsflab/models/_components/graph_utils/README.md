@@ -8,7 +8,7 @@ input: "adj_mx [nodes, nodes] array; adj_type string; matrix [nodes, nodes] with
 output: "list of [nodes, nodes] supports (numpy/COO/torch float32); cheb_poly returns [order, nodes, nodes]"
 origin: "Support-list helpers common to DCRNN/Graph WaveNet-style traffic code (normalized adjacency, random-walk transition matrices); first appeared as a vendored external helper in the CauAir model port, source not recorded"
 origin_models: ["gwnet", "dcrnn", "dfdgcn", "d2stgnn"]
-tags: ["adjacency", "chebyshev", "graph", "laplacian", "support", "transition", "random-walk"]
+tags: ["adjacency", "chebyshev", "graph", "laplacian", "support", "transition", "random-walk", "normalization", "support-list", "doubletransition"]
 ---
 
 # graph_utils
@@ -18,10 +18,10 @@ tags: ["adjacency", "chebyshev", "graph", "laplacian", "support", "transition", 
 Turns one adjacency matrix into the list of dense supports a graph forecaster
 consumes. `normalize_adj_mx(adj, adj_type)` returns, per mode:
 
-- `normlap`: `I - D^{-1/2} A D^{-1/2}`;
-- `scalap`: scaled Laplacian `2L/lambda_max - I` (from `graph_spectral`);
-- `symadj`: `I - normlap = D^{-1/2} A D^{-1/2}`;
-- `transition`: random walk `D^{-1} A`;
+- `normlap`: `I - D^{-1/2} A D^{-1/2}`, degrees from the row sums of `A`, `A` not symmetrized, zero-degree rows give zeros in `D^{-1/2}`;
+- `scalap`: scaled Laplacian `2L/lambda_max - I` from `graph_spectral.scaled_laplacian`, which first symmetrizes `A` as `max(A, A^T)` and uses the true largest `|eigenvalue|` of `L` (`L - I` if that is below 1e-12); unlike `normlap` it is therefore not the plain row-sum Laplacian of a directed `A`;
+- `symadj`: `I - normlap = D^{-1/2} A D^{-1/2}` (same row-sum, unsymmetrized convention as `normlap`);
+- `transition`: random walk `D^{-1} A` (zero-degree rows stay zero);
 - `doubletransition`: `[D^{-1} A, D_r^{-1} A^T]` (forward and reverse walks, two supports);
 - `identity`: `I`;
 - `origin`: `A` with diagonal set to 1.
@@ -38,11 +38,12 @@ spectral helpers"; the original external source is not recorded in history. The 
 the list-of-supports interface (mode names follow the DCRNN/Graph WaveNet convention).
 The actual matrix math lives in `adj_norm` and `graph_spectral`; what stays model-local is
 how supports are used (stacking, adaptive supports, graph convolution layers).
-Current consumers: `gwnet`, `dcrnn`, `dfdgcn`, `d2stgnn`, `st_ssdl`.
+Current consumers: `gwnet`, `dcrnn`, `dfdgcn`, `d2stgnn`, `st_ssdl`, `stdmae`.
 
 ## Interface
 
-Module-level functions (no `__all__`, no state):
+Module-level functions (no `__all__`, so the catalog lists no public symbols; no state). All
+inputs are cast to float64 numpy internally; outputs are float32.
 
 - `normalize_adj_mx(adj_mx, adj_type, return_type="dense") -> list`: `adj_mx` must be a
   finite square array (`ValueError` otherwise). `adj_type` in the modes above;
@@ -59,7 +60,13 @@ Module-level functions (no `__all__`, no state):
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/graph_utils.pt`.
+- `tests/test_component_contracts_graph.py` (`test_graph_utils_normalize_modes`,
+  `test_graph_utils_values_and_errors`) checks, for all seven modes, the support count,
+  `[N, N]` float32 finite shape, COO equal to dense, and `adj_to_supports` dtype;
+  `symadj == I - normlap`, `origin` has unit diagonal, the reverse walk equals
+  `transition_matrix(A.T)`, `cheb_poly` equals `chebyshev_polynomials`, the four
+  `ValueError` cases (unknown mode, unknown `return_type`, non-square, non-finite), and a
+  regression of `fwd`, `rev`, `scalap` against `tests/fixtures/components/graph_utils.pt`.
 - `tests/test_repository_contracts.py`
   (`test_shared_adjacency_normalizers_are_finite`): `adj_to_supports` returns float32
   and equals `transition_matrix(A)` and `transition_matrix(A.T)` on a graph with an
@@ -68,7 +75,6 @@ Module-level functions (no `__all__`, no state):
 - `tests/test_component_extraction_graph.py` runs `adj_to_supports` inside frozen
   reference models of `gwnet`, `dfdgcn`, `d2stgnn` and compares outputs and gradients
   against the extracted models.
-- no fixture: there is no `.pt` fixture for this component.
 
 ## Variants and options
 
@@ -87,8 +93,10 @@ normalized supports. Do not use for learned/adaptive graphs (see
 
 ## Related components
 
-`graph_spectral`, `adj_norm` (underlying normalizers), `diffusion_conv` (consumes
-`doubletransition` supports), `adaptive_node_embedding_adjacency`.
+`graph_spectral` (the Laplacian scaling and Chebyshev math this module wraps; use it
+directly for tensor Chebyshev stacks, as `stgcn` does), `adj_norm` (the row-sum normalizers
+behind the other modes), `diffusion_conv` (consumes `doubletransition` supports),
+`adaptive_node_embedding_adjacency` (learned instead of precomputed adjacency).
 
 <!-- component-card:generated:start -->
 ## Public API

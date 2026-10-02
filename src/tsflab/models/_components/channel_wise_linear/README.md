@@ -28,14 +28,15 @@ caller.
 ## Origin and granularity
 
 The shared-vs-individual `nn.Linear` pattern is the LTSF-Linear family's
-temporal projection. It was extracted in commit `4fac489c` ("make model cards
-canonical"), which replaced the repeated local `linear_layer` blocks in
-`nlinear` and `dlinear` (and then the other consumers) with this module. The
-cut is exactly the projection layer: normalization (`revin`, `last_value_center`),
-decomposition (`series_decomposition`), layout permutes, and any residual or
-mixing stay in the model. Consumers: `linear`, `nlinear`, `rlinear`, `dlinear`
-(via `dlinear` component), `tsmixer`, `mtsmixer`, `rpmixer`, `distdf`, `cosa`,
-`cyclenet`.
+temporal projection. It was extracted from the repeated local linear-layer
+blocks of the LTSF-Linear models (commit `4fac489c`, "make model cards
+canonical"). The cut is exactly the projection layer: normalization (`revin`,
+`last_value_center`), decomposition (`series_decomposition`), layout permutes,
+and any residual or mixing stay in the model. Direct consumers: `linear`,
+`nlinear`, `rlinear`, `mtlinear`, `tsmixer`, `mtsmixer`, `rpmixer`, `distdf`,
+`cosa`, `cyclenet`, `samformer`, `core`, plus the `composed` slot adapters;
+`dlinear` uses it through the `dlinear` component. The generated block below
+is the authoritative consumer list.
 
 ## Interface
 
@@ -69,8 +70,6 @@ mixing stay in the model. Consumers: `linear`, `nlinear`, `rlinear`, `dlinear`
   `tsmixer` (`projection.linear.*`) are pinned.
 - no fixture: no pre-refactor tensor fixture for the LTSF-Linear models; their
   equations are checked by `tests/test_compact_local_implementations.py`.
-  Note that state-dict keys changed relative to the old local `linear_layer`
-  names, so very old checkpoints do not load.
 
 ## Variants and options
 
@@ -91,7 +90,13 @@ channels), or when the input is `[B, L, C]` without the caller transposing.
 
 `dlinear` (two projections over a decomposition), `series_decomposition`,
 `last_value_center`, `revin`, `flatten_forecast_head` (flatten-then-linear
-head over patches).
+head over patches; use it when the input is patch tokens rather than a raw
+`[B, C, L]` series), `mixer_block` (adds nonlinearity and channel mixing
+around such projections), `weight_set_router` (interpolates between the shared and
+individual modes by mixing a few weight sets per channel).
+- `channel_alignment`: width adapter between channel counts, versus a per-channel temporal projection.
+- `patchtst`: channel-independent backbone alternative.
+- `fft_extrapolation_conv`: parameter-efficient frequency-domain history-to-horizon alternative.
 
 <!-- component-card:generated:start -->
 ## Public API

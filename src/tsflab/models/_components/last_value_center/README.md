@@ -30,7 +30,10 @@ The scheme is NLinear's last-value subtraction. The helper pair was added in
 commit `b1518394` ("last_value_center; migrate TimeMixer to
 series_decomposition"); the commit message names the consumers NLinear,
 SegRNN and CrossGNN (its anti-OOD branch), and states that CATS, HL and
-PatchTST keep their own variants with documented divergences. It is cut at the
+PatchTST keep their own variants with documented divergences. Later consumers:
+`mtlinear` (its `NLinear` layer type) and `composed` (the `last_value_center`
+normalization slot, via the `LastValueNorm` adapter in `models/_slots/adapters.py`),
+which are not in `origin_models` because they were not extracted from. It is cut at the
 arithmetic only: where the call goes, the head, padding, and the choice to
 bypass (CrossGNN passes `0.0` instead when `anti_ood=False`) stay local. The
 state is explicit: the caller keeps `level`, so the pair is stateless,
@@ -54,12 +57,17 @@ unlike `revin`.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/last_value_center.pt`.
+- `test_last_value_center_contract_and_reference` in
+  `tests/test_component_contracts_basic.py` checks shapes, that `level` does not
+  require grad, that the last centered step is zero, that restoring the centered
+  tensor recovers `x`, that a float `0.0` level is accepted, and that the input
+  gradient is exactly ones (no path through the level); reference values are in
+  `tests/fixtures/components/last_value_center.pt`.
 - `tests/fixtures/component_extraction_batch7.pt` holds pre-refactor outputs,
   state dicts, and input gradients for `nlinear`, `segrnn`, and `crossgnn` (with
   `anti_ood` true and false); `tests/test_component_extraction_batch7.py`
-  requires identical state-dict keys and values, outputs, and gradients
-  (atol 1e-6).
+  requires identical state-dict keys and values, plus outputs and input gradients
+  within `atol=1e-6`.
 - `test_nlinear_restores_the_last_observation` in
   `tests/test_compact_local_implementations.py` shows a zero head returns the
   last observation repeated over the horizon.
@@ -68,8 +76,9 @@ unlike `revin`.
 
 None. For mean/std normalization with reversible statistics use `revin`
 (`subtract_last=True` gives a stateful last-value-centred variant that still
-divides by the standard deviation). Not extracted: CATS, HL and PatchTST local
-variants (documented in the extraction commit, not detailed in the repository).
+divides by the standard deviation). Not extracted: CATS keeps its own non-detached
+variant (see the `cats` card), HL has no head between subtract and restore (see the
+`hl` card), and PatchTST uses `revin(subtract_last=True)`.
 
 ## When to use and when not to use
 
@@ -80,8 +89,12 @@ gradient through the level is required.
 
 ## Related components
 
-`revin` (stateful mean/std alternative), `channel_wise_linear` (NLinear head),
-`series_decomposition`, `adain_style_norm`.
+- `revin`: stateful mean/std alternative, optionally last-value-centred; also
+  normalizes scale.
+- `channel_wise_linear`: the NLinear head typically placed between centre and restore.
+- `series_decomposition`: removes a smoothed trend, not just the last level.
+- `adain_style_norm`: rescales to externally supplied statistics rather than the last step.
+- `dlinear`: the NLinear/DLinear alternative that uses this centering.
 
 <!-- component-card:generated:start -->
 ## Public API

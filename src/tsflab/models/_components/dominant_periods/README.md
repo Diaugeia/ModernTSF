@@ -56,15 +56,19 @@ outputs (softmax over the amplitudes in both consumers).
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/dominant_periods.pt`.
+- `test_dominant_periods_contract_and_reference` in
+  `tests/test_component_contracts_basic.py` checks shapes, integer dtype, the
+  recovered periods `[6, 12]` of a two-sine input (strongest first), gradient to
+  `x`, `k` out of range (0 and 13 for `T=24`) and non-3-D input errors; reference
+  values are stored in `tests/fixtures/components/dominant_periods.pt`.
 - `test_dominant_periods_matches_timesnet_msgnet_reference` in
   `tests/test_repository_contracts.py` checks periods, amplitudes, and the
   gradient of the amplitudes against an inline reference implementation.
 - `test_timesnet_period_discovery_equation` in
   `tests/test_transformer_patch_forecasters_a.py` checks that a sine of period 4
   over length 16 yields period `[4]` and amplitudes of shape `[1, 1]`.
-- no fixture: there is no stored pre-refactor tensor fixture; the inline
-  reference above is the equivalence evidence.
+- no pre-refactor model fixture: no stored before/after outputs of `timesnet` or
+  `msgnet`; the inline reference above is the equivalence evidence.
 
 ## Variants and options
 
@@ -82,9 +86,15 @@ array), or when a frequency-domain gate is needed instead of integer periods
 
 ## Related components
 
-`harmonic_energy_gate` (periodicity measured as spectral energy ratio),
-`frequency_band_sampler`, `periodic_query_bank` (a fixed known period instead
-of a discovered one).
+- `harmonic_energy_gate`: periodicity as a spectral energy ratio (a soft weight,
+  not integer periods).
+- `frequency_band_sampler`: selects contiguous FFT bands by depth; does not turn
+  frequencies into periods.
+- `periodic_query_bank`: gathers a learnable table for a fixed known period instead
+  of a discovered one.
+- `spectral_descriptor`: per-window spectral summary (entropy, band-energy ratios)
+  from the same kind of channel-averaged spectrum, with no period output.
+- `periodic_alibi_bias`: its periods can parameterize the bias slopes.
 
 <!-- component-card:generated:start -->
 ## Public API

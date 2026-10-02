@@ -2,13 +2,13 @@
 name: "haar_dwt1d"
 kind: "component"
 module: "tsflab.models._components.haar_dwt1d"
-summary: "Single-level orthonormal Haar DWT along the last axis returning (approx, detail) of length ceil(T/2), with an exact inverse that truncates odd-length padding."
+summary: "Stateless single-level orthonormal Haar DWT along the last axis returning (approx, detail) of length ceil(T/2), with an exact inverse that can truncate odd-length padding."
 category: "decomposition"
-input: "x [..., T] (T >= 2); inverse: approx [..., M], detail [..., M]"
+input: "x [..., T] (T >= 2); inverse: approx [..., M], detail [..., M] (same shape), optional length"
 output: "forward: (approx, detail) each [..., ceil(T/2)]; inverse: [..., 2M] or [..., length]"
 origin: "Haar wavelet sub-series mapping of SWIFT, Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting (arXiv 2501.16178, 2025)"
 origin_models: ["swift"]
-tags: ["dwt", "haar", "sub-series", "wavelet", "lossless", "orthonormal", "odd-length-padding"]
+tags: ["dwt", "haar", "sub-series", "wavelet", "lossless", "orthonormal", "odd-length-padding", "stateless", "decimated"]
 ---
 
 # haar_dwt1d
@@ -24,10 +24,10 @@ sample, and the inverse can truncate back with `length`.
 
 ## Origin and granularity
 
-Extracted from `swift` (commit `6b491e13`, automated intake), where the
-forward transform splits the (reversible-normalized) window into sub-series, a
-small convolution fuses them, per-sub-series linear maps predict the output
-sub-series, and the inverse reconstructs the horizon. Only the Haar pair is
+Extracted from `swift` (introduced in the automated intake commit `6b491e13`),
+where the forward transform splits the (reversible-normalized) window into
+sub-series, a small convolution fuses them, per-sub-series linear maps predict the
+output sub-series, and the inverse reconstructs the horizon. Only the Haar pair is
 here; the fusion convolution, the linear maps, and the `_half_length`
 bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
 
@@ -38,11 +38,13 @@ bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
 - `HaarDWT1D.forward(x) -> (approx, detail)`: `x` floating, any leading shape,
   last axis `T >= 2` (else `ValueError`). Both outputs have last length
   `ceil(T / 2)`; leading axes, dtype, and device are preserved.
-- `HaarIDWT1D.forward(approx, detail, length=None) -> Tensor`: shapes must match
-  (else `ValueError`); output last length `2 * approx.shape[-1]`, then truncated
-  to `length` when given (pass the original `T` for odd inputs).
-- No parameters, buffers, or state; no stored padding record, so the caller must
-  remember the original length.
+- `HaarIDWT1D.forward(approx, detail, length=None) -> Tensor`: shapes must be
+  identical (else `ValueError`, no broadcasting); output last length
+  `2 * approx.shape[-1]`, then sliced to `[:length]` when given (pass the
+  original `T` for odd inputs; a `length` larger than the output is not
+  rejected and returns the full reconstruction).
+- No parameters, buffers, or state-dict keys; no stored padding record, so the
+  caller must remember the original length.
 
 ## Invariants and equivalence evidence
 
@@ -51,14 +53,22 @@ bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
   for lengths 8 and 9 on `[2, 3, T]` tensors.
 - `test_haar_dwt_matches_closed_form_on_a_known_pair` in the same file checks
   `[2, 4, 6, 8]` against the closed form.
-- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/haar_dwt1d.pt`.
+- `tests/test_component_contracts_signal.py` (`test_haar_round_trip_and_shapes`,
+  `test_haar_energy_preserved_reference_and_grad`, `test_haar_errors`) checks
+  shapes for lengths 8 and 9, round trip, energy preservation (even length),
+  gradient flow, empty state dicts, and the two `ValueError` cases (`T = 1`,
+  mismatched shapes); a seeded regression, including an odd-length input, is
+  pinned by `tests/fixtures/components/haar_dwt1d.pt`.
 
 ## Variants and options
 
 None. Single level, Haar only, last axis only, no boundary modes. For
-multi-level, db2/db4, or undecimated transforms see `wavelet`, whose
-`DecimatedWaveletTransform("haar")` is a stateful alternative that keeps the
-trim record internally.
+multi-level, db2/db4, or undecimated transforms see `wavelet`. Its
+`DecimatedWaveletTransform("haar")` uses the same filters and the same
+last-sample replication for odd lengths, so a single level should agree with
+this pair numerically (by inspection of the code; no test compares them), but it
+returns a list `[approx, detail]`, is a stateful module that remembers the
+padding for `reconstruct`, and does not need a `length` argument.
 
 ## When to use and when not to use
 
@@ -69,8 +79,9 @@ with the time axis (the outputs are decimated by 2).
 
 ## Related components
 
-`wavelet` (multi-level, db2/db4, a-trous), `series_decomposition` (moving-average
-trend/seasonal split), `revin` (applied before the DWT in `swift`).
+`wavelet` (multi-level, db2/db4, a-trous; overlaps at level 1 as described
+above), `series_decomposition` (moving-average trend/seasonal split, not
+decimated), `revin` (applied before the DWT in `swift`).
 
 <!-- component-card:generated:start -->
 ## Public API

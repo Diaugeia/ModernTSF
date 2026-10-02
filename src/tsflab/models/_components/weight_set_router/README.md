@@ -6,9 +6,9 @@ summary: "Low-rank weight sharing: softmax-with-temperature routing matrix over 
 category: "routing"
 input: "WeightSetRouter: temperature float; mix_weight_sets: weights [num_sets, *shape], routing [num_sets, channels]"
 output: "WeightSetRouter: [num_sets, channels] convex columns; mix_weight_sets: [channels, *shape]"
-origin: "Low-rank Weight Sharing of DiPE-Linear (Zhao et al., arXiv 2411.17257, Eqs. 7-8), inspired by mixture-of-experts and dynamic convolution"
+origin: "Low-rank weight sharing of DiPE-Linear (Zhao et al., arXiv 2411.17257, 2024), inspired by mixture-of-experts and dynamic convolution"
 origin_models: ["dipelinear"]
-tags: ["low-rank", "routing", "softmax", "temperature", "weight-sharing", "channel-wise", "stateless"]
+tags: ["low-rank", "routing", "softmax", "temperature", "weight-sharing", "channel-wise", "stateless", "mixture-of-weights", "convex-combination"]
 ---
 
 # weight_set_router
@@ -38,17 +38,26 @@ caller decides `tau`.
 `temperature > 0` and returns `[num_sets, channels]` whose columns sum to 1.
 
 `mix_weight_sets(weights, routing)`: `weights` is `[num_sets, ...]`, `routing`
-is `[num_sets, channels]`; mismatched sets raise `ValueError`. Returns
-`[channels, ...]` and is differentiable in both arguments.
+is `[num_sets, channels]`; a non-2-D `routing` or mismatched set count raises
+`ValueError`. Returns `[channels, ...]` (dtype by promotion of the two inputs) and is
+differentiable in both arguments. Routing need not be softmax-normalized; any
+`[num_sets, channels]` matrix is accepted.
+
+Both symbols are module-level (`__all__` lists them). `logits` is float32 on the
+module's device; the module is stateless apart from this parameter. Input-independent:
+the routing does not depend on any data tensor.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_dipelinear.py` (WeightSetRouterTests) checks convexity, the
-  high-temperature uniform limit, equality of `mix_weight_sets` with the explicit
-  weighted sum and its gradient; reference values in
+- `tests/test_dipelinear.py` (`WeightSetRouterTests`) checks column sums of one,
+  the high-temperature uniform limit, that low temperature sharpens, `ValueError` at
+  temperature 0, equality of `mix_weight_sets` with the explicit weighted sum and
+  nonzero gradients; reference values in
   `tests/fixtures/components/weight_set_router.pt`.
-- `tests/test_dipelinear.py` (test_matches_official_reference_values)
-  matches the official router (`softmax(route / tau)` over the expert axis).
+- `tests/test_dipelinear.py` (`test_matches_official_reference_values`) loads the
+  official DiPE-Linear forecasts with the router logits copied in, so the routed
+  `softmax(R / tau)` mix is checked end to end through `dipelinear`. The component
+  tests do not cover invalid sizes or a non-2-D routing.
 
 ## Variants and options
 
@@ -64,8 +73,12 @@ channel count varies.
 
 ## Related components
 
-`fft_extrapolation_conv` (consumes the routing as `mixing`), `topk_expert_router`,
-`sparse_connection_router`, `channel_wise_linear`.
+`fft_extrapolation_conv` (consumes the routing as `mixing`), `topk_expert_router`
+(input-dependent, sparse expert gating; this router is a static learned matrix),
+`sparse_connection_router` (learned binary connections over positions, not a convex
+mix of weight sets), `channel_wise_linear` (its `individual=False` and `True` modes are
+the fully shared and fully per-channel ends of the range that this router interpolates
+between).
 
 <!-- component-card:generated:start -->
 ## Public API

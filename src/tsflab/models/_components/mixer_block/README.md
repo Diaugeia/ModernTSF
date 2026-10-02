@@ -8,7 +8,7 @@ input: "[batch, seq_len, channels]"
 output: "[batch, seq_len, channels]"
 origin: "TSMixer, Chen et al., TMLR 2023 (An All-MLP Architecture for Time Series Forecasting), Appendix B.3.2 basic block"
 origin_models: ["tsmixer"]
-tags: ["feature", "gelu", "layernorm", "mixer", "residual", "time"]
+tags: ["feature", "gelu", "layernorm", "mixer", "residual", "time", "tsmixer", "mlp", "pre-norm", "time-mixing", "feature-mixing"]
 ---
 
 # mixer_block
@@ -47,11 +47,17 @@ The final temporal projection stays in `tsmixer` (via `channel_wise_linear`).
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/mixer_block.pt`.
-`tests/test_component_extraction_mixer.py` freezes a copy of the pre-extraction
-`MixerBlock` and TSMixer `Model` and checks identical `state_dict()` keys and
-shapes, forward output, and gradients from a fixed seed (the file docstring
-states this). No `.pt` fixture; the reference is the frozen in-test class.
+- `tests/test_component_contracts_basic.py` (`test_mixer_block_contract_and_reference`)
+  checks the exact state-dict key set, the `[6, 3]` norm and `[6, 6]` time-projection
+  shapes, shape and dtype preservation, gradients to the input and every parameter,
+  that zeroing `time_projection` and `feature_out` makes the block the identity, and
+  seeded values against `tests/fixtures/components/mixer_block.pt`.
+- `tests/test_component_extraction_mixer.py` freezes a copy of the pre-extraction
+  `MixerBlock` and TSMixer `Model` and checks identical `state_dict()` keys and
+  shapes, forward output, and gradients from a fixed seed
+  (`test_state_dict_keys_and_shapes_match`, `test_forward_outputs_match`,
+  `test_gradients_match`).
+- There is no test of non-default dropout behaviour or of shape-mismatch errors.
 
 ## Variants and options
 
@@ -70,7 +76,11 @@ be channel-specific.
 
 `channel_wise_linear` (the temporal projection that follows the stack in
 `tsmixer`), `gated_fusion` (learned blending of two branches rather than residual
-mixing within one stream).
+mixing within one stream). `mtsmixer` (`FactorizedMixerBlock`) and `rpmixer`
+(`RPMixerBlock`) keep their own mixer blocks, model-local, because their
+factorization differs. `composed` only imports this block as a registration marker
+(`# noqa: F401`), not as a used layer.
+- `softmax_gate`: the gated-attention filter PatchTSMixer adds after its MLP mixers; this block has no gate.
 
 <!-- component-card:generated:start -->
 ## Public API

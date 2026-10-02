@@ -27,14 +27,15 @@ back to `[B, H, C]`.
 ## Origin and granularity
 
 The scheme is DLinear from the LTSF-Linear paper; the moving-average decomposition
-it uses is the Autoformer series decomposition. The backbone lived in the
-original commit and was reduced when `series_decomposition` and
-`channel_wise_linear` were extracted (commits `15bc27e6`, `4fac489c`), so this
+it uses is the Autoformer series decomposition. The backbone was reduced when
+`series_decomposition` and `channel_wise_linear` were extracted, so this
 component is now only the composition of the two with two projections. It is
 shared because the same backbone feeds `dlinear`, `quantile_dlinear`
-(followed by a quantile head), and `latenttsf` (applied on latent channels
-`c_in = d_model`). Left local: input shape validation, normalization, any head
-after the backbone, and the latent autoencoder of `latenttsf`.
+(followed by a quantile head), `latenttsf` (applied on latent channels
+`c_in = d_model`), `lift` (as its time-domain branch, `c_in = enc_in`), and
+`mtlinear` (a single-channel `c_in = 1` backbone for its `DLinear` layer type).
+Left local: input shape validation, normalization, any head after the backbone,
+and the latent autoencoder of `latenttsf`.
 
 ## Interface
 
@@ -60,20 +61,27 @@ after the backbone, and the latent autoencoder of `latenttsf`.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/dlinear_shared.pt`, `tests/fixtures/components/dlinear_ind.pt`.
+- `test_dlinear_contract_and_reference` in `tests/test_component_contracts_basic.py`
+  (shared and individual) checks the state-dict keys (`linear` or `linears.0`
+  stems, none under `decomposition`), output shape `[B, pred_len, C]` and dtype,
+  that the output equals the seasonal plus trend projections of the decomposition,
+  gradients reaching input and parameters, `ValueError` for a wrong `seq_len` and
+  for an even `kernel_size`, and `kernel_size > seq_len` working. Reference values:
+  `tests/fixtures/components/dlinear_shared.pt` and
+  `tests/fixtures/components/dlinear_ind.pt`.
 - `test_dlinear_is_seasonal_plus_trend_forecasting` in
-  `tests/test_compact_local_implementations.py` checks that the model output
+  `tests/test_compact_local_implementations.py` checks the `dlinear` model output
   equals seasonal projection plus trend projection of the decomposition.
 - `tests/test_probabilistic_attention_forecasters.py` exercises
   `quantile_dlinear` through this backbone.
-- no fixture: no pre-refactor tensor fixture for the backbone itself; its parts
-  are covered by `tests/test_repository_contracts.py` (decomposition,
-  ChannelWiseLinear).
+- The reference fixtures were recorded from the extracted backbone, not from a
+  pre-extraction model, so equivalence with the original DLinear code is not
+  fixture-backed.
 
 ## Variants and options
 
 - `individual` per-channel vs shared linear layers.
-- `kernel_size` controls the trend smoothness (25 is the library default).
+- `kernel_size` controls the trend smoothness (25 is the paper default).
 - For last-value centering instead of decomposition use `last_value_center`
   with `channel_wise_linear` (NLinear); for instance normalization use `revin`.
 
@@ -87,6 +95,7 @@ cross-channel interaction is required, or for variable-length inputs.
 
 `series_decomposition`, `channel_wise_linear`, `last_value_center`, `revin`,
 `quantile_head` (used with it in `quantile_dlinear`).
+- `fft_extrapolation_conv`: frequency-domain history-to-horizon alternative.
 
 <!-- component-card:generated:start -->
 ## Public API

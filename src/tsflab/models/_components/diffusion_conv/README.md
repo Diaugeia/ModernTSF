@@ -7,8 +7,8 @@ category: "graph"
 input: "x [batch, c_in, nodes, time]; supports list of support_len matrices [nodes, nodes]"
 output: "[batch, c_out, nodes, time]"
 origin: "Diffusion convolution of DCRNN (Li et al., ICLR 2018) as applied in Graph WaveNet (Wu et al., IJCAI 2019)"
-origin_models: ["gwnet"]
-tags: ["diffusion", "graph", "graph-wavenet", "support", "spatiotemporal", "multi-hop"]
+origin_models: ["gwnet", "sttn"]
+tags: ["diffusion", "graph", "graph-wavenet", "support", "spatiotemporal", "multi-hop", "dcrnn", "random-walk", "graph-convolution"]
 ---
 
 # diffusion_conv
@@ -31,7 +31,7 @@ node axis as `x @ S`, so row `v` of `S` is the source node). The concatenation h
 
 Extracted in commit `2315e4e1` ("refactor(components): extract diffusion convolution")
 from the `gwnet` and `sttn` upstream wrappers (the commit touched both
-`_upstream.py` files); today only `gwnet` still imports it. The cut covers the
+`_upstream.py` files); today `gwnet` and `stdmae` import it (`sttn` no longer does). The cut covers the
 neighbourhood einsum, the 1x1 projection and the hop concatenation. The commit
 message is empty, so the reason for the boundary is inferred from the code. Kept model-local: building the supports (`graph_utils`,
 `adaptive_node_embedding_adjacency`), the gated dilated temporal convolution, the
@@ -59,7 +59,12 @@ stored as attribute `mlp` (hence the doubled `mlp.mlp` prefix).
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/diffusion_conv.pt`.
+- `tests/test_component_contracts_graph.py` (`test_diffusion_conv_contract`) checks
+  `NeighborhoodConv2d` against the einsum and its empty state, the
+  `PointwiseProjection` keys, the `[4, 15, 1, 1]` projection weight, output shape and
+  dtype, eval determinism, gradients to the input and every parameter, the `ValueError`s
+  for a wrong support count and for `support_len=0` or `order=0`, dropout active in
+  training mode, and seeded values against `tests/fixtures/components/diffusion_conv.pt`.
 - `tests/test_repository_contracts.py`
   (`test_diffusion_conv_matches_explicit_support_expansion`) checks the output
   against the explicit expansion `[x, S1 x, S1^2 x, S2 x, S2^2 x]` followed by the
@@ -67,8 +72,8 @@ stored as attribute `mlp` (hence the doubled `mlp.mlp` prefix).
   checks catalog registration.
 - `tests/test_component_extraction_graph.py` compares the `gwnet` model (which
   uses `DiffusionConv2d` with `support_len=3, order=2`) against a frozen
-  pre-extraction copy: identical state-dict keys, eval outputs and gradients.
-- no fixture: there is no `.pt` fixture for this component.
+  pre-extraction copy: identical state-dict keys, eval outputs and gradients. `stdmae`
+  adopted the component later and has no frozen pre-extraction copy; `sttn` is not covered.
 
 ## Variants and options
 
@@ -88,8 +93,8 @@ einsum `vw` is shared across the batch), or when the support count may vary at r
 
 ## Related components
 
-`graph_utils` (builds the supports), `adaptive_node_embedding_adjacency` (adaptive
-support), `gated_dilated_conv` (the temporal half of a Graph WaveNet layer),
+`graph_utils` (builds the supports), `adj_norm` (transition-matrix normalisers behind them),
+`adaptive_node_embedding_adjacency` (adaptive support), `gated_dilated_conv` (the temporal half of a Graph WaveNet layer),
 `graph_spectral` (Chebyshev supports), `regularized_adaptive_graph_conv` (linear-time alternative).
 
 <!-- component-card:generated:start -->

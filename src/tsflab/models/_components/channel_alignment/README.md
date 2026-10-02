@@ -48,12 +48,18 @@ that consumes the aligned tensor.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/channel_alignment.pt`.
+- `test_fit_channels_contract_and_reference` in `tests/test_component_contracts_basic.py`
+  checks the pad and slice shapes, that padding is zero and the kept channels are
+  unchanged, the `C == width` case (new object, equal values), gradient flow
+  (`[2, 2, 1]` per channel for one pad plus one slice), float64 and int64 dtype
+  preservation, and the `width=0` error; reference values are stored in
+  `tests/fixtures/components/channel_alignment.pt`.
 - `test_shared_channel_alignment_and_forecast_embedding_contracts` in
   `tests/test_repository_contracts.py` checks the slice case, the zero-padded
   case (leading channels preserved, padding is zeros), and the `width=0` error.
-- no fixture: no pre-refactor tensor fixture; the three consumers are covered
-  by the generic model contract tests.
+- no pre-refactor model fixture: the extraction from the three consumers has no
+  stored before/after outputs; the consumers are covered only by the generic model
+  contract tests.
 
 ## Variants and options
 
@@ -68,8 +74,10 @@ or when padding should carry a mask.
 
 ## Related components
 
-`marks` (`to_spatiotemporal` builds the tensor typically aligned),
-`forecast_embedding`, `channel_wise_linear`.
+- `marks`: `to_spatiotemporal` builds the tensor typically aligned here.
+- `forecast_embedding`: maps value channels plus calendar marks to `d_model` by a
+  learned projection; use it instead when information must not be dropped.
+- `channel_wise_linear`: learned projection over the time axis, not the feature axis.
 
 <!-- component-card:generated:start -->
 ## Public API

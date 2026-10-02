@@ -4,11 +4,11 @@ kind: "component"
 module: "tsflab.models._components.topk_expert_router"
 summary: "Two-layer GELU gating MLP with optional trainable noise returning softmax expert weights, and top-k sparsification with a dense-weight floor and renormalization."
 category: "routing"
-input: "GatingMLP: [*, in_features]; topk_dense_mix: dense weights [*, experts] (distribution on the last axis)"
+input: "GatingMLP: [*, in_features]; topk_dense_mix: dense weights [*, experts] (distribution on the last axis), k, floor"
 output: "GatingMLP: [*, experts] softmax weights; topk_dense_mix: same shape, rows sum to 1"
 origin: "gate of DUET (KDD 2025, arXiv 2412.10859) plus the shared top-k concentration step of DUET and Dynamic TMoE (ICML 2026, arXiv 2605.20678); noisy gating follows the sparsely-gated MoE idea"
 origin_models: ["duet", "dynamic_tmoe"]
-tags: ["expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k"]
+tags: ["expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k", "noisy-gating", "input-conditioned"]
 ---
 
 # topk_expert_router
@@ -42,18 +42,31 @@ with documented reasons.
 `network.2.bias` (`[experts, hidden]`, `[experts]`) and, only when `noisy`,
 `noise_scale` `[experts]` (zeros, so initial noise std is softplus(0)=0.693). No
 buffers, no constructor validation. `forward(features)` returns softmax over the
-last axis, shape `[*, experts]`; noise uses the global torch RNG and only applies
-when `self.training` is true (eval is a plain softmax).
+last axis, shape `[*, experts]`, in the dtype and device of the input; noise uses
+the global torch RNG and only applies when `self.training` is true (eval is a
+plain softmax).
 
 `topk_dense_mix(weights, k, floor) -> Tensor`: `weights` is a non-negative dense
-distribution on the last axis (typically softmax output); `1 <= k <= experts` (torch
-`topk` error otherwise); `floor >= 0` (a `floor` of 0 gives exact hard top-k
-renormalization). Differentiable through the kept values and the floor term; the
-selection is not. Ties follow `torch.topk`. Stateless, same dtype/device as input.
+distribution on the last axis (typically softmax output); `1 <= k <= experts`
+(`k > experts` raises `RuntimeError` from `torch.topk`; `k = 0` is not rejected
+and leaves only the floor term, which renormalizes back to the dense weights, or
+0/0 when `floor = 0`); `floor >= 0` and not validated (a `floor` of 0 gives exact
+hard top-k renormalization). Differentiable through the kept values and the floor
+term; the selection is not. Ties follow `torch.topk`. Stateless, same
+dtype/device as input.
 
 ## Invariants and equivalence evidence
 
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/topk_expert_router_gate.pt`, `tests/fixtures/components/topk_expert_router_mix.pt`.
+- `tests/test_component_contracts_attention.py` (`test_gating_mlp`,
+  `test_topk_dense_mix`): `GatingMLP` state-dict keys (with and without noise),
+  zero-initialized `noise_scale`, softmax rows sum to 1 and are non-negative, eval
+  output equals `softmax(network(x))`, training noise is seed-reproducible and
+  differs from eval, finite gradients; `topk_dense_mix` rows sum to 1, `floor = 0`
+  keeps exactly `k` non-zero renormalized entries, `floor > 0` makes all entries
+  positive, dtype is preserved, gradients are finite, `k > experts` raises
+  `RuntimeError`. Seeded outputs are pinned by
+  `tests/fixtures/components/topk_expert_router_gate.pt` and
+  `tests/fixtures/components/topk_expert_router_mix.pt`.
 - `tests/fixtures/duet_pre_refactor.pt` and
   `tests/fixtures/dynamic_tmoe_pre_refactor.pt`, driven by
   `tests/test_component_extraction_moe.py`, compare state-dict keys, shapes and
@@ -79,7 +92,12 @@ or when the gate needs a different architecture (it is fixed at two layers with 
 
 ## Related components
 
-`sparse_connection_router`, `topk_expert_attention`, `freq_band_moe`, `soft_tree`.
+`weight_set_router` (input-independent, softmax-with-temperature routing over
+weight sets; this component is input-conditioned), `sparse_connection_router`
+(learned top-k binary connection matrix over positions, not mixture weights),
+`topk_expert_attention` (its own `LocalExpertRouter` keeps the top-k keys per
+query and softmaxes the kept logits, without a floor), `freq_band_moe` (dense
+softmax gates over spectral bands), `soft_tree` (differentiable tree routing).
 
 <!-- component-card:generated:start -->
 ## Public API

@@ -2,13 +2,13 @@
 name: "adain_style_norm"
 kind: "component"
 module: "tsflab.models._components.adain_style_norm"
-summary: "Adaptive instance normalization: normalize a [B, L, C] tensor over L with detached mean/std, then rescale to externally supplied style mean and std."
+summary: "Adaptive instance normalization: standardize a [B, L, C] tensor over L with detached mean/std, then rescale to externally supplied style mean and std. No parameters."
 category: "normalization"
 input: "x [batch, length, channels]; style_mean [batch|1, 1, channels]; style_std [batch|1, 1, channels]"
 output: "[batch, length, channels]"
-origin: "Adaptive instance normalization (AdaIN, image style transfer) applied as the NSAN block of CANet (arXiv 2504.17913, 2025); extracted when CANet was added"
+origin: "Adaptive instance normalization (AdaIN; Huang and Belongie, ICCV 2017, image style transfer) used as the NSAN block of CANet (arXiv 2504.17913, 2025); extracted when CANet was added"
 origin_models: ["canet"]
-tags: ["adain", "adaptive", "non-stationary", "normalization", "style", "instance", "detach", "stateless"]
+tags: ["adain", "adaptive", "non-stationary", "normalization", "style", "instance", "detach", "stateless", "parameter-free"]
 ---
 
 # adain_style_norm
@@ -28,15 +28,16 @@ The module owns no parameters; the "style" is an input. Gradients flow through
 
 ## Origin and granularity
 
-The computation is the AdaIN operation from image style transfer, used in CANet
-as its non-stationary adaptive normalization (NSAN) after the spectral block,
-in place of a fixed LayerNorm affine. It was added as a shared component in the
-CANet intake commit (`b94ed873`, "add TQNet, TimePro, Gateformer, CANet"). The
-cut is only the normalize-then-rescale arithmetic. Deriving the style
-statistics (the CANet projection of raw series mean/std, the blend gate, the
-`style` branch from patch embeddings) stays in `canet`. The original AdaIN
-paper reference is not recorded in the repository; the origin above is the
-documented consumer.
+The computation is the AdaIN operation of image style transfer (Huang and
+Belongie, ICCV 2017), applied in CANet as its non-stationary adaptive
+normalization (NSAN) after the spectral block, in place of a fixed LayerNorm
+affine. It was added as a shared component in the CANet intake commit
+(`b94ed873`, "add TQNet, TimePro, Gateformer, CANet"). The cut is only the
+normalize-then-rescale arithmetic. Deriving the style statistics stays in
+`canet`: its projection of the raw series mean/std, its `StyleBlendingGate`
+(a fixed-ratio convex blend of two (mean, std) pairs followed by linear
+projections, not a learned gate), and the style branch computed from patch
+embeddings.
 
 ## Interface
 
@@ -50,45 +51,52 @@ documented consumer.
 
 - `x`: floating tensor `[batch, length, channels]`. Raises `ValueError` if
   `x.ndim != 3`.
-- `style_mean`, `style_std`: broadcastable to `[batch, 1, channels]`. They are
-  not validated and are not detached. `style_std` is used as given (no eps, no
-  positivity check).
-- Returns a tensor with the shape of `x` (after broadcasting) on its device
-  and dtype.
+- `style_mean`, `style_std`: broadcastable to `[batch, 1, channels]` (a scalar
+  tensor also broadcasts). They are not validated and are not detached.
+  `style_std` is used as given (no eps, no positivity check).
+- Returns a tensor with the broadcast shape of the result (the shape of `x`
+  for the intended `[batch|1, 1, channels]` statistics) on the device and dtype
+  of the inputs.
 - Uses the unbiased standard deviation, so `length == 1` yields NaN (and a
-  PyTorch warning). The test below allows loose tolerance because of the unbiased
-  estimator and eps.
+  PyTorch warning). Normalization is always over axis 1.
 
 ## Invariants and equivalence evidence
 
-- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/adain_style_norm.pt`.
+- `tests/test_component_contracts_basic.py` (`test_adain_contract_and_reference`)
+  checks the empty state dict, output shape and dtype, that output mean and
+  unbiased std over the length axis equal the style statistics (loose tolerance
+  because of eps), that `x`, `style_mean` and `style_std` all receive gradients,
+  scalar-style broadcasting, and the `ValueError` for a 2-D input; the seeded
+  output and `x` gradient are pinned by `tests/fixtures/components/adain_style_norm.pt`.
 - `test_adain_rescales_normalized_features_to_style_statistics` in
-  `tests/test_2025_query_gate_hyperstate_forecasters.py` checks that the output
-  mean and (unbiased) std over the length axis equal the style statistics.
-- no fixture: there is no pre-refactor tensor fixture; the component was
-  created together with its only consumer, `canet`, whose forward/backward is
-  exercised by `test_canet_forward_and_gradient` in the same test file.
+  `tests/test_2025_query_gate_hyperstate_forecasters.py` repeats the statistics
+  check on a shifted, scaled input with constant style statistics.
+- The detached `mu`/`sigma` claim is by construction; no test isolates it. No
+  pre-refactor fixture exists (the component was created together with its only
+  consumer, `canet`), whose forward and backward are exercised by
+  `test_canet_forward_and_gradient` in the same test file.
 
 ## Variants and options
 
 None beyond `eps`. It is a different operation from `revin` (which uses its own
 statistics and restores them later with an explicit denorm) and from
-`last_value_center`.
+`last_value_center` (level-only centering, no scale).
 
 ## When to use and when not to use
 
 Use when features should be standardized per sample over the sequence axis and
 re-scaled to statistics produced elsewhere (for example per-sample series
 moments or a learned style branch). Do not use when the statistics should be
-the input's own (use `revin`), when the normalized axis is not axis 1, when
-the standardization statistics should receive gradients, or for inputs of
-length 1.
+the input's own and later undone (use `revin`), when the normalized axis is not
+axis 1, when the standardization statistics should receive gradients, or for
+inputs of length 1.
 
 ## Related components
 
 `revin` (self-statistics, reversible), `last_value_center` (level-only
-centering), `gated_fusion` (a gate of the kind used to blend style statistics
-in `canet`).
+centering). The gate that blends the style statistics in `canet` is model-local
+and is not `gated_fusion`: `gated_fusion` is a learned sigmoid gate over two
+embeddings, whereas `canet` blends statistics with a fixed ratio.
 
 <!-- component-card:generated:start -->
 ## Public API

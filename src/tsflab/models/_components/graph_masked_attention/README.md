@@ -44,13 +44,20 @@ docstring, not evidenced by a second consumer.
 `GlobalLocalGraphAttention(model_dim, num_heads=8)`
 
 - `model_dim` (int >= 1): total width; raises `ValueError` unless divisible by
-  `num_heads`. `num_heads` (int >= 1): head count; `head_dim = model_dim // num_heads`.
+  `num_heads`. `num_heads` (int >= 1, default 8): head count;
+  `head_dim = model_dim // num_heads`. `num_heads == 0` is not validated and raises
+  `ZeroDivisionError`.
 - `forward(query, key, value, adj_mask=None)`: inputs `[..., L, model_dim]` with
   matching leading batch axes (for `extralonger`: `[B, T, N, D]` style layouts where
   the attended axis is second-to-last). Only the last two axes are attended. Heads are
   inserted before the length axis, so `adj_mask` must broadcast to
   `[..., num_heads, L_q, L_kv]` (a `[L_q, L_kv]` mask works). It is cast to bool on
-  the score device; `True` marks an allowed pair.
+  the score device; `True` marks an allowed pair. A `[B, T, L_q, L_kv]` mask for
+  `[B, T, L, D]` inputs does not broadcast correctly; insert a head axis
+  (`mask[:, :, None]`). The module docstring says "broadcastable to
+  `(..., L_q, L_kv)`", which omits the head axis; this card follows the code.
+- Inputs must be floating tensors on one device; `forward` accepts non-bool masks
+  (cast with `.to(torch.bool)`, so any nonzero value is allowed).
 - Returns `[..., L_q, model_dim]`.
 - Parameters (state-dict keys): `fc_q`, `fc_k`, `fc_v`, `out_proj`, each `nn.Linear(model_dim, model_dim)`
   with `.weight`/`.bias`. No buffers; no dropout; stateless.
@@ -65,12 +72,17 @@ docstring, not evidenced by a second consumer.
 ## Invariants and equivalence evidence
 
 - `tests/test_local_graph_forecasters.py`
-  (`test_extralonger_global_local_attention_matches_paper_equation`) recomputes the
+  (`test_extralonger_global_local_attention_matches_paper_equation`, uses a `[5, 5]`
+  mask with self-loops plus one symmetric edge) recomputes the
   equation by hand from the layer's own projections and compares both the masked
   output and the mask-free (plain dense attention) output.
-- `tests/test_component_numeric_fixes.py` checks that a fully masked row is finite
-  (bias-only output, finite gradients) and that rows with visible keys are
-  bit-identical to the hand-computed equation and unaffected by masking another row.
+- `tests/test_component_numeric_fixes.py`:
+  `test_fully_masked_attention_row_is_zero_not_nan` (finite output, bias-only row,
+  finite input gradients) and `test_masked_attention_rows_with_visible_keys_unchanged`
+  (rows with visible keys are bit-identical to the hand-computed equation and
+  unaffected by masking another row).
+- `adj_mask` is only exercised with a 2-D `[L, L]` mask in tests; per-head, per-batch
+  or 4-D masks and cross-attention (`L_q != L_kv`) have no dedicated test.
 - no fixture: no `.pt` fixture or pre-refactor copy exists, because the component
   was created directly for `extralonger` rather than extracted from existing code.
 
@@ -85,15 +97,24 @@ docstring, not evidenced by a second consumer.
 
 Use to let a fixed graph bias attention over nodes while keeping long-range learned
 affinity. Do not use for hard graph-restricted attention (use an additive `-inf` mask
-with a standard attention layer), for large `L` (attention is dense, `O(L^2)`; see
-`node_visibility` for subgraph grouping), or with graphs that can have isolated rows
-unless self-loops are added.
+with a standard attention layer, e.g. `self_attention_family` with a mask from
+`masking`), for large `L` (attention is dense, `O(L^2)`; see `node_visibility` for
+subgraph grouping), or when a row with no allowed key should still attend (such
+rows output only the `out_proj` bias unless self-loops are added).
 
 ## Related components
 
-`self_attention_family` (plain attention layers), `node_visibility` (cuts the node
-set before dense node attention), `adaptive_node_embedding_adjacency` and `graph_utils`
-(sources of adjacency), `sparse_connection_router` (learned sparse mixing instead of attention).
+- `self_attention_family`: plain full/probabilistic attention layers; this layer
+  differs by blending a second, adjacency-masked softmax and owning its projections.
+- `masking`: builds hard attention masks; here the mask only reshapes half of the weights.
+- `node_visibility`: cuts the node set before dense node attention (scalability, not
+  graph bias).
+- `adaptive_node_embedding_adjacency`, `graph_utils`: sources of adjacency
+  (a dense adjacency must be thresholded to a boolean mask first).
+- `sparse_connection_router`: learned sparse mixing instead of attention.
+- `topk_expert_attention`: also sparsifies attention, but by learned top-k expert
+  routing rather than a fixed graph.
+- `periodic_alibi_bias`: additive periodic distance bias, versus an adjacency blend.
 
 <!-- component-card:generated:start -->
 ## Public API

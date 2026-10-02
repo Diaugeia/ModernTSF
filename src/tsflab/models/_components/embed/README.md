@@ -8,7 +8,7 @@ input: "values [batch, time, channels]; marks [batch, time, mark_dim] or None; P
 output: "DataEmbedding [batch, time, d_model]; DataEmbedding_inverted [batch, channels (+ mark_dim), d_model]; PatchEmbedding ([batch*n_vars, patches, d_model], n_vars)"
 origin: "layers/Embed.py layout of the Time-Series-Library; history records it only from the initial commit, exact upstream revision and paper not recorded"
 origin_models: ["transformer", "informer"]
-tags: ["calendar", "embedding", "patch", "position", "token", "inverted", "sinusoidal", "time-features"]
+tags: ["calendar", "embedding", "patch", "position", "token", "inverted", "sinusoidal", "time-features", "time-series-library"]
 ---
 
 # embed
@@ -32,8 +32,11 @@ moves (`33ea2050` colocated it under `_components`); the exact upstream revision
 and per-class provenance are not recorded. It is cut as one file because these
 layers are always combined by the encoder-decoder transformers; what stays
 model-local is everything after the embedding (attention stacks, heads) and any
-patch-specific position scheme other than sinusoidal (for example `gateformer`
-builds its own patch projection and positions inline).
+patch scheme that differs from this one (for example `gateformer` builds its
+own patch projection with the `positional_encoding` component instead of
+`PatchEmbedding`). Consumers: `transformer`, `informer`, `fredf` (via
+`DataEmbedding`) and `gpht`, `penguin`, `sensorformer`, `timeexpert` (via
+`PatchEmbedding`); the generated block is the authoritative list.
 
 ## Interface
 
@@ -41,31 +44,28 @@ All classes are `nn.Module`. Public symbols: `PositionalEmbedding`,
 `TokenEmbedding`, `FixedEmbedding`, `TemporalEmbedding`, `TimeFeatureEmbedding`,
 `DataEmbedding`, `DataEmbedding_inverted`, `DataEmbedding_wo_pos`, `PatchEmbedding`.
 
-- `PositionalEmbedding(d_model, max_len=5000)`: fixed sin/cos table buffer `pe` `[1, max_len, d_model]`. `forward(x)` returns `pe[:, :x.size(1)]`; time must be <= `max_len`. `d_model` should be even.
+- `PositionalEmbedding(d_model, max_len=5000)`: fixed sin/cos table buffer `pe` `[1, max_len, d_model]`. `forward(x)` returns `pe[:, :x.size(1)]` (only `x.size(1)` is read; dtype follows the float32 buffer); time must be <= `max_len`. `d_model` must be even (an odd value raises a shape error when the cosine half is assigned); the same holds for `FixedEmbedding`.
 - `TokenEmbedding(c_in, d_model)`: bias-free `Conv1d` kernel 3, circular padding 1, Kaiming init. `forward(x [B, L, c_in]) -> [B, L, d_model]`. Parameter `tokenConv.weight`.
 - `FixedEmbedding(c_in, d_model)`: frozen sinusoidal `nn.Embedding` of `c_in` indices; `forward(long index tensor)` returns the detached lookup.
 - `TemporalEmbedding(d_model, embed_type="fixed", freq="h")`: sums month/day/weekday/hour (and minute when `freq == "t"`) embeddings. `embed_type="fixed"` uses `FixedEmbedding`, any other value uses learned `nn.Embedding`. Table sizes: minute 4, hour 24, weekday 7, day 32, month 13. `forward(x [B, L, >=4 or 5])` casts to long and reads columns by fixed index: 0 month, 1 day, 2 weekday, 3 hour, 4 minute. This is the five-column Time-Series-Library layout without year; the repository's six-column raw marks (year first) are not directly compatible.
 - `TimeFeatureEmbedding(d_model, embed_type="timeF", freq="h", input_dim=None)`: bias-free `Linear(d_inp, d_model)` with `d_inp = input_dim` or 6 for every `freq` (the `freq_map` is constant 6; `embed_type` and `freq` are otherwise unused). Parameter `embed.weight`.
 - `DataEmbedding(c_in, d_model, embed_type="fixed", freq="h", dropout=0.1, time_feature_dim=None)`: `embed_type="timeF"` selects `TimeFeatureEmbedding` (continuous marks, last dim must equal the chosen width, 6 by default), anything else selects `TemporalEmbedding`. `forward(x [B, L, c_in], x_mark [B, L, m] | None) -> [B, L, d_model]`.
 - `DataEmbedding_inverted(c_in, d_model, embed_type="fixed", freq="h", dropout=0.1)`: note `c_in` here is the **time length** (the Linear input), and `embed_type`/`freq` are ignored. `forward(x [B, L, C], x_mark [B, L, M] | None) -> [B, C (+ M), d_model]`; without marks `c_in = L`, with marks it is still `L`.
-- `DataEmbedding_wo_pos(c_in, d_model, embed_type="fixed", freq="h", dropout=0.1)`: as `DataEmbedding` without position; has no `time_feature_dim` argument (timeF width fixed at 6).
+- `DataEmbedding_wo_pos(c_in, d_model, embed_type="fixed", freq="h", dropout=0.1)`: as `DataEmbedding` without the position term; has no `time_feature_dim` argument (timeF width fixed at 6). It still constructs the unused `position_embedding`, so its state dict still contains the `position_embedding.pe` buffer.
 - `PatchEmbedding(d_model, patch_len, stride, padding, dropout)`: `forward(x [B, n_vars, L]) -> (tokens [B*n_vars, P, d_model], n_vars)` with `P = (L + padding - patch_len) // stride + 1`. Note the input is channel-first, unlike the other classes.
 - Buffers `pe` (all positional users) and frozen `FixedEmbedding` weights appear in the state dict. Dropout is the only stochastic element; no stateful caches. Float inputs; marks for the `fixed` path are converted with `.long()`, so out-of-range indices raise `IndexError`.
 
 ## Invariants and equivalence evidence
 
 - `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/embed_data.pt`, `tests/fixtures/components/embed_patch.pt`, `tests/fixtures/components/embed_positional.pt`, `tests/fixtures/components/embed_temporal.pt`, `tests/fixtures/components/embed_token.pt`.
-- Shapes from the earlier hand check (`DataEmbedding(3, 8, "timeF")` on `[2, 10, 3]` values and
-  `[2, 10, 6]` marks gives `[2, 10, 8]`; `PatchEmbedding(8, 4, 2, 2, 0.)` on `[2, 3, 10]` gives
-  `[6, 5, 8]`, `n_vars=3`) are now asserted in the contract test; consumers (`transformer`,
-  `informer`, `sensorformer`, `timeexpert`) exercise it indirectly.
+- The same test file asserts `DataEmbedding(3, 8, "timeF")` on `[2, 10, 3]` values and `[2, 10, 6]` marks gives `[2, 10, 8]`; `DataEmbedding_inverted(10, 8)` gives `[2, 3, 8]` without marks and `[2, 9, 8]` with six mark channels; `PatchEmbedding(8, 4, 2, 2, 0.)` on `[2, 3, 10]` gives `[6, 5, 8]` with `n_vars=3`; the `wo_pos` variant differs from `DataEmbedding` exactly by the positional term; out-of-range calendar indices raise `IndexError`. Consumers (`transformer`, `informer`, `fredf`, `gpht`, `penguin`, `sensorformer`, `timeexpert`) exercise it indirectly.
 
 ## Variants and options
 
 - `embed_type="timeF"` (continuous `Linear` over marks; the default in the Transformer and Informer configs with `freq="h"`), `"fixed"` (frozen sinusoidal), anything else (learned tables).
 - `freq="t"` adds a minute table in `TemporalEmbedding`; `freq` has no other effect.
 - Quirks worth knowing: `PositionalEmbedding` sets `pe.require_grad` (a typo, harmless since it is a buffer); `TokenEmbedding` compares `torch.__version__` as a string; `DataEmbedding_inverted.c_in` is the lookback length.
-- `adapt_tslib_marks` in `marks` can convert the six-column marks to the five-column categorical layout, but no current consumer of `embed` calls it.
+- `adapt_tslib_marks` in `marks` converts the six-column marks to the five-column categorical layout (or the four-feature hourly `timeF` width); `fredf` calls it before `DataEmbedding`, while `transformer` and `informer` do not.
 
 ## When to use and when not to use
 
@@ -79,7 +79,11 @@ when learned/rotary positions are needed, or when a model needs
 ## Related components
 
 `forecast_embedding` (value plus normalized raw-calendar projection), `marks`
-(mark adapters, including TSLib adaptation), `flatten_forecast_head` (head commonly placed after patch tokens).
+(mark adapters, including TSLib adaptation), `positional_encoding` (standalone
+sin/cos or learned position tables; `embed.PositionalEmbedding` is the fixed
+sinusoid baked into these embeddings), `flatten_forecast_head` (head commonly
+placed after patch tokens), `transformer_encdec` and `self_attention_family`
+(the encoder-decoder stack these embeddings feed).
 
 <!-- component-card:generated:start -->
 ## Public API
