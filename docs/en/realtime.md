@@ -137,9 +137,9 @@ the rankings of consecutive rounds.
 
 ## Weekly automation
 
-The `realtime-weekly` workflow runs `python -m tsflab.realtime weekly` on a
+The `weekly` workflow runs `python -m tsflab.realtime weekly` on a
 CPU runner every Monday (update → score → open → baselines) and proposes the
-results as a pull request. The real-time package imports no torch outside
+results as a pull request that merges after `tsf repo check` passes. The real-time package imports no torch outside
 `forecast`, so the job installs only `pydantic`, `pandas`, `pyarrow`, `requests`,
 `huggingface_hub`, and `akshare` (only the Sina fallback and CSI-300 need it).
 

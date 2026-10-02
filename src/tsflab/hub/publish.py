@@ -87,7 +87,7 @@ dataset card for provenance and terms.""")},
 Append-only panels for the weekly rolling tracks of [TSFLab]({_SOURCE})
 (PeMS traffic, CSI 300 stocks, air quality). One directory per track; each
 weekly release is one commit, so every round is reproducible from its pinned
-revision. Maintained by the `realtime-weekly` workflow.""")},
+revision. Maintained by the `weekly` workflow.""")},
         {"repo_id": f"{owner}/TSFLab-Weights", "repo_type": "model", "card": _card(
             {"license": "mit", "library_name": "tsflab"},
             f"""
@@ -102,7 +102,7 @@ Source: [TSFLab]({_SOURCE}).""")},
             f"""
 # TSFLab Leaderboard
 
-Static leaderboard auto-deployed by the `web-deploy` workflow of
+Static leaderboard auto-deployed by the `ci` workflow of
 [TSFLab]({_SOURCE}).""")},
     ]
 

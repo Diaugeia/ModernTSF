@@ -100,7 +100,7 @@ different `seed` — the row reports the **mean**, `n_runs`, and `<metric>_std`.
 
 ```
 push main
-  └─ .github/workflows/web-deploy.yml
+  └─ .github/workflows/ci.yml (web + deploy jobs)
        ├ python3 pipeline/build_leaderboard.py   validate → aggregate submissions/ → data/leaderboard.json
        ├ bun run build                           Next static export → out/
        └ deploy out/ to the Hugging Face Space (static) → Diaugeia/TSFLab
@@ -136,7 +136,7 @@ app/, src/, lib/, components/   self-contained Next app (UI + EN/中文 copy + d
 data/                           leaderboard.json + model-meta.json + visualization_data.json
 submissions/                    community submission bundles (small JSON, no weights)
 pipeline/                       contract schema + validate + build_leaderboard + build_model_meta
-.github/workflows/              validate (PRs) + deploy (build once → 2 targets)
+.github/workflows/              ci.yml: validate (PRs, via tsf repo check) + build once → deploy to 2 targets
 ```
 
 ---
