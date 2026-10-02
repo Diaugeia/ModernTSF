@@ -20,7 +20,9 @@ uv run tsf dataset inspect --config configs/datasets/<name>.toml --split train -
 uv run tsf dataset plot --config configs/datasets/<name>.toml --split train --num-samples 3
 ```
 
-Check split boundaries, tensor dimensions, missing values, target-channel
+Start from the card's front matter (`domain`, `frequency`, `length`, `channels`,
+`protocol`) and its "Standard protocol and known pitfalls", then confirm them
+against the files. Check split boundaries, tensor dimensions, missing values, target-channel
 behavior, leakage across splits, inferred seasonal period, and adjacency or
 covariate metadata.
 
@@ -28,6 +30,8 @@ covariate metadata.
 
 - A short report with artifact paths, the facts observed, and which
   characteristics are inferred.
+- Any card fact the data contradicts is reported with the measured value; fix the
+  card (`stats_basis: "measured"`) only when asked to update it.
 
 ## Stop and hand off
 

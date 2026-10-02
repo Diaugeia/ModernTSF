@@ -42,6 +42,8 @@ source.
 3. Verify every split, shape, window, and the train-only scaling policy.
 4. Publishing local files (`uv run tsf dataset publish <preset>`) is a maintainer
    action that needs explicit authorization and redistributable source terms.
+   Read the card's `license` and `redistribution`; `unknown` or `restricted`
+   means do not publish without that authorization.
 
 ## Success
 
