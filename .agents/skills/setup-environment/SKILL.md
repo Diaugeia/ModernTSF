@@ -5,7 +5,7 @@ description: Install, repair, or verify the TSFLab Python environment and PyTorc
 
 # Set up the environment
 
-Produce a working, reproducible environment and report what was selected.
+Experiments module, step zero: produce a working, reproducible environment and report what was selected.
 
 ## Inputs
 
@@ -26,6 +26,13 @@ Use an explicit backend (`cpu`, `cu121`, ...) only when auto-detection is wrong 
 reproducibility requires it. For a specific experiment, check readiness with
 `uv run tsf env audit --config <run.toml> --json`; the audit reports facts and never
 changes the environment.
+
+## Chain
+
+- Module: Experiments.
+- Reads: hardware facts and `tsf env audit` output.
+- Produces: a reported environment (versions, backend, extras) recorded with runs.
+- Hands off to: `run-experiment`, `diagnose-experiment`.
 
 ## Success
 

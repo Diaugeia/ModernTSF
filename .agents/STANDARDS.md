@@ -22,12 +22,10 @@ more consumers match exactly, or when it is a paper-neutral building block with 
 standalone contract (transform, attention variant, router, normalization) that
 automated research can recombine; paper-specific glue stays local.
 
-Each extraction needs unit tests and affected-model contract tests; extraction
-from an existing model preserves state-dict keys, outputs, and gradients against
-fixtures captured beforehand. Material variants stay local and named. Models never
-import peer-model code; shared code moves into a component with a card.
-
-A component card is curated: flat front matter (`name`, `kind`, `module`, `summary`,
+Each extraction needs unit tests and affected-model contract tests; extraction from an
+existing model preserves state-dict keys, outputs, and gradients against prior fixtures.
+Material variants stay local and named. Models never import peer-model code; shared code
+moves into a component with a card. A component card is curated: flat front matter (`name`, `kind`, `module`, `summary`,
 `category`, `input`, `output`, `origin`, `origin_models`, `tags`) plus the sections
 Purpose, Origin and granularity, Interface (every public symbol, shapes with axis
 names, state), Invariants and equivalence evidence (cite existing tests/fixtures),
@@ -45,34 +43,29 @@ naming only imported components), and a `## Key ideas` section before the genera
 
 ## Model cards and sources
 Each model `README.md` is the descriptive source of truth: a flat fact header, a body
-mapping operations to local code, and differences from paper and official code.
-
-Required front matter is `name`, `summary`, `paper`, `paper_title`, `venue`, and
+mapping operations to local code, and differences from paper and official code. Required front matter is `name`, `summary`, `paper`, `paper_title`, `venue`, and
 `year`. When official code exists, add `code`, `revision`, and `license` together;
 otherwise omit all three. Do not add nested mappings, persisted verification status, empty
-code fields, or invented source facts.
-Ordinary paper architectures are local code; inspect official code at a pinned
-revision to resolve paper omissions without copying it. A released pretrained
-foundation model is the exception: use its official package and unchanged
-checkpoint behind `src/tsflab/models/_foundation/`, load offline from an
-explicit local path, and declare the entry inference-only. A shape-only smoke test
-is not verification; status is computed from evidence, never written into the card.
+code fields, or invented source facts. Ordinary paper architectures are local code; inspect official code at a pinned revision
+to resolve omissions without copying it. A released pretrained foundation model is the
+exception: use its official package and checkpoint behind `src/tsflab/models/_foundation/`,
+load offline from an explicit local path, and declare it inference-only. A shape-only smoke
+test is not verification; status is computed from evidence, never written into the card.
 
 ## Verification
-One route named `verification`: `verification/models.toml` declares each model's
-paper checks, source comparison when applicable, and runtime profile;
-`verification/evidence/<Model>.json` records the result; `verification/index.json`
-is regenerated. Checks cover paper structure, equations, construction, forward,
-backward, finite outputs, active gradients, state-dict round trip, CPU, batch and
-sequence boundaries, input contract, and reference comparison (official code, else
-`not-applicable`). Use `tsf verify model`, `stale`, `all --jobs`, and `index`.
+One route: `verification/models.toml` declares each model's paper checks, source
+comparison when applicable, and runtime profile; `verification/evidence/<Model>.json`
+records the result; `verification/index.json` is regenerated. Checks cover paper
+structure, equations, construction, forward, backward, finite outputs, active gradients,
+state-dict round trip, CPU, batch/sequence bounds, input contract, and reference
+comparison (official code, else `not-applicable`). Use `tsf verify model|stale|all|index`.
 
 ## Data, experiments, and model artifacts
-Dataset bytes live only in `dataset/`; loaders and schemas in `src/tsflab/data/`; cards in
-`catalog/datasets/`. Task modes are executable contracts checked during config loading.
+Dataset bytes live only in `dataset/`, loaders in `src/tsflab/data/`, cards in
+`catalog/datasets/`. Task modes are executable contracts checked at config loading.
 Experiments are resolved TOML and immutable evidence under `work_dirs/`; execution policy never
-changes scientific settings. Large weights and tokenizers are `ModelArtifact` facts in `spec.py`,
-pinned by revision and SHA-256, never bundled or fetched implicitly (`tsf model artifacts`).
+changes scientific settings. Large weights are `ModelArtifact` facts in `spec.py`, pinned by
+revision and SHA-256, never bundled or fetched implicitly (`tsf model artifacts`).
 
 ## Dataset cards
 Curated facts plus one `dataset-card:canonical` generated block (loader, files, parameters).
@@ -85,16 +78,23 @@ pitfalls, generated block, Related datasets. Measure statistics from local files
 primary source; write `unknown` for unverifiable licenses; never invent facts.
 
 ## Documentation ownership
-Human documentation (root, `docs/`, cards) explains public behavior and CLI
-workflows without Agent paths; Agent procedures live only under `.agents/`. Schemas, front matter, specs, configs, and tests are executable truth;
-generated indexes and tables are projections. Update code truth first, then
-regenerate; do not hand-maintain facts a catalog can render.
+Human docs (root, `docs/`, cards) explain public behavior without Agent paths; Agent
+procedures live only under `.agents/`. Schemas, front matter, specs, configs, and
+tests are executable truth; generated indexes are projections: update code truth
+first, then regenerate.
 
-## Skills
-Skills live only at `.agents/skills/<skill-name>/SKILL.md`, with standard
-kebab-case `name` and discriminating `description` frontmatter. Each skill owns
-one recognizable outcome, expected inputs, preflight checks, execution path,
-success criteria, artifacts, and stopping conditions. Use public APIs or CLI commands;
-omit harness-specific paths, retired aliases, internal entry points, and tutorials.
-Changed skills must pass `uv run python -m tsflab.tsf_core.agent_assets`; test
-descriptions against positive, indirect, negative, and edge-case requests.
+## Modules, skills, and tasks
+Chain: Data -> Models -> Experiments -> Release; each module yields context AutoResearch
+reads (cards, profiles, compositions, interfaces, result board, round ledger).
+
+- Data: add-dataset, inspect-dataset.
+- Models: discover-papers, add-model, integrate-foundation-model, curate-components (task `intake`).
+- Experiments: setup-environment, run-experiment, diagnose-experiment, reproduce-paper-results, analyze-results (task `experiment`).
+- Release: submit-results, forecast-realtime-round, publish-weights.
+- AutoResearch: run-autoresearch (task `autoresearch`).
+- Maintenance: audit, handle-contribution (tasks `maintenance`, `contribution`).
+
+Skills live only at `.agents/skills/<skill-name>/SKILL.md` (80-line budget; detail in
+`references/`), kebab-case `name`, discriminating `description`, and Inputs, Steps,
+Success, Stop sections using public commands only. Tasks are `.agents/tasks/<name>.toml`
+(`tsf agent task`). Check with `uv run python -m tsflab.tsf_core.agent_assets`.

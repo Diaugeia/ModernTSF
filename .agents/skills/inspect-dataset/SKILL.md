@@ -5,8 +5,9 @@ description: Inspect, profile, or visualize an existing TSFLab dataset. Use for 
 
 # Inspect a dataset
 
-Report what a dataset preset actually loads, separating observations from
-inferred characteristics.
+Data module, step two: report what a dataset preset actually loads, separating
+observations from inferred characteristics. The `analyze` profile is the data
+context AutoResearch reads before it picks models.
 
 ## Inputs
 
@@ -30,6 +31,13 @@ Check split boundaries, tensor dimensions, missing values, target-channel
 behavior, leakage across splits, inferred seasonal period, and adjacency or
 covariate metadata.
 
+## Chain
+
+- Module: Data.
+- Reads: dataset card (L1, then L2) and the loaded splits.
+- Produces: profile `work_dirs/profiles/<name>/profile.{json,md}` and a measured-fact report.
+- Hands off to: `run-autoresearch` (profile-driven model choice), `run-experiment` (design), `add-dataset` (card fixes).
+
 ## Success
 
 - A short report with artifact paths, the facts observed, and which
@@ -39,5 +47,5 @@ covariate metadata.
 
 ## Stop and hand off
 
-- Inspection never modifies data. Fixes belong to `prepare-dataset` or
-  `add-dataset`; model output plots belong to `analyze-results`.
+- Inspection never modifies data. Fixes belong to `add-dataset`; model output
+  plots belong to `analyze-results`; profile-driven search to `run-autoresearch`.

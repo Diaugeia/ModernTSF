@@ -1,19 +1,7 @@
----
-name: prepare-dataset
-description: Fetch published preset data or convert existing time-series files into TSFLab-ready data. Use for downloading pinned benchmark files, windowing CSV data, producing NPZ splits, converting traffic bundles, building the UltraTraffic PeMS store, or downloading GIFT-Eval data; not for registering a new loader.
----
-
-# Prepare a dataset
+# Prepare data for a loader
 
 Turn source files into the layout a registered loader reads, without altering the
-source.
-
-## Inputs
-
-- The source path and layout, the destination directory, and the target loader.
-- Window sizes and split policy when the loader needs pre-windowed data.
-
-## Steps
+source. Stop before replacing an existing output directory without authorization.
 
 1. If the preset is published, download it instead of converting anything:
 
@@ -44,13 +32,3 @@ source.
    action that needs explicit authorization and redistributable source terms.
    Read the card's `license` and `redistribution`; `unknown` or `restricted`
    means do not publish without that authorization.
-
-## Success
-
-- Destination data that the target loader reads, source files preserved, and the
-  manifest or split facts reported.
-
-## Stop and hand off
-
-- Stop before replacing an existing output directory without authorization.
-- Register the result with `add-dataset`; profile it with `inspect-dataset`.

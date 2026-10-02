@@ -1,12 +1,12 @@
 ---
 name: discover-papers
-description: Discover, deduplicate, rank, and optionally dispatch review tasks for new time-series forecasting papers. Use for arXiv or Hugging Face paper scans, recurring literature monitoring, and candidate-model intake; not for claiming or completing a paper reproduction.
+description: Discover, deduplicate, rank, and optionally expand the catalog with new time-series forecasting papers. Use for arXiv or Hugging Face paper scans, recurring literature monitoring, candidate-model intake, and an authorized search-to-model expansion run; not for reproducing a paper's results.
 ---
 
 # Discover forecasting papers
 
-Find new forecasting methods, deduplicate them against the catalog, and return a
-ranked, source-linked queue. Search relevance is never permission or evidence to
+Models module, entry point: find new forecasting methods, deduplicate them against
+the catalog, and return a ranked, source-linked queue. Search relevance is never permission or evidence to
 add an implementation. Read [references/intake.md](references/intake.md) before
 scanning or dispatching.
 
@@ -29,6 +29,13 @@ scanning or dispatching.
    not disqualify a paper; record it so the implementation is an independent rewrite.
 4. Write one brief per retained paper, separating verified facts from inference.
 
+## Chain
+
+- Module: Models.
+- Reads: `tsf model list --json` and model cards at L0 for deduplication.
+- Produces: a ranked, source-linked candidate queue (paper, code, license facts).
+- Hands off to: `add-model` or `integrate-foundation-model` (one approved paper each).
+
 ## Success
 
 - A ranked queue with primary URLs, deduplication results, and code facts; an
@@ -36,10 +43,12 @@ scanning or dispatching.
 
 ## Stop and hand off
 
+- Expansion (search through admission, bounded by a model budget) follows
+  [references/expansion.md](references/expansion.md), only when authorized.
 - Dispatch only when the user or recurring prompt explicitly asks: at most three
   independent tasks per run, one paper each, carrying the brief, URLs,
   deduplication result, deliverable, and the instruction to use `add-model` after
   paper, source, and runtime inputs are resolved. Dispatched tasks never merge,
   publish, or modify external systems.
-- Implementation belongs to the downstream `paper-to-model` task or
-  `expand-model-catalog`; search results never establish a local implementation.
+- Implementation belongs to `add-model`; search results never establish a local
+  implementation.

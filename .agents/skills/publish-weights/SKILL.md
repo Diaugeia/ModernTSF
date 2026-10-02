@@ -5,7 +5,7 @@ description: Package a completed TSFLab run's best checkpoint as a checksummed s
 
 # Publish weights
 
-Turn a finished run into a reproducible weights bundle at
+Release module: turn a finished run into a reproducible weights bundle at
 `<dataset>/<model>/<run_id>/` (manifest, `model.safetensors`, run record, card),
 addressed by a URI pinned to an immutable revision.
 
@@ -42,6 +42,13 @@ addressed by a URI pinned to an immutable revision.
    uv run tsf hub list --repo <owner>/<repo> --dataset <dataset>
    uv run tsf hub pull hf://<owner>/<repo>@<revision>/<dataset>/<model>/<run_id>
    ```
+
+## Chain
+
+- Module: Release.
+- Reads: the run record and its checkpoint.
+- Produces: a pinned `hf://<owner>/<repo>@<revision>/...` URI with a checksummed manifest.
+- Hands off to: `forecast-realtime-round` (`weights_uri`), `run-experiment` (reload), `submit-results`.
 
 ## Success
 

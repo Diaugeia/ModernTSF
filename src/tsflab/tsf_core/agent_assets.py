@@ -12,30 +12,29 @@ ROOT = repository_root()
 SKILLS = ROOT / ".agents" / "skills"
 STANDARDS = ROOT / ".agents" / "STANDARDS.md"
 EXPECTED_SKILLS = {
+    # Data
     "add-dataset",
-    "add-model",
-    "analyze-results",
-    "audit-model",
-    "audit-repository",
-    "curate-components",
-    "design-experiment",
-    "diagnose-experiment",
-    "discover-papers",
-    "expand-model-catalog",
-    "extract-paper-structure",
-    "forecast-realtime-round",
-    "implement-model",
     "inspect-dataset",
+    # Models
+    "discover-papers",
+    "add-model",
     "integrate-foundation-model",
-    "prepare-dataset",
-    "publish-weights",
-    "report-defect",
-    "reproduce-paper-results",
-    "run-experiment",
-    "run-autoresearch",
+    "curate-components",
+    # Experiments
     "setup-environment",
-    "smoke-models",
+    "run-experiment",
+    "diagnose-experiment",
+    "reproduce-paper-results",
+    "analyze-results",
+    # Release
     "submit-results",
+    "forecast-realtime-round",
+    "publish-weights",
+    # AutoResearch
+    "run-autoresearch",
+    # Maintenance
+    "audit",
+    "handle-contribution",
 }
 
 

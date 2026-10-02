@@ -1,6 +1,6 @@
 name = "autoresearch"
 title = "Bounded forecasting autoresearch"
-summary = "Profile the data, hypothesize, run a baseline panel, search and recombine catalog pieces, and conclude under explicit budgets and leakage guards."
+summary = "AutoResearch module, consuming the context of the other modules (dataset cards and profile, model cards and compositions, component interfaces, result board, round ledger): profile the data, hypothesize, run a baseline panel, search and recombine catalog pieces, and conclude under explicit budgets and leakage guards."
 skills = ["run-autoresearch"]
 acceptance = [
   "Profile every approved dataset with the dataset analyzer before choosing models.",

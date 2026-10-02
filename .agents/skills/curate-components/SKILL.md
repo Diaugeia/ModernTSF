@@ -5,7 +5,7 @@ description: Identify repeated or reusable operators across existing TSFLab mode
 
 # Curate shared components
 
-Turn duplicated or recombinable operators into cataloged components while keeping
+Models module: turn duplicated or recombinable operators into cataloged components while keeping
 every consumer's behavior bit-for-bit unchanged. Components are reusable
 implementation units, never model categories; read the components section of
 `.agents/STANDARDS.md` first.
@@ -45,6 +45,13 @@ implementation units, never model categories; read the components section of
    uv run tsf component audit
    uv run tsf repo audit
    ```
+
+## Chain
+
+- Module: Models.
+- Reads: component cards (L0-L2) and model-local code.
+- Produces: component cards with interface, invariants, consumers; equivalence tests.
+- Hands off to: `add-model` and `run-autoresearch` (recombination reads component interfaces), `audit`.
 
 ## Success
 

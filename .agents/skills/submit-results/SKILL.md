@@ -5,7 +5,7 @@ description: Package a completed TSFLab run and its research evidence as a TSFLa
 
 # Submit results
 
-Turn a finished run into a validated submission bundle that the leaderboard can
+Release module: turn a finished run into a validated submission bundle that the leaderboard can
 recompute from.
 
 ## Inputs
@@ -36,6 +36,13 @@ recompute from.
 
 4. Weights are never part of a submission; publish them separately with
    `publish-weights` when reproducibility needs them.
+
+## Chain
+
+- Module: Release.
+- Reads: a completed record, its round trajectory, the result board.
+- Produces: a bundle under `apps/web/submissions/<track>/<dataset>/<model>/<id>/`; its rows rebuild the leaderboard.
+- Hands off to: `run-autoresearch` reads the leaderboard as a reference bar; weights go to `publish-weights`.
 
 ## Success
 

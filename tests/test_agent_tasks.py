@@ -21,14 +21,10 @@ class AgentTaskTests(unittest.TestCase):
             {record["name"] for record in list_tasks()},
             {
                 "autoresearch",
-                "catalog-expansion",
-                "component-curation",
+                "contribution",
                 "experiment",
-                "paper-reproduction",
-                "paper-to-model",
-                "paper-watch",
-                "repo-final-audit",
-                "verification-backlog",
+                "intake",
+                "maintenance",
             },
         )
 
@@ -43,13 +39,13 @@ class AgentTaskTests(unittest.TestCase):
         self.assertEqual(payload["permissions"]["model_code"], "no-change-without-separate-authorization")
         self.assertEqual(payload["skills"], ["run-autoresearch"])
 
-    def test_component_curation_supports_bounded_periodic_scans(self) -> None:
-        payload = render_task("component-curation", {})
+    def test_maintenance_supports_bounded_periodic_scans(self) -> None:
+        payload = render_task("maintenance", {"mode": "curation"})
         self.assertIn("repository-wide repeated implementation scan", payload["prompt"])
         self.assertEqual(payload["budget"]["max_component_extractions"], 2)
         self.assertEqual(
             payload["permissions"]["repository"],
-            "write-components-affected-models-and-tests",
+            "write-selected-models-components-tests-evidence-and-generated-projections",
         )
 
     def test_every_template_has_a_directly_renderable_demo(self) -> None:
@@ -68,36 +64,41 @@ class AgentTaskTests(unittest.TestCase):
 
     def test_missing_or_unknown_inputs_fail_closed(self) -> None:
         with self.assertRaisesRegex(AgentTaskError, "missing required"):
-            render_task("paper-to-model", {"paper_url": "https://arxiv.org/abs/1"})
+            render_task("contribution", {})
         with self.assertRaisesRegex(AgentTaskError, "unknown input"):
-            render_task("paper-watch", {"surprise": "write everything"})
+            render_task("intake", {"surprise": "write everything"})
         with self.assertRaisesRegex(AgentTaskError, "between 1 and 12"):
             render_task("autoresearch", {"question": "test", "max_runs": "13"})
 
-    def test_paper_to_model_prompt_has_an_explicit_preimplementation_gate(self) -> None:
+    def test_intake_is_read_only_by_default_with_a_preimplementation_gate(self) -> None:
         payload = render_task(
-            "paper-to-model",
-            {"paper_url": "https://arxiv.org/abs/1", "model_name": "Example"},
+            "intake", {"paper_url": "https://arxiv.org/abs/1", "model_name": "Example"}
         )
-        self.assertIn("Before writing code, confirm", payload["prompt"])
-        self.assertNotIn("authorized..", payload["prompt"])
+        self.assertIn("before writing code, confirm", payload["prompt"])
+        self.assertIn("Read-only", payload["inputs"]["approval"])
+        self.assertEqual(payload["budget"]["max_models"], 1)
+
+    def test_contribution_defaults_to_draft_only(self) -> None:
+        payload = render_task("contribution", {"target": "#12"})
+        self.assertIn("#12", payload["prompt"])
+        self.assertIn("Draft only", payload["inputs"]["authorization"])
+        self.assertEqual(payload["permissions"]["external_actions"], "none-unless-authorized")
 
     def test_numeric_inputs_narrow_machine_readable_budgets(self) -> None:
         cases = [
             ("experiment", {"question": "test", "max_runs": "2"}, "max_runs", 2),
             (
-                "paper-reproduction",
+                "experiment",
                 {
+                    "question": "reproduce the reported primary table",
                     "paper_url": "https://arxiv.org/abs/1",
-                    "target": "reported primary table",
                     "max_runs": "3",
                 },
                 "max_runs",
                 3,
             ),
-            ("paper-watch", {"limit": "4"}, "max_candidates", 4),
-            ("catalog-expansion", {"candidate_limit": "2"}, "max_candidates", 2),
-            ("verification-backlog", {"batch_size": "1"}, "max_models", 1),
+            ("intake", {"candidate_limit": "4"}, "max_candidates", 4),
+            ("maintenance", {"batch_size": "1"}, "max_models", 1),
         ]
         for name, supplied, key, expected in cases:
             with self.subTest(name=name):

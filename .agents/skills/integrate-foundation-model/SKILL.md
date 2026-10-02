@@ -5,7 +5,7 @@ description: Integrate a released pretrained time-series foundation model throug
 
 # Integrate a foundation model
 
-Expose an official pretrained runtime as one flat, inference-only catalog entry.
+Models module, variant of `add-model`: expose an official pretrained runtime as one flat, inference-only catalog entry.
 Do not reimplement the network, copy its source, convert checkpoints without a
 demonstrated need, or bundle weights in TSFLab.
 
@@ -18,7 +18,7 @@ demonstrated need, or bundle weights in TSFLab.
 ## Steps
 
 1. Confirm identity and license; an architecture-only local model is a different
-   claim and belongs to `implement-model`.
+   claim and belongs to `add-model`.
 2. Check whether the official package coexists with the main environment. If
    dependencies conflict, use a compatible provider environment behind the same
    `src/tsflab/models/_foundation/` boundary; never relax core dependencies.
@@ -41,6 +41,13 @@ uv run tsf model artifacts <Name>
 uv run tsf verify model <Name>
 uv run tsf repo doctor --strict --models <Name>
 ```
+
+## Chain
+
+- Module: Models.
+- Reads: official package facts, component cards (L0) for shared interfaces.
+- Produces: an inference-only card, spec, pinned artifacts, preset, evidence (same layout as `add-model`).
+- Hands off to: `run-experiment` (zero-shot runs), `run-autoresearch`, `audit`.
 
 ## Success
 

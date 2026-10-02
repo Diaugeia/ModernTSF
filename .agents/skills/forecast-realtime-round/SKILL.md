@@ -5,7 +5,7 @@ description: Produce, validate, and submit a forecast for an open TSFLab real-ti
 
 # Forecast a real-time round
 
-Real-time tracks open a round each week; forecasts must exist before their target
+Release module: real-time tracks open a round each week; forecasts must exist before their target
 window is observed and are scored when a later data release covers it.
 
 ## Inputs
@@ -47,6 +47,13 @@ window is observed and are scored when a later data release covers it.
 To study the protocol on history instead, use
 `uv run tsf realtime replay --track <track> --end <date> --weeks <n> [--models ...]`;
 replayed rounds live under `work_dirs/_realtime_replay/` and never mix with live ones.
+
+## Chain
+
+- Module: Release.
+- Reads: `round.json`, the track store, the model card (L1) and preset.
+- Produces: a validated forecast file; later `scores.json` and the track summary in `apps/web/data/realtime/<track>.json`.
+- Hands off to: `publish-weights` (weights behind the forecast), `run-autoresearch` (live scores as evidence).
 
 ## Success
 

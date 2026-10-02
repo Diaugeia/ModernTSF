@@ -1,18 +1,20 @@
 ---
 name: run-experiment
-description: Preview and run one or more TSFLab experiment or sweep configurations, in the repository or in a standalone project created with tsf init. Use for training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
+description: Design, preview, and run one or more TSFLab experiment or sweep configurations, in the repository or in a standalone project created with tsf init. Use for choosing baselines, seeds, and budgets, then training, evaluation, ablations, hyperparameter grids, concurrency, or GPU assignment; not for quick contract-only checks.
 ---
 
 # Run experiments
 
-Execute validated configs and report their artifacts. The Agent owns design and
+Experiments module, step one: design, then execute validated configs and report
+their artifacts. Run configs and `work_dirs/` records feed the result board that
+AutoResearch reads. The Agent owns design and
 interpretation; the library owns validation, execution, budgets, and recovery, so
 do not reimplement them with ad hoc subprocesses or edited manifests. Python APIs
 and the CLI below are equivalent.
 
 ## Inputs
 
-- Resolved run configs (from `design-experiment` or the user) and the resource
+- A research question or resolved run configs and the resource
   intent: jobs, GPUs, and an optional research round.
 - For a standalone project, scaffold it with `uv run tsf init <dir>`; its run
   configs extend installed presets through `tsflab://configs/...` and write to
@@ -20,7 +22,9 @@ and the CLI below are equivalent.
 
 ## Steps
 
-1. Preview, then launch:
+1. Without finished configs, design first per [design](references/design.md): a
+   falsifiable comparison, fair baselines, seeds, and budget as inherited TOML.
+   Then preview and launch:
 
    ```bash
    uv run tsf run configs/runs/<run>.toml --dry-run --json
@@ -38,6 +42,13 @@ and the CLI below are equivalent.
 4. For budgets, GPU queueing, tracking, cancellation, or interrupted-run recovery,
    read [execution controls](references/execution.md); ordinary one-off runs do
    not need them.
+
+## Chain
+
+- Module: Experiments.
+- Reads: dataset card (L1) and profile, model card (L1) and preset, the result board for baselines.
+- Produces: resolved configs, run records `work_dirs/<dataset>/<model>/records/<run_id>.json`, optional round events.
+- Hands off to: `analyze-results` (board), `submit-results` (records), `diagnose-experiment`, `run-autoresearch`.
 
 ## Success
 

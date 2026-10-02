@@ -1,0 +1,59 @@
+---
+name: audit
+description: Audit TSFLab at the scope you need: one model against its paper, official code, and evidence; fast smoke checks for some or all models; or the whole repository (Agent assets, catalog drift, cards, documentation, strict runtime contracts) before a release or after structural changes. Use for reviews and gates; not for fixing a contribution or running experiments.
+---
+
+# Audit
+
+Maintenance module: confirm that code, catalogs, cards, evidence, and Agent assets
+agree. Pick the narrowest scope; report failures rather than weakening a gate.
+
+## Inputs
+
+- The scope (one model, a model set, or the whole tree), the working tree, and the
+  affected models when known.
+
+## Steps
+
+1. One model: follow [references/model.md](references/model.md) (metadata, source
+   facts, implementation, evidence), and show every discrepancy with file and line.
+2. Fast checks after an implementation change: follow
+   [references/smoke.md](references/smoke.md) for the narrowest smoke scope.
+3. Whole repository: regenerate projections first, inspect the diff, then gate:
+
+   ```bash
+   uv run tsf repo cards            # regenerate cards and indexes, then inspect the diff
+   uv run tsf repo audit
+   uv run tsf verify stale
+   uv run tsf repo doctor --strict
+   uv run pytest -q
+   ```
+
+   Run affected smoke configs too. Check canonical Agent assets and links, flat
+   models, shared components, README front matter against runtime specs and presets,
+   and public `tsf` instructions. Every model needs local code, a readable card, a
+   manifest entry, and current evidence, with no classification fields, undocumented
+   model, persisted blocker, or failed verification. The strict doctor covers forward
+   execution, finite gradients, batch size one, and exact state-dict and output round
+   trips.
+4. For several models, audit each independently; the task owns partitioning,
+   shared-file writes, and the final gate.
+
+## Chain
+
+- Module: Maintenance.
+- Reads: cards, specs, evidence, assets, and tests of every module.
+- Produces: a gate result by layer; regenerated projections (`tsf repo cards`).
+- Hands off to: `add-model`, `curate-components`, `diagnose-experiment`, `handle-contribution`.
+
+## Success
+
+- All audit sections PASS, zero stale evidence, and a clean `repo cards` diff;
+  otherwise failures reported by layer: assets, metadata, source facts,
+  paper/reference checks, construction, contracts, smoke, formatting, tests.
+
+## Stop and hand off
+
+- Report failures exactly; never edit status, evidence, or claims to make counts pass.
+- Fixes go to `add-model` (single model), `curate-components` (cross-model),
+  `diagnose-experiment` (run failures), or `handle-contribution` (an external change).

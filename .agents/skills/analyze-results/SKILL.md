@@ -5,7 +5,8 @@ description: Aggregate, filter, rank, compare, plot, and report completed TSFLab
 
 # Analyze results
 
-Turn completed runs into comparisons and conclusions the evidence supports. Reason,
+Experiments module, closing step: turn completed runs into comparisons and conclusions
+the evidence supports; the aggregated results are the result board AutoResearch reads. Reason,
 plot, and write with native Agent tools; use library computations for reproducible
 aggregation and protocol checks. The CLI helpers are optional.
 
@@ -35,6 +36,13 @@ aggregation and protocol checks. The CLI helpers are optional.
 4. When a research round exists, append the evidence-backed conclusion and next
    decision, then mark it completed, blocked, or stopped. Metrics stay in result
    artifacts rather than narrative memory.
+
+## Chain
+
+- Module: Experiments.
+- Reads: run records and artifacts under `work_dirs/` (read-only).
+- Produces: the result board: aggregates, ranks, plots, report artifacts, round conclusion.
+- Hands off to: `submit-results` (compatible records), `run-autoresearch` (baselines and bars), `reproduce-paper-results`.
 
 ## Success
 

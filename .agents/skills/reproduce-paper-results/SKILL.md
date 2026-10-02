@@ -5,7 +5,7 @@ description: Reproduce and compare a forecasting paper's reported experiments in
 
 # Reproduce paper results
 
-Rerun a paper's reported experiments under a traceable protocol map and compare
+Experiments module: rerun a paper's reported experiments under a traceable protocol map and compare
 cell by cell. Success means the attempt is rerunnable and traceable, not that the
 numbers match.
 
@@ -17,8 +17,8 @@ numbers match.
 
 ## Steps
 
-1. Route implementation doubts to `audit-model`; when the model is absent, render
-   the `paper-to-model` task instead of implementing it here.
+1. Route implementation doubts to `audit`; when the model is absent, use the
+   `intake` task or `add-model` instead of implementing it here.
 2. Map the protocol: dataset name and version, split boundaries, scaling, feature
    mode, lookback and horizons, covariates, loss, optimizer and schedule, batch
    size, epochs and stopping, seeds, checkpoint selection, metric formula and
@@ -32,11 +32,18 @@ numbers match.
    ```
 
 4. When authorized, execute through `run-experiment`; for multi-run work use the
-   `paper-reproduction` task round and pass it with `tsf run --round`. Preserve raw
+   `experiment` task round and pass it with `tsf run --round`. Preserve raw
    outputs, resolved configs, environment facts, seeds, and failed runs.
 5. Aggregate compatible cells with `analyze-results`, then report per cell: paper
    value, local value, absolute and relative difference, run count, uncertainty,
    and every protocol deviation. Missing or failed cells stay visible.
+
+## Chain
+
+- Module: Experiments.
+- Reads: paper protocol, model card (L2), dataset card, audited evidence.
+- Produces: protocol map, paper-run configs, per-cell paper-versus-local comparison.
+- Hands off to: `run-experiment`, `analyze-results`, `submit-results` (when records are shareable).
 
 ## Success
 

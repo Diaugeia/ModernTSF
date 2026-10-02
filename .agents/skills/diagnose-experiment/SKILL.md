@@ -5,7 +5,7 @@ description: Diagnose a failed, unstable, or invalid TSFLab experiment. Use for 
 
 # Diagnose an experiment
 
-Find the earliest supported root cause of a bad run. Scheduler labels such as OOM
+Experiments module: find the earliest supported root cause of a bad run. Scheduler labels such as OOM
 are signals, not a diagnosis; use library state, audit, and recovery APIs where
 their guarantees matter.
 
@@ -28,6 +28,13 @@ their guarantees matter.
    never lower the scientific workload and call it equivalent.
 5. When the run belongs to a research round, append the supported classification
    or decision to it; do not paste the full log or keep a separate ledger.
+
+## Chain
+
+- Module: Experiments.
+- Reads: run status, attempt logs, resolved config, model smoke case.
+- Produces: a root-cause note (classification, affected runs) in the round when one exists.
+- Hands off to: `run-experiment` (repaired runs), `analyze-results` (valid outputs), `handle-contribution`.
 
 ## Success
 
