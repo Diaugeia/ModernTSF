@@ -24,3 +24,13 @@ def node_calendar(index: pd.DatetimeIndex, num_nodes: int) -> np.ndarray:
     """``(T, N, 2)`` time-of-day and day-of-week covariates broadcast to every node."""
     features = np.stack([time_of_day(index), day_of_week(index)], axis=-1)  # (T, 2)
     return np.repeat(features[:, None, :], num_nodes, axis=1)
+
+
+def time_marks(index: pd.DatetimeIndex) -> np.ndarray:
+    """``(T, 6)`` year, month, day, weekday, hour, minute marks.
+
+    Same layout as the CSV loaders' ``_build_time_stamp`` (raw integers).
+    """
+    return np.column_stack(
+        [index.year, index.month, index.day, index.dayofweek, index.hour, index.minute]
+    ).astype(np.float32)

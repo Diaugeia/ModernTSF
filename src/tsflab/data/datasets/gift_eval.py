@@ -20,6 +20,9 @@ from tsflab.data.schemas.datasets.gift_eval import GiftEvalParameterConfig
 # Prediction-length maps (replicated from GIFT-EVAL to avoid runtime dep)
 # ---------------------------------------------------------------------------
 
+# Mirrors gift_eval's PRED_LENGTH_MAP (src/gift_eval/data.py). Upstream defines no
+# quarterly/yearly entries (Q/A series come only from M4, see below), so none are
+# added here; the GIFT-Eval paper publishes no values for them either.
 _PRED_LENGTH_MAP = {
     "M": 12,
     "W": 8,

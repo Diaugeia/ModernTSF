@@ -1,7 +1,7 @@
 ---
-name: "gift_eval/jena_weather"
+name: "gift_eval/jena_weather_H"
 kind: "dataset"
-summary: "GIFT-Eval Jena Weather: one series of 21 meteorological variates, short-term horizon 48; frequency and length are not recorded for this id."
+summary: "GIFT-Eval Jena Weather at hourly frequency (id jena_weather/H): one series of 21 meteorological variates, short-term horizon 48."
 domain: "Nature"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "multivariate", "nature", "weather", "meteorology", "jena"]
 source: "MPI for Biogeochemistry, Jena weather station"
@@ -10,7 +10,7 @@ citation: "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Eval
 citation_url: "https://arxiv.org/abs/2410.10393"
 license: "CC-BY-4.0"
 redistribution: "allowed"
-frequency: "not recorded (the id has no frequency suffix)"
+frequency: "hourly (1h)"
 time_span: "varies by series; not recorded in the GIFT-Eval metadata used here"
 length: "not reported"
 channels: 21
@@ -22,18 +22,18 @@ seq_lens: []
 pred_lens: [48]
 split: "per series: last 10% test, one horizon validation, rest train"
 stats_basis: "source-reported"
-related: ["weather"]
-config: "configs/datasets/gift_eval/jena_weather.toml"
+related: ["weather", "gift_eval/jena_weather_10T", "gift_eval/jena_weather_D"]
+config: "configs/datasets/gift_eval/jena_weather_H.toml"
 loader: "gift_eval"
-alias: "gift_eval/jena_weather"
+alias: "gift_eval/jena_weather_H"
 task_modes: ["time_series"]
 ---
 
-# gift_eval/jena_weather
+# gift_eval/jena_weather_H
 
 ## Overview
 
-Jena Weather (jena_weather) is the GIFT-Eval series collection built from 21 meteorological indicators from the Max Planck Institute for Biogeochemistry weather station in Jena, as prepared for Autoformer. It is part of the Nature domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (48 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
+Jena Weather (jena_weather/H) is the GIFT-Eval series collection built from 21 meteorological indicators from the Max Planck Institute for Biogeochemistry weather station in Jena, as prepared for Autoformer. It is part of the Nature domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (48 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
 
 ## Provenance and license
 
@@ -51,7 +51,7 @@ Jena Weather (jena_weather) is the GIFT-Eval series collection built from 21 met
 | Variates per series | 21 | source-reported |
 | Mean length per series | not reported | source-reported |
 | Total observations | not reported | source-reported |
-| Frequency | not recorded (the id has no frequency suffix) | source-reported |
+| Frequency | hourly (1h) | source-reported (Hugging Face layout `jena_weather/H`) |
 | Short-term test windows | not reported | source-reported |
 
 All values are source-reported; nothing here was measured from local files because GIFT-Eval data are not bundled. The loader reports the series count through its own windowing, not through this table.
@@ -63,20 +63,20 @@ All values are source-reported; nothing here was measured from local files becau
 - Context length is not fixed by GIFT-Eval; pick `seq_len` per model and report it. Leaderboard metrics (MASE, CRPS) are scale-free and probabilistic; scores from this preset are comparable only when the same metric and windows are used.
 - Leakage: the pretraining corpora of several foundation models overlap GIFT-Eval test data (source-reported). Use the GIFT-Eval pretrain split or a clean corpus when claiming zero-shot results.
 - Multivariate: `features = "M"` forecasts all variates; `S` keeps the first variate only.
-- The id has no frequency suffix, unlike other multi-frequency GIFT-Eval datasets (the paper lists Jena at 10T, H and D). Check that `dataset/gift_eval/jena_weather` exists after download; not verified locally.
+- Jena Weather exists at three frequencies in `Salesforce/GiftEval` (`jena_weather/10T`, `jena_weather/H`, `jena_weather/D`, checked against the Hugging Face repository tree); this preset selects `jena_weather/H`; siblings: `gift_eval/jena_weather_10T`, `gift_eval/jena_weather_D`. The older unsuffixed id `jena_weather` is not a preset. Not verified locally.
 
 <!-- dataset-card:canonical:start -->
 ## Loader and files
 
 - Registry loader: `gift_eval`
-- Config: [`configs/datasets/gift_eval/jena_weather.toml`](../../../../configs/datasets/gift_eval/jena_weather.toml)
+- Config: [`configs/datasets/gift_eval/jena_weather_H.toml`](../../../../configs/datasets/gift_eval/jena_weather_H.toml)
 - Local path: `./dataset/gift_eval`
-- Dataset id: `jena_weather`
+- Dataset id: `jena_weather/H`
 - Track: `standard`
 
 ## Input and output contract
 
-Windowed history/target values and timestamp marks; after batching, values use `[batch, time, channels]`.
+Windowed history/target values and timestamp marks `(year, month, day, weekday, hour, minute)` synthesised from each series' start date and frequency; after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -100,11 +100,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/jena_weather.toml`; fetch
-published files with `tsf data download gift_eval/jena_weather` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/jena_weather_H.toml`. Not published through the TSFLab manifest. Fetch the Hugging Face `Salesforce/GiftEval` data with `tsf data prepare --from gift --datasets jena_weather/H` (or `--link-only` for an existing download); it links `./dataset/gift_eval`. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

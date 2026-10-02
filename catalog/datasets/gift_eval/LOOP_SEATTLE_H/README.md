@@ -75,7 +75,7 @@ All values are source-reported; nothing here was measured from local files becau
 
 ## Input and output contract
 
-Windowed history/target values and timestamp marks; after batching, values use `[batch, time, channels]`.
+Windowed history/target values and timestamp marks `(year, month, day, weekday, hour, minute)` synthesised from each series' start date and frequency; after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -99,11 +99,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/LOOP_SEATTLE_H.toml`; fetch
-published files with `tsf data download gift_eval/LOOP_SEATTLE_H` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/LOOP_SEATTLE_H.toml`. Not published through the TSFLab manifest. Fetch the Hugging Face `Salesforce/GiftEval` data with `tsf data prepare --from gift --datasets LOOP_SEATTLE/H` (or `--link-only` for an existing download); it links `./dataset/gift_eval`. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

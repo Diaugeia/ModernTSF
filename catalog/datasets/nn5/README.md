@@ -73,7 +73,7 @@ The repository neither ships nor pins this file (`dataset/` is local and the Hub
 
 ## Input and output contract
 
-Each item provides history/target windows and timestamp marks; after batching, values use `[batch, time, channels]`.
+Each item provides history/target windows and timestamp marks `(year, month, day, weekday, hour, minute)` parsed from the file's date column; after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -100,11 +100,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/nn5.toml`; fetch
-published files with `tsf data download nn5` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/nn5.toml`. Not published and not downloadable with TSFLab: place the data file at the local path above (`./dataset/NN5/NN5.csv`) yourself; `tsf data prepare` has no converter for it. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

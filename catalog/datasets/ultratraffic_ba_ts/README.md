@@ -63,7 +63,7 @@ Measured from the local parquet store and manifest under `dataset/` (read-only).
 - **Scaling.** One scalar mean and standard deviation is computed on the training rows across all stations (not per station), so large stations dominate and per-station scale differences remain; the loader's `value_mean`/`value_std` are used for inversion.
 - **Gap filling.** The loader linearly interpolates (both directions) and zero-fills the whole panel before splitting; for the static 2023 panel there are no gaps, but other variants or years could use future values to fill earlier gaps.
 - **Zeros.** Some stations report exact zeros for many hours (8% of the District 8 values, 4% of District 3), probably outages or closures rather than real empty roads; this was not traced to the source.
-- **No calendar features (ts layout).** `ultratraffic_ts` passes all-zero timestamp stamps, so models see no time-of-day or day-of-week information; the `_st` presets add those two covariates.
+- **Calendar marks (ts layout).** `ultratraffic_ts` builds real timestamp marks from the panel's hourly index: raw integer `(year, month, day, weekday, hour, minute)` per step, the same layout as the custom CSV loader's marks (all zeros only with `calendar = false`). The `_st` presets instead carry time-of-day and day-of-week as node covariates scaled to [0, 1).
 - **No adjacency.** The archive carries no station coordinates, so graph models receive no adjacency (`adj_mx` is None).
 - **Different from `traffic`.** This is hourly flow in vehicles per hour for 2023, not LTSF's 2015-2016 occupancy rate.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
@@ -79,7 +79,7 @@ Measured from the local parquet store and manifest under `dataset/` (read-only).
 
 ## Input and output contract
 
-Each item contains history/future values shaped `[time, nodes]` (nodes become channels) plus timestamp marks before batching; covariates are dropped.
+Each item contains history/future values shaped `[time, nodes]` (stations become channels) plus real timestamp marks `(year, month, day, weekday, hour, minute)` built from the panel's hourly index, as the CSV loaders do (all zeros only when `calendar = false`).
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -110,11 +110,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/ultratraffic_ba_ts.toml`; fetch
-published files with `tsf data download ultratraffic_ba_ts` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/ultratraffic_ba_ts.toml`. Not published. Build the local parquet store from the UltraTraffic archive with `tsf data prepare --from ultratraffic --archive <TrafficCL.zip>` (writes `./dataset/ultratraffic` by default). Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

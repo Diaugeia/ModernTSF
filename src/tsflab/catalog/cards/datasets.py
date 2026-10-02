@@ -99,6 +99,8 @@ class DatasetRecord:
     task: dict[str, object]
     track: str
     task_modes: tuple[str, ...]
+    #: True when configs/hub/datasets.json pins at least one file for this preset.
+    published: bool = False
 
 
 def _quoted(value: object) -> str:
@@ -117,10 +119,22 @@ def _task_modes_for_loader(loader: str) -> tuple[str, ...]:
     return ordered_task_modes(DATASET_REGISTRY.get(loader).task_modes)
 
 
+def _is_published(root: Path, name: str, manifest: dict) -> bool:
+    """Whether the pinned Hub manifest holds files for preset ``name``."""
+    from tsflab.release.hub.datasets import published_files
+
+    try:
+        return bool(published_files(name, manifest, root))
+    except (FileNotFoundError, ValueError, KeyError):
+        return False
+
+
 def dataset_records(root: Path) -> tuple[DatasetRecord, ...]:
     """Read every dataset preset without importing its runtime dependencies."""
     config_root = root / "configs" / "datasets"
     records: list[DatasetRecord] = []
+    manifest_file = root / "configs" / "hub" / "datasets.json"
+    manifest = json.loads(manifest_file.read_text(encoding="utf-8")) if manifest_file.is_file() else {"files": {}}
     for path in sorted(config_root.rglob("*.toml")):
         payload = tomllib.loads(path.read_text(encoding="utf-8"))
         dataset = payload.get("dataset", {})
@@ -138,6 +152,7 @@ def dataset_records(root: Path) -> tuple[DatasetRecord, ...]:
                 task=dict(payload.get("task", {})),
                 track=str(dataset.get("track", "")),
                 task_modes=_task_modes_for_loader(str(dataset.get("name", ""))),
+                published=_is_published(root, name, manifest),
             )
         )
     return tuple(records)
@@ -219,26 +234,89 @@ def _front_matter(
 # Generated blocks
 # ---------------------------------------------------------------------------
 
+_MARKS = "`(year, month, day, weekday, hour, minute)`"
+
+
 def _item_contract(record: DatasetRecord) -> str:
-    if record.loader == "gift_eval":
+    loader = record.loader
+    if loader == "gift_eval":
         return (
-            "Windowed history/target values and timestamp marks; after batching, "
-            "values use `[batch, time, channels]`."
+            "Windowed history/target values and timestamp marks "
+            f"{_MARKS} synthesised from each series' start date and frequency; after "
+            "batching, values use `[batch, time, channels]`."
         )
-    if record.loader in {"cauair_st", "synthetic_st", "ultratraffic_st", "realtime_panel_st"}:
+    if loader in {"cauair_st", "synthetic_st", "ultratraffic_st", "realtime_panel_st"}:
         return (
             "Each item is `(value_history, value_future, covariate_history, covariate_future)`; "
-            "values use `[time, nodes]` and covariates `[time, nodes, features]` before batching."
+            "values use `[time, nodes]` and covariates `[time, nodes, features]` before batching. "
+            "There are no separate timestamp marks: calendar information, when present, is carried "
+            "by the covariates."
         )
-    if record.loader in {"cauair_ts", "ultratraffic_ts", "realtime_panel_ts"}:
+    if loader == "cauair_ts":
         return (
             "Each item contains history/future values shaped `[time, nodes]` (nodes become "
-            "channels) plus timestamp marks before batching; covariates are dropped."
+            "channels) plus all-zero timestamp marks `[time, 6]` before batching; the bundle's "
+            "covariates are dropped, so no calendar information reaches the model."
+        )
+    if loader == "ultratraffic_ts":
+        return (
+            "Each item contains history/future values shaped `[time, nodes]` (stations become "
+            f"channels) plus real timestamp marks {_MARKS} built from the panel's hourly index, "
+            "as the CSV loaders do (all zeros only when `calendar = false`)."
+        )
+    if loader == "realtime_panel_ts":
+        return (
+            "Each item contains history/future values shaped `[time, channels]` plus timestamp "
+            f"marks {_MARKS} from the panel index (all zeros when `calendar = false`)."
+        )
+    if loader == "solar":
+        if record.params.get("start"):
+            return (
+                "Each item provides history/target windows and timestamp marks "
+                f"{_MARKS} synthesised from the preset's `start` and `freq` (the file has no date "
+                "column); after batching, values use `[batch, time, channels]`."
+            )
+        return (
+            "Each item provides history/target windows and all-zero timestamp marks (the file has "
+            "no date column and no `start` is set); after batching, values use `[batch, time, channels]`."
         )
     return (
-        "Each item provides history/target windows and timestamp marks; after batching, "
-        "values use `[batch, time, channels]`."
+        "Each item provides history/target windows and timestamp marks "
+        f"{_MARKS} parsed from the file's date column; after batching, values use "
+        "`[batch, time, channels]`."
     )
+
+
+def _preparation(record: DatasetRecord) -> str:
+    """Return the correct acquisition command for this preset's loader family."""
+    check = f"Inspect availability with `tsf data inspect --config {record.config}`. "
+    loader = record.loader
+    if record.published:
+        how = (f"The files are published in the pinned Hub manifest: run "
+               f"`tsf data download {record.name}`.")
+    elif loader in {"ultratraffic_st", "ultratraffic_ts"}:
+        how = ("Not published. Build the local parquet store from the UltraTraffic archive with "
+               "`tsf data prepare --from ultratraffic --archive <TrafficCL.zip>` "
+               f"(writes `{record.path}` by default).")
+    elif loader == "cauair_st" or loader == "cauair_ts":
+        how = ("Not published. Convert a raw value array and adjacency into the node bundle with "
+               f"`tsf data prepare --from traffic --values <values.npz> --adj <adj> --output-dir "
+               f"{record.path} --add-time --freq-min <minutes>` (defaults: 12-step history and "
+               "horizon, statistics fitted on the training rows only).")
+    elif loader == "gift_eval":
+        gift_id = record.dataset_id
+        how = ("Not published through the TSFLab manifest. Fetch the Hugging Face "
+               f"`Salesforce/GiftEval` data with `tsf data prepare --from gift --datasets {gift_id}` "
+               f"(or `--link-only` for an existing download); it links `{record.path}`.")
+    elif loader in {"realtime_panel_st", "realtime_panel_ts"}:
+        how = ("Not published as files. The panel store is written by the real-time track "
+               "(see `docs/en/realtime.md` and `tsf realtime --help`) under the local path above, "
+               "or pulled from a Hub revision via `dataset.params.revision`.")
+    else:
+        how = ("Not published and not downloadable with TSFLab: place the data file at the local "
+               f"path above (`{record.path}`) yourself; `tsf data prepare` has no converter for it.")
+    return (f"{check}{how} Reference this preset from an experiment configuration rather than "
+            "duplicating its loader parameters.")
 
 
 def render_runtime_block(record: DatasetRecord) -> str:
@@ -278,11 +356,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config {record.config}`; fetch
-published files with `tsf data download {record.name}` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+{_preparation(record)}
 
 ## Composition constraints
 

@@ -50,7 +50,7 @@ No source-reported or measured statistics exist for this file: length, channel c
 - Preset defaults: `target = "OT"`, `scale = true`, `split_ratio = [0.7, 0.1, 0.2]`; scaling statistics come from the training split only.
 - The target column must be named `OT`, the first column must be a parseable `date`, and every other column must be numeric.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
-- **Target column.** `features = "S"` forecasts `OT`; `"MS"` forecasts the last column.
+- **Target column.** Unlike `aqshunyi`/`aqwan` (target `WSPM`), this preset keeps `OT` because its file is neither shipped nor pinned, so its real column names are unverifiable here; change `target` to match your file. `features = "S"` forecasts `OT`; `"MS"` forecasts the last column.
 
 <!-- dataset-card:canonical:start -->
 ## Loader and files
@@ -63,7 +63,7 @@ No source-reported or measured statistics exist for this file: length, channel c
 
 ## Input and output contract
 
-Each item provides history/target windows and timestamp marks; after batching, values use `[batch, time, channels]`.
+Each item provides history/target windows and timestamp marks `(year, month, day, weekday, hour, minute)` parsed from the file's date column; after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -90,11 +90,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/beijing_air.toml`; fetch
-published files with `tsf data download beijing_air` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/beijing_air.toml`. Not published and not downloadable with TSFLab: place the data file at the local path above (`./dataset/BeijingAirQuality/BeijingAirQuality.csv`) yourself; `tsf data prepare` has no converter for it. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 
