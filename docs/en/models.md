@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -94,6 +94,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Kronos` | [`configs/models/Kronos.toml`](../../configs/models/Kronos.toml) | time-series | [README](../../src/tsflab/models/kronos/README.md) |
 | `LassoRegressionTS` | [`configs/models/LassoRegressionTS.toml`](../../configs/models/LassoRegressionTS.toml) | time-series | [README](../../src/tsflab/models/lasso_regression_ts/README.md) |
 | `LatentTSF` | [`configs/models/LatentTSF.toml`](../../configs/models/LatentTSF.toml) | pretraining-stage, time-series | [README](../../src/tsflab/models/latenttsf/README.md) |
+| `LIFT` | [`configs/models/LIFT.toml`](../../configs/models/LIFT.toml) | time-series | [README](../../src/tsflab/models/lift/README.md) |
 | `LightGBMTS` | [`configs/models/LightGBMTS.toml`](../../configs/models/LightGBMTS.toml) | time-series | [README](../../src/tsflab/models/lightgbm_ts/README.md) |
 | `LightTS` | [`configs/models/LightTS.toml`](../../configs/models/LightTS.toml) | time-series | [README](../../src/tsflab/models/lightts/README.md) |
 | `Linear` | [`configs/models/Linear.toml`](../../configs/models/Linear.toml) | time-series | [README](../../src/tsflab/models/linear/README.md) |

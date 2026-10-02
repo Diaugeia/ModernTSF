@@ -104,7 +104,7 @@ from tsflab.models._components.dlinear import DLinearBackbone
 
 `decomposition`, `linear`, `moving-average`, `seasonal`, `trend`
 
-## Current model consumers (4)
+## Current model consumers (5)
 
-`dlinear`, `latenttsf`, `mtlinear`, `quantile_dlinear`
+`dlinear`, `latenttsf`, `lift`, `mtlinear`, `quantile_dlinear`
 <!-- component-card:generated:end -->

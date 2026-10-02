@@ -1068,3 +1068,9 @@ profile = 'standard'
 test = 'tests/test_mtlinear.py'
 reference_test = 'tests/test_mtlinear.py::MTLinearTests::test_clustering_matches_complete_linkage_reference'
 reference_sources = ['https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/models/MTLinear.py', 'https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/utils/grad_manip.py', 'https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/exp/exp_main.py']
+
+[models.LIFT]
+profile = 'standard'
+test = 'tests/test_lift.py'
+reference_test = 'tests/test_lift.py::LIFTTests::test_cross_correlation_matches_direct_sum'
+reference_sources = ['https://github.com/SJTU-Quant/LIFT/blob/79cf8f157bb9a616c9733daf1e9c2cfefdc98c94/models/LIFT.py', 'https://github.com/SJTU-Quant/LIFT/blob/79cf8f157bb9a616c9733daf1e9c2cfefdc98c94/util/lead_estimate.py']
