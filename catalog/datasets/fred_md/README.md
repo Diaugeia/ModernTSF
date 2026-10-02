@@ -17,7 +17,8 @@ channels: 107
 channel_kind: "series"
 target: "OT (last series)"
 missing_values: "the paper's database has 134 series; the TFB file keeps 107 (selection undocumented) with no NaN"
-protocol: "TFB multivariate: lookback 36 or 104, horizons 24/36/48/60, chronological 7:1:2"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 36/104, horizons 24/36/48/60"
+literature_protocol: "TFB multivariate: lookback 36 or 104, horizons 24/36/48/60, chronological 7:1:2"
 seq_lens: [36, 104]
 pred_lens: [24, 36, 48, 60]
 split: "7:1:2"

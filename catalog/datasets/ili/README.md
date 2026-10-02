@@ -17,7 +17,8 @@ channels: 7
 channel_kind: "channels"
 target: "OT (last column)"
 missing_values: "none in the standard file"
-protocol: "LTSF: lookback 36, horizons 24/36/48/60, chronological 7:1:2, MSE/MAE on z-scored data"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 36/104, horizons 24/36/48/60"
+literature_protocol: "LTSF: lookback 36, horizons 24/36/48/60, chronological 7:1:2, MSE/MAE on z-scored data"
 seq_lens: [36, 104]
 pred_lens: [24, 36, 48, 60]
 split: "7:1:2"

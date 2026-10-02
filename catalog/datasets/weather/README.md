@@ -17,7 +17,8 @@ channels: 21
 channel_kind: "channels"
 target: "OT"
 missing_values: "no NaN; the raw -9999 missing-value sentinel remains in OT (50 rows), max. PAR (30) and wv (1)"
-protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"
@@ -61,7 +62,7 @@ Measured on `dataset/weather/weather.csv` (read-only).
 
 - **Split.** 7:1:2 chronological, scaling on training rows only. The test split is roughly mid-October to December 2020 and the training split is January to August, so seasonal shift between train and test is large.
 - **Sentinels.** `-9999` marks missing readings. They stay in `OT` (50 rows), `max. PAR` (30), and `wv` (1) and become extreme outliers after z-scoring; clean or mask them before comparing against papers that report on this file as-is.
-- **Target.** `features = "S"` forecasts `OT`; `"MS"` forecasts the last column, which is `wv (m/s)` in this file because the columns are alphabetical, not `OT`.
+- **Target.** `"S"` and `"MS"` both forecast `OT`: the loader moves the named target to the last channel in `MS` mode, so the alphabetical column order of this file does not change the target.
 - **Encoding.** Column names containing the micro and superscript characters were stored with replacement characters; do not select columns by those names.
 - **Intermittent channels.** `rain (mm)` and `raining (s)` are mostly zero, so MSE is dominated by smooth channels while MAPE-style metrics are undefined.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

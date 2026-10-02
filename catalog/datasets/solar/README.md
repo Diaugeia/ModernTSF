@@ -17,7 +17,8 @@ channels: 137
 channel_kind: "channels"
 target: "column \"0\" (first plant) in S mode; all 137 plants in M mode"
 missing_values: "none (measured: no NaN); night values are exact zeros, not missing"
-protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720; TFB uses chronological 6:2:2 while this preset uses 7:1:2; LSTNet used 6:2:2 with horizons 3/6/12/24 steps"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720; TFB uses chronological 6:2:2 while this preset uses 7:1:2; LSTNet used 6:2:2 with horizons 3/6/12/24 steps"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"
@@ -59,7 +60,7 @@ Measured on `dataset/solar/solar.txt` (read-only); hour of day is derived assumi
 ## Standard protocol and known pitfalls
 
 - **Zeros at night.** About 55% of all values are exactly zero (hours 0-4 and 19-23 are all zero, measured). Relative-error metrics such as MAPE are undefined there, z-scoring turns the night level into a large negative constant, and a large share of the error budget is the day-night mask rather than cloud-driven variation.
-- **Split mismatch.** The preset uses 7:1:2 while TFB and LSTNet use 6:2:2. Autoformer does not use Solar. Do not compare numbers across split conventions.
+- **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
 - **No timestamps.** The file has no date column; the loader assigns the same constant calendar mark (all-zero date) to every step, so models that rely on time marks receive no calendar information. Daily periodicity must be learned from the values.
 - **Target.** `target = "0"` selects the first plant for `features = "S"`; `"MS"` forecasts the last plant.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

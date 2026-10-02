@@ -17,7 +17,8 @@ channels: 7
 channel_kind: "channels"
 target: "OT"
 missing_values: "none (measured: no empty cells, no duplicate or missing timestamps)"
-protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 6:2:2 (12/4/4 months), MSE/MAE on z-scored data"
+protocol: "TSFLab: chronological 6:2:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 6:2:2 (12/4/4 months), MSE/MAE on z-scored data"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "6:2:2"
@@ -63,7 +64,7 @@ Measured on `dataset/ETT-small/ETTm1.csv` (read-only).
 ## Standard protocol and known pitfalls
 
 - **Truncation.** The loader reads only the first 57,600 rows (20 months), so the last 12,080 rows of the 69,680-row CSV are never used (measured). The 20 months split chronologically as 12/4/4 months, which the ratio `[0.6, 0.2, 0.2]` reproduces exactly: train rows 0-34,559, validation to row 46,080, test to row 57,600.
-- **Split convention.** ETT uses 6:2:2; most other LTSF sets use 7:1:2. Do not copy the ratio from another preset, and do not compare numbers across the two conventions.
+- **Split.** TSFLab uses a chronological 6:2:2 split for this dataset. Results reported under other splits (7:1:2) are not directly comparable.
 - **Window overlap.** Validation and test splits start `seq_len` rows early so the first target window has full context. This reuses earlier rows only as inputs; scaling statistics are fitted on the training rows alone (`scale = true`).
 - **`drop_last`.** The loaders keep the final partial batch (`drop_last=False`) for every split, so test metrics cover every window. Reference code that drops the last test batch reports slightly different numbers, more so at large batch sizes.
 - **Target.** `features = "S"` forecasts `OT`; `"MS"` forecasts the last column, which is also `OT` here; `"M"` forecasts all seven channels.

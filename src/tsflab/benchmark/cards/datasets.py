@@ -43,6 +43,7 @@ CURATED_KEYS = (
     "target",
     "missing_values",
     "protocol",
+    "literature_protocol",
     "seq_lens",
     "pred_lens",
     "split",
@@ -50,8 +51,10 @@ CURATED_KEYS = (
     "related",
     "realtime_track",
 )
-#: Keys every preset card must carry (``realtime_track`` is optional).
-REQUIRED_PRESET_KEYS = tuple(key for key in CURATED_KEYS if key != "realtime_track")
+#: Keys every preset card must carry; ``OPTIONAL_KEYS`` may be omitted.
+#: ``protocol`` is the TSFLab protocol; ``literature_protocol`` is context only.
+OPTIONAL_KEYS = ("realtime_track", "literature_protocol")
+REQUIRED_PRESET_KEYS = tuple(key for key in CURATED_KEYS if key not in OPTIONAL_KEYS)
 #: A family card describes a collection, so per-series facts are not required.
 REQUIRED_FAMILY_KEYS = (
     "summary", "domain", "tags", "source", "source_url", "citation", "citation_url",

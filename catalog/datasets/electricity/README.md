@@ -15,9 +15,10 @@ time_span: "2012-01-01 00:00:01 to 2014-12-31 23:00:01"
 length: 26304
 channels: 321
 channel_kind: "channels"
-target: "all 321 clients (no OT column in this file)"
+target: "321 (last client column; the TSLib copy names it OT)"
 missing_values: "none; clients that started after 2012 carry zeros before their start; the 1-second timestamp offset is part of the file"
-protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"
@@ -58,8 +59,8 @@ Measured on `dataset/electricity/electricity.csv` (read-only).
 
 ## Standard protocol and known pitfalls
 
-- **Split.** The preset uses 7:1:2 (Autoformer/TFB convention); the original LSTNet paper used 6:2:2. Scaling statistics come from the training rows only.
-- **Target column.** The preset sets `target = "OT"`, but this file has no `OT` column: `features = "S"` would raise a `KeyError`. Use `features = "M"` (all 321 clients) or `"MS"`, which forecasts the last column (client 321).
+- **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable. Scaling statistics come from the training rows only.
+- **Target column.** This copy names the clients `1` to `321` and has no `OT` column, so the preset targets `321`, the last client, which is the column the TSLib copy calls `OT`. `features = "M"` uses all 321 clients; `"S"` and `"MS"` forecast client `321`.
 - **Scale heterogeneity.** Client magnitudes span several orders (maximum 764,000 versus mean 2,539), so per-channel z-scoring is essential and a few clients dominate unscaled errors.
 - **Zero blocks.** Four clients are mostly zero and one client only starts after row 160 (measured); a zero is not always a measurement.
 - **Timestamps** carry a one-second offset (`00:00:01`); calendar features are unaffected.

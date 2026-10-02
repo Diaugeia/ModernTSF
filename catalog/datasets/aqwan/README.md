@@ -17,7 +17,8 @@ channels: 11
 channel_kind: "channels"
 target: "OT (last column, WSPM) by convention"
 missing_values: "the UCI original has NA cells (5,146 NA cells at Wanshouxigong); the TFB file has no NaN, so they were filled, and the categorical wind direction column was dropped"
-protocol: "TFB: lookback 96, 336 or 512, horizons 96/192/336/720, chronological 6:2:2; this preset's default split is 7:1:2"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "TFB: lookback 96, 336 or 512, horizons 96/192/336/720, chronological 6:2:2; this preset's default split is 7:1:2"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"
@@ -56,7 +57,7 @@ The repository neither ships nor pins this file (`dataset/` is local and the Hub
 
 ## Standard protocol and known pitfalls
 
-- **Split mismatch.** TFB reports 6:2:2 for the AQ sets, while this preset keeps the generic custom-loader default 7:1:2; pass `split_ratio = [0.6, 0.2, 0.2]` when reproducing TFB tables.
+- **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
 - **Imputation.** The TFB file's NaN-free values were filled; the filling method is not documented, so errors at formerly missing hours are not real measurements.
 - **Heavy tails.** PM2.5 and PM10 spike during haze episodes; z-scoring on the training split leaves outliers, and MSE is dominated by a few events.
 - **Target column.** The last column is `WSPM` (wind speed), not a pollutant, so `features = "MS"` forecasts wind speed; use `"S"` with `target` set to a pollutant such as `PM2.5` if that is the goal.

@@ -17,7 +17,8 @@ channels: 325
 channel_kind: "nodes"
 target: "traffic speed"
 missing_values: "not verified"
-protocol: "DCRNN: 12 steps in, 12 steps out (reported at 15/30/60 minutes), chronological 7:1:2, masked MAE/RMSE/MAPE"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 12, horizons 12"
+literature_protocol: "DCRNN: 12 steps in, 12 steps out (reported at 15/30/60 minutes), chronological 7:1:2, masked MAE/RMSE/MAPE"
 seq_lens: [12]
 pred_lens: [12]
 split: "7:1:2"

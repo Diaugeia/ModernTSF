@@ -17,7 +17,8 @@ channels: "unknown (file not pinned)"
 channel_kind: "channels"
 target: "OT (the column the preset names; must exist in the file)"
 missing_values: "unknown"
-protocol: "No published protocol; generic LTSF defaults (lookback 96, horizons 96/192/336/720, chronological 7:1:2) apply"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96, horizons 96/192/336/720"
+literature_protocol: "No published protocol; generic LTSF defaults (lookback 96, horizons 96/192/336/720, chronological 7:1:2) apply"
 seq_lens: [96]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"

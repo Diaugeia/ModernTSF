@@ -15,9 +15,10 @@ time_span: "2015-01-01 00:00:01 to 2016-12-31 23:00:01"
 length: 17544
 channels: 862
 channel_kind: "channels"
-target: "all 862 sensors (no OT column in this file)"
+target: "862 (last sensor column; the TSLib copy names it OT)"
 missing_values: "none in this file (measured)"
-protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
 split: "7:1:2"
@@ -57,8 +58,8 @@ Measured on `dataset/traffic/traffic.csv` (read-only).
 
 ## Standard protocol and known pitfalls
 
-- **Split.** The preset uses 7:1:2 (Autoformer/TFB); LSTNet used 6:2:2. Scaling uses training rows only.
-- **Target column.** `target = "OT"` does not exist in this file, so `features = "S"` fails; use `"M"` or `"MS"` (last column, sensor 862).
+- **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
+- **Target column.** This copy names the sensors `1` to `862` and has no `OT` column, so the preset targets `862`, the last sensor, which the TSLib copy calls `OT`. `"S"` and `"MS"` forecast sensor `862`.
 - **Memory.** 862 channels with a long lookback make attention-style models expensive; many papers cap batch size or channel sampling, which changes results.
 - **Different dataset, same name.** The PeMS03/04/07/08 presets are 5-minute flow graphs and the `ultratraffic_*` presets are hourly flow per station for 2023; none are comparable with this occupancy file.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

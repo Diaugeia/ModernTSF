@@ -17,7 +17,8 @@ channels: 111
 channel_kind: "series"
 target: "OT (last series)"
 missing_values: "the TFB file is the imputed version (no NaN); raw NN5 contains missing values and zeros"
-protocol: "TFB multivariate: lookback 36 or 104, horizons 24/36/48/60, chronological 7:1:2; the original competition used horizon 56 days"
+protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 36/104, horizons 24/36/48/60"
+literature_protocol: "TFB multivariate: lookback 36 or 104, horizons 24/36/48/60, chronological 7:1:2; the original competition used horizon 56 days"
 seq_lens: [36, 104]
 pred_lens: [24, 36, 48, 60]
 split: "7:1:2"
