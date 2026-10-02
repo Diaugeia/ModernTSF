@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -30,6 +30,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `CATS` | [`configs/models/CATS.toml`](../../configs/models/CATS.toml) | time-series | [README](../../src/tsflab/models/cats/README.md) |
 | `CauAir` | [`configs/models/CauAir.toml`](../../configs/models/CauAir.toml) | covariate | [README](../../src/tsflab/models/cauair/README.md) |
 | `CMoS` | [`configs/models/CMoS.toml`](../../configs/models/CMoS.toml) | time-series | [README](../../src/tsflab/models/cmos/README.md) |
+| `Composed` | [`configs/models/Composed.toml`](../../configs/models/Composed.toml) | time-series | [README](../../src/tsflab/models/composed/README.md) |
 | `CoRA` | [`configs/models/CoRA.toml`](../../configs/models/CoRA.toml) | time-series | [README](../../src/tsflab/models/cora/README.md) |
 | `CoRe` | [`configs/models/CoRe.toml`](../../configs/models/CoRe.toml) | test-time-adaptation, time-series | [README](../../src/tsflab/models/core/README.md) |
 | `COSA` | [`configs/models/COSA.toml`](../../configs/models/COSA.toml) | test-time-adaptation, time-series | [README](../../src/tsflab/models/cosa/README.md) |

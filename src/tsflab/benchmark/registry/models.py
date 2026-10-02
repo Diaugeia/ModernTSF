@@ -281,6 +281,7 @@ MODEL_CATALOG = ModelCatalog({
     'PMDformer': 'tsflab.models.pmdformer.spec',
     'MMPD': 'tsflab.models.mmpd.spec',
     'COSA': 'tsflab.models.cosa.spec',
+    'Composed': 'tsflab.models.composed.spec',
     'DistDF': 'tsflab.models.distdf.spec',
     'Sonnet': 'tsflab.models.sonnet.spec',
     'APN': 'tsflab.models.apn.spec',

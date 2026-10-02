@@ -96,7 +96,7 @@ from tsflab.models._components.gated_dilated_conv import causal_pad, gated_dilat
 
 `causal`, `dilated`, `gate`, `gated-activation`, `wavenet`
 
-## Current model consumers (4)
+## Current model consumers (5)
 
-`dfdgcn`, `gwnet`, `mtgnn`, `wavenet`
+`composed`, `dfdgcn`, `gwnet`, `mtgnn`, `wavenet`
 <!-- component-card:generated:end -->

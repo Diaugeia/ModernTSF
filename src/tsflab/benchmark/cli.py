@@ -13,7 +13,7 @@ Catalog and resource operations:
     component        list, match, or show a reusable implementation component
     dataset          add, prepare, inspect, analyze, or plot a dataset
     catalog          search models, components, and datasets (ranked L0 lines)
-    result           aggregate, rank, plot, or report results
+    result           aggregate, rank, plot, report, or show the board to beat (board)
     repo             audit, diagnose, or regenerate cards for the repository
     verify           run or inspect unified model verification
     agent            list, inspect, validate, render, or start bounded Agent tasks

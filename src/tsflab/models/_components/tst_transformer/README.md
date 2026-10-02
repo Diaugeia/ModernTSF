@@ -100,7 +100,7 @@ import tsflab.models._components.tst_transformer
 
 `attention`, `encoder`, `time-series`, `transformer`
 
-## Current model consumers (0)
+## Current model consumers (1)
 
-No model currently declares this component directly.
+`composed`
 <!-- component-card:generated:end -->

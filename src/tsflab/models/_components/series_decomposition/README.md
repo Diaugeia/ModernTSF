@@ -114,7 +114,7 @@ from tsflab.models._components.series_decomposition import EdgePaddedMovingAvera
 
 `decomposition`, `moving-average`, `residual`, `smoothing`, `trend`
 
-## Current model consumers (10)
+## Current model consumers (11)
 
-`amplifier`, `autoformer`, `bist`, `fedformer`, `micn`, `moderntcn`, `refocus`, `stop`, `symtime`, `timemixer`
+`amplifier`, `autoformer`, `bist`, `composed`, `fedformer`, `micn`, `moderntcn`, `refocus`, `stop`, `symtime`, `timemixer`
 <!-- component-card:generated:end -->

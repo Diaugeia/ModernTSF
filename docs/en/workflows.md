@@ -407,7 +407,7 @@ optional research round.
    `component:<name>`, `model:<Name>` (a donor design whose idea is borrowed;
    models never import peers), or `loss:<name>`. Start from the best baseline,
    screen one slot at a time, then combine the best compatible winners.
-3. **Dry-run the recombination.** Write a TOML spec and validate it:
+3. **Validate the recombination.** Write a TOML spec and validate it:
 
    ```toml
    name = "SeasonalRevLinear"
@@ -418,17 +418,75 @@ optional research round.
    normalization = ["component:revin"]
    decomposition = ["component:series_decomposition"]
    temporal = ["component:channel_wise_linear"]
+   channel = ["local:independent"]      # local:independent | local:individual | local:mixing
+   head = ["component:flatten_forecast_head"]
    loss = ["loss:mae"]
+   [params]                             # optional: hidden, n_layers, n_heads, patch_len, stride, kernel_size, dropout
+   hidden = 32
    ```
 
    ```bash
    uv run tsf component compose spec.toml
    ```
 
-   `compose` writes nothing. It checks that components, models, and the loss are
-   real, that component symbols import, and that the free-form budget (two blocks,
-   120 lines each) holds, then prints the `tsf model scaffold` command for a winner.
-   It does not prove shape compatibility; read the component cards.
+   Without flags `compose` writes nothing. It checks that components, models, and the
+   loss are real, that component symbols import, and that the free-form budget (two
+   blocks, 120 lines each) holds, then reports whether the slots are **executable**
+   by the slot adapters (`executable: yes (point output)` or `NOT EXECUTABLE: <reason>`,
+   for example `mixer_block` needs `channel = "mixing"`).
+
+   Executable options, one per slot (absent slots default to `none` / `independent` /
+   `flatten_forecast_head` / `mse`):
+
+   | slot | options |
+   | --- | --- |
+   | normalization | `none`, `component:revin`, `component:last_value_center` |
+   | decomposition | `none`, `component:series_decomposition` (`wavelet` is rejected: subbands change length) |
+   | temporal | `local:linear`, `component:channel_wise_linear`, `component:tst_transformer` (alias `component:patchtst`), `component:mamba`, `component:gated_dilated_conv`, `component:mixer_block` |
+   | channel | `local:independent` (shared weights), `local:individual` (per-channel head weights), `local:mixing` (only with `mixer_block`) |
+   | head | `component:flatten_forecast_head` (point), `component:quantile_head` (needs `loss:quantile`), `component:gaussian_parameter_head` (needs `loss:nll_gaussian`) |
+
+4. **Make it runnable and run it.** `--write-config` turns the validated spec into a
+   run config that extends a base, a dataset, and the `Composed` model with the slot
+   parameters (the point model; quantile and Gaussian heads need `--register` below):
+
+   ```bash
+   uv run tsf component compose spec.toml --write-config configs/runs/auto_seasonal.toml \
+     --dataset etth1 --enc-in 7 --pred-len 96 --work-dir work_dirs/round1
+   # tiny CPU check on the fixture dataset instead:
+   uv run tsf component compose spec.toml --write-config /tmp/auto.toml \
+     --dataset configs/fixtures/smoke.toml --enc-in 6 --pred-len 12 --smoke
+   uv run tsf smoke --config /tmp/auto.toml        # or: uv run tsf run configs/runs/auto_seasonal.toml --round <id>
+   ```
+
+   `--dataset` is a TOML path or a `configs/datasets/<name>.toml` preset name.
+
+5. **Read the bar to beat.** The board merges the committed leaderboard with local run
+   records and prints compact lines, best first (`rank model metric mae/mse H n source`):
+
+   ```bash
+   uv run tsf result board --dataset ETTh1 --horizon 96 --top 5
+   uv run tsf result board --dataset weather --records work_dirs/round1 --json
+   ```
+
+   Local rows list their `seq` and `epochs`; a short or smoke run is not comparable
+   with a published row. Slot-assignment runs of `Composed` are labelled by their
+   slots, for example `Composed[revin/none/linear/independent]`.
+
+6. **Register the winner.** After confirmation seeds, scaffold a dedicated catalog
+   model whose card records the composition and hypothesis as provenance, then admit
+   it through the normal gates:
+
+   ```bash
+   uv run tsf component compose spec.toml --register SeasonalRevLinear --dry-run   # lists the files
+   uv run tsf component compose spec.toml --register SeasonalRevLinear
+   uv run tsf model add --name SeasonalRevLinear   # verification, audits, catalog entry; rolls back on failure
+   ```
+
+   `--register` writes `src/tsflab/models/<slug>/` (model, spec, card, preset) plus a
+   `verification/models.toml` entry; the generated model fixes the slots, so its
+   quantile or Gaussian head declares the matching output capability. Combine
+   `--register NAME --write-config PATH` to get a config that runs the new model.
 
 Many wins need no code: change `training.loss`, `task.seq_len`, or a model
 parameter in the run config. Register a new model only after it beats the baselines
