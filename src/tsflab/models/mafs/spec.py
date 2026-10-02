@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.mafs.model import Model
 from pydantic import BaseModel
@@ -31,6 +33,13 @@ def build_model(cfg, params):
     )
 
 
+def training_objective(model, batch: TrainingBatch, criterion):
+    """Forecast criterion plus the multi-scale prefix specialization loss."""
+    forecast = batch.forecast(model)
+    loss = criterion(batch.align(forecast), batch.target)
+    return forecast, loss + model.specialization_loss(batch.x, batch.target)
+
+
 SPEC = ModelSpec(
     name="MAFS",
     module="tsflab.models.mafs",
@@ -43,4 +52,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(["time-series"]),
         components=(),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
+    training_objective=training_objective,
 )

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.visifold.model import Model
 
@@ -55,6 +57,20 @@ def build_model(cfg, params):
     )
 
 
+def training_objective(model, batch: TrainingBatch, criterion):
+    """Forecast criterion restricted to the nodes kept by node visibility."""
+    forecast = batch.forecast(model)
+    outputs, target = batch.align(forecast), batch.target
+    keep = model.last_keep_indices
+    if keep is None:
+        return forecast, criterion(outputs, target)
+    offset = model.num_nodes - target.shape[-1]
+    keep = keep[keep >= offset] - offset
+    if keep.numel() == 0:
+        return forecast, outputs.sum() * 0.0
+    return forecast, criterion(outputs[..., keep], target[..., keep])
+
+
 SPEC = ModelSpec(
     name="VisiFold",
     module="tsflab.models.visifold",
@@ -67,4 +83,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(["spatiotemporal"]),
     components=("marks", "node_visibility"),
     contract_task={"seq_len": 12, "pred_len": 12, "label_len": 0},
+    training_objective=training_objective,
 )

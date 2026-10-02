@@ -167,11 +167,13 @@ class Model(nn.Module):
 
         num_groups = 1
         keep_indices: torch.Tensor | None = None
+        self.last_keep_indices = None
         shuffle_perm: torch.Tensor | None = None
         if self.training:
             # Node visibility: mask a fraction of nodes, shuffle the survivors,
             # then split them into fixed-size subgraphs before attention.
             tokens, keep_indices = random_mask_tokens(tokens, self.mask_ratio)
+            self.last_keep_indices = keep_indices.detach()
             tokens, shuffle_perm = shuffle_tokens(tokens)
             visible_length = tokens.shape[1]
             tokens, num_groups, visible_length = group_into_subgraphs(tokens, self.subgraph_size)

@@ -10,14 +10,14 @@ revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
 tagline: "Jointly learns a discrete node graph via Gumbel-Softmax edge sampling and a bidirectional diffusion graph-GRU seq2seq."
 tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "covariates", "probabilistic-graph"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder-projection", "loss=loss:mse"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder-projection", "loss=loss:mse+local:graph-prior-bce"]
 ---
 # GTS
 
 ## Key ideas
 
 - `DiscreteGraphDiscovery` encodes each node's history, classifies every directed edge, and samples edges with straight-through Gumbel-Softmax in training (probabilities in evaluation).
-- The supplied adjacency is only a weak edge-logit prior and the target of `graph_prior_loss`, which is not applied by default.
+- The supplied adjacency is only a weak edge-logit prior and the target of `graph_prior_loss`; the `training_objective` adds that BCE (weight 1) to the configured criterion, only when an adjacency is supplied.
 - `LearnedDiffusion` does bidirectional polynomial (Chebyshev-style) propagation on the sampled graph inside `GraphGRUCell`, stacked as `RecurrentStack` encoder and decoder.
 - The decoder generates the horizon autoregressively from a zero start, projecting each step to one value per node.
 
@@ -46,7 +46,7 @@ under Shared components), and the default preset is
 - Local implementation: the graph learner, diffusion recurrence, and forecasting head are written against TSFLab contracts; BasicTS is retained as a cited reference.
 - Formula mapping: `DiscreteGraphDiscovery` implements node-series encoding, pairwise edge probabilities, and differentiable discrete sampling; `LearnedDiffusion` provides bidirectional polynomial graph propagation; `GraphGRUCell` and the encoder/decoder stacks implement the forecasting network.
 - Adjacency and marks: supplied adjacency is a shape-checked weak edge-logit prior and the target of `graph_prior_loss`; graph discovery still occurs end-to-end. Encoder marks are accepted through `input_dim`. No future target is consumed.
-- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The auxiliary prior loss, official data pipeline, training schedule, and published metrics remain caller responsibilities.
+- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The graph prior BCE is part of the runner training objective, active only when `adj_mx` is given (the prior is the supplied adjacency, not the official k-nearest-neighbour graph from the training series). The official data pipeline, training schedule, and published metrics remain caller responsibilities.
 
 ## Shared components
 
@@ -76,7 +76,7 @@ Default config: `configs/models/GTS.toml`; model specification: `spec.py`; imple
 - Local implementation: the graph learner, diffusion recurrence, and forecasting head are written against TSFLab contracts; BasicTS is retained as a cited reference.
 - Formula mapping: `DiscreteGraphDiscovery` implements node-series encoding, pairwise edge probabilities, and differentiable discrete sampling; `LearnedDiffusion` provides bidirectional polynomial graph propagation; `GraphGRUCell` and the encoder/decoder stacks implement the forecasting network.
 - Adjacency and marks: supplied adjacency is a shape-checked weak edge-logit prior and the target of `graph_prior_loss`; graph discovery still occurs end-to-end. Encoder marks are accepted through `input_dim`. No future target is consumed.
-- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The auxiliary prior loss, official data pipeline, training schedule, and published metrics remain caller responsibilities.
+- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The graph prior BCE is part of the runner training objective, active only when `adj_mx` is given (the prior is the supplied adjacency, not the official k-nearest-neighbour graph from the training series). The official data pipeline, training schedule, and published metrics remain caller responsibilities.
 
 ## Citation
 

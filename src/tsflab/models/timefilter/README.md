@@ -10,7 +10,7 @@ revision: "dffde87e4fff0fdeeebbacde03dc1e432e15b3a1"
 license: "NOASSERTION"
 tagline: "Patch-level spatial-temporal graph filtered by a mixture of graph experts that keep only top-p affinities."
 tags: ["gnn", "mixture-of-experts", "graph-learning", "patching", "channel-mixing", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-embedding-graph-nodes", "channel=local:patch-graph-moe-filter", "head=local:flatten-linear-head", "loss=loss:mse"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-embedding-graph-nodes", "channel=local:patch-graph-moe-filter", "head=local:flatten-linear-head", "loss=loss:mse+local:router-load-balance"]
 ---
 # TimeFilter
 
@@ -19,7 +19,7 @@ composition: ["normalization=component:revin", "decomposition=none", "temporal=l
 - `PatchGraphBuilder` turns every (channel, patch) into a node and builds a dense query/key affinity over all nodes, mixing channel and time dependencies.
 - `PatchSpecificGraphFilter` keeps the top-p fraction of each node's affinities as a sparse adjacency and routes each node to `num_experts` `RegionExpert` message-passing experts with a softmax router.
 - The affinity is recomputed from node features between filter layers; a flatten linear head maps each channel's patches to the horizon under `revin`.
-- A load-balancing `last_moe_loss` is computed but not added to the training loss.
+- The router load-balancing `last_moe_loss` is added to the configured criterion with weight 0.05 by the model's `training_objective`.
 
 <!-- model-card:canonical:start -->
 ## Input and output
@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Clean-room implementation: confirmed. The implementation was derived independently from the paper's channel-patch graph, patch-specific top-p filtration, and differentiable region-expert router; source from the unlicensed reference repository was not copied or reused. The balance term remains inspectable as `last_moe_loss` but is not injected into the common point-forecast loss.
+Clean-room implementation: confirmed. The implementation was derived independently from the paper's channel-patch graph, patch-specific top-p filtration, and differentiable region-expert router; source from the unlicensed reference repository was not copied or reused. The balance term `last_moe_loss` is added to the configured criterion with weight 0.05 (the `alpha` of the official training loop) by the model's `training_objective`; validation and test use the standard loss only.
 
 ## Shared components
 
@@ -69,7 +69,7 @@ Default config: `configs/models/TimeFilter.toml`; model specification: `spec.py`
 
 ## Verification
 
-Clean-room implementation: confirmed. The implementation was derived independently from the paper's channel-patch graph, patch-specific top-p filtration, and differentiable region-expert router; source from the unlicensed reference repository was not copied or reused. The balance term remains inspectable as `last_moe_loss` but is not injected into the common point-forecast loss.
+Clean-room implementation: confirmed. The implementation was derived independently from the paper's channel-patch graph, patch-specific top-p filtration, and differentiable region-expert router; source from the unlicensed reference repository was not copied or reused. The balance term `last_moe_loss` is added to the configured criterion with weight 0.05 (the `alpha` of the official training loop) by the model's `training_objective`; validation and test use the standard loss only.
 
 ## Citation
 

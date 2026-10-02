@@ -10,7 +10,7 @@ revision: "8e42bfe0c4156eea920c4dd86eee4f1b8658143e"
 license: "NOASSERTION"
 tagline: "Multi-mode patch diffusion: denoiser conditioned on future-patch tokens; point forecast from an anchor step."
 tags: ["diffusion", "probabilistic", "patching", "channel-independent", "attention-variant", "loss-framework"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:future-query-cross-attention-backbone", "channel=local:channel-independent-flattened", "head=local:patch-consistent-denoiser-anchor", "loss=loss:mse+local:patch-diffusion-loss-method"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:future-query-cross-attention-backbone", "channel=local:channel-independent-flattened", "head=local:patch-consistent-denoiser-anchor", "loss=local:patch-diffusion-loss-method"]
 ---
 # MMPD
 
@@ -19,7 +19,7 @@ composition: ["normalization=local:instance-standardization", "decomposition=non
 - `FuturePatchBackbone` turns history patches into one token per future patch by cross-attending learned future queries to the patch embeddings.
 - `PatchConsistentDenoiser` predicts noise for noisy future patches, conditioned on the token, the diffusion step, and the left and right neighbouring patches, using AdaLN MLP blocks (`AdaLNMLPBlock`).
 - `diffusion_loss` mixes the noise-prediction loss with a deterministic anchor term (weight `diffusion_weight`); `sample` draws multi-mode trajectories.
-- `forward` returns the efficient anchor-step point forecast; the trainer does not call `diffusion_loss`, so the default pipeline scores that forecast with MSE.
+- `forward` returns the efficient anchor-step point forecast; `diffusion_loss` is declared as the model's `ModelSpec.training_objective`, so training uses it instead of the configured criterion; validation and test still score the anchor forecast with the standard loss.
 - Channels are flattened into the batch and series are standardized with detached mean and standard deviation.
 
 <!-- model-card:canonical:start -->
@@ -50,8 +50,9 @@ Local implementation: confirmed.
 
 This local implementation follows diffusion Eq. (3), the token/step/left/
 right Patch Consistent MLP in Eq. (7), AdaLN-MLP Eqs. (12)--(13), and the
-deterministic anchor term in Eq. (8). `diffusion_loss` exposes the joint training
-objective and `sample` exposes conditional reverse trajectories; ordinary
+deterministic anchor term in Eq. (8). `diffusion_loss` is the joint training
+objective, wired as the runner's training objective (it replaces the configured
+criterion during training only), and `sample` exposes conditional reverse trajectories; ordinary
 `forward` returns the efficient anchor point forecast required by TSFLab.
 The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
 probabilities are not part of the common point-forecast output and are not
@@ -86,8 +87,9 @@ Local implementation: confirmed.
 
 This local implementation follows diffusion Eq. (3), the token/step/left/
 right Patch Consistent MLP in Eq. (7), AdaLN-MLP Eqs. (12)--(13), and the
-deterministic anchor term in Eq. (8). `diffusion_loss` exposes the joint training
-objective and `sample` exposes conditional reverse trajectories; ordinary
+deterministic anchor term in Eq. (8). `diffusion_loss` is the joint training
+objective, wired as the runner's training objective (it replaces the configured
+criterion during training only), and `sample` exposes conditional reverse trajectories; ordinary
 `forward` returns the efficient anchor point forecast required by TSFLab.
 The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
 probabilities are not part of the common point-forecast output and are not

@@ -16,10 +16,10 @@ from tsflab.benchmark.runner.model_io import (
     call_forecaster,
     make_decoder_input,
     slice_prediction_target,
-    slice_target,
     unwrap_model,
 )
 from tsflab.benchmark.registry.losses import get_loss
+from tsflab.benchmark.runner.objective import TrainingBatch
 from tsflab.benchmark.utils.training import (
     CheckpointManager,
     EarlyStopping,
@@ -109,8 +109,9 @@ def _forward_training(
     """Run one forward pass and resolve its explicitly declared objective.
 
     A special paper objective is registered on ``ModelSpec`` and returns both
-    the forecast and a scalar loss. This avoids a second stochastic forward and
-    keeps model-specific objective discovery out of the generic trainer.
+    the forecast (or ``None``) and a scalar loss; see
+    ``tsflab.benchmark.runner.objective``. This avoids a second stochastic
+    forward and keeps model-specific objective discovery out of the trainer.
     """
     if training_objective is None:
         outputs = call_forecaster(
@@ -120,16 +121,19 @@ def _forward_training(
             model, outputs, batch_y, pred_len, features, criterion
         )
 
-    target = slice_target(batch_y, pred_len, features)
-    outputs, loss = training_objective(unwrap_model(model), batch_x, target)
-    sliced_outputs, _ = slice_prediction_target(
-        outputs, batch_y, pred_len, features
+    batch = TrainingBatch(
+        x=batch_x, x_mark=batch_x_mark, dec_inp=dec_inp, y_mark=batch_y_mark,
+        y=batch_y, pred_len=pred_len, features=features,
     )
-    if sliced_outputs.shape != target.shape:
-        raise ValueError(
-            "training_objective forecast shape "
-            f"{tuple(sliced_outputs.shape)} does not match target {tuple(target.shape)}"
-        )
+    outputs, loss = training_objective(unwrap_model(model), batch, criterion)
+    if outputs is not None:
+        sliced_outputs = batch.align(outputs)
+        if sliced_outputs.shape != batch.target.shape:
+            raise ValueError(
+                "training_objective forecast shape "
+                f"{tuple(sliced_outputs.shape)} does not match target "
+                f"{tuple(batch.target.shape)}"
+            )
     if not torch.is_tensor(loss) or loss.numel() != 1 or not torch.isfinite(loss):
         raise ValueError("training_objective must return a finite scalar tensor loss")
     return outputs, loss
@@ -156,6 +160,7 @@ def train(
     checkpoint_cfg,
     callbacks: list[Callback] | None = None,
     training_objective=None,
+    training_setup=None,
     resume: bool = False,
     tracker=None,
     checkpoint_every_batches: int = 0,
@@ -259,6 +264,10 @@ def train(
             tracker.start(metadata["epoch"] + 1)
         else:
             tracker.start(1)
+    if training_setup is not None and not (resume and os.path.isfile(latest)):
+        training_setup(
+            unwrap_model(model), train_loader, pred_len=pred_len, features=features
+        )
     if resume and os.path.isfile(latest):
         state = restore_checkpoint(
             latest, model=model, optimizer=optimizer, scaler=scaler,
@@ -456,6 +465,9 @@ def _train_step_with_callbacks(
                 model, training_objective, batch_x, batch_x_mark, dec_inp,
                 batch_y_mark, batch_y, pred_len, features, criterion,
             )
+            outputs = _callback_outputs(
+                outputs, model, batch_x, batch_x_mark, dec_inp, batch_y_mark
+            )
             outputs, batch_y_sliced = slice_prediction_target(
                 outputs, batch_y, pred_len, features
             )
@@ -481,6 +493,9 @@ def _train_step_with_callbacks(
             model, training_objective, batch_x, batch_x_mark, dec_inp,
             batch_y_mark, batch_y, pred_len, features, criterion,
         )
+        outputs = _callback_outputs(
+            outputs, model, batch_x, batch_x_mark, dec_inp, batch_y_mark
+        )
         outputs, batch_y_sliced = slice_prediction_target(
             outputs, batch_y, pred_len, features
         )
@@ -497,6 +512,16 @@ def _train_step_with_callbacks(
             optimizer.step()
             optimizer.zero_grad()
     return do_step
+
+
+def _callback_outputs(outputs, model, batch_x, batch_x_mark, dec_inp, batch_y_mark):
+    """Give callbacks a forecast when the objective returned none (no gradient)."""
+    if outputs is not None:
+        return outputs
+    with torch.no_grad():
+        return call_forecaster(
+            unwrap_model(model), batch_x, batch_x_mark, dec_inp, batch_y_mark
+        )
 
 
 def _resolve_step(callbacks, ctx: CallbackContext) -> bool:

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "VisiFold",
   "status": "passed",
-  "verified_at": "2026-10-02T18:18:57.177494Z",
-  "subject_sha256": "84dc9a2813bbfe3c21729e987dc3a3f41770deb7b2dfa2921f465eaea1dafe4e",
+  "verified_at": "2026-10-02T18:33:37.793840Z",
+  "subject_sha256": "b162294e1b001ab04a18bc54723d7fefe1fa7ff897ff3dd81e3a5af62ced406d",
   "paper": {
     "title": "VisiFold: Long-Term Traffic Forecasting via Temporal Folding Graph and Node Visibility",
     "venue": "ICDE 2026",

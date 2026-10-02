@@ -10,7 +10,7 @@ revision: "67b630e67f6a18c9e9be918d9b4337c960db1e9a"
 license: "MIT"
 tagline: "Binary-spherical-quantized coarse/fine subtokens per record, decoded by a causal Transformer, coarse then fine."
 tags: ["transformer", "discrete-tokens", "autoregressive", "channel-mixing", "financial", "normalization"]
-composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:causal-decoder-transformer-with-kv-cache", "channel=local:channel-mixing-record-tokenizer", "head=local:coarse-to-fine-subtoken-heads-expected-bit-decode", "loss=loss:mse"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:causal-decoder-transformer-with-kv-cache", "channel=local:channel-mixing-record-tokenizer", "head=local:coarse-to-fine-subtoken-heads-expected-bit-decode", "loss=loss:mse+local:hierarchical-tokenizer-reconstruction"]
 ---
 # Kronos
 
@@ -19,7 +19,7 @@ composition: ["normalization=local:instance-mean-std-normalization", "decomposit
 - `HierarchicalTokenizer` maps each multichannel record to a spherical latent and binarizes it with a straight-through Binary Spherical Quantization (`code_bits`), split into equal coarse and fine halves.
 - Coarse and fine bit halves are embedded separately and fused (`_embed_bits`, `fusion`) into one token per step.
 - `CausalBlock`s are a decoder-only Transformer with an incremental key/value cache (`prefill`, `step`) that generates the horizon autoregressively.
-- The fine prediction is conditioned on a differentiable expected coarse code (`fine_context`); `tokenizer_loss` gives the hierarchical reconstruction objective.
+- The fine prediction is conditioned on a differentiable expected coarse code (`fine_context`); `tokenizer_loss` (coarse and full reconstruction plus BSQ commitment) is added to the configured criterion by the model's `training_objective`.
 - Trained from scratch with a compact affine tokenizer and 8-bit default vocabulary; it has no pretrained Kronos weights.
 
 <!-- model-card:canonical:start -->
@@ -51,7 +51,11 @@ Local implementation: confirmed.
 This compact clean-room rewrite implements the paper's defining hierarchy:
 straight-through BSQ, equal coarse/fine binary subtokens, fused subtoken
 embeddings, causal decoding, coarse prediction, and fine prediction conditioned
-on a differentiable expected coarse code (Eqs. (2)--(8)). It is trained from scratch;
+on a differentiable expected coarse code (Eqs. (2)--(8)). The runner trains the tokenizer jointly with the
+forecaster (configured criterion on the decoded forecast plus `tokenizer_loss`);
+the paper's separate tokenizer pre-training and coarse/fine next-token
+cross-entropy are not reproduced because forecasts here are decoded from
+expected bits rather than sampled tokens. It is trained from scratch;
 it does not include the authors' 12-billion-record corpus or pretrained weights.
 The local tokenizer is an affine encoder/decoder rather than the paper's large
 Transformer autoencoder, and the default eight-bit vocabulary is smaller than
@@ -87,7 +91,11 @@ Local implementation: confirmed.
 This compact clean-room rewrite implements the paper's defining hierarchy:
 straight-through BSQ, equal coarse/fine binary subtokens, fused subtoken
 embeddings, causal decoding, coarse prediction, and fine prediction conditioned
-on a differentiable expected coarse code (Eqs. (2)--(8)). It is trained from scratch;
+on a differentiable expected coarse code (Eqs. (2)--(8)). The runner trains the tokenizer jointly with the
+forecaster (configured criterion on the decoded forecast plus `tokenizer_loss`);
+the paper's separate tokenizer pre-training and coarse/fine next-token
+cross-entropy are not reproduced because forecasts here are decoded from
+expected bits rather than sampled tokens. It is trained from scratch;
 it does not include the authors' 12-billion-record corpus or pretrained weights.
 The local tokenizer is an affine encoder/decoder rather than the paper's large
 Transformer autoencoder, and the default eight-bit vocabulary is smaller than

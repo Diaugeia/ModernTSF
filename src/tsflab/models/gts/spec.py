@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from tsflab.benchmark.runner.objective import TrainingBatch
+
 from tsflab.benchmark.registry.models import ModelSpec
 from tsflab.models.gts.model import Model
 
@@ -33,6 +35,15 @@ def build_model(cfg, params):
     )
 
 
+def training_objective(model, batch: TrainingBatch, criterion):
+    """Forecast criterion plus the graph prior BCE when a prior adjacency exists."""
+    forecast = batch.forecast(model)
+    loss = criterion(batch.align(forecast), batch.target)
+    if model.has_prior:
+        loss = loss + model.graph_prior_loss(batch.x)
+    return forecast, loss
+
+
 SPEC = ModelSpec(
     name='GTS',
     module='tsflab.models.gts',
@@ -45,4 +56,5 @@ SPEC = ModelSpec(
     capabilities=frozenset(['spatiotemporal']),
     components=('channel_alignment', 'marks'),
     contract_task={'seq_len': 12, 'pred_len': 12, 'label_len': 0},
+    training_objective=training_objective,
 )

@@ -46,7 +46,7 @@ under Shared components), and the default preset is
 Clean-room implementation: confirmed. The reference-only source code was not
 copied. The structure map covers equations (4)--(20), including ConAU
 centralized interaction and bounded GenPU-style environment forecasts; the
-external experiment loop remains responsible for worst-loss DRO selection.
+worst-loss DRO selection over `environment_forecasts` is not wired: no `training_objective` is declared because the pinned official trainer (`src/engines/stop_engine.py`) optimizes the plain masked loss on `model(X)` with its DRO variance terms commented out, so the paper's weighting is not recoverable from code and is left to an external loop.
 
 ## Shared components
 
@@ -82,7 +82,7 @@ of the generic trainer.
 Clean-room implementation: confirmed. The reference-only source code was not
 copied. The structure map covers equations (4)--(20), including ConAU
 centralized interaction and bounded GenPU-style environment forecasts; the
-external experiment loop remains responsible for worst-loss DRO selection.
+worst-loss DRO selection over `environment_forecasts` is not wired: no `training_objective` is declared because the pinned official trainer (`src/engines/stop_engine.py`) optimizes the plain masked loss on `model(X)` with its DRO variance terms commented out, so the paper's weighting is not recoverable from code and is left to an external loop.
 
 ## Citation
 

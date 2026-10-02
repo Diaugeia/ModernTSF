@@ -29,8 +29,8 @@ def build_model(cfg, params):
         global_margin=params.get("global_margin",0.0), w_recon=params.get("w_recon",1.0),
         w_align=params.get("w_align",0.1))
 
-def training_objective(model, batch_x, target):
-    forecast, loss, _ = model.training_objective(batch_x, target)
+def training_objective(model, batch, criterion):
+    forecast, loss, _ = model.training_objective(batch.x, batch.target)
     return forecast, loss
 
 SPEC = ModelSpec(name="TimeAlign", module="tsflab.models.timealign", model_class=Model,

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LatentTSF",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "fdfcd30ca6ef2347a7d2fed8a19455d75c330fe3a5fdbd869d2d49a8c13f1a58",
+  "verified_at": "2026-10-02T18:33:37.793840Z",
+  "subject_sha256": "6672affc223df587338fa772bca6051592d139ffd35e7422ba0d733181e86b7c",
   "paper": {
     "title": "From Observations to States: Latent Time Series Forecasting",
     "venue": "ICML 2026",

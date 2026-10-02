@@ -154,6 +154,7 @@ class Model(nn.Module):
         self.seq_len = seq_len
         self.pred_len = pred_len
         self.num_nodes = num_nodes
+        self.has_prior = adj_mx is not None
         self.input_dim = input_dim
         self.graph_discovery = DiscreteGraphDiscovery(
             seq_len, num_nodes, embedding_dim, temp, prior, prior_strength
