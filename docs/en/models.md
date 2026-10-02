@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 202 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -150,6 +150,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `RPMixer` | [`configs/models/RPMixer.toml`](../../configs/models/RPMixer.toml) | spatiotemporal | [README](../../src/tsflab/models/rpmixer/README.md) |
 | `S4` | [`configs/models/S4.toml`](../../configs/models/S4.toml) | time-series | [README](../../src/tsflab/models/s4/README.md) |
 | `S_Mamba` | [`configs/models/S_Mamba.toml`](../../configs/models/S_Mamba.toml) | time-series | [README](../../src/tsflab/models/s_mamba/README.md) |
+| `SAMBA` | [`configs/models/SAMBA.toml`](../../configs/models/SAMBA.toml) | time-series | [README](../../src/tsflab/models/samba/README.md) |
 | `SCINet` | [`configs/models/SCINet.toml`](../../configs/models/SCINet.toml) | time-series | [README](../../src/tsflab/models/scinet/README.md) |
 | `SDMixer` | [`configs/models/SDMixer.toml`](../../configs/models/SDMixer.toml) | time-series | [README](../../src/tsflab/models/sdmixer/README.md) |
 | `SegRNN` | [`configs/models/SegRNN.toml`](../../configs/models/SegRNN.toml) | time-series | [README](../../src/tsflab/models/segrnn/README.md) |

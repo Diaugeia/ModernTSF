@@ -373,4 +373,5 @@ MODEL_CATALOG = ModelCatalog({
     "CoRe": "tsflab.models.core.spec",
     "FreDF": "tsflab.models.fredf.spec",
     "GPHT": "tsflab.models.gpht.spec",
+    "SAMBA": "tsflab.models.samba.spec",
 })

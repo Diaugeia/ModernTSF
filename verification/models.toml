@@ -1074,3 +1074,9 @@ profile = 'standard'
 test = 'tests/test_gpht_structure.py'
 reference_test = 'tests/test_gpht_structure.py'
 reference_sources = ['https://github.com/icantnamemyself/GPHT/blob/cfdbbd2f8386603476d0b48705b6189cfae0ad90/models/GPHT.py', 'https://github.com/icantnamemyself/GPHT/blob/cfdbbd2f8386603476d0b48705b6189cfae0ad90/exp/exp_long_term_forecasting_GPHT.py']
+
+[models.SAMBA]
+profile = 'standard'
+test = 'tests/test_samba_structure.py'
+reference_test = 'tests/test_samba_structure.py'
+reference_sources = ['https://github.com/YukinoAsuna/SAMBA/blob/490257dac0806e16c00372226870850d39e8be65/model/SAMBA.py', 'https://github.com/YukinoAsuna/SAMBA/blob/490257dac0806e16c00372226870850d39e8be65/layers/Block.py', 'https://github.com/YukinoAsuna/SAMBA/blob/490257dac0806e16c00372226870850d39e8be65/layers/samba_simple.py']
