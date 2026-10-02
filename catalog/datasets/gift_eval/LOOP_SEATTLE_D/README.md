@@ -11,7 +11,7 @@ citation_url: "https://arxiv.org/abs/2410.10393"
 license: "No formal license; research use only with citation of Cui et al. (dataset README)"
 redistribution: "conditional"
 frequency: "daily (1d)"
-time_span: "varies by series; not recorded in the GIFT-Eval metadata used here"
+time_span: "one year (365 days, 2015 per the original loop-detector dataset); not recorded per series in the GIFT-Eval metadata used here"
 length: 365
 channels: 1
 channel_kind: "channels"

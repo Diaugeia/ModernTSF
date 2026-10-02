@@ -34,7 +34,7 @@ task_modes: ["spatiotemporal", "covariate"]
 
 ## Overview
 
-`rt_grid_ercot` serves the eight ERCOT weather-zone load series as a static dataset in the spatiotemporal layout (zones as nodes plus calendar covariates), read from the panel store at a fixed release.
+`rt_grid_ercot` serves the eight ERCOT weather-zone load series as a static dataset in the spatiotemporal layout (zones as nodes plus calendar covariates), read from the panel store.
 
 ## Provenance and license
 
@@ -53,10 +53,9 @@ No local copy of `dataset/realtime/grid_ercot` exists in a development checkout,
 
 ## Standard protocol and known pitfalls
 
-- **Local clock time.** Hour-ending values are stored at the start of the hour they cover in America/Chicago local time; the spring-forward hour is absent and the repeated autumn hour is averaged, so the grid is not strictly uniform in UTC.
+- **Local clock time.** Hour-ending values are stored at the start of the hour they cover, in America/Chicago local time; the repeated hour of the autumn clock change is averaged. Stamps are naive local time, so daylight saving shifts the daily cycle against UTC by an hour for part of the year.
 - **Only eight channels.** The panel is small for spatiotemporal models; it behaves like a multivariate load series.
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

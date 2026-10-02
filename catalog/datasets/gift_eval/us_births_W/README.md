@@ -33,7 +33,7 @@ task_modes: ["time_series"]
 
 ## Overview
 
-US Births (us_births/W) is the GIFT-Eval series collection built from daily number of births in the United States, from the Monash repository. It is part of the Healthcare domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (8 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
+US Births (us_births/W) is the GIFT-Eval series collection built from the daily number of births in the United States (aggregated to weekly by GIFT-Eval), from the Monash repository. It is part of the Healthcare domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (8 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
 
 ## Provenance and license
 

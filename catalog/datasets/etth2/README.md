@@ -53,7 +53,7 @@ ETT-small (Electricity Transformer Temperature) records two years of data from t
 | Time span (CSV) | 2016-07-01 00:00:00 to 2018-06-26 19:00:00 | measured |
 | Step | hourly (all 17,419 gaps equal; no duplicates) | measured |
 | Missing values | 0 | measured |
-| Exact zeros | 9.79% of all values | measured |
+| Exact zeros | 9.79% of all CSV values | measured |
 | OT mean / std (used rows) | 26.231 / 12.327 | measured |
 | OT range (CSV) | -2.65 to 58.88 | measured |
 | Split rows (6:2:2) | train 8,640, validation 2,880, test 2,880 | measured (loader code) |
@@ -69,7 +69,7 @@ Measured on `dataset/ETT-small/ETTh2.csv` (read-only).
 - **`drop_last`.** The loaders keep the final partial batch (`drop_last=False`) for every split, so test metrics cover every window. Reference code that drops the last test batch reports slightly different numbers, more so at large batch sizes.
 - **Target.** `features = "S"` forecasts `OT`; `"MS"` forecasts the last column, which is also `OT` here; `"M"` forecasts all seven channels.
 - **Frequency naming.** `ETTm*` is 15-minute data, not one-minute data, although the upstream README text says "every minute" (the CSV is verified 15-minute).
-- **Distribution shift.** ETTh2 has 9.8% exact zeros across all values (measured); the ETTh2/ETTm2 loads are zero-heavy compared with station 1 (about 1.0%) and shift more between train and test.
+- **Distribution shift.** `OT` mean / std is 26.87 / 11.59 on the training rows and 14.41 / 7.13 on the test rows (measured, used rows), so the test period is much cooler and calmer than training; exact zeros are 9.8% of all values in the CSV (measured).
 
 <!-- dataset-card:canonical:start -->
 ## Loader and files

@@ -17,7 +17,7 @@ channels: 358
 channel_kind: "nodes"
 target: "traffic flow"
 missing_values: "not stated in the papers"
-protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 12, horizons 12"
+protocol: "TSFLab: chronological 7:1:2 split, values unscaled by default (scale = false, calendar covariates kept raw); lookback 12, horizons 12"
 literature_protocol: "STSGCN: 12 steps in, 12 steps out (one hour), chronological 6:2:2, MAE/RMSE/MAPE"
 seq_lens: [12]
 pred_lens: [12]
@@ -34,7 +34,7 @@ task_modes: ["spatiotemporal", "covariate"]
 
 ## Overview
 
-PEMS03 is a spatiotemporal traffic benchmark: 358 sensors recording traffic flow every five minutes over 2018-09-01 to 2018-11-30, with a sensor graph. It covers PeMS District 3 (North Central (Sacramento area)). In this repository it loads through the `cauair_st` node loader as a `(T, N, 3)` bundle (value, time-in-day, day-in-week) with an adjacency matrix, so graph and spatiotemporal models can use the road network.
+PEMS03 is a spatiotemporal traffic benchmark: 358 sensors recording traffic flow every five minutes over 2018-09-01 to 2018-11-30, with a sensor graph. It covers PeMS District 3 (North Central, Sacramento area). In this repository it loads through the `cauair_st` node loader as a `(T, N, 3)` bundle (value, time-in-day, day-in-week) with an adjacency matrix, so graph and spatiotemporal models can use the road network.
 
 ## Provenance and license
 
@@ -57,8 +57,8 @@ The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3
 ## Standard protocol and known pitfalls
 
 - **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
-- **Bundle contract.** `input_dim = 3` keeps the value plus two calendar covariates (time-in-day, day-in-week) appended by `convert-traffic --add-time`; `scale = false` leaves values unscaled, so scale the value channel upstream or flip `scale` if the model expects z-scored input.
-- **Window split.** Window centres are split chronologically by `convert-traffic --splits` (default 0.7,0.1,0.2). The converter also stores whole-series `mean`/`std` in `his.npz`, so any `scale = true` variant would use statistics that include validation and test data.
+- **Bundle contract.** `input_dim = 3` keeps the value plus two calendar covariates (time-in-day, day-in-week) appended by `tsf data prepare --from traffic --add-time`; `scale = false` leaves values unscaled, so scale the value channel upstream or flip `scale` if the model expects z-scored input.
+- **Window split.** Window centres are split chronologically by `tsf data prepare --from traffic --splits` (default 0.7,0.1,0.2); the window indices depend on the converter's `--seq-len` and `--pred-len` (default 96 each), so convert with 12 and 12 for the 12-in/12-out protocol and rebuild the bundle to change either. The converter also stores whole-series `mean`/`std` in `his.npz`, so any `scale = true` variant would use statistics that include validation and test data.
 - **Adjacency.** `adj_mx.npy` comes from the converter's `--adj` input; check how it was built before comparing graph models across papers.
 - **Metrics.** The repository evaluator has no masked-metric option; DCRNN-style papers mask zero (missing) targets, so unmasked numbers are not comparable.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

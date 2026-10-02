@@ -7,7 +7,7 @@ tags: ["air-quality", "beijing", "pm2.5", "pollution", "meteorology", "environme
 source: "Beijing Municipal Environmental Monitoring Center and China Meteorological Administration data via UCI (donor Song Chen); TFB packaging by Qiu et al."
 source_url: "https://archive.ics.uci.edu/dataset/501/beijing+multi+site+air+quality+data"
 citation: "Cautionary tales on air-quality improvement in Beijing (Zhang et al., Proceedings of the Royal Society A, 2017)"
-citation_url: "https://www.semanticscholar.org/paper/Cautionary-tales-on-air-quality-improvement-in-Zhang-Guo/59c99a7bf19617b43be0aa9f492def8c80ffae19"
+citation_url: "https://doi.org/10.1098/rspa.2017.0457"
 license: "CC-BY-4.0 (UCI page; the TFB repository's MIT license covers code, not data)"
 redistribution: "conditional"
 frequency: "hourly (1h)"
@@ -15,7 +15,7 @@ time_span: "2013-03-01 00:00 to 2017-02-28 23:00"
 length: 35064
 channels: 11
 channel_kind: "channels"
-target: "OT (last column, WSPM) by convention"
+target: "OT (the column the preset names; by TFB convention the last column, WSPM)"
 missing_values: "the UCI original has NA cells (5,146 NA cells at Wanshouxigong); the TFB file has no NaN, so they were filled, and the categorical wind direction column was dropped"
 protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
 literature_protocol: "TFB: lookback 96, 336 or 512, horizons 96/192/336/720, chronological 6:2:2; this preset's default split is 7:1:2"
@@ -41,7 +41,7 @@ AQWan is the hourly record of one of 12 stations in the UCI Beijing Multi-Site A
 - Source: UCI Machine Learning Repository, Beijing Multi-Site Air Quality Data (https://archive.ics.uci.edu/dataset/501/beijing+multi+site+air+quality+data), doi 10.24432/C5RK5G. Air data come from the Beijing Municipal Environmental Monitoring Center and weather from the China Meteorological Administration; the donor is Song Chen.
 - License: Creative Commons Attribution 4.0 ("sharing and adaptation of the datasets for any purpose, provided that the appropriate credit is given"). The TFB package adds no separate data license.
 - Cite Cautionary tales on air-quality improvement in Beijing (Zhang et al., Proceedings of the Royal Society A, 2017) and TFB: Towards Comprehensive and Fair Benchmarking of Time Series Forecasting Methods (Qiu et al., PVLDB 2024).
-- `AQWan` is the Wanshouxigong station (verified from the TFB file's source name `PRSA_Data_Wanshouxigong_20130301-20170228.csv`); `AQWan` is Wanshouxigong, not Wanliu.
+- `AQWan` is the Wanshouxigong station, not Wanliu (verified from the TFB file's source name `PRSA_Data_Wanshouxigong_20130301-20170228.csv`).
 - This preset points to `dataset/AQWan/AQWan.csv`, which is not shipped.
 
 ## Structure and statistics
@@ -53,7 +53,7 @@ AQWan is the hourly record of one of 12 stations in the UCI Beijing Multi-Site A
 | Span | 2013-03-01 00:00 to 2017-02-28 23:00 | source-reported |
 | Missing values | UCI original: 5,146 NA cells at this station (all columns); TFB file: none | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/aqwan.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers above are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/aqwan.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 

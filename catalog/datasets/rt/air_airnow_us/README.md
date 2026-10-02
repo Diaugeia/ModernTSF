@@ -11,9 +11,9 @@ citation_url: "n/a"
 license: "US government public data (preliminary; not for regulatory use)"
 redistribution: "conditional"
 frequency: "hourly (1h)"
-time_span: "from the first bootstrap week back 56 days; grows with each weekly release"
+time_span: "the 56 days before the bootstrap; grows with each weekly release"
 length: "grows weekly; the bootstrap covers 56 days of AirNow archive files"
-channels: "unknown (sites reporting at least 90% of hours at bootstrap; the set is in the store manifest)"
+channels: "up to 200 (config max_sites; sites reporting at least 90% of hours at bootstrap; the exact set is in the store manifest)"
 channel_kind: "stations"
 target: "hourly PM2.5 (micrograms per cubic metre) per station"
 missing_values: "stations report irregularly; unobserved hours are NaN in the store and the loader forward-fills them"
@@ -22,7 +22,7 @@ seq_lens: [168]
 pred_lens: [24]
 split: "7:1:2"
 stats_basis: "source-reported"
-related: ["rt/air_openaq_us"]
+related: ["rt/air_openaq_us", "rt/air_openaq_cn", "rt/air_openaq_eu"]
 realtime_track: "air_airnow_us"
 config: "configs/datasets/rt/air_airnow_us.toml"
 loader: "realtime_panel_st"
@@ -53,11 +53,11 @@ No local copy of `dataset/realtime/air_airnow_us` exists in a development checko
 ## Standard protocol and known pitfalls
 
 - **Sensor sets are fixed at bootstrap.** The channel set is frozen so rounds stay comparable; stations that start reporting later are not added, and stations that stop remain as forward-filled constants.
-- **Reported values are noisy.** PM2.5 readings can be sparse, spiky, and include instrument noise; the real-time store keeps them as reported.- **Short history.** Only the 56-day bootstrap plus later weeks exist, so seasonal structure beyond a few weeks is absent from the training split.
+- **Reported values are noisy.** PM2.5 readings can be sparse, spiky, and include instrument noise; the real-time store keeps them as reported.
+- **Mixed time zones.** Stamps are naive UTC while stations span several time zones, so local daily cycles are phase-shifted between channels.
+- **Short history.** Only the 56-day bootstrap plus later weeks exist, so seasonal structure beyond a few weeks is absent from the training split.
 - **Negative values.** Negative PM2.5 readings are raw instrument noise and are kept.
-
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
@@ -117,3 +117,5 @@ overrides; the card does not imply that the data is bundled.
 ## Related datasets
 
 - [`rt/air_openaq_us`](../air_openaq_us/README.md): US, OpenAQ source
+- [`rt/air_openaq_cn`](../air_openaq_cn/README.md): China, OpenAQ source
+- [`rt/air_openaq_eu`](../air_openaq_eu/README.md): Europe, OpenAQ source

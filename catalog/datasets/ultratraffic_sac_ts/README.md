@@ -59,10 +59,11 @@ Measured from the local parquet store and manifest under `dataset/` (read-only).
 
 ## Standard protocol and known pitfalls
 
-- **One year only.** The preset loads 2023 alone: a 7:1:2 split puts training from January to mid-September (6,132 hours), validation to about 20 October, and the last 1,752 hours (late October to December, with Thanksgiving and Christmas) in test, so the test period includes holiday regimes the training split lacks.
+- **One year only.** The preset loads 2023 alone: a 7:1:2 split puts training from January to mid-September (6,132 hours), validation to 19 October, and the last 1,752 hours (late October to December, with Thanksgiving and Christmas) in test, so the test period includes holiday regimes the training split lacks.
 - **Scaling.** One scalar mean and standard deviation is computed on the training rows across all stations (not per station), so large stations dominate and per-station scale differences remain; the loader's `value_mean`/`value_std` are used for inversion.
 - **Gap filling.** The loader linearly interpolates (both directions) and zero-fills the whole panel before splitting; for the static 2023 panel there are no gaps, but other variants or years could use future values to fill earlier gaps.
 - **Zeros.** Some stations report exact zeros for many hours (8% of the District 8 values, 4% of District 3), probably outages or closures rather than real empty roads; this was not traced to the source.
+- **No calendar features (ts layout).** `ultratraffic_ts` passes all-zero timestamp stamps, so models see no time-of-day or day-of-week information; the `_st` presets add those two covariates.
 - **No adjacency.** The archive carries no station coordinates, so graph models receive no adjacency (`adj_mx` is None).
 - **Different from `traffic`.** This is hourly flow in vehicles per hour for 2023, not LTSF's 2015-2016 occupancy rate.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

@@ -52,7 +52,7 @@ NN5 is the daily cash-withdrawal history of 111 ATMs from the NN5 forecasting co
 | Dates | file dates 1996-03-18 to 1998-05-17 are nominal; the competition covers two years of daily data | source-reported |
 | Missing values | none in the TFB file (imputed 'without missing values' version) | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/nn5.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers above are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/nn5.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 

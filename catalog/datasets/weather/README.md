@@ -51,7 +51,7 @@ Weather is the 2020 record of the roof weather station of the Max Planck Institu
 | Channels | 21 (alphabetical order with `OT` second; the last column is `wv (m/s)`) | measured |
 | Time span | 2020-01-01 00:10:00 to 2020-12-31 22:40:00; contiguous 10-minute grid, no gaps | measured |
 | NaN values | 0 | measured |
-| -9999 sentinels | OT: 50, max. PAR (�mol/m�/s): 30, wv (m/s): 1 | measured |
+| -9999 sentinels | OT: 50, max. PAR: 30, wv (m/s): 1 | measured |
 | OT range excluding sentinels | 305.5 to 524.2, mean 427.7 (looks like CO2 in ppm; meaning not verified) | measured |
 | Exact zeros | 16.0% of all values (rain, raining, radiation at night) | measured |
 | Year coverage | 2020; the series starts at 00:10 and ends at 22:40, so 8 slots of a full year grid are absent at the edges | measured |
@@ -60,7 +60,7 @@ Measured on `dataset/weather/weather.csv` (read-only).
 
 ## Standard protocol and known pitfalls
 
-- **Split.** 7:1:2 chronological, scaling on training rows only. The test split is roughly mid-October to December 2020 and the training split is January to August, so seasonal shift between train and test is large.
+- **Split.** 7:1:2 chronological, scaling on training rows only. The training split is January to mid-September 2020, validation runs to mid-October, and the test split is roughly 19 October to December (measured), so seasonal shift between train and test is large.
 - **Sentinels.** `-9999` marks missing readings in `OT` (50 rows), `max. PAR` (30), and `wv` (1). The preset sets `missing_sentinels = [-9999]`, so they become NaN and are filled causally before scaling (forward fill, then back fill only for a leading gap); all affected rows fall in the training split (rows 7,244 to 31,773 of 52,696, measured). Left in place they inflate the training standard deviation of `OT` from 18.2 to 384.0, of `max. PAR` from 573.5 to 643.4, and of `wv` from 1.67 to 52.1, with z-scores down to -192 (measured on the training split). Results therefore differ from papers that use the file as-is and from earlier TSFLab weather runs. Remove the parameter to reproduce the as-is protocol.
 - **Target.** `"S"` and `"MS"` both forecast `OT`: the loader moves the named target to the last channel in `MS` mode, so the alphabetical column order of this file does not change the target.
 - **Encoding.** Column names containing the micro and superscript characters were stored with replacement characters; do not select columns by those names.

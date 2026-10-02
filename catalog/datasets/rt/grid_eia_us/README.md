@@ -11,9 +11,9 @@ citation_url: "n/a"
 license: "US government work, public domain (per docs/en/realtime.md)"
 redistribution: "allowed"
 frequency: "hourly (1h)"
-time_span: "365 days back from the bootstrap; grows with each weekly release"
+time_span: "the 365 days before the bootstrap; grows with each weekly release"
 length: "grows weekly; the bootstrap covers 365 days of API backfill"
-channels: "unknown (balancing authorities reporting at least the configured share of hours at bootstrap; the set is in the store manifest)"
+channels: "up to 80 (config max_series; balancing authorities reporting at least 90% of hours at bootstrap; the exact set is in the store manifest)"
 channel_kind: "stations"
 target: "demand (megawatt-hours per hour per the EIA-930 series; unit not re-measured) per balancing authority"
 missing_values: "operator-reported values have gaps and outliers; unobserved hours are NaN and the loader forward-fills them"
@@ -54,8 +54,7 @@ No local copy of `dataset/realtime/grid_eia_us` exists in a development checkout
 
 - **Operator-reported.** A few outliers and gaps are normal; regional aggregates such as `US48` or `TEX` are excluded so channels do not overlap.
 - **Reporting lag.** Demand lags about an hour in the live feed.
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

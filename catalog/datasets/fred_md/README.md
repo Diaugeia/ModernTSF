@@ -52,7 +52,7 @@ FRED-MD is a monthly database of US macroeconomic indicators (output, labor, hou
 | Span | 1959-01 to 2019-08 | source-reported |
 | Missing values | none in the TFB file | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/fred_md.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers above are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/fred_md.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 

@@ -11,7 +11,7 @@ citation_url: "n/a"
 license: "CC-BY-4.0 (OpenAQ; per-provider licenses vary)"
 redistribution: "conditional"
 frequency: "hourly (1h)"
-time_span: "from the first bootstrap week back 365 days; grows with each weekly release"
+time_span: "the 365 days before the bootstrap; grows with each weekly release"
 length: "grows weekly; the bootstrap covers 365 days of API backfill"
 channels: "up to 200 (config max_sensors; the exact set is in the store manifest)"
 channel_kind: "stations"
@@ -34,7 +34,7 @@ task_modes: ["spatiotemporal", "covariate"]
 
 ## Overview
 
-`rt_air_openaq_cn` serves the OpenAQ China PM2.5 real-time track as a static spatiotemporal dataset (stations as nodes plus calendar covariates), read from the panel store at a fixed release.
+`rt_air_openaq_cn` serves the OpenAQ China PM2.5 real-time track as a static spatiotemporal dataset (stations as nodes plus calendar covariates), read from the panel store.
 
 ## Provenance and license
 
@@ -54,8 +54,8 @@ No local copy of `dataset/realtime/air_openaq_cn` exists in a development checko
 
 - **Sensor sets are fixed at bootstrap.** The channel set is frozen so rounds stay comparable; stations that start reporting later are not added, and stations that stop remain as forward-filled constants.
 - **Reported values are noisy.** PM2.5 readings can be sparse, spiky, and include instrument noise; the real-time store keeps them as reported.
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Time zone.** Stamps are naive UTC while the stations sit in UTC+8, so the local daily cycle is shifted by eight hours.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

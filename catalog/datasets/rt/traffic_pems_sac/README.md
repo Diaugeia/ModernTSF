@@ -5,7 +5,7 @@ summary: "Hourly total flow per Caltrans PeMS station in District 3 (Sacramento)
 domain: "Transport / road traffic"
 tags: ["traffic", "pems", "flow", "hourly", "california", "district-3", "real-time", "stations", "spatiotemporal", "frozen-release", "covariate"]
 source: "Caltrans PeMS hourly total flow per station (District 3 (Sacramento)); 2019-2023 history from the UltraTraffic_CL archive, later weeks from the PeMS clearinghouse station_5min files"
-source_url: "http://pems.dot.ca.gov"
+source_url: "https://pems.dot.ca.gov"
 citation: "n/a (no dataset paper; TSFLab real-time track)"
 citation_url: "n/a"
 license: "unknown"
@@ -22,7 +22,7 @@ seq_lens: [168]
 pred_lens: [24]
 split: "7:1:2"
 stats_basis: "measured"
-related: ["ultratraffic_sac_st", "ultratraffic_sac_ts", "rt/traffic_pems_ba", "rt/traffic_pems_la"]
+related: ["ultratraffic_sac_st", "ultratraffic_sac_ts", "rt/traffic_pems_ba", "rt/traffic_pems_la", "rt/traffic_pems_sb"]
 realtime_track: "traffic_pems_sac"
 config: "configs/datasets/rt/traffic_pems_sac.toml"
 loader: "realtime_panel_st"
@@ -38,7 +38,7 @@ task_modes: ["spatiotemporal", "covariate"]
 
 ## Provenance and license
 
-- Source system: Caltrans PeMS (http://pems.dot.ca.gov), District 3. Its Conditions of Use say site information is in the public domain unless otherwise indicated; this is a generic policy, not a statement about the packaged data.
+- Source system: Caltrans PeMS (https://pems.dot.ca.gov), District 3. Its Conditions of Use say site information is in the public domain unless otherwise indicated; this is a generic policy, not a statement about the packaged data.
 - The 2019-2023 bootstrap history comes from the UltraTraffic_CL archive (publisher not identified in the repository; see `ultratraffic_sac_st`); weekly increments come from the PeMS clearinghouse `station_5min` files summed to hourly flow (free PeMS account).
 - `license` and `redistribution` are `unknown`; confirm the archive's terms before publishing a release or this preset's data.
 
@@ -53,7 +53,7 @@ task_modes: ["spatiotemporal", "covariate"]
 | Stations with more than 50% NaN | 227 | measured |
 | Stations whose first reading is after the training split ends | 99 | measured |
 | Value range | 0 to 20,671; mean 1914.1, standard deviation 1663.1 (vehicles per hour, NaN excluded) | measured |
-| Exact zeros | 1.75% of observed values | measured |
+| Exact zeros | 2.29% of observed values | measured |
 | Mean flow by year | 2,275 (2019), 1,911 (2020), 2,041 (2021), 1,850 (2022), 1,664 (2023) | measured |
 | Track config | `configs/realtime/traffic_pems_sac.toml`: freq h, seq_len 168, horizon 24, min_coverage 0.8, timezone America/Los_Angeles | source-reported (config) |
 
@@ -64,7 +64,7 @@ Measured from the local store `dataset/realtime/traffic_pems_sac` (read-only). W
 - **Coverage is not uniform.** The NaN share falls from 39.7% in 2019 to 0.0% in 2023, so the test split is the best-covered year while the training split carries most of the filled gaps.
 - **2020 regime.** Mean flow dips in 2020 and does not return to its 2019 level in every district (see the yearly means above), so the training split mixes pre-pandemic and pandemic regimes.
 - **No adjacency.** The store carries no station coordinates, so graph models receive no adjacency.
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** The preset reads the local panel store at the pinned release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
@@ -128,3 +128,4 @@ overrides; the card does not imply that the data is bundled.
 - [`ultratraffic_sac_ts`](../../ultratraffic_sac_ts/README.md): the same data with stations as plain channels
 - [`rt/traffic_pems_ba`](../traffic_pems_ba/README.md): another PeMS district as a real-time preset
 - [`rt/traffic_pems_la`](../traffic_pems_la/README.md): another PeMS district as a real-time preset
+- [`rt/traffic_pems_sb`](../traffic_pems_sb/README.md): another PeMS district as a real-time preset

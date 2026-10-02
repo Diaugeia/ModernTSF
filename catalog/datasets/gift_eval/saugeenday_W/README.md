@@ -33,7 +33,7 @@ task_modes: ["time_series"]
 
 ## Overview
 
-Saugeen River Flow (saugeenday/W) is the GIFT-Eval series collection built from mean flow of the Saugeen River at Walkerton (Ontario), from the Monash repository. It is part of the Nature domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (8 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
+Saugeen River Flow (saugeenday/W) is the GIFT-Eval series collection built from mean daily flow of the Saugeen River at Walkerton (Ontario) (aggregated to weekly by GIFT-Eval), from the Monash repository. It is part of the Nature domain of the GIFT-Eval benchmark, a zero-shot-oriented suite for general time series forecasting models (Salesforce AI Research). This preset forecasts the short-term horizon (8 steps); GIFT-Eval defines medium and long terms for some datasets, but this repository ships the short-term preset only.
 
 ## Provenance and license
 

@@ -11,7 +11,7 @@ citation_url: "n/a"
 license: "CC-BY-4.0 (Open-Meteo; non-commercial free tier, attribution required)"
 redistribution: "conditional"
 frequency: "hourly (1h)"
-time_span: "365 days back from the bootstrap; grows with each weekly release"
+time_span: "the 365 days before the bootstrap; grows with each weekly release"
 length: "grows weekly; the bootstrap covers 365 days of the same API"
 channels: "55 (sites in the track config)"
 channel_kind: "stations"
@@ -54,8 +54,7 @@ No local copy of `dataset/realtime/solar_openmeteo_ghi` exists in a development 
 
 - **Model values, not station readings.** Values are model analysis at coordinates, so they are smoother than gauge data; the newest three hours are forecasts and are not stored.
 - **Night zeros.** Irradiance is exactly zero at night, so MAPE-style metrics are undefined and MSE is driven by daytime peaks.
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

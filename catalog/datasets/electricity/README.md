@@ -41,7 +41,7 @@ Electricity (ECL) holds the electricity consumption of 321 clients of a Portugue
 - Raw data: Artur Trindade, UCI Machine Learning Repository, ElectricityLoadDiagrams20112014 (https://doi.org/10.24432/C58C86), license CC BY 4.0 ("sharing and adaptation of the datasets for any purpose, provided that the appropriate credit is given").
 - Preprocessing: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data. That repository carries no license file, so the preprocessed copy is derived from CC BY data and must credit Trindade.
 - Cite LSTNet and the UCI dataset. UCI reports kW per 15 minutes while the LSTNet README says kWh, so the unit of this file is ambiguous; treat values as relative load.
-- Redistribution: allowed with attribution for the raw data; prefer the UCI source when publishing.
+- Redistribution: `conditional`. The raw UCI data allows redistribution with attribution, but this preprocessed LSTNet copy carries no license of its own; prefer the UCI source when publishing.
 
 ## Structure and statistics
 

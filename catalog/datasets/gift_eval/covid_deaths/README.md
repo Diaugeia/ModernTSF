@@ -5,7 +5,7 @@ summary: "GIFT-Eval COVID Deaths at daily frequency: 266 series of Healthcare da
 domain: "Healthcare"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "healthcare", "daily", "covid-19", "epidemiology", "monash"]
 source: "Monash Time Series Forecasting Repository (Godahewa et al., 2021)"
-source_url: "https://forecastingdata.org/"
+source_url: "https://zenodo.org/records/4656009"
 citation: "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url: "https://arxiv.org/abs/2410.10393"
 license: "CC-BY-4.0"
@@ -37,7 +37,7 @@ COVID Deaths (covid_deaths) is the GIFT-Eval series collection built from daily 
 
 ## Provenance and license
 
-- Original source: Monash Time Series Forecasting Repository (Godahewa et al., 2021); https://forecastingdata.org/.
+- Original source: Monash Time Series Forecasting Repository (Godahewa et al., 2021); https://zenodo.org/records/4656009 (index: https://forecastingdata.org/).
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
 - License of the underlying data: `CC-BY-4.0` (explicit license found for the source).
 - Bytes are not bundled; download them with `tsf data prepare --from gift`.

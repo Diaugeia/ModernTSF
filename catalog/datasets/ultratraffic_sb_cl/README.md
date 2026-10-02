@@ -47,21 +47,21 @@ This preset loads one year (2023) of hourly total flow, in vehicles per hour sum
 | --- | --- | --- |
 | Stations (static 2023) | 1,105 (this preset: 51) | measured |
 | Rows (hours in 2023) | 8,760 | measured |
-| Value range, 2023 (all stations) | 0 to 16,278, mean 2,442.2 | measured |
-| Exact zeros, 2023 (all stations) | 8.31% of all values | measured |
+| Value range, 2023 (this preset's 51 stations) | 0 to 10,739, mean 2,319.1 (all 1,105 District 8 stations: 0 to 16,278, mean 2,442.2) | measured |
+| Exact zeros, 2023 (this preset's 51 stations) | 16.17% of all values (all District 8 stations: 8.31%) | measured |
 | NaN, 2023 | 0.0% | measured |
 | 2023 added / common stations (continual-learning split) | 51 added, 1,054 common | measured (manifest) |
 | Stations per static year (2003-2023) | 108 to 1,252 | measured (manifest) |
-| Real-time store `dataset/realtime/traffic_pems_sb` | 43,824 hourly rows, 2019-01-01 to 2023-12-31, 1,105 channels, 4.5% NaN (bootstrap release only) | measured |
+| Real-time store `dataset/realtime/traffic_pems_sb` (whole district, not this slice) | 43,824 hourly rows, 2019-01-01 to 2023-12-31, 1,105 channels, 4.5% NaN (bootstrap release only) | measured |
 
 Measured from the local parquet store and manifest under `dataset/` (read-only).
 
 ## Standard protocol and known pitfalls
 
-- **One year only.** The preset loads 2023 alone: a 7:1:2 split puts training from January to mid-September (6,132 hours), validation to about 20 October, and the last 1,752 hours (late October to December, with Thanksgiving and Christmas) in test, so the test period includes holiday regimes the training split lacks.
+- **One year only.** The preset loads 2023 alone: a 7:1:2 split puts training from January to mid-September (6,132 hours), validation to 19 October, and the last 1,752 hours (late October to December, with Thanksgiving and Christmas) in test, so the test period includes holiday regimes the training split lacks.
 - **Scaling.** One scalar mean and standard deviation is computed on the training rows across all stations (not per station), so large stations dominate and per-station scale differences remain; the loader's `value_mean`/`value_std` are used for inversion.
 - **Gap filling.** The loader linearly interpolates (both directions) and zero-fills the whole panel before splitting; for the static 2023 panel there are no gaps, but other variants or years could use future values to fill earlier gaps.
-- **Zeros.** Some stations report exact zeros for many hours (8% of the District 8 values, 4% of District 3), probably outages or closures rather than real empty roads; this was not traced to the source.
+- **Zeros.** The 51 added stations report exact zeros for 16% of their hours (8% for all District 8 stations, 4% for District 3), probably outages or closures rather than real empty roads; this was not traced to the source.
 - **Continual-learning view.** `cl_added` contains only stations new in 2023; pair it with `ultratraffic_sb_st` (all stations) or the `cl_common` variant to study sensors joining the network.
 - **No adjacency.** The archive carries no station coordinates, so graph models receive no adjacency (`adj_mx` is None).
 - **Different from `traffic`.** This is hourly flow in vehicles per hour for 2023, not LTSF's 2015-2016 occupancy rate.

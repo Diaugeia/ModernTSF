@@ -11,7 +11,7 @@ citation_url: "n/a"
 license: "CC-BY-4.0 (Open-Meteo; non-commercial free tier, attribution required)"
 redistribution: "conditional"
 frequency: "hourly (1h)"
-time_span: "from 2022 model-analysis data back 365 days at bootstrap; grows with each weekly release"
+time_span: "the 365 days before the bootstrap (the API's analysis hours start in 2022); grows with each weekly release"
 length: "grows weekly; the bootstrap covers 365 days of the same API (analysis hours from 2022)"
 channels: "82 (cities in the track config)"
 channel_kind: "stations"
@@ -34,7 +34,7 @@ task_modes: ["spatiotemporal", "covariate"]
 
 ## Overview
 
-`rt_weather_openmeteo_temp` serves hourly temperature at 82 cities as a static spatiotemporal dataset (cities as nodes plus calendar covariates), read from the panel store at a fixed release.
+`rt_weather_openmeteo_temp` serves hourly temperature at 82 cities as a static spatiotemporal dataset (cities as nodes plus calendar covariates), read from the panel store.
 
 ## Provenance and license
 
@@ -54,8 +54,7 @@ No local copy of `dataset/realtime/weather_openmeteo_temp` exists in a developme
 
 - **Model values, not station readings.** Values are model analysis at coordinates, so they are smoother than gauge data; the newest three hours are forecasts and are not stored.
 - **Strong annual cycle.** A one-year history gives the training split one season and the test split another, so the seasonal shift is large.
-
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

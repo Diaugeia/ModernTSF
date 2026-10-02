@@ -34,7 +34,7 @@ task_modes: ["time_series"]
 
 ## Overview
 
-`rt_stock_nasdaq100` freezes the NASDAQ-100 real-time track as a static dataset: each channel is one constituent's daily log return, read from the panel store at a fixed release and split chronologically 7:1:2.
+`rt_stock_nasdaq100` freezes the NASDAQ-100 real-time track as a static dataset: each channel is one constituent's daily log return, read from the panel store and split chronologically 7:1:2.
 
 ## Provenance and license
 
@@ -57,7 +57,7 @@ No local copy of `dataset/realtime/stock_nasdaq100` exists in a development chec
 - **Survivorship bias.** The panel is built from the constituents at bootstrap, so the history contains only stocks that were in the index then; static results look better than live ones.
 - **Returns, not prices.** Values are daily log returns with a near-zero mean and heavy tails; a zero forecast is a strong baseline and MSE is dominated by volatile days.
 - **Holidays and suspensions.** Exchange holidays and halts are unobserved cells on a business-day grid; the loader forward-fills them, which turns a missing return into a repeated one rather than a zero.
-- **Frozen snapshot, not the live track.** The preset reads the local panel store at a fixed release (`version`); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
+- **Frozen snapshot, not the live track.** No `version` is pinned, so the preset reads whatever the local panel store holds (pin a release, or set `revision`, for a reproducible study); the live track keeps growing and its rolling weekly rounds (`docs/en/realtime.md`) remain the contamination-free evaluation. A static split of the snapshot says nothing about data that arrive after it.
 - **Gap filling.** Unobserved cells are forward-filled and only a series' leading gap is back-filled from its first reading; the loader fills the whole panel before splitting, so a channel that starts late carries a constant first value in training. Fully empty channels become zero.
 - **Scaling.** One scalar mean and standard deviation from the training rows is shared by all channels, as in the real-time export, so large channels dominate raw-unit MSE.
 - **`drop_last`.** Loaders keep the last partial batch for every split.

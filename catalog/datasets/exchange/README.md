@@ -46,12 +46,12 @@ Exchange-rate holds the daily exchange rates of eight countries' currencies, col
 
 | Item | Value | Basis |
 | --- | --- | --- |
-| Rows (standard file) | 7,588 daily steps | source-reported (TFB data file, row count verified by the research) |
+| Rows (standard file) | 7,588 daily steps | source-reported (TFB data file) |
 | Channels | 8 currencies; last column `OT` is the target convention | source-reported |
 | Span | LSTNet: 1990 to 2016; file dates 1990-01-01 to 2010-09-09 (7,588 consecutive days) | source-reported (conflicting; dates nominal) |
 | Missing values | none in the standard file | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/exchange.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers above are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/exchange.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 
