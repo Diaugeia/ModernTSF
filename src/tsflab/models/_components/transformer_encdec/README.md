@@ -109,7 +109,7 @@ import tsflab.models._components.transformer_encdec
 
 `attention`, `decoder`, `encoder`, `transformer`
 
-## Current model consumers (3)
+## Current model consumers (4)
 
-`dualformer`, `informer`, `transformer`
+`dualformer`, `gpht`, `informer`, `transformer`
 <!-- component-card:generated:end -->

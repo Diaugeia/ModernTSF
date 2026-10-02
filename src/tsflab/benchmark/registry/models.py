@@ -380,4 +380,7 @@ MODEL_CATALOG = ModelCatalog({
     "PENGUIN": "tsflab.models.penguin.spec",
     "DiPELinear": "tsflab.models.dipelinear.spec",
     "PGN": "tsflab.models.pgn.spec",
+    "FreDF": "tsflab.models.fredf.spec",
+    "GPHT": "tsflab.models.gpht.spec",
+    "SAMBA": "tsflab.models.samba.spec",
 })
