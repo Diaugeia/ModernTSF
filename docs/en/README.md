@@ -8,7 +8,7 @@ component, and dataset details live in their cards.
 
 - [workflows.md](workflows.md): model interfaces, adding models, offline official
   foundation runtimes, artifacts, components, reading the catalog by depth, datasets
-  (84 presets, one TSFLab protocol each), experiments, AutoResearch, and verification.
+  (99 presets, one TSFLab protocol each), experiments, AutoResearch, and verification.
 - [execution.md](execution.md): optional environment audits, tracking, budgets, GPU scheduling, recovery, and independently usable Python modules.
 - [hub.md](hub.md): standalone projects (`tsf init`), `hf://` addressing, and publishing weights bundles.
 - [realtime.md](realtime.md): rolling real-time tracks, weekly rounds, forecast submissions, scoring, and replay.

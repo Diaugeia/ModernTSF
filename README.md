@@ -42,7 +42,7 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
 | 🧩 **Code & interface** | 199 methods as peers in one flat catalog, composed from 48 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison; every card opens with a tagline, tags, and a six-slot composition |
-| 🗃️ **Data** | 84 dataset presets (73 conventional, including the GIFT-Eval family, and 11 spatiotemporal or covariate), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
+| 🗃️ **Data** | 99 dataset presets (75 conventional, including the GIFT-Eval family, and 24 spatiotemporal or covariate; 16 of them are frozen releases of the real-time tracks), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
 | ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf dataset analyze` profiles a dataset and `tsf component compose` dry-runs a recombination for AutoResearch |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
