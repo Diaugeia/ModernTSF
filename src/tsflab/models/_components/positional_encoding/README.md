@@ -98,7 +98,7 @@ import tsflab.models._components.positional_encoding
 
 `encoding`, `patch`, `position`, `transformer`
 
-## Current model consumers (4)
+## Current model consumers (5)
 
-`canet`, `gateformer`, `lsinet`, `semixer`
+`canet`, `composed`, `gateformer`, `lsinet`, `semixer`
 <!-- component-card:generated:end -->

@@ -308,7 +308,7 @@ def component_command(args: list[str]) -> int:
         print(
             "usage: tsf component {list,show,search,match,compose,audit} [args...]\n"
             "       tsf component list [--json]                (L0 lines)\n"
-            "       tsf component compose <spec.toml> [--json]   (dry run)\n"
+            "       tsf component compose <spec.toml> [--json] [--write-config PATH --dataset D --enc-in N [--smoke]] [--register NAME [--dry-run]]\n"
             "       tsf component search <terms...> [--limit N] [--json]   (L0 lines; match is an alias)\n"
             "       tsf component show <name> [--depth {0,1,2,3}] [--json]"
         )

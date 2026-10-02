@@ -88,7 +88,7 @@ from tsflab.models._components.mixer_block import MixerBlock
 
 `feature`, `gelu`, `layernorm`, `mixer`, `residual`, `time`
 
-## Current model consumers (1)
+## Current model consumers (2)
 
-`tsmixer`
+`composed`, `tsmixer`
 <!-- component-card:generated:end -->

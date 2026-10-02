@@ -187,9 +187,13 @@ def _hub_dataset_command(action: str, rest: list[str]) -> int:
 def result_command(args: list[str]) -> int:
     """Route result aggregation, ranking, plotting, reporting, and visualization."""
     if not args or args[0] in {"-h", "--help", "help"}:
-        print("usage: tsf result {aggregate,rank,plot,report,predictions} [args...]")
+        print("usage: tsf result {aggregate,rank,plot,report,predictions,board} [args...]")
         return 0
     action, rest = args[0], args[1:]
+    if action == "board":
+        from tsflab.benchmark.commands.result_board import board_command
+
+        return board_command(rest)
     scripts = {
         "aggregate": "aggregate_results.py",
         "rank": "rank_models.py",

@@ -124,6 +124,10 @@ test = 'tests/test_mixer_frequency_forecasters.py'
 reference_test = 'tests/test_mixer_frequency_forecasters.py'
 reference_sources = ['https://github.com/CSTCloudOps/CMoS/blob/b696a0c33b5ad8f03ad483d43b95fcb5564aa939/model/CMoS/Model.py']
 
+[models.Composed]
+profile = 'standard'
+test = 'tests/test_composed.py'
+
 [models.CoRA]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'
