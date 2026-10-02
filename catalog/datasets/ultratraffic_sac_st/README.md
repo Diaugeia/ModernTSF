@@ -1,20 +1,73 @@
 ---
 name: "ultratraffic_sac_st"
 kind: "dataset"
+summary: "Hourly total flow per Caltrans PeMS station in District 3 (North Central (Sacramento)) for 2023, 801 stations (all stations present in 2023), with stations as nodes plus two calendar covariates."
+domain: "Transportation / road traffic"
+tags: ["traffic", "pems", "flow", "hourly", "california", "district-3", "ultratraffic", "stations", "2023", "real-time-backed", "spatiotemporal", "covariate"]
+source: "Caltrans PeMS hourly total flow per station, as packaged in the UltraTraffic_CL archive (archive publisher not identified in the repository)"
+source_url: "http://pems.dot.ca.gov"
+citation: "n/a (no paper identified for the UltraTraffic_CL archive)"
+citation_url: "n/a"
+license: "unknown"
+redistribution: "unknown"
+frequency: "hourly (1h)"
+time_span: "2023-01-01 00:00 to 2023-12-31 23:00 (store holds 2003-2023)"
+length: 8760
+channels: 801
+channel_kind: "nodes"
+target: "total flow of every station"
+missing_values: "none after the converter's gap filling (measured: 0 NaN in the 2023 panel); zeros remain"
+protocol: "Chronological 7:1:2 within 2023, global z-score from the training split; no published protocol (seq_len 168 and horizon 24 match the real-time track)"
+seq_lens: [168]
+pred_lens: [24]
+split: "7:1:2"
+stats_basis: "measured"
+related: ["ultratraffic_sac_ts", "ultratraffic_ba_st", "pems03"]
+realtime_track: "traffic_pems_sac"
 config: "configs/datasets/ultratraffic_sac_st.toml"
 loader: "ultratraffic_st"
 alias: "ultratraffic_sac_st"
 task_modes: ["spatiotemporal", "covariate"]
-summary: "Time-series forecasting preset loaded by `ultratraffic_st`."
 ---
 
 # ultratraffic_sac_st
 
 ## Overview
 
-Time-series forecasting preset loaded by `ultratraffic_st`. This card describes the repository preset and runtime contract; it
-does not add an external-source provenance claim that is absent from the configuration.
+This preset loads one year (2023) of hourly total flow, in vehicles per hour summed over lanes, for the stations of Caltrans PeMS District 3 (North Central (Sacramento)) from the local UltraTraffic parquet store (`dataset/ultratraffic/PEMS_SAC`, built from `UltraTraffic_CL.zip`). All stations present in 2023; stations as nodes plus two calendar covariates. The same store bootstraps the real-time track `traffic_pems_sac`.
 
+## Provenance and license
+
+- Source system: Caltrans PeMS (http://pems.dot.ca.gov), District 3. Its Conditions of Use say site information is in the public domain unless otherwise indicated; this is a generic policy.
+- Packaging: the store manifest records `UltraTraffic_CL.zip` as its source archive. No publication or repository named UltraTraffic was found in primary sources during this card's research; the closest published relatives (XXLTraffic, CC BY-NC 4.0; TrafficStream) were not confirmed to be the same data, so provenance beyond PeMS is unverified. If the archive derives from a CC BY-NC dataset, commercial use and republication are restricted.
+- `license` and `redistribution` are therefore `unknown`; do not run `tsf dataset publish` for these presets without confirming the archive's terms.
+
+## Structure and statistics
+
+| Item | Value | Basis |
+| --- | --- | --- |
+| Stations (static 2023) | 801 (this preset: 801) | measured |
+| Rows (hours in 2023) | 8,760 | measured |
+| Value range, 2023 (all stations) | 0 to 13,783, mean 1,663.6 | measured |
+| Exact zeros, 2023 (all stations) | 4.38% of all values | measured |
+| NaN, 2023 | 0.0% | measured |
+| 2023 added / common stations (continual-learning split) | 110 added, 691 common | measured (manifest) |
+| Stations per static year (2003-2023) | 84 to 801 | measured (manifest) |
+| Real-time store `dataset/realtime/traffic_pems_sac` | 43,824 hourly rows, 2019-01-01 to 2023-12-31, 801 channels, 23.8% NaN (bootstrap release only) | measured |
+
+Measured from the local parquet store and manifest under `dataset/` (read-only).
+
+## Standard protocol and known pitfalls
+
+- **One year only.** The preset loads 2023 alone: a 7:1:2 split puts training from January to mid-September (6,132 hours), validation to about 20 October, and the last 1,752 hours (late October to December, with Thanksgiving and Christmas) in test, so the test period includes holiday regimes the training split lacks.
+- **Scaling.** One scalar mean and standard deviation is computed on the training rows across all stations (not per station), so large stations dominate and per-station scale differences remain; the loader's `value_mean`/`value_std` are used for inversion.
+- **Gap filling.** The loader linearly interpolates (both directions) and zero-fills the whole panel before splitting; for the static 2023 panel there are no gaps, but other variants or years could use future values to fill earlier gaps.
+- **Zeros.** Some stations report exact zeros for many hours (8% of the District 8 values, 4% of District 3), probably outages or closures rather than real empty roads; this was not traced to the source.
+- **No adjacency.** The archive carries no station coordinates, so graph models receive no adjacency (`adj_mx` is None).
+- **Different from `traffic`.** This is hourly flow in vehicles per hour for 2023, not LTSF's 2015-2016 occupancy rate.
+- **`drop_last`.** Loaders keep the last partial batch for every split.
+
+<!-- dataset-card:canonical:start -->
 ## Loader and files
 
 - Registry loader: `ultratraffic_st`
@@ -25,7 +78,7 @@ does not add an external-source provenance claim that is absent from the configu
 
 ## Input and output contract
 
-Each item provides history/target windows and timestamp marks; after batching, values use `[batch, time, channels]`.
+Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -56,14 +109,22 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/ultratraffic_sac_st.toml` and
-prepare/download data with the loader-specific dataset command when required.
-Reference this preset from an experiment configuration rather than duplicating
-its loader parameters.
+Inspect availability with `tsf dataset inspect --config configs/datasets/ultratraffic_sac_st.toml`; fetch
+published files with `tsf dataset download ultratraffic_sac_st` when the preset is
+listed by `tsf dataset download --list`, otherwise place the data at the local
+path above (see `tsf dataset prepare --help`). Reference this preset from an
+experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 
-Choose one of `spatiotemporal, covariate` and match it to the model's declared task
-mode. Inspect the loader
-before changing feature or scaling parameters. Paths are repository defaults and
-may need local overrides; the card does not imply that the data is bundled.
+Task modes: `spatiotemporal`, `covariate`. Match one of them to the model's declared task mode; the
+config loader rejects other combinations. Change feature or scaling parameters
+only after reading the loader. Paths are repository defaults and may need local
+overrides; the card does not imply that the data is bundled.
+<!-- dataset-card:canonical:end -->
+
+## Related datasets
+
+- [`ultratraffic_sac_ts`](../ultratraffic_sac_ts/README.md): same stations, other layout
+- [`ultratraffic_ba_st`](../ultratraffic_ba_st/README.md): another district, same pipeline
+- [`pems03`](../pems03/README.md): 5-minute PeMS flow graph of the same district (STSGCN)

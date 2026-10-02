@@ -8,7 +8,7 @@ src/moderntsf/models/<slug>/              local model code, spec, and model card
 src/moderntsf/models/_components/<name>/  reusable component code and card
 src/moderntsf/data/                       dataset loaders and parameter schemas
 dataset/                        local dataset bytes (not packaged)
-catalog/datasets/<preset>/      generated readable dataset cards
+catalog/datasets/<preset>/      dataset cards: curated facts plus a generated runtime block
 configs/                        composable model, dataset, and run TOML
 verification/                   manifest, generated index, per-model evidence
 work_dirs/                      experiment checkpoints, metrics, and records
@@ -208,7 +208,9 @@ Data has three non-overlapping layers:
 
 - `dataset/`: local files, downloads, and converted arrays; never code or cards.
 - `src/moderntsf/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
-- `catalog/datasets/`: one generated README card per runnable dataset preset.
+- `catalog/datasets/`: one README card per runnable dataset preset, plus one family
+  card for GIFT-Eval. Each card pairs curated facts (domain, source, license,
+  statistics, protocol, pitfalls) with a generated runtime block.
 
 Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
 (see [the Hub page](hub.md#benchmark-data)):
@@ -217,6 +219,24 @@ Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
 uv run tsf dataset download --list
 uv run tsf dataset download etth1
 ```
+
+Find and read datasets by what they are, not only by name. Search matches the
+card's domain, tags, frequency, and source; `show` returns the card's facts:
+
+```bash
+uv run tsf dataset search hourly electricity
+uv run tsf dataset show etth1       # preset record plus card facts
+uv run tsf dataset audit            # required facts, no placeholders, generated block current
+```
+
+Card front matter (short facts: `summary`, `domain`, `tags`, `source`, `license`,
+`redistribution`, `frequency`, `time_span`, `length`, `channels`, `target`,
+`missing_values`, `protocol`, `seq_lens`, `pred_lens`, `split`, `stats_basis`,
+`related`) is the quick reference; the body adds provenance, statistics, standard
+protocol, and known pitfalls. `license: "unknown"` means no explicit terms were
+found, not that redistribution is allowed. `stats_basis` says whether numbers
+were measured from local files or reported by the source. `tsf repo cards`
+rewrites only the marked runtime block and the generated front-matter keys.
 
 Use an existing CSV preset or create a loader-backed dataset:
 

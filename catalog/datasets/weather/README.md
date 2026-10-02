@@ -1,20 +1,72 @@
 ---
 name: "weather"
 kind: "dataset"
+summary: "21 meteorological indicators every 10 minutes during 2020 from the Max Planck Institute for Biogeochemistry weather station in Jena, as prepared for Autoformer."
+domain: "Weather / meteorology"
+tags: ["weather", "meteorology", "jena", "climate", "ltsf", "benchmark", "multivariate", "10min", "max-planck", "autoformer", "temperature", "pressure"]
+source: "Max Planck Institute for Biogeochemistry, Jena (Beutenberg weather station)"
+source_url: "https://www.bgc-jena.mpg.de/wetter/"
+citation: "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting (Wu et al., NeurIPS 2021)"
+citation_url: "https://arxiv.org/abs/2106.13008"
+license: "CC-BY-4.0"
+redistribution: "allowed"
+frequency: "10-minute (10min)"
+time_span: "2020-01-01 00:10 to 2020-12-31 22:40 (calendar year 2020)"
+length: 52696
+channels: 21
+channel_kind: "channels"
+target: "OT"
+missing_values: "no NaN; the raw -9999 missing-value sentinel remains in OT (50 rows), max. PAR (30) and wv (1)"
+protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
+seq_lens: [96, 336, 512]
+pred_lens: [96, 192, 336, 720]
+split: "7:1:2"
+stats_basis: "measured"
+related: ["ettm1", "electricity", "gift_eval/jena_weather"]
 config: "configs/datasets/weather.toml"
 loader: "weather"
 alias: "weather"
 task_modes: ["time_series"]
-summary: "Time-series forecasting preset loaded by `weather`."
 ---
 
 # weather
 
 ## Overview
 
-Time-series forecasting preset loaded by `weather`. This card describes the repository preset and runtime contract; it
-does not add an external-source provenance claim that is absent from the configuration.
+Weather is the 2020 record of the roof weather station of the Max Planck Institute for Biogeochemistry in Jena, Germany: 21 indicators (air pressure, temperatures, humidity, vapor pressure, wind speed and direction, rain, radiation, and derived quantities) sampled every 10 minutes. Autoformer introduced this subset to the LTSF canon; it is the usual benchmark for many correlated channels with a smooth daily cycle and sparse intermittent channels such as rain.
 
+## Provenance and license
+
+- Producer: Max-Planck-Institut fuer Biogeochemie, Jena (station documentation by Olaf Kolle); data at https://www.bgc-jena.mpg.de/wetter/.
+- License: the Data Download page (https://www.bgc-jena.mpg.de/wetter/weather_data.html) states "Terms of Use (as per Creative Commons CC-BY-4.0)"; the landing page itself states none. Redistribution and adaptation are allowed with attribution.
+- Cite Autoformer for this subset and credit the Max Planck Institute for Biogeochemistry.
+- Do not confuse it with Informer's own "Weather" set (NOAA local climatological data, 2010-2013), which is a different dataset.
+
+## Structure and statistics
+
+| Item | Value | Basis |
+| --- | --- | --- |
+| Rows | 52,696 | measured |
+| Channels | 21 (alphabetical order with `OT` second; the last column is `wv (m/s)`) | measured |
+| Time span | 2020-01-01 00:10:00 to 2020-12-31 22:40:00; contiguous 10-minute grid, no gaps | measured |
+| NaN values | 0 | measured |
+| -9999 sentinels | OT: 50, max. PAR (�mol/m�/s): 30, wv (m/s): 1 | measured |
+| OT range excluding sentinels | 305.5 to 524.2, mean 427.7 (looks like CO2 in ppm; meaning not verified) | measured |
+| Exact zeros | 16.0% of all values (rain, raining, radiation at night) | measured |
+| Year coverage | 2020; the series starts at 00:10 and ends at 22:40, so 8 slots of a full year grid are absent at the edges | measured |
+
+Measured on `dataset/weather/weather.csv` (read-only).
+
+## Standard protocol and known pitfalls
+
+- **Split.** 7:1:2 chronological, scaling on training rows only. The test split is roughly mid-October to December 2020 and the training split is January to August, so seasonal shift between train and test is large.
+- **Sentinels.** `-9999` marks missing readings. They stay in `OT` (50 rows), `max. PAR` (30), and `wv` (1) and become extreme outliers after z-scoring; clean or mask them before comparing against papers that report on this file as-is.
+- **Target.** `features = "S"` forecasts `OT`; `"MS"` forecasts the last column, which is `wv (m/s)` in this file because the columns are alphabetical, not `OT`.
+- **Encoding.** Column names containing the micro and superscript characters were stored with replacement characters; do not select columns by those names.
+- **Intermittent channels.** `rain (mm)` and `raining (s)` are mostly zero, so MSE is dominated by smooth channels while MAPE-style metrics are undefined.
+- **`drop_last`.** Loaders keep the last partial batch for every split.
+
+<!-- dataset-card:canonical:start -->
 ## Loader and files
 
 - Registry loader: `weather`
@@ -52,14 +104,22 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/weather.toml` and
-prepare/download data with the loader-specific dataset command when required.
-Reference this preset from an experiment configuration rather than duplicating
-its loader parameters.
+Inspect availability with `tsf dataset inspect --config configs/datasets/weather.toml`; fetch
+published files with `tsf dataset download weather` when the preset is
+listed by `tsf dataset download --list`, otherwise place the data at the local
+path above (see `tsf dataset prepare --help`). Reference this preset from an
+experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 
-Choose one of `time_series` and match it to the model's declared task
-mode. Inspect the loader
-before changing feature or scaling parameters. Paths are repository defaults and
-may need local overrides; the card does not imply that the data is bundled.
+Task modes: `time_series`. Match one of them to the model's declared task mode; the
+config loader rejects other combinations. Change feature or scaling parameters
+only after reading the loader. Paths are repository defaults and may need local
+overrides; the card does not imply that the data is bundled.
+<!-- dataset-card:canonical:end -->
+
+## Related datasets
+
+- [`ettm1`](../ettm1/README.md): other sub-hourly LTSF set
+- [`electricity`](../electricity/README.md): other 7:1:2 LTSF set
+- [`gift_eval/jena_weather`](../gift_eval/jena_weather/README.md): GIFT-Eval packaging of the same station

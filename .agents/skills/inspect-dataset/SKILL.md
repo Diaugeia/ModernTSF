@@ -21,7 +21,9 @@ uv run tsf dataset analyze <name>        # structured profile for model selectio
 uv run tsf dataset plot --config configs/datasets/<name>.toml --split train --num-samples 3
 ```
 
-`analyze` writes `work_dirs/profiles/<name>/profile.{json,md}` from train statistics plus
+Start from the card's front matter (`domain`, `frequency`, `length`, `channels`,
+`protocol`) and its "Standard protocol and known pitfalls", then confirm them
+against the files. `analyze` writes `work_dirs/profiles/<name>/profile.{json,md}` from train statistics plus
 labelled train/val/test shift; use it before choosing models.
 
 Check split boundaries, tensor dimensions, missing values, target-channel
@@ -32,6 +34,8 @@ covariate metadata.
 
 - A short report with artifact paths, the facts observed, and which
   characteristics are inferred.
+- Any card fact the data contradicts is reported with the measured value; fix the
+  card (`stats_basis: "measured"`) only when asked to update it.
 
 ## Stop and hand off
 

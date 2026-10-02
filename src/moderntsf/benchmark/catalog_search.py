@@ -119,6 +119,9 @@ def search_catalog(
                 next(w for surface, w in _WEIGHTS.items() if t in surfaces[surface])
                 for t in matched
             )
+            # An exact name (or alias) hit outranks partial matches on longer names.
+            if set(surfaces["name"].split()) & terms:
+                score += 50
             results.append({**record, "score": score, "matched_terms": sorted(matched)})
     results.sort(key=lambda item: (-int(item["score"]), str(item["kind"]), str(item["name"])))
     return results[:limit]

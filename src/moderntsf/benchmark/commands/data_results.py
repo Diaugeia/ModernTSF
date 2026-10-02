@@ -15,11 +15,13 @@ def _print(payload: object) -> None:
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
-def _dataset_record_payload(record: object) -> dict[str, object]:
+def _dataset_record_payload(record: object, facts: dict[str, object] | None = None) -> dict[str, object]:
     from dataclasses import asdict
 
     payload = asdict(record)
     payload["card"] = f"catalog/datasets/{record.name}/README.md"
+    if facts is not None:
+        payload["facts"] = facts  # curated card front matter (level 0/1)
     return payload
 
 
@@ -35,6 +37,7 @@ def dataset_command(args: list[str]) -> int:
         return 0
     action, rest = args[0], args[1:]
     if action in {"list", "show", "search", "audit"}:
+        from moderntsf.benchmark.dataset_cards import dataset_facts, search_text
         from moderntsf.benchmark.resource_cards import audit_resource_cards, dataset_records
 
         records = dataset_records(ROOT)
@@ -57,9 +60,21 @@ def dataset_command(args: list[str]) -> int:
             parsed = parse_show("tsf dataset show", "dataset preset name", rest)
             selected = next((record for record in records if record.name == parsed.name), None)
             if selected is None:
-                print(f"Unknown dataset preset {parsed.name!r}", file=sys.stderr)
-                return 2
-            legacy = _dataset_record_payload(selected)
+                family = [r for r in records if r.loader == parsed.name and r.dataset_id]
+                if not family:
+                    print(f"Unknown dataset preset {parsed.name!r}", file=sys.stderr)
+                    return 2
+                card_path = dataset_card_path(ROOT, parsed.name)
+                facts = {"kind": "dataset-family", "members": len(family)}
+                legacy = {"name": parsed.name, "kind": "dataset-family",
+                          "card": card_path.relative_to(ROOT).as_posix(),
+                          "facts": dataset_facts(ROOT, [parsed.name]).get(parsed.name, {}),
+                          "members": [r.name for r in family]}
+                paths = existing(ROOT, card_path.relative_to(ROOT).as_posix())
+                return show_card(ROOT, card_path, parsed, facts=facts, paths=paths, legacy=legacy)
+            legacy = _dataset_record_payload(
+                selected, dataset_facts(ROOT, [selected.name]).get(selected.name, {})
+            )
             facts = {
                 "config": selected.config,
                 "loader": selected.loader,
@@ -91,7 +106,8 @@ def dataset_command(args: list[str]) -> int:
         failures = [error for error in audit_resource_cards(ROOT) if "dataset" in error]
         for failure in failures:
             print(f"ERROR: {failure}")
-        print(f"Dataset cards: {len(records) - len(failures)}/{len(records)} current")
+        failing = sum(any(f"catalog/datasets/{record.name}/README.md" in item for item in failures) for record in records)
+        print(f"Dataset cards: {len(records) - failing}/{len(records)} complete and current")
         return 1 if failures else 0
 
     scripts = {
