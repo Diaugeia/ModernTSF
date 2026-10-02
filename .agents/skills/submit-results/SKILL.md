@@ -1,6 +1,6 @@
 ---
 name: submit-results
-description: Package a completed TSFLab run and its research evidence as a TSFLab Leaderboard submission. Use for local submission bundles or leaderboard contribution; publishing a pull request requires explicit authorization.
+description: "Package a completed TSFLab run and its research evidence as a TSFLab Leaderboard submission bundle. Use for local submission bundles or leaderboard contribution; opening a pull request requires explicit authorization. Not for live real-time forecasts (forecast-realtime-round) or weights (publish-weights)."
 ---
 
 # Submit results
@@ -11,18 +11,21 @@ recompute from.
 ## Inputs
 
 - A completed run (`work_dirs/<dataset>/<model>/records/<run_id>.json`), ideally
-  executed inside a research round so its trajectory is captured.
+  executed inside a research round so its trajectory is captured. Runs execute on a
+  GPU machine or CI (see `run-experiment`); packaging happens locally from the
+  returned `work_dirs/` and does no training.
 
 ## Steps
 
-1. Run inside a round when possible, then package:
+1. Open a round before the run when possible (`tsf research start --task submission
+   --goal <goal> --max-runs <count>`, then `tsf run <cfg> --round <id>` on the run
+   machine, then `tsf research status <id> completed --message <conclusion>`). Without
+   one the bundle's trajectory is marked synthetic. Package the finished record:
 
    ```bash
-   uv run tsf research start --task submission --goal <goal> --max-runs <count>
-   uv run tsf run configs/runs/<run>.toml --round <round-id>
-   uv run tsf research status <round-id> completed --message <conclusion>
-   uv run tsf result submit --dataset <dataset> --model <model> --latest
+   uv run tsf result submit --dataset <dataset> --model <model> [--run-id <run_id> | --latest]
    ```
+   The bundle lands in `work_dirs/_submissions/`; `--latest` takes the newest record.
 
 2. Inspect `submission.json`, `trajectory.jsonl`, and `report.md`. Confirm dataset
    version, run identity, metrics, and whether the trajectory is synthetic.
@@ -30,8 +33,8 @@ recompute from.
    and check it with the same contract the site uses:
 
    ```bash
-   uv run tsf result leaderboard --source apps/web/submissions --out /tmp/board.json
-   uv run tsf repo schema --check
+   uv run tsf result leaderboard --source apps/web/submissions --out work_dirs/_board/leaderboard.json
+   uv run tsf repo check --only web-submissions schema-export
    ```
 
 4. Weights are never part of a submission; publish them separately with

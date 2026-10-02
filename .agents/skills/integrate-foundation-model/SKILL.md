@@ -1,6 +1,6 @@
 ---
 name: integrate-foundation-model
-description: Integrate a released pretrained time-series foundation model through its official package and a pinned local checkpoint. Use for zero-shot or inference-only foundation runtimes; not for ordinary paper architecture implementations.
+description: "Integrate a released pretrained time-series foundation model through its official package and a pinned local checkpoint. Use for zero-shot or inference-only foundation runtimes; not for ordinary paper architecture implementations."
 ---
 
 # Integrate a foundation model
@@ -38,7 +38,7 @@ demonstrated need, or bundle weights in TSFLab.
 
 ```bash
 uv run tsf model artifacts <Name>
-uv run tsf model verify <Name>
+uv run tsf model verify <Name>        # offline, CPU, small tensors: no training
 uv run tsf repo check --contracts strict --models <Name>
 ```
 
@@ -58,4 +58,4 @@ uv run tsf repo check --contracts strict --models <Name>
 
 - Stop if the license, official loader, checkpoint identity, or input/output
   semantics cannot be established; an adapter alone is not a catalog model.
-- Admit the entry with `add-model`.
+- Admit the entry with `tsf model add --name <Name>` exactly as `add-model` step 7 does (unified verification, audits, rollback).

@@ -6,7 +6,8 @@ package through ``tsflab://`` extends paths, so upgrading TSFLab upgrades the
 defaults without copying them.
 
 ``--modules`` selects the module chain (data, models, experiments, release,
-autoresearch; default all). The project gets an AGENTS.md generated from that
+autoresearch; default: the whole chain). ``maintenance`` (audit, contributions)
+needs a TSFLab checkout and is added only when named. The project gets an AGENTS.md generated from that
 chain plus the chosen modules' skills and task templates, copied from the
 installed package so they match its version (``tsf agent sync`` refreshes them
 after an upgrade). The chosen modules are recorded under ``[tool.tsflab]`` in
@@ -22,7 +23,8 @@ import shutil
 import sys
 import tomllib
 
-from tsflab.agent.modules import CHAIN, MODULES, find_project, module_skills, module_tasks, parse_modules
+from tsflab.agent.index import render_index
+from tsflab.agent.modules import ALL_MODULES, CHAIN, MODULES, find_project, module_skills, module_tasks, parse_modules
 
 GENERATED_START = "<!-- tsflab:generated:start -->"
 GENERATED_END = "<!-- tsflab:generated:end -->"
@@ -68,7 +70,7 @@ def _version() -> str:
 
 def extras_for(modules: list[str]) -> list[str]:
     """Pip extras needed by ``modules`` (``all`` when every module is chosen)."""
-    if list(modules) == list(CHAIN):
+    if set(CHAIN) <= set(modules):
         return ["all"]
     extras: list[str] = []
     for name in modules:
@@ -100,8 +102,8 @@ def render_agents_md(name: str, modules: list[str]) -> str:
         GENERATED_START,
         f"Standalone project on TSFLab {_version()}. `.agents/skills/` holds workflows and",
         "`.agents/tasks/` bounded task templates, copied from the installed package for the modules",
-        "below; `tsf agent sync` refreshes them after upgrading TSFLab. Claude Code reads",
-        "`CLAUDE.md` and `.claude/skills`, which link to the same files.",
+        "below, indexed by module in `.agents/README.md`; `tsf agent sync` refreshes them after",
+        "upgrading TSFLab. Claude Code reads `CLAUDE.md` and `.claude/skills`, which link to the same files.",
         "",
         "## Module chain",
         "Data -> Models -> Experiments -> Release, each producing context that AutoResearch",
@@ -168,6 +170,8 @@ def sync_agent_assets(target: Path, modules: list[str]) -> list[str]:
     for task in tasks:
         shutil.copy2(source / "tasks" / f"{task}.toml", target / ".agents" / "tasks" / f"{task}.toml")
         written.append(f".agents/tasks/{task}.toml")
+    (target / ".agents" / "README.md").write_text(render_index(source, modules, project=True), encoding="utf-8")
+    written.append(".agents/README.md")
     return written
 
 
@@ -293,7 +297,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("directory", nargs="?", default=".")
     parser.add_argument("--name", help="project name (default: directory name)")
     parser.add_argument("--modules", default=None,
-                        help=f"comma-separated modules from {','.join(CHAIN)} (default: all)")
+                        help=f"comma-separated modules from {','.join(ALL_MODULES)} (default: {','.join(CHAIN)})")
     parser.add_argument("--force", action="store_true", help="overwrite existing files")
     args = parser.parse_args(argv)
     try:

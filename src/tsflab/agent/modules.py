@@ -1,4 +1,10 @@
-"""Module chain (Data -> Models -> Experiments -> Release, AutoResearch) and project records.
+"""Module map: the single source of which module owns each skill and task template.
+
+The chain is Data -> Models -> Experiments -> Release, each producing context that
+AutoResearch consumes. Maintenance sits beside the chain (audit, contributions) and
+is not part of a standalone project unless chosen. ``.agents/README.md`` is generated
+from this map (``tsf repo cards``) and ``tsflab.agent.assets`` rejects any skill or
+task that is missing from it or listed twice.
 
 A project created by ``tsf init`` records its chosen modules under
 ``[tool.tsflab]`` in its ``pyproject.toml``; ``tsf agent`` and ``tsf catalog``
@@ -12,7 +18,7 @@ from __future__ import annotations
 from pathlib import Path
 import tomllib
 
-# module -> (skills, tasks, pip extras, one-line purpose, entry commands)
+# module -> skills, tasks, pip extras, purpose, entry commands, context it produces
 MODULES: dict[str, dict[str, object]] = {
     "data": {
         "skills": ["add-dataset", "inspect-dataset"],
@@ -20,6 +26,7 @@ MODULES: dict[str, dict[str, object]] = {
         "extras": ["data"],
         "purpose": "register, prepare, profile, and publish datasets",
         "commands": ["tsf data inspect", "tsf data analyze", "tsf data prepare", "tsf data add"],
+        "context": "dataset cards and presets; train-only profile `work_dirs/profiles/<name>/profile.{json,md}`",
     },
     "models": {
         "skills": ["discover-papers", "add-model", "integrate-foundation-model", "curate-components"],
@@ -27,6 +34,7 @@ MODULES: dict[str, dict[str, object]] = {
         "extras": ["models"],
         "purpose": "find papers, implement or adapt models, curate reusable components",
         "commands": ["tsf model scaffold", "tsf model add", "tsf model verify", "tsf model compose"],
+        "context": "model cards (tagline, tags, six-slot composition), component interfaces, verification evidence",
     },
     "experiments": {
         "skills": ["setup-environment", "run-experiment", "diagnose-experiment",
@@ -34,14 +42,16 @@ MODULES: dict[str, dict[str, object]] = {
         "tasks": ["experiment"],
         "extras": ["experiments"],
         "purpose": "design, run, diagnose, and analyze budgeted experiments",
-        "commands": ["tsf env", "tsf run", "tsf result aggregate", "tsf result rank"],
+        "commands": ["tsf env", "tsf run", "tsf result aggregate", "tsf result board"],
+        "context": "run records `work_dirs/<dataset>/<model>/records/<run_id>.json` and CSVs; the result board",
     },
     "release": {
         "skills": ["submit-results", "forecast-realtime-round", "publish-weights"],
         "tasks": [],
         "extras": ["hub", "realtime"],
         "purpose": "submit results, forecast real-time rounds, publish weights",
-        "commands": ["tsf result submit", "tsf result hub", "tsf realtime update"],
+        "commands": ["tsf result submit", "tsf result hub", "tsf realtime forecast"],
+        "context": "leaderboard `apps/web/data/leaderboard.json`, real-time scores, pinned `hf://` weights URIs",
     },
     "autoresearch": {
         "skills": ["run-autoresearch"],
@@ -49,20 +59,39 @@ MODULES: dict[str, dict[str, object]] = {
         "extras": ["autoresearch"],
         "purpose": "budgeted research loops that consume the other modules' context",
         "commands": ["tsf research start", "tsf research iteration", "tsf agent task start autoresearch"],
+        "context": "round ledger `work_dirs/_research/<id>/` (hypotheses, runs, conclusions) and winning composition specs",
+    },
+    "maintenance": {
+        "skills": ["audit", "handle-contribution"],
+        "tasks": ["maintenance", "contribution"],
+        "extras": [],
+        "purpose": "keep catalog, cards, evidence, and Agent assets consistent; triage issues and pull requests",
+        "commands": ["tsf repo check", "tsf repo cards", "tsf model audit", "tsf agent task validate"],
+        "context": "gate results and regenerated cards and indexes",
     },
 }
-CHAIN = tuple(MODULES)
+CHAIN = ("data", "models", "experiments", "release", "autoresearch")  # the default for `tsf init`
+ALL_MODULES = tuple(MODULES)  # the chain plus maintenance (opt-in: `--modules ...,maintenance`)
+
+
+def owners(kind: str) -> dict[str, list[str]]:
+    """Map each skill (``kind='skills'``) or task (``'tasks'``) name to the modules listing it."""
+    result: dict[str, list[str]] = {}
+    for module, info in MODULES.items():
+        for name in info[kind]:  # type: ignore[union-attr]
+            result.setdefault(name, []).append(module)
+    return result
 
 
 def parse_modules(text: str | None) -> list[str]:
-    """Parse ``a,b,c`` (default: every module) and reject unknown names."""
+    """Parse ``a,b,c`` (default: the chain, without maintenance) and reject unknown names."""
     if text is None or text.strip() in {"", "all"}:
         return list(CHAIN)
     names = [part.strip() for part in text.split(",") if part.strip()]
     unknown = [name for name in names if name not in MODULES]
     if unknown:
-        raise ValueError(f"unknown module(s): {', '.join(unknown)}; choose from {', '.join(CHAIN)}")
-    return [name for name in CHAIN if name in names]
+        raise ValueError(f"unknown module(s): {', '.join(unknown)}; choose from {', '.join(ALL_MODULES)}")
+    return [name for name in ALL_MODULES if name in names]
 
 
 def module_tasks(modules: list[str]) -> list[str]:

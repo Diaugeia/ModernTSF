@@ -29,7 +29,7 @@ Claude Code reads `CLAUDE.md` and `.claude/skills` links to the same files.
 ## Module chain
 Data -> Models -> Experiments -> Release, each producing context that AutoResearch
 consumes; Maintenance (audit, contributions) keeps it sound. Skill and task map:
-`.agents/STANDARDS.md` (Modules).
+`.agents/README.md` (generated index).
 
 ## Information layers
 - Human-facing material lives in `README.md`, `CONTRIBUTING.md`, English `docs/`,

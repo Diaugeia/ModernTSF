@@ -5,41 +5,46 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from tsflab.agent.index import render_index
+from tsflab.agent.modules import MODULES, owners
 from tsflab.core.paths import is_packaged_root, repository_root
 
 
 ROOT = repository_root()
 SKILLS = ROOT / ".agents" / "skills"
 STANDARDS = ROOT / ".agents" / "STANDARDS.md"
-EXPECTED_SKILLS = {
-    # Data
-    "add-dataset",
-    "inspect-dataset",
-    # Models
-    "discover-papers",
-    "add-model",
-    "integrate-foundation-model",
-    "curate-components",
-    # Experiments
-    "setup-environment",
-    "run-experiment",
-    "diagnose-experiment",
-    "reproduce-paper-results",
-    "analyze-results",
-    # Release
-    "submit-results",
-    "forecast-realtime-round",
-    "publish-weights",
-    # AutoResearch
-    "run-autoresearch",
-    # Maintenance
-    "audit",
-    "handle-contribution",
-}
+INDEX = ROOT / ".agents" / "README.md"
+ROOT_DOCS = {"STANDARDS.md", "README.md"}
 
 
 def _link_target(path: Path) -> str | None:
     return str(path.readlink()) if path.is_symlink() else None
+
+
+def audit_module_map(skills_on_disk: set[str]) -> list[str]:
+    """Every skill and task belongs to exactly one module; the map names nothing unknown."""
+    errors: list[str] = []
+    task_names = {path.stem for path in (ROOT / ".agents" / "tasks").glob("*.toml")}
+    for kind, on_disk in (("skills", skills_on_disk), ("tasks", task_names)):
+        mapped = owners(kind)
+        for name, modules in sorted(mapped.items()):
+            if len(modules) > 1:
+                errors.append(f"{kind[:-1]} {name!r} is listed by several modules: {', '.join(modules)}")
+        unmapped = sorted(on_disk - mapped.keys())
+        unknown = sorted(mapped.keys() - on_disk)
+        if unmapped:
+            errors.append(f"{kind} missing from tsflab.agent.modules.MODULES: {', '.join(unmapped)}")
+        if unknown:
+            errors.append(f"tsflab.agent.modules.MODULES names unknown {kind}: {', '.join(unknown)}")
+    for module, info in MODULES.items():
+        for key in ("skills", "tasks", "extras", "purpose", "commands", "context"):
+            if key not in info:
+                errors.append(f"module {module!r} lacks {key!r}")
+    if not INDEX.is_file():
+        errors.append(".agents/README.md is missing; run `tsf repo cards`")
+    elif INDEX.read_text(encoding="utf-8") != render_index(ROOT / ".agents"):
+        errors.append(".agents/README.md is stale; run `tsf repo cards`")
+    return errors
 
 
 def audit_agent_assets() -> list[str]:
@@ -69,7 +74,6 @@ def audit_agent_assets() -> list[str]:
                 f"{duplicate_root.relative_to(ROOT)} duplicates native .agents/skills discovery"
             )
     obsolete_agent_docs = (
-        ROOT / ".agents" / "README.md",
         ROOT / ".agents" / "HARNESS_COMPATIBILITY.md",
         ROOT / ".agents" / "standards",
     )
@@ -79,8 +83,8 @@ def audit_agent_assets() -> list[str]:
                 f"{obsolete_doc.relative_to(ROOT)} duplicates .agents/STANDARDS.md"
             )
     root_agent_docs = {path.name for path in (ROOT / ".agents").glob("*.md")}
-    if root_agent_docs != {"STANDARDS.md"}:
-        errors.append(".agents may contain only the consolidated STANDARDS.md at its root")
+    if root_agent_docs != ROOT_DOCS:
+        errors.append(".agents may contain only STANDARDS.md and the generated README.md at its root")
 
     for skill_file in sorted(SKILLS.rglob("SKILL.md")):
         if skill_file.parent.parent != SKILLS:
@@ -162,13 +166,7 @@ def audit_agent_assets() -> list[str]:
                     f"{skill_file.relative_to(ROOT)}: references obsolete interface {obsolete!r}"
                 )
 
-    if seen != EXPECTED_SKILLS:
-        missing = sorted(EXPECTED_SKILLS - seen)
-        unexpected = sorted(seen - EXPECTED_SKILLS)
-        if missing:
-            errors.append(f"missing canonical skills: {', '.join(missing)}")
-        if unexpected:
-            errors.append(f"unexpected or obsolete skills: {', '.join(unexpected)}")
+    errors.extend(audit_module_map(seen))
     from tsflab.agent.tasks import audit_tasks
 
     errors.extend(audit_tasks())

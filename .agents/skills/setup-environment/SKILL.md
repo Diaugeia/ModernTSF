@@ -1,6 +1,6 @@
 ---
 name: setup-environment
-description: Install, repair, or verify the TSFLab Python environment and PyTorch backend, including the optional hub and realtime extras. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes.
+description: "Install, repair, or verify the TSFLab Python environment and PyTorch backend, including the optional hub and realtime extras. Use for first-time setup, dependency failures, CUDA detection problems, or hardware changes."
 ---
 
 # Set up the environment
@@ -19,7 +19,7 @@ bash scripts/detect_hardware.sh
 UV_TORCH_BACKEND=auto uv sync --python 3.12            # add --extra hub --extra realtime as needed
 uv run tsf env audit --json
 uv run tsf --help
-uv run tsf repo check --audit
+uv run tsf repo check --audit          # in a TSFLab checkout; skip in a standalone project
 ```
 
 Use an explicit backend (`cpu`, `cu121`, ...) only when auto-detection is wrong or
@@ -43,3 +43,5 @@ changes the environment.
 
 - Do not change dependency pins to mask a driver mismatch; report it.
 - Environment-caused run failures go to `diagnose-experiment`.
+- Training machines (GPU hosts, CI, Slurm) get the same sync; this skill never starts
+  a run. Local audits only describe the machine they ran on.

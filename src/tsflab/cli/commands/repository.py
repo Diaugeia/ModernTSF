@@ -30,6 +30,13 @@ def regenerate_cards(args: list[str]) -> int:
     print(f"Regenerated model card bodies: {changed} of {len(models)} changed")
     count = write_resource_cards(root)
     print(f"Generated {count} component and dataset cards")
+    from tsflab.agent.index import render_index
+
+    index = root / ".agents" / "README.md"
+    fresh = render_index(root / ".agents")
+    if not index.is_file() or index.read_text(encoding="utf-8") != fresh:
+        index.write_text(fresh, encoding="utf-8")
+        print("Regenerated .agents/README.md (module index)")
     return passthrough("check_docs.py", ["--write"])
 
 
@@ -88,7 +95,7 @@ def repository_command(args: list[str]) -> int:
         print("  check   the single mergeable gate: [--scope full|changed] [--only STEP...] [--json]")
         print("          --audit runs the static audits only; --contracts construct|forward|backward|strict")
         print("          [--models NAME...] executes model tensor contracts")
-        print("  cards   regenerate component/dataset cards and the model documentation index")
+        print("  cards   regenerate component/dataset cards, the model documentation index, and .agents/README.md")
         print("  schema  export TSF-Core JSON Schema [--check] [--out-dir DIR]")
         return 0
     action, rest = args[0], args[1:]

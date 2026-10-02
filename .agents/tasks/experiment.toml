@@ -18,7 +18,8 @@ runs. Design the smallest fair comparison, preview it before execution, diagnose
 failures narrowly, and analyze only compatible completed cells. For a paper
 reproduction, map its protocol first and stop for a decision when missing data or
 protocol ambiguity changes the claim. Do not change model code, publish, push, or
-dispatch additional tasks.
+dispatch additional tasks. Training and sweeps run on GPU machines or CI, not locally:
+preview, hand off the exact command, and analyze the records that come back.
 """
 
 [inputs.question]

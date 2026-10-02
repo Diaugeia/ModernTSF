@@ -24,14 +24,14 @@ from tsflab.core.paths import working_root
 
 
 def _pack(run: str, out: Path) -> dict:
-    from tsflab import hub
+    from tsflab.release import hub
 
     record, checkpoint = hub.find_run(run, working_root())
     return hub.pack(record, checkpoint, out)
 
 
 def hub_command(argv: list[str]) -> int:
-    from tsflab import hub
+    from tsflab.release import hub
 
     parser = argparse.ArgumentParser(prog="tsf result hub", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)

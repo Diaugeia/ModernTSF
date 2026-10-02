@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out-dir", default=None, help="Output dir (default: work_dirs/_submissions)")
     args = ap.parse_args(argv)
 
-    from tsflab import tsf_core
+    from tsflab import core as tsf_core
     rec_path = _find_record(args.dataset, args.model, args.run_id)
     rec_data = json.loads(rec_path.read_text())
     if not rec_data.get("results"):

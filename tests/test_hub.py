@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import torch
 import torch.nn as nn
 
-from tsflab import hub
+from tsflab.release import hub
 from tsflab.catalog.model_artifacts import fetch_artifact
 from tsflab.catalog.registry.models import ModelArtifact, ModelSpec
 from tsflab.agent.scaffold import init_project

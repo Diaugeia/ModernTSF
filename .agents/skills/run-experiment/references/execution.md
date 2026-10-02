@@ -5,7 +5,10 @@ Discover APIs through `tsflab.experiments.infra.api.describe_modules()` or the o
 `tsf agent interface` adapter. The Agent owns decisions; services own atomic state and
 execution constraints. CLI examples below do not mandate a subprocess hop.
 
-Keep scientific TOML independent of execution policy. Use `tsf run <config>
+Heavy runs execute on GPU machines or CI, never on the maintainer's local machine; the
+Agent previews with `--dry-run`, hands off the exact command or the prepared directory,
+and reads the records that come back under `work_dirs/` (a synced copy of the run
+machine's `work_dirs/`). Keep scientific TOML independent of execution policy. Use `tsf run <config>
 --policy <policy.toml>` for resource/budget/tracking settings. First call the same
 command with `--dry-run --json`; no compute starts until the whole matrix passes.
 Missing environment/data/weights are readiness failures, not model evidence.
@@ -40,4 +43,4 @@ For persistent queue or cluster submission, prepare the matrix once with
 submission is external dispatch and requires authorization. Storage cleanup is a
 preview unless `--apply` is supplied; preserve user data and never automate
 cleanup outside the authorized scope. Use `tsf --format json <command>` when a
-Harness needs one envelope across old and new command surfaces.
+harness needs one machine-readable envelope for any command.

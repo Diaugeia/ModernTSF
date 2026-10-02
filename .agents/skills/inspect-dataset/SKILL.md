@@ -1,6 +1,6 @@
 ---
 name: inspect-dataset
-description: Inspect, profile, or visualize an existing TSFLab dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, model-selection profiles, or raw sample plots; not for result plots or model predictions.
+description: "Inspect, profile, or visualize an existing TSFLab dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, model-selection profiles, or raw sample plots; not for result plots or model predictions."
 ---
 
 # Inspect a dataset
@@ -36,7 +36,7 @@ covariate metadata.
 - Module: Data.
 - Reads: dataset card (L1, then L2) and the loaded splits.
 - Produces: profile `work_dirs/profiles/<name>/profile.{json,md}` and a measured-fact report.
-- Hands off to: `run-autoresearch` (profile-driven model choice), `run-experiment` (design), `add-dataset` (card fixes).
+- Hands off to: `run-autoresearch` (re-runs `tsf data analyze` per approved dataset), `run-experiment` (design), `add-dataset` (card fixes).
 
 ## Success
 

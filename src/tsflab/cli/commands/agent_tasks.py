@@ -49,13 +49,14 @@ AGENT_USAGE = (
 
 
 def _modules_command(tail: list[str]) -> int:
-    from tsflab.agent.modules import CHAIN, MODULES, find_project
+    from tsflab.agent.modules import ALL_MODULES, MODULES, find_project
 
     found = find_project()
-    chosen = found[1] if found else list(CHAIN)
+    chosen = found[1] if found else list(ALL_MODULES)
     records = [
         {"module": name, "purpose": MODULES[name]["purpose"], "skills": MODULES[name]["skills"],
-         "tasks": MODULES[name]["tasks"], "commands": MODULES[name]["commands"]}
+         "tasks": MODULES[name]["tasks"], "commands": MODULES[name]["commands"],
+         "context": MODULES[name]["context"]}
         for name in chosen
     ]
     if tail == ["--json"]:

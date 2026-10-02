@@ -1,6 +1,6 @@
 ---
 name: forecast-realtime-round
-description: Produce, validate, and submit a forecast for an open TSFLab real-time round (stocks, PeMS traffic, air quality, weather, solar, grid load), then read its score once the truth arrives. Use for live or replayed rolling evaluation; not for static benchmark runs or leaderboard result bundles.
+description: "Produce, validate, and submit a forecast for an open TSFLab real-time round (stocks, PeMS traffic, air quality, weather, solar, grid load), then read its score once the truth arrives. Use for live or replayed rolling evaluation; not for static benchmark runs or leaderboard result bundles."
 ---
 
 # Forecast a real-time round
@@ -29,8 +29,8 @@ window is observed and are scored when a later data release covers it.
    ```
 
    The command exports history to the cutoff, trains through the standard runner,
-   and writes `forecasts/<Name>.json`. It trains a model, so run it only where
-   training is allowed (typically a GPU machine). An external method writes the
+   and writes `forecasts/<Name>.json`. It trains a model: run it on a GPU machine or
+   CI, never locally, and bring the forecast file back. An external method writes the
    same `ForecastSubmission` JSON itself.
 3. Validate exactly as CI does:
 
@@ -46,7 +46,8 @@ window is observed and are scored when a later data release covers it.
 
 To study the protocol on history instead, use
 `uv run tsf realtime replay --track <track> --end <date> --weeks <n> [--models ...]`;
-replayed rounds live under `work_dirs/_realtime_replay/` and never mix with live ones.
+replayed rounds live under `work_dirs/_realtime_replay/` and never mix with live ones;
+replay also trains, so it follows the same GPU-machine rule.
 
 ## Chain
 
