@@ -14,17 +14,6 @@ license: "NOASSERTION"
 Sonnet (Spectral Operator Neural Network) is a time series forecasting model for multivariate prediction. It applies learnable wavelet transformations to the input and incorporates spectral analysis using the Koopman operator. The core of its predictive skill is Multivariable Coherence Attention (MVCA), which leverages spectral coherence among variables to model inter-variable dependencies in the frequency domain, avoiding the pitfalls of naive self-attention for time series.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Sonnet (Spectral Operator Neural Network) is a time series forecasting model for multivariate prediction.
-
-## Core architecture
-
-It applies learnable wavelet transformations to the input and incorporates spectral analysis using the Koopman operator. The core of its predictive skill is Multivariable Coherence Attention (MVCA), which leverages spectral coherence among variables to model inter-variable dependencies in the frequency domain, avoiding the pitfalls of naive self-attention for time series.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Sonnet.toml`](../../../../configs/models/Sonnet.toml).
 
 ## Differences

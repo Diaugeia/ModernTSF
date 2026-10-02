@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DynamicTMoE",
   "status": "passed",
-  "verified_at": "2026-09-28T20:27:53.677316Z",
-  "subject_sha256": "3cbabba7566e4cbed385b3938b83487891cca7e06266245de746d4143bd7d296",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "11ed895127acf6049d0703c5259cc4282b3c7632c9ed7ed0500c8243147b0dcc",
   "paper": {
     "title": "Dynamic TMoE: A Drift-Aware Dynamic Mixture of Experts Framework for Non-Stationary Time Series Forecasting",
     "venue": "ICML 2026",
@@ -147,7 +147,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model DynamicTMoE",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_special_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_special_forecasters.py"
   ]
 }

@@ -14,17 +14,6 @@ license: "Apache-2.0"
 Linear is one of the embarrassingly simple one-layer linear models from the LTSF-Linear family that directly maps the full historical input window to the prediction horizon via a single learnable linear projection applied independently per channel, serving as a strong baseline that outperforms complex Transformer-based models on long-term time series forecasting.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Linear is one of the embarrassingly simple one-layer linear models from the LTSF-Linear family that directly maps the full historical input window to the prediction horizon via a single learnable linear projection applied independently per channel, serving as a strong baseline that outperforms complex Transformer-based models on long-term time series forecasting.
-
-## Core architecture
-
-Linear is one of the embarrassingly simple one-layer linear models from the LTSF-Linear family that directly maps the full historical input window to the prediction horizon via a single learnable linear projection applied independently per channel, serving as a strong baseline that outperforms complex Transformer-based models on long-term time series forecasting.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Linear.toml`](../../../../configs/models/Linear.toml).
 
 ## Differences

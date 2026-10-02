@@ -14,17 +14,6 @@ license: "MIT"
 Informer is a Transformer-based model for long-sequence time-series forecasting in the standard univariate and multivariate setting. It introduces ProbSparse self-attention to achieve O(L log L) time and memory complexity, a self-attention distilling mechanism that halves cascading layer inputs to handle extreme-length inputs, and a generative-style decoder that produces the entire output sequence in a single forward pass, dramatically reducing inference latency on long-horizon tasks.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Informer is a Transformer-based model for long-sequence time-series forecasting in the standard univariate and multivariate setting.
-
-## Core architecture
-
-It introduces ProbSparse self-attention to achieve O(L log L) time and memory complexity, a self-attention distilling mechanism that halves cascading layer inputs to handle extreme-length inputs, and a generative-style decoder that produces the entire output sequence in a single forward pass, dramatically reducing inference latency on long-horizon tasks.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Informer.toml`](../../../../configs/models/Informer.toml).
 
 ## Differences

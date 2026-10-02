@@ -14,17 +14,6 @@ license: "MIT"
 TimeBase is an ultra-lightweight network for long-term time series forecasting that extracts core basis temporal components from the input window and transforms traditional point-level prediction into efficient segment-level forecasting, exploiting the temporal pattern similarity and low-rank structure inherent in long-horizon time series data.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TimeBase is an ultra-lightweight network for long-term time series forecasting that extracts core basis temporal components from the input window and transforms traditional point-level prediction into efficient segment-level forecasting, exploiting the temporal pattern similarity and low-rank structure inherent in long-horizon time series data.
-
-## Core architecture
-
-TimeBase is an ultra-lightweight network for long-term time series forecasting that extracts core basis temporal components from the input window and transforms traditional point-level prediction into efficient segment-level forecasting, exploiting the temporal pattern similarity and low-rank structure inherent in long-horizon time series data.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimeBase.toml`](../../../../configs/models/TimeBase.toml).
 
 ## Differences

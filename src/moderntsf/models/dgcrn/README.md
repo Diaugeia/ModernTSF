@@ -14,17 +14,6 @@ license: "MIT"
 The DGCRN paper uses hyper-networks to generate time-varying graph filters and combines the resulting dynamic adjacency with a predefined graph inside a recurrent encoder-decoder. This clean-room implementation generates directed graphs from hidden state and node embeddings at every step, mixes dynamic and static propagation in graph-GRU gates, and uses known time marks without future targets.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-The DGCRN paper uses hyper-networks to generate time-varying graph filters and combines the resulting dynamic adjacency with a predefined graph inside a recurrent encoder-decoder.
-
-## Core architecture
-
-This clean-room implementation generates directed graphs from hidden state and node embeddings at every step, mixes dynamic and static propagation in graph-GRU gates, and uses known time marks without future targets.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DGCRN.toml`](../../../../configs/models/DGCRN.toml).
 
 ## Differences

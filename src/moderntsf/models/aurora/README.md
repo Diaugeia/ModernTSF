@@ -14,17 +14,6 @@ license: "NOASSERTION"
 The paper's Aurora is a pretrained generative multimodal foundation model. This repository provides a compact paper-structured rewrite for ordinary forecasting, not the released pretrained system.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Aurora is a compact clean-room multimodal-guided forecaster with patch tokens, modality distillation, future conditions, prototype retrieval, and deterministic flow integration.
-
-## Core architecture
-
-Aurora is a compact clean-room multimodal-guided forecaster with patch tokens, modality distillation, future conditions, prototype retrieval, and deterministic flow integration.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Aurora.toml`](../../../../configs/models/Aurora.toml).
 
 ## Differences

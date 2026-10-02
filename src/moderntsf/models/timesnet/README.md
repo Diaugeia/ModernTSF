@@ -14,17 +14,6 @@ license: "MIT"
 TimesNet is a task-general time series analysis backbone for the standard time-series forecasting setting. It observes that real-world time series exhibit multi-periodicity, then transforms the 1D sequence into a set of 2D tensors (one per detected period) so that intraperiod and interperiod variations map to columns and rows respectively — enabling powerful 2D vision-style convolution kernels (via a parameter-efficient inception block) to model complex temporal patterns that are difficult to capture in 1D.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TimesNet is a task-general time series analysis backbone for the standard time-series forecasting setting.
-
-## Core architecture
-
-It observes that real-world time series exhibit multi-periodicity, then transforms the 1D sequence into a set of 2D tensors (one per detected period) so that intraperiod and interperiod variations map to columns and rows respectively — enabling powerful 2D vision-style convolution kernels (via a parameter-efficient inception block) to model complex temporal patterns that are difficult to capture in 1D.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimesNet.toml`](../../../../configs/models/TimesNet.toml).
 
 ## Differences

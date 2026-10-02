@@ -14,17 +14,6 @@ license: "MIT"
 FiLM (Frequency improved Legendre Memory) is a time-series forecasting model for the standard univariate and multivariate long-term forecasting setting. It applies Legendre polynomial projections to compress and approximate historical context, applies a Fourier-domain projection to remove high-frequency noise, and uses a low-rank approximation to reduce computation — yielding a plug-in representation module that can also enhance other deep learning forecasters.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-FiLM (Frequency improved Legendre Memory) is a time-series forecasting model for the standard univariate and multivariate long-term forecasting setting.
-
-## Core architecture
-
-It applies Legendre polynomial projections to compress and approximate historical context, applies a Fourier-domain projection to remove high-frequency noise, and uses a low-rank approximation to reduce computation — yielding a plug-in representation module that can also enhance other deep learning forecasters.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/FiLM.toml`](../../../../configs/models/FiLM.toml).
 
 ## Differences

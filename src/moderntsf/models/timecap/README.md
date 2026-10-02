@@ -14,17 +14,6 @@ license: "MIT"
 TimeCAP is a time series forecasting model for multivariate sequence prediction. It is the first purely channel-aware pre-training framework for multivariate time series, systematically integrating complementary autoregressive and one-shot generative paradigms via a flexible channel-grouping learning approach and an adaptive meta-routing mechanism that captures both intra-group local patterns and global inter-channel coherence.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TimeCAP is a time series forecasting model for multivariate sequence prediction.
-
-## Core architecture
-
-It is the first purely channel-aware pre-training framework for multivariate time series, systematically integrating complementary autoregressive and one-shot generative paradigms via a flexible channel-grouping learning approach and an adaptive meta-routing mechanism that captures both intra-group local patterns and global inter-channel coherence.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimeCAP.toml`](../../../../configs/models/TimeCAP.toml).
 
 ## Differences

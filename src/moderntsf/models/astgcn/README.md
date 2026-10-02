@@ -14,17 +14,6 @@ license: "NOASSERTION"
 The ASTGCN paper proposes a graph traffic forecaster with spatial-temporal attention, Chebyshev graph convolution, temporal convolution, and a learned fusion of recent, daily-periodic, and weekly-periodic branches. This clean-room implementation realizes one recent-history branch with learned spatial/temporal attention, attention-modulated Chebyshev filters, gated temporal convolution, and direct horizon projection.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-The ASTGCN paper proposes a graph traffic forecaster with spatial-temporal attention, Chebyshev graph convolution, temporal convolution, and a learned fusion of recent, daily-periodic, and weekly-periodic branches.
-
-## Core architecture
-
-This clean-room implementation realizes one recent-history branch with learned spatial/temporal attention, attention-modulated Chebyshev filters, gated temporal convolution, and direct horizon projection.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, nodes]` point forecast. Timestamp or 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/ASTGCN.toml`](../../../../configs/models/ASTGCN.toml).
 
 ## Differences

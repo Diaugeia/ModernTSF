@@ -14,17 +14,6 @@ license: "NOASSERTION"
 MAGE (Mixture of Adaptive Graph Experts) is a spatiotemporal learning model for node-structured or graph-structured data. It introduces a sparse yet balanced mixture-of-experts strategy in which each expert perceives a unique underlying graph topology through kernel-based functions with linear complexity relative to the number of nodes, overcoming the noise amplification caused by ReLU activations in existing adaptive graph learning methods.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MAGE (Mixture of Adaptive Graph Experts) is a spatiotemporal learning model for node-structured or graph-structured data.
-
-## Core architecture
-
-It introduces a sparse yet balanced mixture-of-experts strategy in which each expert perceives a unique underlying graph topology through kernel-based functions with linear complexity relative to the number of nodes, overcoming the noise amplification caused by ReLU activations in existing adaptive graph learning methods.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MAGE.toml`](../../../../configs/models/MAGE.toml).
 
 ## Differences

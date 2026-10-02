@@ -14,17 +14,6 @@ license: "LicenseRef-NXAI-Community"
 TiRex is a decoder-only probabilistic forecaster built around xLSTM-style scalar recurrent memory. Past values and observation masks are patched into tokens; missing future patches allow the recurrent state to propagate uncertainty across a multi-patch horizon.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TiRex is a decoder-only probabilistic forecaster based on xLSTM-style scalar recurrent memory.
-
-## Core architecture
-
-The local implementation uses value/missing-mask patches, missing future tokens, stacked scalar-memory blocks, and multi-patch quantile decoding.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels, quantiles]` quantile foreca
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TiRex.toml`](../../../../configs/models/TiRex.toml).
 
 ## Differences

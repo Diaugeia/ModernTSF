@@ -14,17 +14,6 @@ license: "MIT"
 DFDGCN is a spatiotemporal learning model for node-structured graph data. It captures spatial dependencies in transportation networks by learning dynamic graphs in the frequency domain, mitigating time-shift effects via Fourier transform and combining identity and time embeddings with static predefined and self-adaptive graphs.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-DFDGCN is a spatiotemporal learning model for node-structured graph data.
-
-## Core architecture
-
-It captures spatial dependencies in transportation networks by learning dynamic graphs in the frequency domain, mitigating time-shift effects via Fourier transform and combining identity and time embeddings with static predefined and self-adaptive graphs.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DFDGCN.toml`](../../../../configs/models/DFDGCN.toml).
 
 ## Differences

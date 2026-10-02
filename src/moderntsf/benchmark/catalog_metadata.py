@@ -60,6 +60,11 @@ def _scalar(value: str) -> object:
         return value == "true"
     if value.startswith(('"', "'")):
         return json.loads(value) if value.startswith('"') else value[1:-1]
+    if value.startswith("["):
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return value
     try:
         return int(value)
     except ValueError:

@@ -14,17 +14,6 @@ license: "Apache-2.0"
 ImplicitForecaster (IF) is a time-series forecasting decoding module accepted at NeurIPS 2025. Rather than generating long-horizon forecasts by independently predicting each time point, it implicitly decomposes the target sequence into constituent waves parameterized by frequency, amplitude, and phase, capturing both long-term and short-term dynamics in a holistic manner and consistently boosting mainstream backbone models.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-ImplicitForecaster (IF) is a time-series forecasting decoding module accepted at NeurIPS 2025.
-
-## Core architecture
-
-Rather than generating long-horizon forecasts by independently predicting each time point, it implicitly decomposes the target sequence into constituent waves parameterized by frequency, amplitude, and phase, capturing both long-term and short-term dynamics in a holistic manner and consistently boosting mainstream backbone models.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/ImplicitForecaster.toml`](../../../../configs/models/ImplicitForecaster.toml).
 
 ## Differences

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 STTN (Spatial-Temporal Transformer Networks) is a spatiotemporal forecasting model designed for node-structured traffic and sensor-network data. It combines a spatial Transformer that dynamically models directed spatial dependencies with a self-attention mechanism — capturing real-time node-to-node relationships without a fixed adjacency matrix — with a temporal Transformer that captures long-range bidirectional temporal dependencies, yielding competitive accuracy especially for long-horizon traffic flow forecasting.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-STTN (Spatial-Temporal Transformer Networks) is a spatiotemporal forecasting model designed for node-structured traffic and sensor-network data.
-
-## Core architecture
-
-It combines a spatial Transformer that dynamically models directed spatial dependencies with a self-attention mechanism — capturing real-time node-to-node relationships without a fixed adjacency matrix — with a temporal Transformer that captures long-range bidirectional temporal dependencies, yielding competitive accuracy especially for long-horizon traffic flow forecasting.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/STTN.toml`](../../../../configs/models/STTN.toml).
 
 ## Differences

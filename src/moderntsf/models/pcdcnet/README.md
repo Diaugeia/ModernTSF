@@ -14,17 +14,6 @@ license: "NOASSERTION"
 PCDCNet is a covariate-prediction model for air quality forecasting in a node-structured spatiotemporal setting, where each node is a monitoring station. It integrates numerical modeling principles (emissions, meteorological influences, and physical-chemical domain constraints) with deep learning components — specifically graph-based spatial transport, recurrent temporal accumulation, and local interaction representation enhancement — to forecast 72-hour PM2.5 and O3 concentrations at the station level.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-PCDCNet is a covariate-prediction model for air quality forecasting in a node-structured spatiotemporal setting, where each node is a monitoring station.
-
-## Core architecture
-
-It integrates numerical modeling principles (emissions, meteorological influences, and physical-chemical domain constraints) with deep learning components — specifically graph-based spatial transport, recurrent temporal accumulation, and local interaction representation enhancement — to forecast 72-hour PM2.5 and O3 concentrations at the station level.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/PCDCNet.toml`](../../../../configs/models/PCDCNet.toml).
 
 ## Differences

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 HDMixer is a pure MLP-based time series forecasting model for multivariate prediction that addresses two limitations of standard patch-based approaches: fixed-length patches lose temporal boundary information (e.g., peaks and periods are cut arbitrarily), and existing methods focus mainly on long-range cross-patch dependencies while ignoring short-range within-patch and cross-variable interactions. HDMixer introduces a Length-Extendable Patcher (LEP) to enrich patch boundary information and a Hierarchical Dependency Explorer (HDE) that models all three dependency levels — within-patch (short-term), across-patch (long-term), and cross-variable — using pure MLPs.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-HDMixer is a pure MLP-based time series forecasting model for multivariate prediction that addresses two limitations of standard patch-based approaches: fixed-length patches lose temporal boundary information (e.g., peaks and periods are cut arbitrarily), and existing methods focus mainly on long-range cross-patch dependencies while ignoring short-range within-patch and cross-variable interactions.
-
-## Core architecture
-
-HDMixer introduces a Length-Extendable Patcher (LEP) to enrich patch boundary information and a Hierarchical Dependency Explorer (HDE) that models all three dependency levels — within-patch (short-term), across-patch (long-term), and cross-variable — using pure MLPs.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/HDMixer.toml`](../../../../configs/models/HDMixer.toml).
 
 ## Differences

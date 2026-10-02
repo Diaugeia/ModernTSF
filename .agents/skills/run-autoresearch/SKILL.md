@@ -27,8 +27,9 @@ Detail lives in the references; read each only at its step.
    --max-iterations M`, or reuse a supplied one) and note each hypothesis
    (`tsf research note <id> --kind hypothesis`). Claim one iteration per phase with
    `tsf research iteration <id> --operation <phase>`; reuse of an id is free.
-4. Retrieve candidates progressively, shortest card level first, and stop reading
-   once a candidate is excluded; see [retrieval-baselines](references/retrieval-baselines.md).
+4. Retrieve candidates progressively: `uv run tsf catalog search <terms>` (L0 lines),
+   `tsf <model|component|dataset> show <name>` (L1), `--depth 2|3` only when a
+   decision needs it; see [retrieval-baselines](references/retrieval-baselines.md).
 5. Evaluate a small baseline panel before any search (same split, horizon, metric,
    seeds); it sets the bar every later candidate must beat.
 6. Search by changing one factor per iteration from the best baseline, starting with

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 CrossGNN is a multivariate time-series forecasting model that tackles noise and inter-variable heterogeneity through a linear-complexity graph neural network framework. It uses an adaptive multi-scale identifier to build cleaner multi-resolution views of the input, a Cross-Scale GNN to capture trend information at the most informative scale, and a Cross-Variable GNN to jointly model homogeneity and heterogeneity between channels — all while maintaining O(L) time and space complexity with respect to sequence length.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-CrossGNN is a multivariate time-series forecasting model that tackles noise and inter-variable heterogeneity through a linear-complexity graph neural network framework.
-
-## Core architecture
-
-It uses an adaptive multi-scale identifier to build cleaner multi-resolution views of the input, a Cross-Scale GNN to capture trend information at the most informative scale, and a Cross-Variable GNN to jointly model homogeneity and heterogeneity between channels — all while maintaining O(L) time and space complexity with respect to sequence length.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/CrossGNN.toml`](../../../../configs/models/CrossGNN.toml).
 
 ## Differences

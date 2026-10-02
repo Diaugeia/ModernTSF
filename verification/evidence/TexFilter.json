@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TexFilter",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "5838c29f2dfd06d40e94b40ade39b43c7793b9302e620618f212ce6153b83598",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "0ec27418903b8e71727a27c23f19c220bbf7a39040668ceda3f04ffcf5a9af48",
   "paper": {
     "title": "FilterNet: Harnessing Frequency Filters for Time Series Forecasting",
     "venue": "NeurIPS 2024",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model TexFilter",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_filter_forecasters.py::LocalFilterForecasterTests::test_contextual_filter_has_input_dependent_kernel"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_filter_forecasters.py::LocalFilterForecasterTests::test_contextual_filter_has_input_dependent_kernel"
   ]
 }

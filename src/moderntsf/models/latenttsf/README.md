@@ -14,17 +14,6 @@ license: "MIT"
 LatentTSF is a time series forecasting model that shifts the forecasting paradigm from observation-space regression to latent state prediction. It employs an AutoEncoder to project each observation into a learned higher-dimensional latent state space, then performs all forecasting entirely within that space, allowing the model to capture structured temporal dynamics rather than fitting noisy observations directly. This addresses the "Latent Chaos" phenomenon where standard observation-space models achieve accurate predictions while learning temporally disordered representations.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-LatentTSF is a time series forecasting model that shifts the forecasting paradigm from observation-space regression to latent state prediction.
-
-## Core architecture
-
-It employs an AutoEncoder to project each observation into a learned higher-dimensional latent state space, then performs all forecasting entirely within that space, allowing the model to capture structured temporal dynamics rather than fitting noisy observations directly. This addresses the "Latent Chaos" phenomenon where standard observation-space models achieve accurate predictions while learning temporally disordered representations.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/LatentTSF.toml`](../../../../configs/models/LatentTSF.toml).
 
 ## Differences

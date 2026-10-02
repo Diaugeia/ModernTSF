@@ -13,17 +13,6 @@ license: "Apache-2.0"
 # TQNet
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TQNet turns CycleNet's per-variable learnable recurrent cycle into a cross-variable temporal query: a phase-aligned window of a learnable periodic table serves as the query of a single attention layer whose keys and values are the raw instance-normalized lookback window.
-
-## Core architecture
-
-This fuses a global periodic prior with local per-sample observations before a lightweight MLP produces the forecast.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -39,7 +28,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TQNet.toml`](../../../../configs/models/TQNet.toml).
 
 ## Differences

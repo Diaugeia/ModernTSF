@@ -20,17 +20,6 @@ predicted quantiles cannot cross by construction. It is trained with the pinball
 (`quantile`) loss and scored with CRPS / WQL / coverage.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-QuantileDLinear is a **probabilistic** ModernTSF forecaster: it wraps the point DLinear backbone with the shared monotone `QuantileHead` (`src/moderntsf/models/_components/quantile_head/README.md`) to emit a non-crossing grid of quantiles `(B, pred_len, C, Q)` instead of a single point.
-
-## Core architecture
-
-The head builds quantiles from a median anchor by adding/subtracting cumulative `softplus` offsets, so the predicted quantiles cannot cross by construction. It is trained with the pinball (`quantile`) loss and scored with CRPS / WQL / coverage.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -46,7 +35,8 @@ declared output contract is a `[batch, 96, channels, quantiles]` quantile foreca
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/QuantileDLinear.toml`](../../../../configs/models/QuantileDLinear.toml).
 
 ## Differences

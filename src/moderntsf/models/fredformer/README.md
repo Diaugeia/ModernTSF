@@ -14,17 +14,6 @@ license: "NOASSERTION"
 Fredformer is a Transformer-based model for multivariate time series forecasting that addresses the frequency bias problem, where attention mechanisms tend to over-weight low-frequency (high-energy) components while ignoring high-frequency features. It applies frequency-equalised attention across patch-level frequency bands to produce more balanced and accurate forecasts.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Fredformer is a Transformer-based model for multivariate time series forecasting that addresses the frequency bias problem, where attention mechanisms tend to over-weight low-frequency (high-energy) components while ignoring high-frequency features.
-
-## Core architecture
-
-It applies frequency-equalised attention across patch-level frequency bands to produce more balanced and accurate forecasts.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Fredformer.toml`](../../../../configs/models/Fredformer.toml).
 
 ## Differences

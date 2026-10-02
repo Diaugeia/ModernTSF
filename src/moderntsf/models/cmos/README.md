@@ -14,17 +14,6 @@ license: "NOASSERTION"
 CMoS is a super-lightweight multivariate time series forecasting model for the standard time-series setting. Rather than learning shape embeddings, it directly models spatial correlations between different time-series chunks using a Correlation Mixing strategy that captures diverse channel dependencies with minimal parameters, and an optional Periodicity Injection technique for faster convergence — achieving competitive accuracy at up to 100x the parameter efficiency of DLinear.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-CMoS is a super-lightweight multivariate time series forecasting model for the standard time-series setting.
-
-## Core architecture
-
-Rather than learning shape embeddings, it directly models spatial correlations between different time-series chunks using a Correlation Mixing strategy that captures diverse channel dependencies with minimal parameters, and an optional Periodicity Injection technique for faster convergence — achieving competitive accuracy at up to 100x the parameter efficiency of DLinear.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/CMoS.toml`](../../../../configs/models/CMoS.toml).
 
 ## Differences

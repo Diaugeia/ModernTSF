@@ -10,17 +10,6 @@ year: 2025
 # TimePro
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TimePro patches each channel independently, then runs a stack of bidirectional selective-state-space blocks over the variate axis whose scalar hidden state is reshaped into a (time-patch, variate) grid and locally mixed before read-out.
-
-## Core architecture
-
-This variable- and time-aware hyper-state feeds a linear head that projects to the forecast horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -36,7 +25,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimePro.toml`](../../../../configs/models/TimePro.toml).
 
 ## Differences

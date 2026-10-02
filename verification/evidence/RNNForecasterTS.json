@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RNNForecasterTS",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "6c2f678f8a017682b23fde81fdc912848f01f9de201b3265d70caeb099535e55",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "61cc7f991f729eb02054f52ef03d0de92ffb581a3d3660d3d2620219896e9bb4",
   "paper": {
     "title": "Finding Structure in Time",
     "venue": "Cognitive Science",
@@ -137,7 +137,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -147,6 +147,6 @@
   },
   "commands": [
     "uv run tsf verify model RNNForecasterTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_neural_baselines.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_neural_baselines.py"
   ]
 }

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 LSTM is a per-node vanilla Long Short-Term Memory sequence predictor applied in the spatiotemporal forecasting setting. Each spatial node is modeled independently as a univariate sequence, with the LSTM gates learning to selectively retain or forget information across timesteps — providing a simple but effective recurrent baseline for node-structured time series data.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-LSTM is a per-node vanilla Long Short-Term Memory sequence predictor applied in the spatiotemporal forecasting setting.
-
-## Core architecture
-
-Each spatial node is modeled independently as a univariate sequence, with the LSTM gates learning to selectively retain or forget information across timesteps — providing a simple but effective recurrent baseline for node-structured time series data.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/LSTM.toml`](../../../../configs/models/LSTM.toml).
 
 ## Differences

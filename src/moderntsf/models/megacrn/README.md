@@ -14,17 +14,6 @@ license: "Apache-2.0"
 MegaCRN (Meta-Graph Convolutional Recurrent Network) is a spatiotemporal forecasting model designed for graph-structured node data such as road-network traffic. It addresses the heterogeneity and non-stationarity inherent in traffic streams by learning dynamic graph structures through a Meta-Graph Learner backed by a learnable Meta-Node Bank, plugged into a GCRN encoder-decoder. This allows the model to disentangle locations and time slots with different patterns and adapt robustly to anomalous conditions.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MegaCRN (Meta-Graph Convolutional Recurrent Network) is a spatiotemporal forecasting model designed for graph-structured node data such as road-network traffic.
-
-## Core architecture
-
-It addresses the heterogeneity and non-stationarity inherent in traffic streams by learning dynamic graph structures through a Meta-Graph Learner backed by a learnable Meta-Node Bank, plugged into a GCRN encoder-decoder. This allows the model to disentangle locations and time slots with different patterns and adapt robustly to anomalous conditions.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MegaCRN.toml`](../../../../configs/models/MegaCRN.toml).
 
 ## Differences

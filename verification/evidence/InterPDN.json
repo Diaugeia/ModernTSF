@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "InterPDN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "caa5e4d886abba2f485594466755829b09d8dc12385a292751132cc7925155b8",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "e90558bf94d143cda17b1817cefcd41443c32e92ab812f7345355c372c670c87",
   "paper": {
     "title": "Time Series Forecasting via Direct Per-Step Probability Distribution Modeling",
     "venue": "AAAI 2026",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model InterPDN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

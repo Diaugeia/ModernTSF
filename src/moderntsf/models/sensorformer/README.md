@@ -10,17 +10,6 @@ year: 2025
 # Sensorformer
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Sensorformer patches each variable's window the way PatchTST does, then refines the patch representations with a stack of two-stage Sensor Attention Blocks: stage one compresses every variable's patches into one 'Sensor' summary token via cross-attention (using the variable's last patch as query and all variables' patches as key/value), and stage two lets every patch attend back to those summaries, jointly extracting cross-variable and cross-time dependencies at a fraction of pure cross-patch self-attention's cost; a shared linear head then maps each variable's flattened final patch representations to the forecast horizon.
-
-## Core architecture
-
-Sensorformer patches each variable's window the way PatchTST does, then refines the patch representations with a stack of two-stage Sensor Attention Blocks: stage one compresses every variable's patches into one 'Sensor' summary token via cross-attention (using the variable's last patch as query and all variables' patches as key/value), and stage two lets every patch attend back to those summaries, jointly extracting cross-variable and cross-time dependencies at a fraction of pure cross-patch self-attention's cost; a shared linear head then maps each variable's flattened final patch representations to the forecast horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -36,7 +25,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Sensorformer.toml`](../../../../configs/models/Sensorformer.toml).
 
 ## Differences

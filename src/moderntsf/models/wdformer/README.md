@@ -14,17 +14,6 @@ license: "unspecified (no LICENSE file at the pinned revision)"
 WDformer embeds each variate as a Haar-wavelet-subband token, attends over variate tokens with a differential-attention encoder (subtracting two softmax attention maps to cancel common-mode noise), and maps back to a forecast by projecting to pseudo-subband coefficients that a fixed inverse wavelet transform reassembles.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-WDformer embeds each variate as a Haar-wavelet-subband token, attends over variate tokens with a differential-attention encoder (subtracting two softmax attention maps to cancel common-mode noise), and maps back to a forecast by projecting to pseudo-subband coefficients that a fixed inverse wavelet transform reassembles.
-
-## Core architecture
-
-WDformer embeds each variate as a Haar-wavelet-subband token, attends over variate tokens with a differential-attention encoder (subtracting two softmax attention maps to cancel common-mode noise), and maps back to a forecast by projecting to pseudo-subband coefficients that a fixed inverse wavelet transform reassembles.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/WDformer.toml`](../../../../configs/models/WDformer.toml).
 
 ## Differences

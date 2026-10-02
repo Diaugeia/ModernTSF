@@ -14,17 +14,6 @@ license: "Apache-2.0"
 WaveNet is a modified integration of DeepMind's stacked dilated causal convolution architecture for the standard univariate and multivariate time-series forecasting setting. The core network applies multiple blocks of exponentially dilated causal convolutions with gated tanh/sigmoid activations and residual plus skip connections, giving a large temporal receptive field with relatively few parameters. In ModernTSF the original audio-generation head is replaced with a direct multi-step regression head (via a 1×1 convolution over the skip summaries) and RevIN instance normalization is wrapped around the network for stable long-horizon forecasting.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-WaveNet is a modified integration of DeepMind's stacked dilated causal convolution architecture for the standard univariate and multivariate time-series forecasting setting.
-
-## Core architecture
-
-The core network applies multiple blocks of exponentially dilated causal convolutions with gated tanh/sigmoid activations and residual plus skip connections, giving a large temporal receptive field with relatively few parameters. In ModernTSF the original audio-generation head is replaced with a direct multi-step regression head (via a 1×1 convolution over the skip summaries) and RevIN instance normalization is wrapped around the network for stable long-horizon forecasting.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/WaveNet.toml`](../../../../configs/models/WaveNet.toml).
 
 ## Differences

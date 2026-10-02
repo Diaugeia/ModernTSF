@@ -14,17 +14,6 @@ license: "MIT"
 MAFS (Multi-Agent Forecasting System) is a time series forecasting framework that replaces the conventional single-model paradigm with a cooperative system of specialized agents. The forecasting task is decomposed into multiple sub-tasks — covering different temporal perspectives such as varying resolutions or signal characteristics — each handled by a dedicated iTransformer-based agent. Agents communicate through learnable topology graphs (ring, star, chain, or fully connected), and a lightweight voting aggregator integrates their outputs into the final prediction for each channel.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MAFS (Multi-Agent Forecasting System) is a time series forecasting framework that replaces the conventional single-model paradigm with a cooperative system of specialized agents.
-
-## Core architecture
-
-The forecasting task is decomposed into multiple sub-tasks — covering different temporal perspectives such as varying resolutions or signal characteristics — each handled by a dedicated iTransformer-based agent. Agents communicate through learnable topology graphs (ring, star, chain, or fully connected), and a lightweight voting aggregator integrates their outputs into the final prediction for each channel.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MAFS.toml`](../../../../configs/models/MAFS.toml).
 
 ## Differences

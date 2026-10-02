@@ -15,17 +15,6 @@ known-future covariates, and one horizon-shared local MLP produces non-crossing
 quantiles.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MQRNN is a probabilistic direct multi-horizon forecaster: a shared LSTM encodes each series with historical temporal covariates, a global MLP jointly produces horizon-specific and horizon-agnostic contexts from the state and all known-future covariates, and one horizon-shared local MLP produces non-crossing quantiles.
-
-## Core architecture
-
-MQRNN is a probabilistic direct multi-horizon forecaster: a shared LSTM encodes each series with historical temporal covariates, a global MLP jointly produces horizon-specific and horizon-agnostic contexts from the state and all known-future covariates, and one horizon-shared local MLP produces non-crossing quantiles.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -41,7 +30,8 @@ declared output contract is a `[batch, 96, channels, quantiles]` quantile foreca
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MQRNN.toml`](../../../../configs/models/MQRNN.toml).
 
 ## Differences

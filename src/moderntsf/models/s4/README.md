@@ -14,17 +14,6 @@ license: "Apache-2.0"
 S4 (Structured State Space Sequence model) is a general sequence model for time series forecasting that is built on the diagonal S4D variant of the structured state space framework. It uses an FFT-based long convolution kernel derived from a diagonalized state matrix, enabling efficient modeling of long-range dependencies without custom CUDA operators. In ModernTSF the S4D layers are stacked with residual connections over the time axis, preceded by an input projection and followed by a linear forecast head mapping the sequence length to the prediction horizon.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-S4 (Structured State Space Sequence model) is a general sequence model for time series forecasting that is built on the diagonal S4D variant of the structured state space framework.
-
-## Core architecture
-
-It uses an FFT-based long convolution kernel derived from a diagonalized state matrix, enabling efficient modeling of long-range dependencies without custom CUDA operators. In ModernTSF the S4D layers are stacked with residual connections over the time axis, preceded by an input projection and followed by a linear forecast head mapping the sequence length to the prediction horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/S4.toml`](../../../../configs/models/S4.toml).
 
 ## Differences

@@ -14,17 +14,6 @@ license: "Apache-2.0"
 AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head.
-
-## Core architecture
-
-AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/AWEMixer.toml`](../../../../configs/models/AWEMixer.toml).
 
 ## Differences

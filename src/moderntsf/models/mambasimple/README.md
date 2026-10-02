@@ -14,17 +14,6 @@ license: "MIT"
 MambaSimple is a time series forecasting model built on the Mamba selective state space architecture. It adapts Mamba's selective scan mechanism — where SSM parameters are functions of the input, allowing the model to selectively propagate or forget information — into a pure PyTorch implementation that requires no custom CUDA operators, making it portable across CPU, CUDA, and MPS backends.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MambaSimple is a time series forecasting model built on the Mamba selective state space architecture.
-
-## Core architecture
-
-It adapts Mamba's selective scan mechanism — where SSM parameters are functions of the input, allowing the model to selectively propagate or forget information — into a pure PyTorch implementation that requires no custom CUDA operators, making it portable across CPU, CUDA, and MPS backends.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MambaSimple.toml`](../../../../configs/models/MambaSimple.toml).
 
 ## Differences

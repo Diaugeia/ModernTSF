@@ -14,17 +14,6 @@ license: "NOASSERTION"
 MICN (Multi-scale Isometric Convolution Network) is a long-term time-series forecasting model presented at ICLR 2023. It adopts a multi-scale branch structure where each branch extracts local temporal features via down-sampled convolution and captures global correlations via isometric convolution, achieving linear complexity with respect to sequence length while outperforming Transformer-based methods on standard benchmarks.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MICN (Multi-scale Isometric Convolution Network) is a long-term time-series forecasting model presented at ICLR 2023.
-
-## Core architecture
-
-It adopts a multi-scale branch structure where each branch extracts local temporal features via down-sampled convolution and captures global correlations via isometric convolution, achieving linear complexity with respect to sequence length while outperforming Transformer-based methods on standard benchmarks.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MICN.toml`](../../../../configs/models/MICN.toml).
 
 ## Differences

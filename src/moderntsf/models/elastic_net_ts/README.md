@@ -11,17 +11,6 @@ year: 2005
 ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`.
-
-## Core architecture
-
-ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -37,7 +26,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/ElasticNetTS.toml`](../../../../configs/models/ElasticNetTS.toml).
 
 ## Differences

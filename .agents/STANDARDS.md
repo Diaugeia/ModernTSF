@@ -1,7 +1,5 @@
 # Repository standards
-
-Read only the section relevant to the current change. `AGENTS.md` contains the
-always-on rules; this file keeps detailed contracts out of the default context.
+Read only the section relevant to the change; `AGENTS.md` holds the always-on rules.
 
 ## Models
 
@@ -11,9 +9,9 @@ owns `model.py`, a checked `README.md` model card, and a `spec.py` limited to it
 factory, parameter schema, config path, and runtime contract.
 
 The catalog index joins registered specs to model-card front matter; registration
-is the admission boundary. Configs are runnable presets, not registrations. A
+is the admission boundary; configs are runnable presets, not registrations. A
 releasable entry must import, validate parameters, construct, return finite
-correctly shaped output, and pass the unified verification contract.
+correctly shaped output, and pass unified verification.
 
 ## Components
 
@@ -29,62 +27,66 @@ automated research can recombine; paper-specific glue stays local.
 Each extraction needs unit tests and affected-model contract tests; extraction
 from an existing model preserves state-dict keys, outputs, and gradients against
 fixtures captured beforehand. Material variants stay local and named. Models never
-import peer-model code; shared code moves into a component with a generated card.
+import peer-model code; shared code moves into a component with a card.
 Avoid catch-all utilities and flag-driven base classes that hide paper behavior.
+
+A component card is curated: flat front matter (`name`, `kind`, `module`, `summary`,
+`category`, `input`, `output`, `origin`, `origin_models`, `tags`) plus the sections
+Purpose, Origin and granularity, Interface (every public symbol, shapes with axis
+names, state), Invariants and equivalence evidence (cite existing tests/fixtures),
+Variants and options, When to use and when not to use, Related components. Only the
+`component-card:generated` block (API, import, consumers) is rendered; the audit
+enforces both.
+
+## Progressive disclosure
+Catalog retrieval has four depths for models, components, and datasets: L0 one line
+(`name`, `kind`, `summary`, `tags`; what search returns), L1 front matter plus
+interface/constraint sections, L2 the full card, L3 paths to open. Search at L0, open
+L1, escalate only when a decision needs it (`tsf <kind> show <name> --depth N`).
 
 ## Model cards and sources
 Each model `README.md` is the descriptive source of truth. Its front matter is a
-flat, human-readable fact header. The body maps defining operations to local code
-and states differences in preprocessing, architecture,
-objective, training, output, and defaults.
+flat fact header; the generated block does not restate `summary`. The body maps
+operations to local code and states differences from paper and official code.
 
 Required front matter is `name`, `summary`, `paper`, `paper_title`, `venue`, and
 `year`. When official code exists, add `code`, `revision`, and `license` together;
-otherwise omit all three. Do not add nested mappings, persisted verification
-status, empty code fields, or invented source facts.
-
-Ordinary paper architectures are maintained as local code. Inspect authoritative
-official code at a pinned revision when available to resolve paper omissions,
-without copying it. A released pretrained foundation model is the narrow exception:
-use its official package and unchanged checkpoint behind `src/moderntsf/models/_foundation/`,
-load offline from an explicit local path, and declare the flat catalog entry
-inference-only. Record source and license facts. A shape-only smoke test is not
-verification, and verification status is computed from evidence rather than
-written into the card.
+otherwise omit all three. Do not add nested mappings, persisted verification status, empty
+code fields, or invented source facts.
+Ordinary paper architectures are local code; inspect official code at a pinned
+revision to resolve paper omissions without copying it. A released pretrained
+foundation model is the exception: use its official package and unchanged
+checkpoint behind `src/moderntsf/models/_foundation/`, load offline from an
+explicit local path, and declare the entry inference-only. A shape-only smoke test
+is not verification; status is computed from evidence, never written into the card.
 
 ## Verification
-There is one route named `verification`. `verification/models.toml` declares each
-model's paper checks, source comparison when applicable, and special runtime
-profile. `verification/evidence/<Model>.json` records the complete result;
-`verification/index.json` is regenerated and never hand-maintained.
-
-Required checks cover paper structure, equations, construction, forward, backward,
-finite outputs, active gradients, state-dict round trip, CPU, batch and sequence
-boundaries, input contract, and reference comparison. Reference comparison uses
-official code when available and is otherwise `not-applicable`; it is a check, not
-a classification. Use `tsf verify model`, `stale`, `all --jobs`, and `index`.
+One route named `verification`: `verification/models.toml` declares each model's
+paper checks, source comparison when applicable, and runtime profile;
+`verification/evidence/<Model>.json` records the result; `verification/index.json`
+is regenerated, never hand-maintained. Required checks cover paper structure,
+equations, construction, forward, backward, finite outputs, active gradients,
+state-dict round trip, CPU, batch and sequence boundaries, input contract, and
+reference comparison (official code when available, else `not-applicable`). Use
+`tsf verify model`, `stale`, `all --jobs`, and `index`.
 
 ## Data, experiments, and model artifacts
-Local dataset bytes live only in `dataset/`; loaders and schemas live in
-`src/moderntsf/data/`; readable preset cards live in `catalog/datasets/`. Dataset and model
-task modes are executable contracts checked during config loading. Experiments are
-resolved TOML and immutable evidence under `work_dirs/`; optional execution policy
-never changes scientific settings. Recovery preserves identity and attempt history.
-Large weights and tokenizers are `ModelArtifact` runtime facts in `spec.py`, pinned
-by source revision and SHA-256. They are never bundled or downloaded implicitly.
-Use `tsf model artifacts` to inspect or explicitly fetch them; required artifacts
-must verify before construction. This capability does not classify a model.
+Local dataset bytes live only in `dataset/`; loaders and schemas in
+`src/moderntsf/data/`; preset cards in `catalog/datasets/`. Task modes are
+executable contracts checked during config loading. Experiments are resolved TOML
+and immutable evidence under `work_dirs/`; execution policy never changes
+scientific settings; recovery preserves identity and attempt history. Large weights
+and tokenizers are `ModelArtifact` facts in `spec.py`, pinned by revision and
+SHA-256, never bundled or downloaded implicitly (`tsf model artifacts`); required
+artifacts must verify before construction.
 
 ## Documentation ownership
-Human documentation lives at the repository root, under `docs/`, and in model
-cards. It explains public behavior and public CLI workflows without Agent paths,
-prompt syntax, or internal command modules. Agent procedures live only under
-`.agents/` and must not duplicate human tutorials. Schemas, model-card front
-matter, runtime specs, configs, and tests are executable truth; generated indexes
-and tables are projections.
-
-Update code truth first, then regenerate or revise the English human projection.
-Do not hand-maintain facts that can be rendered from a catalog.
+Human documentation lives at the repository root, under `docs/`, and in cards; it
+explains public behavior and CLI workflows without Agent paths or internal command
+modules. Agent procedures live only under `.agents/` and never duplicate human
+tutorials. Schemas, front matter, specs, configs, and tests are executable truth;
+generated indexes and tables are projections. Update code truth first, then
+regenerate; do not hand-maintain facts a catalog can render.
 
 ## Skills
 Skills live only at `.agents/skills/<skill-name>/SKILL.md`, with standard
@@ -93,7 +95,6 @@ one recognizable outcome, expected inputs, preflight checks, execution path,
 success criteria, artifacts, and stopping conditions. Use native Agent work and
 public APIs or optional CLI adapters; omit harness-specific paths, assumptions, retired
 aliases, internal script entry points, or copies of human-facing tutorials.
-
-Changed skills must pass `uv run python -m moderntsf.tsf_core.agent_assets` and the standard
-skill frontmatter validator. Test descriptions against positive, indirect,
+Changed skills must pass `uv run python -m moderntsf.tsf_core.agent_assets` and the
+standard frontmatter validator; test descriptions against positive, indirect,
 incomplete, negative, and edge-case requests.

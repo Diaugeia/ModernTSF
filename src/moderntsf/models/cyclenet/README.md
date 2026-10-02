@@ -14,17 +14,6 @@ license: "Apache-2.0"
 CycleNet is a long-term time-series forecasting model that explicitly models periodic patterns in the input sequence via a Residual Cycle Forecasting (RCF) technique. It separates learnable recurrent cycle components from the residual signal and predicts on the residuals, achieving state-of-the-art accuracy in electricity, weather, and energy domains with over 90% fewer parameters than competing approaches.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-CycleNet is a long-term time-series forecasting model that explicitly models periodic patterns in the input sequence via a Residual Cycle Forecasting (RCF) technique.
-
-## Core architecture
-
-It separates learnable recurrent cycle components from the residual signal and predicts on the residuals, achieving state-of-the-art accuracy in electricity, weather, and energy domains with over 90% fewer parameters than competing approaches.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/CycleNet.toml`](../../../../configs/models/CycleNet.toml).
 
 ## Differences

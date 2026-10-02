@@ -12,17 +12,6 @@ license: "Unlicensed (no LICENSE file in official repo; all rights reserved by d
 # RAGC
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-RAGC forecasts node-structured spatiotemporal series through a stochastically regularized, node-embedding adaptive graph convolution at its core.
-
-## Core architecture
-
-It embeds each lookback window per node, concatenates it with a stochastic-shared-embedding-regularized node embedding and time-of-day/day-of-week embeddings, and stacks feed-forward + adaptive-graph-convolution blocks whose graph operator (the 'Efficient Cosine Operator') builds a gated cosine-normalized support from the node embeddings and diffuses it with a linear-time kernel trick that never materializes a dense adjacency; each block subtracts the graph-smoothed signal from the running state (a residual-difference mechanism) while accumulating the smoothed signal in a skip path, and both paths are projected to the forecast horizon and summed.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -38,7 +27,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/RAGC.toml`](../../../../configs/models/RAGC.toml).
 
 ## Differences

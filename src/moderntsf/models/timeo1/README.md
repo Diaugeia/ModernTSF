@@ -14,17 +14,6 @@ license: "MIT"
 Time-o1 is a model-agnostic transformation-augmented training objective. The local module exposes its per-variate SVD basis fitting and transformed-label loss alongside a small independent temporal backbone required by the repository's model contract.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Time-o1 is a model-agnostic transformation-augmented forecasting objective that aligns the most significant decorrelated label components.
-
-## Core architecture
-
-The local runtime provides per-variate SVD basis fitting, the published mixed objective, and a small independent temporal carrier model.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimeO1.toml`](../../../../configs/models/TimeO1.toml).
 
 ## Differences

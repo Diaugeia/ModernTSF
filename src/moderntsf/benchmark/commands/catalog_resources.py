@@ -69,7 +69,9 @@ def model_command(args: list[str]) -> int:
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
             "usage: tsf model {scaffold,add,list,show,search,artifacts,audit} [args...]\n"
-            "       tsf model list [--details | --json]"
+            "       tsf model list [--details | --json]\n"
+            "       tsf model search <terms...> [--capability C] [--limit N] [--json]   (L0 lines)\n"
+            "       tsf model show <name> [--depth {0,1,2,3}] [--json]"
         )
         return 0
     action, rest = args[0], args[1:]
@@ -118,56 +120,80 @@ def model_command(args: list[str]) -> int:
                 print(f"{record['name']}\n  {record['summary']}")
         return 0
     if action == "show":
-        if len(rest) != 1:
-            print("usage: tsf model show <name>", file=sys.stderr)
-            return 2
         from moderntsf.benchmark.catalog_metadata import model_records
+        from moderntsf.benchmark.catalog_show import existing, parse_show, show_card
         from moderntsf.benchmark.registry.models import MODEL_CATALOG
 
-        spec = MODEL_CATALOG.get(rest[0])
+        parsed = parse_show("tsf model show", "public model name", rest)
+        try:
+            spec = MODEL_CATALOG.get(parsed.name)
+        except KeyError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
         fields = next(
             record for record in model_records(ROOT) if record["name"] == spec.name
         )
         paper = dict(fields["paper"])
         codebase = fields["codebase"]
-        fields["card_text"] = (ROOT / str(fields["model_card"])).read_text(
-            encoding="utf-8"
-        )
+        card_path = ROOT / str(fields["model_card"])
+        fields["card_text"] = card_path.read_text(encoding="utf-8")
         audit = _model_audit_record(fields)
-        _print(
-            {
-                "name": spec.name,
-                "module": spec.module,
-                "summary": fields["summary"],
-                "parameters": spec.params_schema.model_json_schema(),
-                "paper": {
-                    "title": paper["title"],
-                    "venue": paper["venue"],
-                    "year": paper["year"],
-                    "url": paper["url"],
-                },
-                "codebase": codebase,
-                "config": spec.config_path,
-                "model_card": spec.model_card,
-                "smoke_config": spec.smoke_config,
-                "capabilities": sorted(spec.capabilities),
-                "components": list(spec.components),
-                "output_type": spec.output_type,
-                "task_modes": sorted(spec.task_modes),
-                "artifacts": [
-                    {
-                        "name": artifact.name,
-                        "revision": artifact.revision,
-                        "filename": artifact.filename,
-                        "required": artifact.required,
-                    }
-                    for artifact in spec.artifacts
-                ],
-                "verification": audit["verification"],
-                "blockers": audit["blockers"],
-            }
+        legacy = {
+            "name": spec.name,
+            "module": spec.module,
+            "summary": fields["summary"],
+            "parameters": spec.params_schema.model_json_schema(),
+            "paper": {
+                "title": paper["title"],
+                "venue": paper["venue"],
+                "year": paper["year"],
+                "url": paper["url"],
+            },
+            "codebase": codebase,
+            "config": spec.config_path,
+            "model_card": spec.model_card,
+            "smoke_config": spec.smoke_config,
+            "capabilities": sorted(spec.capabilities),
+            "components": list(spec.components),
+            "output_type": spec.output_type,
+            "task_modes": sorted(spec.task_modes),
+            "artifacts": [
+                {
+                    "name": artifact.name,
+                    "revision": artifact.revision,
+                    "filename": artifact.filename,
+                    "required": artifact.required,
+                }
+                for artifact in spec.artifacts
+            ],
+            "verification": audit["verification"],
+            "blockers": audit["blockers"],
+        }
+        facts = {
+            "config": spec.config_path,
+            "smoke_config": spec.smoke_config or "(none)",
+            "task_modes": sorted(spec.task_modes),
+            "capabilities": sorted(spec.capabilities),
+            "components": list(spec.components),
+            "output_type": spec.output_type,
+            "verification": audit["verification"]["status"],
+            "blockers": audit["blockers"],
+        }
+        package = card_path.parent.relative_to(ROOT).as_posix()
+        paths = existing(
+            ROOT,
+            card_path.relative_to(ROOT).as_posix(),
+            f"{package}/model.py",
+            str(fields["spec_file"]),
+            spec.config_path,
+            spec.smoke_config or "",
+            f"verification/evidence/{spec.name}.json",
+            *(
+                f"src/moderntsf/models/_components/{name}/README.md"
+                for name in spec.components
+            ),
         )
-        return 0
+        return show_card(ROOT, card_path, parsed, facts=facts, paths=paths, legacy=legacy)
     if action == "artifacts":
         import argparse
         from pathlib import Path
@@ -206,67 +232,9 @@ def model_command(args: list[str]) -> int:
                 print(f"{record['name']}\t{state}\t{record['path']}")
         return 0
     if action == "search":
-        import argparse
-        import re
-        from moderntsf.benchmark.catalog_metadata import model_records
+        from moderntsf.benchmark.catalog_search import search_command
 
-        parser = argparse.ArgumentParser(
-            prog="tsf model search",
-            description="Search canonical model-card metadata and text.",
-        )
-        parser.add_argument("query", nargs="*", help="terms describing a method")
-        parser.add_argument("--capability", action="append", default=[], help="Require a canonical capability; repeat for intersection")
-        parser.add_argument("--limit", type=int, default=10)
-        parser.add_argument("--json", action="store_true")
-        parsed = parser.parse_args(rest)
-        if parsed.limit < 1:
-            parser.error("--limit must be positive")
-        terms = set(re.findall(r"[a-z0-9]+", " ".join(parsed.query).casefold()))
-        matches = []
-        for fields in model_records(ROOT):
-            if not set(parsed.capability).issubset(fields.get("capabilities", ())):
-                continue
-            paper = dict(fields["paper"])
-            card = (ROOT / str(fields["model_card"])).read_text(encoding="utf-8")
-            surfaces = {
-                "name": str(fields["name"]).casefold(),
-                "summary": str(fields["summary"]).casefold(),
-                "paper": str(paper["title"]).casefold(),
-                "card": card.casefold(),
-            }
-            matched = {
-                term for term in terms if any(term in text for text in surfaces.values())
-            }
-            if terms and not matched:
-                continue
-            score = len(matched) * 100 + sum(
-                8
-                if term in surfaces["name"]
-                else 4
-                if term in surfaces["summary"]
-                else 3
-                if term in surfaces["paper"]
-                else 1
-                for term in matched
-            )
-            matches.append(
-                {
-                    "name": fields["name"],
-                    "summary": fields["summary"],
-                    "score": score,
-                    "matched_terms": sorted(matched),
-                }
-            )
-        matches.sort(key=lambda item: (-int(item["score"]), str(item["name"])))
-        matches = matches[: parsed.limit]
-        if parsed.json:
-            _print(matches)
-        else:
-            for match in matches:
-                print(
-                    f"{match['name']} score={match['score']}\n  {match['summary']}"
-                )
-        return 0
+        return search_command(ROOT, rest, prog="tsf model search", kind="model")
     if action == "audit":
         import argparse
         from moderntsf.benchmark.catalog_metadata import model_records
@@ -339,10 +307,11 @@ def component_command(args: list[str]) -> int:
 
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
-            "usage: tsf component {list,show,match,compose,audit} [args...]\n"
-            "       tsf component list [--json]\n"
+            "usage: tsf component {list,show,search,match,compose,audit} [args...]\n"
+            "       tsf component list [--json]                (L0 lines)\n"
             "       tsf component compose <spec.toml> [--json]   (dry run)\n"
-            "       tsf component match <requirements...> [--limit N] [--json]"
+            "       tsf component search <terms...> [--limit N] [--json]   (L0 lines; match is an alias)\n"
+            "       tsf component show <name> [--depth {0,1,2,3}] [--json]"
         )
         return 0
     action, rest = args[0], args[1:]
@@ -369,85 +338,103 @@ def component_command(args: list[str]) -> int:
         print(f"Component catalog/cards: {'PASS' if not failures else 'FAIL'} ({total} components)")
         return 1 if failures else 0
     if action == "list" and (not rest or rest == ["--json"]):
-        records = [
-            {
-                "name": spec.name,
-                "module": spec.module,
-                "summary": spec.contract,
-                "card": f"src/moderntsf/models/_components/{spec.name}/README.md",
-            }
-            for spec in COMPONENT_CATALOG.specs()
-        ]
+        from moderntsf.benchmark.card_depth import card_l0, l0_line, read_card
+        from moderntsf.benchmark.component_cards import component_card_path
+
+        records = []
+        for spec in COMPONENT_CATALOG.specs():
+            record = card_l0(read_card(component_card_path(ROOT, spec.name)))
+            record.update(
+                module=spec.module,
+                card=f"src/moderntsf/models/_components/{spec.name}/README.md",
+            )
+            records.append(record)
         if rest == ["--json"]:
             _print(records)
         else:
             for record in records:
-                print(f"{record['name']}\t{record['summary']}")
+                print(l0_line(record))
         return 0
-    if action == "show" and len(rest) == 1:
+    if action == "show":
+        from moderntsf.benchmark.catalog_show import existing, parse_show, show_card
+        from moderntsf.benchmark.component_cards import component_card_path
+
+        parsed = parse_show("tsf component show", "component name", rest)
         try:
-            spec = COMPONENT_CATALOG.get(rest[0])
+            spec = COMPONENT_CATALOG.get(parsed.name)
         except KeyError as exc:
             print(str(exc), file=sys.stderr)
             return 2
-        from moderntsf.tsf_core.paths import repository_root
-
-        root = repository_root()
         consumers = []
-        for package in sorted((root / "src" / "moderntsf" / "models").iterdir()):
+        for package in sorted((ROOT / "src" / "moderntsf" / "models").iterdir()):
             if package.is_dir() and spec.name in components_used_by(package):
                 consumers.append(package.name)
-        _print(
-            {
-                "name": spec.name,
-                "module": spec.module,
-                "contract": spec.contract,
-                "public_symbols": list(spec.public_symbols),
-                "keywords": list(spec.keywords),
-                "consumers": consumers,
-                "card": f"src/moderntsf/models/_components/{spec.name}/README.md",
-            }
+        card = f"src/moderntsf/models/_components/{spec.name}/README.md"
+        legacy = {
+            "name": spec.name,
+            "module": spec.module,
+            "contract": spec.contract,
+            "public_symbols": list(spec.public_symbols),
+            "keywords": list(spec.keywords),
+            "consumers": consumers,
+            "card": card,
+        }
+        shown = ", ".join(consumers[:8]) + (", ..." if len(consumers) > 8 else "")
+        facts = {
+            "public_symbols": list(spec.public_symbols),
+            "consumers": f"{len(consumers)} models: {shown}" if consumers else "none",
+        }
+        tests = sorted(
+            path.relative_to(ROOT).as_posix()
+            for path in (ROOT / "tests").glob("*.py")
+            if spec.module in path.read_text(encoding="utf-8")
         )
-        return 0
-    if action == "match":
-        import argparse
+        paths = existing(
+            ROOT,
+            card,
+            f"src/moderntsf/models/_components/{spec.name}/__init__.py",
+            *tests[:6],
+            *(f"src/moderntsf/models/{name}/model.py" for name in consumers[:3]),
+        )
+        return show_card(
+            ROOT, component_card_path(ROOT, spec.name), parsed, facts=facts, paths=paths, legacy=legacy
+        )
+    if action in {"match", "search"}:
+        from moderntsf.benchmark.catalog_search import search_command
 
-        parser = argparse.ArgumentParser(
-            prog="tsf component match",
-            description="Rank lexical component candidates; semantic review is still required.",
-        )
-        parser.add_argument("requirements", nargs="+", help="operations or contract terms")
-        parser.add_argument("--limit", type=int, default=5)
-        parser.add_argument("--json", action="store_true")
-        parsed = parser.parse_args(rest)
-        if parsed.limit < 1:
-            parser.error("--limit must be positive")
-        matches = COMPONENT_CATALOG.match(" ".join(parsed.requirements), parsed.limit)
-        records = [
-            {
-                "name": match.spec.name,
-                "score": match.score,
-                "matched_terms": list(match.matched_terms),
-                "contract": match.spec.contract,
-                "module": match.spec.module,
+        def augment(record: dict[str, object]) -> dict[str, object]:
+            spec = COMPONENT_CATALOG.get(str(record["name"]))
+            return {
+                **record,
+                "contract": spec.contract,
+                "module": spec.module,
                 "review_required": True,
             }
-            for match in matches
-        ]
-        if parsed.json:
-            _print(records)
-        else:
-            for record in records:
-                terms = ", ".join(record["matched_terms"])
-                print(
-                    f"{record['name']}\t{record['score']}\t{terms}\n"
-                    f"  {record['contract']}"
-                )
-            if records:
-                print(
-                    "Candidate retrieval only; inspect the component contract and "
-                    "implementation before reuse."
-                )
-        return 0
-    print("usage: tsf component {list,show,match,compose,audit} [args...]", file=sys.stderr)
+
+        code = search_command(
+            ROOT, rest, prog=f"tsf component {action}", kind="component", augment=augment
+        )
+        if code == 0 and "--json" not in rest:
+            print(
+                "Candidate retrieval only; open one with `tsf component show <name> "
+                "--depth 1` and review shapes and semantics before reuse.",
+                file=sys.stderr,
+            )
+        return code
+    print("usage: tsf component {list,show,search,match,compose,audit} [args...]", file=sys.stderr)
     return 2
+
+
+def catalog_command(args: list[str]) -> int:
+    """Search all catalogs at once, returning ranked L0 lines."""
+    if not args or args[0] in {"-h", "--help", "help"} or args[0] != "search":
+        print(
+            "usage: tsf catalog search <terms...> [--kind model|component|dataset] "
+            "[--limit N] [--json]\n"
+            "Each result is one L0 line: name, kind, summary, tags. Open one with\n"
+            "`tsf <kind> show <name> --depth 1|2|3`."
+        )
+        return 0 if not args or args[0] in {"-h", "--help", "help"} else 2
+    from moderntsf.benchmark.catalog_search import search_command
+
+    return search_command(ROOT, args[1:], prog="tsf catalog search")

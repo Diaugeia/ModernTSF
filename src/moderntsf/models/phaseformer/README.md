@@ -14,17 +14,6 @@ license: "MIT"
 PhaseFormer is an efficient time series forecasting model for standard univariate and multivariate prediction. It introduces a phase perspective for exploiting periodicity: instead of treating individual patches as tokens (which incurs large parameter counts), PhaseFormer groups time steps into compact phase embeddings aligned to the dominant period and uses a lightweight routing mechanism for cross-phase interaction, achieving state-of-the-art performance with approximately 1k parameters across benchmark datasets.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-PhaseFormer is an efficient time series forecasting model for standard univariate and multivariate prediction.
-
-## Core architecture
-
-It introduces a phase perspective for exploiting periodicity: instead of treating individual patches as tokens (which incurs large parameter counts), PhaseFormer groups time steps into compact phase embeddings aligned to the dominant period and uses a lightweight routing mechanism for cross-phase interaction, achieving state-of-the-art performance with approximately 1k parameters across benchmark datasets.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/PhaseFormer.toml`](../../../../configs/models/PhaseFormer.toml).
 
 ## Differences

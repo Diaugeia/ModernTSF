@@ -14,17 +14,6 @@ license: "MIT"
 Pyraformer is a Transformer-based time series forecasting model that builds a multi-resolution pyramidal attention module (PAM) over the input sequence. Inter-scale tree connections summarize temporal features at progressively coarser resolutions, while intra-scale connections between neighboring tokens model dependencies at each resolution. This design achieves O(1) maximum signal-path length with respect to sequence length and linear time and space complexity, making it efficient for long-range forecasting on both single-step and multi-step horizons.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Pyraformer is a Transformer-based time series forecasting model that builds a multi-resolution pyramidal attention module (PAM) over the input sequence.
-
-## Core architecture
-
-Inter-scale tree connections summarize temporal features at progressively coarser resolutions, while intra-scale connections between neighboring tokens model dependencies at each resolution. This design achieves O(1) maximum signal-path length with respect to sequence length and linear time and space complexity, making it efficient for long-range forecasting on both single-step and multi-step horizons.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Pyraformer.toml`](../../../../configs/models/Pyraformer.toml).
 
 ## Differences

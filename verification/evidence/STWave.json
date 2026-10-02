@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STWave",
   "status": "passed",
-  "verified_at": "2026-09-28T20:27:53.677316Z",
-  "subject_sha256": "5fc4a57a6e2b27d6f08d9e686da430957bdbc8a3d6d82dceeee1bd8de5c5244c",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "ef5acd8ea0670a0dd5f23e95ea3cff225549583c68a2810691c41fb66368d1bc",
   "paper": {
     "title": "When Spatio-Temporal Meet Wavelets: Disentangled Traffic Forecasting via Efficient Spectral Graph Attention Networks",
     "venue": "ICDE 2023",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model STWave",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_graph_forecasters_c.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_graph_forecasters_c.py"
   ]
 }

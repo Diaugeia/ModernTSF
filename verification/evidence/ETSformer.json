@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ETSformer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "c6ed37325f0677788ff6fa7f01d139d3bb32319be78c1a7d7837218b898c5196",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "610a5683265fffbacab1e9c0835819bf6fb6ce37bf366a39c671bf4a50fac8e2",
   "paper": {
     "title": "ETSformer: Exponential Smoothing Transformers for Time-series Forecasting",
     "venue": "arXiv preprint",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model ETSformer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_etsformer.py::LocalETSformerTests::test_model_exposes_level_growth_seasonality_stacks"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_etsformer.py::LocalETSformerTests::test_model_exposes_level_growth_seasonality_stacks"
   ]
 }

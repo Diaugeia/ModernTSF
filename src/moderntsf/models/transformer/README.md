@@ -14,17 +14,6 @@ license: "MIT"
 Transformer is the standard encoder-decoder attention architecture applied to time-series forecasting, with full scaled dot-product self-attention, causal decoder attention, encoder-decoder cross-attention, positional/value embeddings, and a one-shot forecast projection.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Transformer is the standard encoder-decoder attention architecture applied to time-series forecasting, with full scaled dot-product self-attention, causal decoder attention, encoder-decoder cross-attention, positional/value embeddings, and a one-shot forecast projection.
-
-## Core architecture
-
-Transformer is the standard encoder-decoder attention architecture applied to time-series forecasting, with full scaled dot-product self-attention, causal decoder attention, encoder-decoder cross-attention, positional/value embeddings, and a one-shot forecast projection.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Transformer.toml`](../../../../configs/models/Transformer.toml).
 
 ## Differences

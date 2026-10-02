@@ -10,17 +10,6 @@ year: 2025
 # Gateformer
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-Gateformer encodes each variate through two complementary pathways: a whole-window global embedding and a patched cross-time-attention embedding.
-
-## Core architecture
-
-It fuses them with a learned gate, applies cross-variate attention on the fused variate embeddings, and fuses again with a second gate before projecting to the forecast horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -36,7 +25,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/Gateformer.toml`](../../../../configs/models/Gateformer.toml).
 
 ## Differences

@@ -13,17 +13,6 @@ license: "unlicensed (no LICENSE file present in the repository; inspected only 
 # ReFocus
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-ReFocus reinforces mid-frequency and key-frequency spectral content for multivariate forecasting: it reversibly normalizes each instance, subtracts a beta-scaled moving-average trend to attenuate the dominant low-frequency band (AMEO), embeds the residual into the frequency domain with dense complex-linear projections, and refines it through a stack of Energy-based Key-Frequency Picking Blocks (EKPB) that stochastically pool one channel's spectrum per frequency bin (weighted by spectral energy) and fuse that shared key-frequency representation back into every channel before projecting to the forecast horizon.
-
-## Core architecture
-
-ReFocus reinforces mid-frequency and key-frequency spectral content for multivariate forecasting: it reversibly normalizes each instance, subtracts a beta-scaled moving-average trend to attenuate the dominant low-frequency band (AMEO), embeds the residual into the frequency domain with dense complex-linear projections, and refines it through a stack of Energy-based Key-Frequency Picking Blocks (EKPB) that stochastically pool one channel's spectrum per frequency bin (weighted by spectral energy) and fuse that shared key-frequency representation back into every channel before projecting to the forecast horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -39,7 +28,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/ReFocus.toml`](../../../../configs/models/ReFocus.toml).
 
 ## Differences

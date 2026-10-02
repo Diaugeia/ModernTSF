@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Linear",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "0857cb9b526f4f29976211d0a81bdcacc42238c9e539874c3719d51624a38642",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "3729f09b01ef184ac13e71c105d8ab56a1f33535085580d46eef887513027820",
   "paper": {
     "title": "Are Transformers Effective for Time Series Forecasting?",
     "venue": "AAAI 2023",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model Linear",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_linear_is_the_paper_temporal_affine_equation"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_compact_local_implementations.py::CompactLocalEquationTests::test_linear_is_the_paper_temporal_affine_equation"
   ]
 }

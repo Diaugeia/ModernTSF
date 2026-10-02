@@ -14,17 +14,6 @@ license: "Apache-2.0"
 FITS (Frequency Interpolation Time Series analysis) is a lightweight time series forecasting model that operates entirely in the complex frequency domain. Instead of processing raw time-domain sequences, FITS applies rFFT to compress the input, performs low-pass filtering to discard high-frequency noise, and uses frequency-domain interpolation to map the compressed representation to the target prediction length, enabling competitive forecasting performance with only approximately 10k parameters — small enough for edge-device deployment.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-FITS (Frequency Interpolation Time Series analysis) is a lightweight time series forecasting model that operates entirely in the complex frequency domain.
-
-## Core architecture
-
-Instead of processing raw time-domain sequences, FITS applies rFFT to compress the input, performs low-pass filtering to discard high-frequency noise, and uses frequency-domain interpolation to map the compressed representation to the target prediction length, enabling competitive forecasting performance with only approximately 10k parameters — small enough for edge-device deployment.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/FITS.toml`](../../../../configs/models/FITS.toml).
 
 ## Differences

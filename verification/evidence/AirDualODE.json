@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "AirDualODE",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "8671d7fe45d4d10020fbcf6874c1eb86d421f6bffe68d9ce0b9e6539e28ba3b9",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "8dc4331da21b9c93fcd2c93542ef857c2eece185c2b518e47b11121e62091030",
   "paper": {
     "title": "Air Quality Prediction with Physics-Guided Dual Neural ODEs in Open Systems",
     "venue": "ICLR 2025",
@@ -147,7 +147,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -157,6 +157,6 @@
   },
   "commands": [
     "uv run tsf verify model AirDualODE",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_air_quality_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_air_quality_forecasters.py"
   ]
 }

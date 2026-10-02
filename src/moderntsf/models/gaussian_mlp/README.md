@@ -17,17 +17,6 @@ coverage / width. It serves as the minimal reference for the `distribution`
 output type — the parametric counterpart to the quantile models.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-GaussianMLP is a simple **parametric probabilistic** baseline: an MLP maps the flattened input window to per-step Gaussian parameters `(loc, scale)` for every horizon step and channel, returning `(B, pred_len, C, 2)` with a strictly positive scale (`softplus + eps`).
-
-## Core architecture
-
-It is trained by maximum likelihood (`nll_gaussian`) and scored with the closed-form Gaussian CRPS plus coverage / width. It serves as the minimal reference for the `distribution` output type — the parametric counterpart to the quantile models.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -43,7 +32,8 @@ declared output contract is a `[batch, 96, channels, parameters]` distribution p
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/GaussianMLP.toml`](../../../../configs/models/GaussianMLP.toml).
 
 ## Differences

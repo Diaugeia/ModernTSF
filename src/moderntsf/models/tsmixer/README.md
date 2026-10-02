@@ -14,17 +14,6 @@ license: "Apache-2.0"
 TSMixer is an MLP-Mixer-style model for multivariate time-series forecasting that alternates mixing operations along the time dimension and the feature (channel) dimension. By stacking MLP blocks that operate on transposed views of the input, it efficiently extracts both temporal dynamics and cross-variate correlations without any attention mechanism, achieving competitive accuracy while remaining easy to implement.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TSMixer is an MLP-Mixer-style model for multivariate time-series forecasting that alternates mixing operations along the time dimension and the feature (channel) dimension.
-
-## Core architecture
-
-By stacking MLP blocks that operate on transposed views of the input, it efficiently extracts both temporal dynamics and cross-variate correlations without any attention mechanism, achieving competitive accuracy while remaining easy to implement.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TSMixer.toml`](../../../../configs/models/TSMixer.toml).
 
 ## Differences

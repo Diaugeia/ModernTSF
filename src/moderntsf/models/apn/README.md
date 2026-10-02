@@ -14,17 +14,6 @@ license: "NOASSERTION"
 APN (Adaptive Patching Network) is a general and efficient framework for forecasting irregular multivariate time series (IMTS) in a multivariate time-series forecasting setting. It introduces a Time-Aware Patch Aggregation (TAPA) module that learns dynamically adjustable patch boundaries and a time-aware weighted averaging strategy to transform raw irregular observations into high-quality regularized representations, avoiding the need for resampling or interpolation.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-APN (Adaptive Patching Network) is a general and efficient framework for forecasting irregular multivariate time series (IMTS) in a multivariate time-series forecasting setting.
-
-## Core architecture
-
-It introduces a Time-Aware Patch Aggregation (TAPA) module that learns dynamically adjustable patch boundaries and a time-aware weighted averaging strategy to transform raw irregular observations into high-quality regularized representations, avoiding the need for resampling or interpolation.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/APN.toml`](../../../../configs/models/APN.toml).
 
 ## Differences

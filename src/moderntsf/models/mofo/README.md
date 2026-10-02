@@ -14,17 +14,6 @@ license: "MIT"
 MoFo is a Transformer-based long-term time-series forecasting model for the standard time-series setting. It explicitly models periodic patterns by constructing period-structured 2D patch tensors through discrete sampling and introduces a period-aware modulator that applies a learnable regulated relaxation function to guide attention coefficients toward periodic trends, achieving high memory efficiency and fast training speed.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MoFo is a Transformer-based long-term time-series forecasting model for the standard time-series setting.
-
-## Core architecture
-
-It explicitly models periodic patterns by constructing period-structured 2D patch tensors through discrete sampling and introduces a period-aware modulator that applies a learnable regulated relaxation function to guide attention coefficients toward periodic trends, achieving high memory efficiency and fast training speed.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MoFo.toml`](../../../../configs/models/MoFo.toml).
 
 ## Differences

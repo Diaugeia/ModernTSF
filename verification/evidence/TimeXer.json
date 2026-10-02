@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeXer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "26b2a480b1d066c2e874d20fcf4e5f7ad5db27cdbc2a51c4c3cd2351beaf07f2",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "e8e6e8d4189a6d533cd8c949f9283f109bc245c1ad57e2efad8e3903c0b2fee4",
   "paper": {
     "title": "TimeXer: Empowering Transformers for Time Series Forecasting with Exogenous Variables",
     "venue": "NeurIPS 2024",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model TimeXer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_c.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_c.py"
   ]
 }

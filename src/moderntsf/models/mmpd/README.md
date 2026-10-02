@@ -14,17 +14,6 @@ license: "NOASSERTION"
 MMPD (Multi-Mode Patch Diffusion) is a training-loss framework for patch-based time series forecasting models that replaces the standard MSE loss with a diffusion-based multi-mode objective, enabling models to generate diverse probabilistic forecasts corresponding to multiple plausible future outcomes. It is applicable to any patch-based backbone that outputs latent tokens for the future.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-MMPD (Multi-Mode Patch Diffusion) is a training-loss framework for patch-based time series forecasting models that replaces the standard MSE loss with a diffusion-based multi-mode objective, enabling models to generate diverse probabilistic forecasts corresponding to multiple plausible future outcomes.
-
-## Core architecture
-
-It is applicable to any patch-based backbone that outputs latent tokens for the future.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/MMPD.toml`](../../../../configs/models/MMPD.toml).
 
 ## Differences

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 RLinear is a time series forecasting model that combines Reversible Instance Normalisation (RevIN) with a single linear projection layer to perform long-term multivariate or univariate forecasting. Despite its simplicity, the model achieves competitive or state-of-the-art performance on standard benchmarks by exploiting the fact that affine mapping dominates forecasting accuracy and that RevIN transforms non-periodic trends into periodic-like patterns that a linear layer can capture effectively.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-RLinear is a time series forecasting model that combines Reversible Instance Normalisation (RevIN) with a single linear projection layer to perform long-term multivariate or univariate forecasting.
-
-## Core architecture
-
-Despite its simplicity, the model achieves competitive or state-of-the-art performance on standard benchmarks by exploiting the fact that affine mapping dominates forecasting accuracy and that RevIN transforms non-periodic trends into periodic-like patterns that a linear layer can capture effectively.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/RLinear.toml`](../../../../configs/models/RLinear.toml).
 
 ## Differences

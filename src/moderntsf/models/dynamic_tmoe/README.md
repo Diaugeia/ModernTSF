@@ -14,17 +14,6 @@ license: "NOASSERTION"
 Dynamic TMoE models non-stationarity through drift perception, temporally coherent expert routing, heterogeneous inductive biases, and training-time expert-pool evolution.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-DynamicTMoE is a clean-room fixed-capacity realization of drift-aware temporal MoE routing with RBF-MMD, recurrent memory, heterogeneous experts, and cyclic relations.
-
-## Core architecture
-
-DynamicTMoE is a clean-room fixed-capacity realization of drift-aware temporal MoE routing with RBF-MMD, recurrent memory, heterogeneous experts, and cyclic relations.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DynamicTMoE.toml`](../../../../configs/models/DynamicTMoE.toml).
 
 ## Differences

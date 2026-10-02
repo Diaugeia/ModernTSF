@@ -14,17 +14,6 @@ license: "MIT"
 FEDformer is a Transformer-based model for long-term multivariate and univariate time-series forecasting that combines seasonal-trend decomposition with a frequency-enhanced attention mechanism. The decomposition component captures the global profile of the series while Transformer blocks model finer-grained structure; exploiting the sparse Fourier representation of most time series yields linear complexity in sequence length, making FEDformer more efficient than standard Transformers.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-FEDformer is a Transformer-based model for long-term multivariate and univariate time-series forecasting that combines seasonal-trend decomposition with a frequency-enhanced attention mechanism.
-
-## Core architecture
-
-The decomposition component captures the global profile of the series while Transformer blocks model finer-grained structure; exploiting the sparse Fourier representation of most time series yields linear complexity in sequence length, making FEDformer more efficient than standard Transformers.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/FEDformer.toml`](../../../../configs/models/FEDformer.toml).
 
 ## Differences

@@ -14,17 +14,6 @@ license: "NOASSERTION"
 BiMamba is a bidirectional state-space model (SSM) for long-term multivariate time-series forecasting. It extends the Mamba selective SSM with a forget gate (Mamba+) and runs it in both the forward and backward directions, enabling the model to capture long-range temporal dependencies without the quadratic cost of Transformer attention. A series-relation-aware decider automatically selects between channel-independent and channel-mixing tokenisation strategies depending on the dataset.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-BiMamba is a bidirectional state-space model (SSM) for long-term multivariate time-series forecasting.
-
-## Core architecture
-
-It extends the Mamba selective SSM with a forget gate (Mamba+) and runs it in both the forward and backward directions, enabling the model to capture long-range temporal dependencies without the quadratic cost of Transformer attention. A series-relation-aware decider automatically selects between channel-independent and channel-mixing tokenisation strategies depending on the dataset.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/BiMamba.toml`](../../../../configs/models/BiMamba.toml).
 
 ## Differences

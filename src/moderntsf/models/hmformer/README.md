@@ -14,17 +14,6 @@ license: "NOASSERTION"
 HMformer is a Transformer-based multivariate time-series forecasting model that proposes a hierarchical multi-scale framework to overcome the limitations of the original Transformer architecture when applied to real-world time series with complex multi-scale periodicities. It employs a hierarchical cross-scale mixing mechanism, a scale-adaptive feature expansion design, and a multi-branch complementary prediction strategy to capture intricate multi-scale temporal dynamics while retaining the Transformer's strength in modeling long-range dependencies.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-HMformer is a Transformer-based multivariate time-series forecasting model that proposes a hierarchical multi-scale framework to overcome the limitations of the original Transformer architecture when applied to real-world time series with complex multi-scale periodicities.
-
-## Core architecture
-
-It employs a hierarchical cross-scale mixing mechanism, a scale-adaptive feature expansion design, and a multi-branch complementary prediction strategy to capture intricate multi-scale temporal dynamics while retaining the Transformer's strength in modeling long-range dependencies.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/HMformer.toml`](../../../../configs/models/HMformer.toml).
 
 ## Differences

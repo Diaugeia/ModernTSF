@@ -13,17 +13,6 @@ license: "unlicensed (repository README displays an MIT badge but no LICENSE fil
 # SWIFT
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-SWIFT reversibly normalizes each instance (RevIN), maps every channel's sub-series with a single-level, lossless Haar wavelet decomposition into an approximation and a detail band, fuses those two bands with a small shared depthwise convolution (cross-band information fusion), maps the fused coefficients from input-length to horizon-length with a single linear layer or a shallow MLP (the sub-series mapper), and reconstructs the forecast with the matching inverse Haar transform before denormalizing.
-
-## Core architecture
-
-SWIFT reversibly normalizes each instance (RevIN), maps every channel's sub-series with a single-level, lossless Haar wavelet decomposition into an approximation and a detail band, fuses those two bands with a small shared depthwise convolution (cross-band information fusion), maps the fused coefficients from input-length to horizon-length with a single linear layer or a shallow MLP (the sub-series mapper), and reconstructs the forecast with the matching inverse Haar transform before denormalizing.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -39,7 +28,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/SWIFT.toml`](../../../../configs/models/SWIFT.toml).
 
 ## Differences

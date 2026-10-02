@@ -12,17 +12,6 @@ license: "MIT"
 # VisiFold
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-VisiFold is a spatiotemporal graph forecaster for long-term traffic prediction on node-structured data.
-
-## Core architecture
-
-It folds each node's entire input history into a single per-node token with a small MLP (a temporal folding graph, avoiding cross-step message passing across stacked snapshots) and, during training, applies a node-visibility mechanism — node-level random masking followed by shuffle-then-subgraph-grouped self-attention — to bound the cost of all-pairs node mixing before projecting each surviving node token directly to the forecast horizon.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -38,7 +27,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/VisiFold.toml`](../../../../configs/models/VisiFold.toml).
 
 ## Differences

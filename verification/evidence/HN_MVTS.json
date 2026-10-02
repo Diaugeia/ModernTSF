@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "HN_MVTS",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "e24f21bb6f87b3691d464089aba1ae4b4f6c0d1c278859d26882483dab15c97b",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "1d6a5e344b42427a97092122aafa1640d5b74f73de4214bb4df6718fa45827cc",
   "paper": {
     "title": "HN-MVTS: HyperNetwork-based Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model HN_MVTS",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_recent_forecasters_a.py"
   ]
 }

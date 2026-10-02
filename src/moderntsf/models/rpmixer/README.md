@@ -14,17 +14,6 @@ license: "NOASSERTION"
 RPMixer is a spatiotemporal forecasting model built on an all-MLP (all-Multi-Layer Perceptron) architecture that forgoes explicit graph-based spatial modeling in favour of general time series mixing. It addresses the tendency of standard MLP-mixer models to overfit on large-scale spatial-temporal datasets by inserting random projection layers between blocks to increase output diversity, exploiting the ensemble-like behaviour of deep residual networks where each block acts as a base learner. The approach achieves competitive or superior performance against both graph-based and general forecasting baselines on large spatial-temporal benchmarks.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-RPMixer is a spatiotemporal forecasting model built on an all-MLP (all-Multi-Layer Perceptron) architecture that forgoes explicit graph-based spatial modeling in favour of general time series mixing.
-
-## Core architecture
-
-It addresses the tendency of standard MLP-mixer models to overfit on large-scale spatial-temporal datasets by inserting random projection layers between blocks to increase output diversity, exploiting the ensemble-like behaviour of deep residual networks where each block acts as a base learner. The approach achieves competitive or superior performance against both graph-based and general forecasting baselines on large spatial-temporal benchmarks.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/RPMixer.toml`](../../../../configs/models/RPMixer.toml).
 
 ## Differences

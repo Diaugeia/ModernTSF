@@ -48,7 +48,7 @@ not call. Validation and test metrics always use the configured observation loss
 - `spatiotemporal`: node values with historical node/time covariates.
 - `covariate`: node values plus known future covariates.
 
-Inspect compatibility with `tsf model show <Name>` and `tsf dataset show <preset>`.
+Inspect compatibility with `tsf model show <Name>` and `tsf dataset show <preset>`; both accept `--depth {0,1,2,3}` (see Components below).
 
 ## Add a model or method
 
@@ -63,7 +63,7 @@ catalog entry.
    component, or a model-local block. Start with:
 
    ```bash
-   uv run tsf component match "operation and tensor contract" --json
+   uv run tsf component search "operation and tensor contract"
    uv run tsf component show <candidate>
    ```
 
@@ -163,16 +163,40 @@ belong in verification and the model card.
 ## Components
 
 Components live only in `src/moderntsf/models/_components/<name>/`. Each directory has an
-implementation, a catalog contract, focused tests, and a generated README card.
+implementation, a catalog contract, focused tests, and a README card. The card is
+curated (purpose and formula, origin and why it was cut at this boundary, every
+public symbol with parameters and tensor shapes, equivalence evidence, variants,
+when to use and not to use, related components); its API, import line, and
+consumers are generated between the card markers. `tsf component audit` enforces
+both parts.
 Extract only mathematically and operationally equivalent behavior—matching names
 or tensor rank is insufficient. Validate axes, normalization, masking, residual
 order, initialization, state, outputs, gradients, and serialization.
 
 ```bash
 uv run tsf component list
-uv run tsf component match "patch forecast head" --json
-uv run tsf component show flatten_forecast_head
+uv run tsf component search "patch forecast head"
+uv run tsf component show flatten_forecast_head --depth 1
 uv run tsf component audit
+```
+
+### Reading the catalog by depth
+
+Models, components, and datasets share four depths, so you spend context only as
+needed. Search returns one line per result (`name`, `kind`, `summary`, `tags`);
+`show` takes `--depth` (default 1) and `--json` for structured output:
+
+| Depth | Content |
+| --- | --- |
+| 0 | the one-line summary |
+| 1 | front matter plus the interface and constraint sections |
+| 2 | the full card |
+| 3 | the source, config, test, and evidence paths to open |
+
+```bash
+uv run tsf catalog search "reversible normalization" --kind component
+uv run tsf component show revin --depth 2
+uv run tsf model show PatchTST --depth 3
 ```
 
 Paper-specific variants stay inside the model package. Named model packages must

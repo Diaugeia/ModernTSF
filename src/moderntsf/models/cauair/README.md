@@ -14,17 +14,6 @@ license: "NOASSERTION"
 CauAir uses learnable coarse-region caches to model causal association between station AQI and weather at linear complexity in the number of stations. This entry is a local implementation from the IJCAI paper; the unlicensed author repository is reference-only and was inspected at the pinned revision; no external source code was copied.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-CauAir models nationwide AQI-weather causality through learnable coarse-region caches with linear station complexity.
-
-## Core architecture
-
-This local implementation retains multi-head cache assignment/aggregation, equation (5) parallel CachLormer with SwiGLU, past association, future-covariate propagation, and horizon decoding.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 24, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 24, channels]` point forecast. Timestamp 
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/CauAir.toml`](../../../../configs/models/CauAir.toml).
 
 ## Differences

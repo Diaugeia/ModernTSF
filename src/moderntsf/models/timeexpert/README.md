@@ -14,17 +14,6 @@ license: "unspecified (no LICENSE file at the pinned revision)"
 TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context.
-
-## Core architecture
-
-TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/TimeExpert.toml`](../../../../configs/models/TimeExpert.toml).
 
 ## Differences

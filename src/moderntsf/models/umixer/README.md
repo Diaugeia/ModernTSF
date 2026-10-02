@@ -14,17 +14,6 @@ license: "NOASSERTION"
 UMixer is a long-term time-series forecasting model published at AAAI 2024. It combines U-Net-style multi-scale skip connections with MLP-Mixer blocks to capture local temporal dependencies across patches and channels separately, and introduces a stationarity correction method that explicitly restores the non-stationary distribution of the data by constraining the difference in stationarity between the model input and output.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-UMixer is a long-term time-series forecasting model published at AAAI 2024.
-
-## Core architecture
-
-It combines U-Net-style multi-scale skip connections with MLP-Mixer blocks to capture local temporal dependencies across patches and channels separately, and introduces a stationarity correction method that explicitly restores the non-stationary distribution of the data by constraining the difference in stationarity between the model input and output.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/UMixer.toml`](../../../../configs/models/UMixer.toml).
 
 ## Differences

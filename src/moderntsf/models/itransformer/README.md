@@ -14,17 +14,6 @@ license: "MIT"
 iTransformer is a Transformer-based model for multivariate time series forecasting that inverts the conventional token design: instead of embedding multiple variates at the same timestamp into one token, it embeds the entire time series of each individual variate into a single variate token. Attention is then applied across variates to capture inter-channel correlations, while the feed-forward network learns nonlinear temporal representations per variate.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-iTransformer is a Transformer-based model for multivariate time series forecasting that inverts the conventional token design: instead of embedding multiple variates at the same timestamp into one token, it embeds the entire time series of each individual variate into a single variate token.
-
-## Core architecture
-
-Attention is then applied across variates to capture inter-channel correlations, while the feed-forward network learns nonlinear temporal representations per variate.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/iTransformer.toml`](../../../../configs/models/iTransformer.toml).
 
 ## Differences

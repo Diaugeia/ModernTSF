@@ -14,17 +14,6 @@ license: "Apache-2.0"
 GTR (Global Temporal Retriever) is a lightweight, plug-and-play module for multivariate time series forecasting that extends any host model's temporal receptive field beyond the immediate input window by maintaining an adaptive global temporal embedding of the full cycle and dynamically retrieving and aligning relevant long-range historical segments with the current input, fusing them via 2D convolution and residual connections.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-GTR (Global Temporal Retriever) is a lightweight, plug-and-play module for multivariate time series forecasting that extends any host model's temporal receptive field beyond the immediate input window by maintaining an adaptive global temporal embedding of the full cycle and dynamically retrieving and aligning relevant long-range historical segments with the current input, fusing them via 2D convolution and residual connections.
-
-## Core architecture
-
-GTR (Global Temporal Retriever) is a lightweight, plug-and-play module for multivariate time series forecasting that extends any host model's temporal receptive field beyond the immediate input window by maintaining an adaptive global temporal embedding of the full cycle and dynamically retrieving and aligning relevant long-range historical segments with the current input, fusing them via 2D convolution and residual connections.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/GTR.toml`](../../../../configs/models/GTR.toml).
 
 ## Differences

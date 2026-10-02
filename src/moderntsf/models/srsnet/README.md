@@ -14,17 +14,6 @@ license: "MIT"
 SRSNet is a patch-based time series forecasting model that introduces the Selective Representation Space (SRS) module, which uses learnable Selective Patching and Dynamic Reassembly techniques to adaptively select and reorder patches from the input context window, paired with an MLP prediction head, to achieve state-of-the-art forecasting performance.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-SRSNet is a patch-based time series forecasting model that introduces the Selective Representation Space (SRS) module, which uses learnable Selective Patching and Dynamic Reassembly techniques to adaptively select and reorder patches from the input context window, paired with an MLP prediction head, to achieve state-of-the-art forecasting performance.
-
-## Core architecture
-
-SRSNet is a patch-based time series forecasting model that introduces the Selective Representation Space (SRS) module, which uses learnable Selective Patching and Dynamic Reassembly techniques to adaptively select and reorder patches from the input context window, paired with an MLP prediction head, to achieve state-of-the-art forecasting performance.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/SRSNet.toml`](../../../../configs/models/SRSNet.toml).
 
 ## Differences

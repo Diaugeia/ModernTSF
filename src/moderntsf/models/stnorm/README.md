@@ -14,17 +14,6 @@ license: "Apache-2.0"
 STNorm is a spatiotemporal forecasting model that augments a WaveNet-style backbone with two dedicated normalization modules — spatial normalization and temporal normalization — to separately refine high-frequency temporal components and local spatial components in multi-variate time-series data. It operates on node-structured data and does not require an externally provided static adjacency matrix.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-STNorm is a spatiotemporal forecasting model that augments a WaveNet-style backbone with two dedicated normalization modules — spatial normalization and temporal normalization — to separately refine high-frequency temporal components and local spatial components in multi-variate time-series data.
-
-## Core architecture
-
-It operates on node-structured data and does not require an externally provided static adjacency matrix.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/STNorm.toml`](../../../../configs/models/STNorm.toml).
 
 ## Differences

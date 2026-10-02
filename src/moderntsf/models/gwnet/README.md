@@ -14,17 +14,6 @@ license: "Apache-2.0"
 GWNet (Graph WaveNet) is a spatiotemporal graph neural network that serves the spatiotemporal forecasting setting on node-structured data. It jointly models hidden spatial dependencies via a learned adaptive adjacency matrix and long-range temporal trends via stacked dilated 1D causal convolutions whose receptive field grows exponentially with depth — enabling end-to-end, scalable traffic and sensor-network forecasting.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-GWNet (Graph WaveNet) is a spatiotemporal graph neural network that serves the spatiotemporal forecasting setting on node-structured data.
-
-## Core architecture
-
-It jointly models hidden spatial dependencies via a learned adaptive adjacency matrix and long-range temporal trends via stacked dilated 1D causal convolutions whose receptive field grows exponentially with depth — enabling end-to-end, scalable traffic and sensor-network forecasting.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 12, nodes]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/GWNet.toml`](../../../../configs/models/GWNet.toml).
 
 ## Differences

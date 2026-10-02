@@ -14,17 +14,6 @@ license: "MIT"
 DUET (Dual Clustering Enhanced Multivariate Time Series Forecasting) is a time series forecasting model that addresses two key challenges in multivariate forecasting: heterogeneous temporal patterns caused by distribution shifts, and complex inter-channel correlations. It introduces a Temporal Clustering Module (TCM) that groups time segments into fine-grained distribution clusters and assigns specialised pattern extractors to each, and a Channel Clustering Module (CCM) that performs soft channel clustering in the frequency domain via metric learning and sparsification, jointly modelling both temporal and channel dimensions.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-DUET (Dual Clustering Enhanced Multivariate Time Series Forecasting) is a time series forecasting model that addresses two key challenges in multivariate forecasting: heterogeneous temporal patterns caused by distribution shifts, and complex inter-channel correlations.
-
-## Core architecture
-
-It introduces a Temporal Clustering Module (TCM) that groups time segments into fine-grained distribution clusters and assigns specialised pattern extractors to each, and a Channel Clustering Module (CCM) that performs soft channel clustering in the frequency domain via metric learning and sparsification, jointly modelling both temporal and channel dimensions.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/DUET.toml`](../../../../configs/models/DUET.toml).
 
 ## Differences

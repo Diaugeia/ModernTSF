@@ -14,17 +14,6 @@ license: "MIT"
 Each variable is patch-embedded independently. A ModernTCN block applies large-kernel depthwise convolution over patches, normalization, a variable-grouped ConvFFN, a reshape, and a feature-grouped ConvFFN. Multi-stage representations optionally feed one forecast head.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-ModernTCN is a pure convolutional architecture for general time series analysis that modernizes the traditional Temporal Convolutional Network (TCN) by incorporating large effective receptive fields through depthwise separable convolutions, achieving state-of-the-art performance across long-term and short-term forecasting, imputation, classification, and anomaly detection tasks.
-
-## Core architecture
-
-ModernTCN is a pure convolutional architecture for general time series analysis that modernizes the traditional Temporal Convolutional Network (TCN) by incorporating large effective receptive fields through depthwise separable convolutions, achieving state-of-the-art performance across long-term and short-term forecasting, imputation, classification, and anomaly detection tasks.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/ModernTCN.toml`](../../../../configs/models/ModernTCN.toml).
 
 ## Differences

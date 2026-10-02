@@ -12,6 +12,7 @@ Catalog and resource operations:
     model            add, list, show, or audit a model specification
     component        list, match, or show a reusable implementation component
     dataset          add, prepare, inspect, analyze, or plot a dataset
+    catalog          search models, components, and datasets (ranked L0 lines)
     result           aggregate, rank, plot, or report results
     repo             audit, diagnose, or regenerate cards for the repository
     verify           run or inspect unified model verification
@@ -38,6 +39,10 @@ Records and integration:
     submit           package a run into a Submission Report
     schema-export    export TSF-Core JSON Schema
     leaderboard-build  recompute a leaderboard from submissions
+
+Progressive disclosure: search returns L0 lines; ``model|component|dataset show
+<name> --depth {0,1,2,3}`` opens L0 line, L1 interface/constraints, L2 full card,
+or L3 paths to open.
 
 Run ``tsf <command> --help`` for command-specific options.
 """
@@ -88,6 +93,10 @@ def main(argv: list[str] | None = None) -> int:
             "component": component_command,
         }
         return handlers[command](rest)
+    if command == "catalog":
+        from moderntsf.benchmark.commands.catalog_resources import catalog_command
+
+        return catalog_command(rest)
     if command in {"dataset", "result"}:
         from moderntsf.benchmark.commands.data_results import dataset_command, result_command
 

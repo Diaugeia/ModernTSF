@@ -15,17 +15,6 @@ the period-oriented forecast from a learned trend correction and combines them
 with a scalar gate.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-SVTime is a compact time-series forecasting model that distils inter-period consistency and patch-wise variety from large vision forecasters into patch-specific linear period maps.
-
-## Core architecture
-
-A backcast-residual decomposition separates the period-oriented forecast from a learned trend correction and combines them with a scalar gate.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -41,7 +30,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/SVTime.toml`](../../../../configs/models/SVTime.toml).
 
 ## Differences

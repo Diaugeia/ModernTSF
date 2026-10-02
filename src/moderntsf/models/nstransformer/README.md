@@ -14,17 +14,6 @@ license: "MIT"
 NSTransformer (Non-stationary Transformer) is a time series forecasting model that addresses the over-stationarization problem in Transformer-based forecasters. It augments any standard Transformer backbone with two interdependent modules — Series Stationarization, which normalises input statistics and restores them in the output for improved predictability, and De-stationary Attention, which recovers intrinsic non-stationary information into the computed temporal dependencies by approximating distinguishable attentions learned from the raw, un-normalised series.
 
 <!-- model-card:canonical:start -->
-## Method overview
-
-NSTransformer (Non-stationary Transformer) is a time series forecasting model that addresses the over-stationarization problem in Transformer-based forecasters.
-
-## Core architecture
-
-It augments any standard Transformer backbone with two interdependent modules — Series Stationarization, which normalises input statistics and restores them in the output for improved predictability, and De-stationary Attention, which recovers intrinsic non-stationary information into the computed temporal dependencies by approximating distinguishable attentions learned from the raw, un-normalised series.
-
-The model-local implementation is in [`model.py`](model.py); imported, strictly
-shared building blocks are listed below.
-
 ## Input and output
 
 The primary input is a history tensor shaped `[batch, 96, channels]`. The
@@ -40,7 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ModernTSF implements the model locally after checking the paper and, when
 available, the pinned official codebase. Construction and runtime schema live
 in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py), and the default preset is
+[`model.py`](model.py) (imported, strictly shared building blocks are listed
+under Shared components), and the default preset is
 [`configs/models/NSTransformer.toml`](../../../../configs/models/NSTransformer.toml).
 
 ## Differences
