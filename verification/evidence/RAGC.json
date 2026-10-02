@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RAGC",
   "status": "passed",
-  "verified_at": "2026-09-28T20:57:54.079169Z",
-  "subject_sha256": "ea18da9477cbf359f9a58ea20afaf4751fe6a01e821a7eeb071fbc03bdf3ad53",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "93887ab68d92057ce464d49871a8199967f57b2c76b15d4a44e1161df405d9c1",
   "paper": {
     "title": "Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution",
     "venue": "arXiv",
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model RAGC",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_graph_forecasters.py::PaperStructureTests::test_each_model_exposes_its_defining_operation"
   ]
 }

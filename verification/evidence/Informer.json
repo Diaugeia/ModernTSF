@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Informer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "931e5e1041aea1be3db4ae3b3eebf53bed86c6281aa8a31c01e939a977ff6d5b",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "299b8beeff81159be1785c21211425a130084caadcad4fd774ed58906d78b31c",
   "paper": {
     "title": "Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting",
     "venue": "AAAI 2021",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model Informer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_local_attention_forecasters.py::LocalAttentionForecasterTests::test_informer_uses_probsparse_and_distilling"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_local_attention_forecasters.py::LocalAttentionForecasterTests::test_informer_uses_probsparse_and_distilling"
   ]
 }

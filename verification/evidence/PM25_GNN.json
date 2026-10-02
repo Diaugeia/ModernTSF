@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PM25_GNN",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "2e195d567a8ef97a4068796bdbdef45cf9e072caceab76feb282c8438f387be6",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "ea8637db50b21316227d2bd57469e8c99952ee5a910ced7e3323dd11c153c527",
   "paper": {
     "title": "PM2.5-GNN: A Domain Knowledge Enhanced Graph Neural Network For PM2.5 Forecasting",
     "venue": "ACM SIGSPATIAL 2020",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model PM25_GNN",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_graph_forecasters_b.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_graph_forecasters_b.py"
   ]
 }

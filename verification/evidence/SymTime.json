@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SymTime",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "5db9a110ee40bfd2dc64462b10c6b4d5bb78036ab23f49900a32b57d6eff1a82",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "78b05d27e5cc476151fb18c0af676d68d9dd9e5f4c7cb38891ea64414fc689a2",
   "paper": {
     "title": "Synthetic Series-Symbol Data Generation for Time Series Foundation Models",
     "venue": "NeurIPS 2025",
@@ -146,7 +146,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -156,6 +156,6 @@
   },
   "commands": [
     "uv run tsf verify model SymTime",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_foundation_retrieval_forecasters.py"
   ]
 }

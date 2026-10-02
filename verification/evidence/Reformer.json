@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Reformer",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "d6978415d63b5ffffdb407af03e214ae6ab3f347f3f4f66bbf2c5226d09a21d6",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "cdc1244e1b460f8773cd15d392ad4f2e36c98f0b6eb86fa897685db6f2cfc5b0",
   "paper": {
     "title": "Reformer: The Efficient Transformer",
     "venue": "ICLR 2020",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model Reformer",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_ssm_sequence_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_ssm_sequence_forecasters.py"
   ]
 }

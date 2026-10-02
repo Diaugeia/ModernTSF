@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MixLinear",
   "status": "passed",
-  "verified_at": "2026-09-28T18:37:08.769655Z",
-  "subject_sha256": "2b27514a46d1a7df88506dc230c6236d643a2fe2c72d65c0d8a61ed01c195368",
+  "verified_at": "2026-10-02T15:56:36.954952Z",
+  "subject_sha256": "daab3b9d8e02b43f9df9704fa126fa04ff81830c3ab66c2095975130a7dbc778",
   "paper": {
     "title": "MixLinear: Extreme Low Resource Multivariate Time Series Forecasting with 0.1K Parameters",
     "venue": "ICLR 2026",
@@ -145,7 +145,7 @@
       "numpy": "2.3.5",
       "torch": "2.6.0"
     },
-    "platform": "macOS-27.0-arm64-arm-64bit",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
     "device": "cpu",
     "dtype": "float32",
     "deterministic": {
@@ -155,6 +155,6 @@
   },
   "commands": [
     "uv run tsf verify model MixLinear",
-    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.venv/bin/python -m pytest -q tests/test_linear_mixer_forecasters.py"
+    "/Users/chengao/Downloads/Projects/Research/Modern_TSF/ModernTSF/.claude/worktrees/component-cards/.venv/bin/python -m pytest -q tests/test_linear_mixer_forecasters.py"
   ]
 }
