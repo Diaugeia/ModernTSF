@@ -22,6 +22,16 @@ from tsflab.models._components.marks import adapt_tslib_marks, tslib_time_featur
 from tsflab.models._components.revin import RevIN
 
 
+
+def _rfft_time(values: torch.Tensor) -> torch.Tensor:
+    """Orthonormal rFFT over axis 1, computed on the last axis (MKL-safe in backward)."""
+    return torch.fft.rfft(values.transpose(1, -1).contiguous(), dim=-1, norm="ortho").transpose(1, -1)
+
+
+def _irfft_time(spectrum: torch.Tensor, length: int) -> torch.Tensor:
+    """Inverse of :func:`_rfft_time` with ``length`` output steps."""
+    return torch.fft.irfft(spectrum.transpose(1, -1).contiguous(), n=length, dim=-1, norm="ortho").transpose(1, -1)
+
 class FrequencyDynamicFusionBlock(nn.Module):
     """One FDBlock over ``[batch, length, d_model]`` with ``K = length // 2 + 1`` bins."""
 
@@ -43,22 +53,22 @@ class FrequencyDynamicFusionBlock(nn.Module):
         return torch.softmax(self.frequency_weight, dim=0)
 
     def forward(self, values: torch.Tensor) -> torch.Tensor:
-        spectrum = torch.fft.rfft(values, dim=1, norm="ortho")  # [B, K, D]
+        spectrum = _rfft_time(values)  # [B, K, D]
         transfer = torch.view_as_complex(self.transfer)  # [K, D_out, D_in]
         transferred = torch.einsum("bkd,ked->bke", spectrum, transfer)
         fused = transferred * self.fusion_weights().to(transferred.real.dtype)[None, :, None]
-        return torch.fft.irfft(fused.contiguous(), n=self.length, dim=1, norm="ortho")
+        return _irfft_time(fused, self.length)
 
     def decoupled_reference(self, values: torch.Tensor) -> torch.Tensor:
         """Literal Algorithm 1 form (K masked copies), kept to verify equivalence."""
-        spectrum = torch.fft.rfft(values, dim=1, norm="ortho")
+        spectrum = _rfft_time(values)
         transfer = torch.view_as_complex(self.transfer)
         total = torch.zeros_like(values)
         weights = self.fusion_weights()
         for m in range(self.bins):
             single = torch.zeros_like(spectrum)
             single[:, m] = spectrum[:, m] @ transfer[m].transpose(0, 1)
-            total = total + torch.fft.irfft(single.contiguous(), n=self.length, dim=1, norm="ortho"
+            total = total + _irfft_time(single, self.length
             ) * weights[m]
         return total
 

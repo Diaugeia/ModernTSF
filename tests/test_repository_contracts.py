@@ -413,7 +413,7 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(len(dataset_records(root)), EXPECTED_DATASETS)
         self.assertEqual(
             len(list((root / "src/tsflab/models/_components").glob("*/README.md"))),
-            50,
+            len(COMPONENT_CATALOG.names()),
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
