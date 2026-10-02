@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 202 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -112,6 +112,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `MMPD` | [`configs/models/MMPD.toml`](../../configs/models/MMPD.toml) | time-series | [README](../../src/tsflab/models/mmpd/README.md) |
 | `ModernTCN` | [`configs/models/ModernTCN.toml`](../../configs/models/ModernTCN.toml) | time-series | [README](../../src/tsflab/models/moderntcn/README.md) |
 | `MoFo` | [`configs/models/MoFo.toml`](../../configs/models/MoFo.toml) | time-series | [README](../../src/tsflab/models/mofo/README.md) |
+| `MoU` | [`configs/models/MoU.toml`](../../configs/models/MoU.toml) | time-series | [README](../../src/tsflab/models/mou/README.md) |
 | `MQRNN` | [`configs/models/MQRNN.toml`](../../configs/models/MQRNN.toml) | covariate, quantile-output, time-series | [README](../../src/tsflab/models/mqrnn/README.md) |
 | `MSGNet` | [`configs/models/MSGNet.toml`](../../configs/models/MSGNet.toml) | time-series | [README](../../src/tsflab/models/msgnet/README.md) |
 | `MTGNN` | [`configs/models/MTGNN.toml`](../../configs/models/MTGNN.toml) | spatiotemporal | [README](../../src/tsflab/models/mtgnn/README.md) |

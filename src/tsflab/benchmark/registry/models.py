@@ -373,4 +373,5 @@ MODEL_CATALOG = ModelCatalog({
     "CoRe": "tsflab.models.core.spec",
     "SAMformer": "tsflab.models.samformer.spec",
     "AMD": "tsflab.models.amd.spec",
+    "MoU": "tsflab.models.mou.spec",
 })
