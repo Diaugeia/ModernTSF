@@ -623,6 +623,12 @@ profile = 'standard'
 test = 'tests/test_transformer_patch_forecasters_a.py'
 reference_test = 'tests/test_transformer_patch_forecasters_a.py'
 
+[models.PENGUIN]
+profile = 'standard'
+test = 'tests/test_penguin_structure.py'
+reference_test = 'tests/test_penguin_structure.py'
+reference_sources = ['https://github.com/ysygMhdxw/AISTATS2026_PENGUIN/blob/d9a2b84f9fa214c91c4c1c51e5a7f95fb451cefb/models/PENGIUN.py', 'https://github.com/ysygMhdxw/AISTATS2026_PENGUIN/blob/d9a2b84f9fa214c91c4c1c51e5a7f95fb451cefb/layers/SelfAttention_Family.py']
+
 [models.PatchTSMixer]
 profile = 'standard'
 test = 'tests/test_patchtsmixer_structure.py'

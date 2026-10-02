@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 202 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -130,6 +130,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `Pathformer` | [`configs/models/Pathformer.toml`](../../configs/models/Pathformer.toml) | time-series | [README](../../src/tsflab/models/pathformer/README.md) |
 | `PAttn` | [`configs/models/PAttn.toml`](../../configs/models/PAttn.toml) | time-series | [README](../../src/tsflab/models/pattn/README.md) |
 | `PCDCNet` | [`configs/models/PCDCNet.toml`](../../configs/models/PCDCNet.toml) | covariate | [README](../../src/tsflab/models/pcdcnet/README.md) |
+| `PENGUIN` | [`configs/models/PENGUIN.toml`](../../configs/models/PENGUIN.toml) | time-series | [README](../../src/tsflab/models/penguin/README.md) |
 | `PhaseFormer` | [`configs/models/PhaseFormer.toml`](../../configs/models/PhaseFormer.toml) | time-series | [README](../../src/tsflab/models/phaseformer/README.md) |
 | `PHAT` | [`configs/models/PHAT.toml`](../../configs/models/PHAT.toml) | time-series | [README](../../src/tsflab/models/phat/README.md) |
 | `PM25_GNN` | [`configs/models/PM25_GNN.toml`](../../configs/models/PM25_GNN.toml) | covariate | [README](../../src/tsflab/models/pm25gnn/README.md) |

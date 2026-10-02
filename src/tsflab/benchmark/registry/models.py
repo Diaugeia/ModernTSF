@@ -373,4 +373,5 @@ MODEL_CATALOG = ModelCatalog({
     "CoRe": "tsflab.models.core.spec",
     "PatchTSMixer": "tsflab.models.patchtsmixer.spec",
     "AdaMSHyper": "tsflab.models.adamshyper.spec",
+    "PENGUIN": "tsflab.models.penguin.spec",
 })
