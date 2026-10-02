@@ -5,11 +5,11 @@ summary: "GIFT-Eval LOOP Seattle at hourly frequency: 323 series of Transport da
 domain: "Transport"
 tags: ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "transport", "hourly", "traffic", "speed", "libcity"]
 source: "LibCity / LOOP Seattle (Cui et al.)"
-source_url: "https://github.com/LibCity/Bigscity-LibCity"
+source_url: "https://github.com/zhiyongc/Seattle-Loop-Data"
 citation: "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url: "https://arxiv.org/abs/2410.10393"
-license: "unknown"
-redistribution: "unknown"
+license: "No formal license; research use only with citation of Cui et al. (dataset README)"
+redistribution: "conditional"
 frequency: "hourly (1h)"
 time_span: "varies by series; not recorded in the GIFT-Eval metadata used here"
 length: 8760
@@ -39,7 +39,8 @@ LOOP Seattle (LOOP_SEATTLE/H) is the GIFT-Eval series collection built from traf
 
 - Original source: LibCity / LOOP Seattle (Cui et al.); https://github.com/LibCity/Bigscity-LibCity.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
-- License of the underlying data: `unknown`; no explicit terms were found, so redistribution is not assumed.
+- GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
+- Underlying data terms: the Seattle Inductive Loop Detector Dataset README (https://github.com/zhiyongc/Seattle-Loop-Data) says "This dataset should only be used for research" and asks users to cite Cui, Ke and Wang (2018) or Cui, Henrickson, Ke and Wang (2019). The repository has no LICENSE file (GitHub API: none); LibCity (Apache-2.0 code) redistributes it without adding terms. Redistribution is `conditional` on research-only use and citation.
 - Bytes are not bundled; download them with `tsf dataset gift-download`.
 
 ## Structure and statistics

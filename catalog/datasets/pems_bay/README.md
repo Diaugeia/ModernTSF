@@ -8,8 +8,8 @@ source: "Caltrans PeMS; packaged by Li, Yu, Shahabi and Liu (DCRNN)"
 source_url: "https://github.com/liyaguang/DCRNN"
 citation: "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018)"
 citation_url: "https://arxiv.org/abs/1707.01926"
-license: "unknown"
-redistribution: "unknown"
+license: "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
+redistribution: "conditional"
 frequency: "5-minute (5min)"
 time_span: "2017-01-01 to about 2017-06-30 (52,116 steps; the DCRNN paper text says to 2017-05-31)"
 length: 52116
@@ -38,7 +38,7 @@ PEMS-BAY is a spatiotemporal traffic benchmark: 325 sensors recording traffic sp
 
 ## Provenance and license
 
-- Producer: DCRNN authors packaged Caltrans PeMS data; repository https://github.com/liyaguang/DCRNN (code MIT). The packaged file has no stated data license; PeMS's own Conditions of Use say site information is in the public domain unless otherwise indicated, a generic policy, so `license` stays `unknown`.
+- Producer: DCRNN authors packaged Caltrans PeMS (Bay Area) data; repository https://github.com/liyaguang/DCRNN (code MIT per GitHub API). The README gives only Google Drive / Baidu links for `pems-bay.h5` and states no data license. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
 - Cite: Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018), https://arxiv.org/abs/1707.01926.
 - Obtain `pems-bay.h5` and `adj_mx_bay.pkl` from the DCRNN README; TSFLab does not ship them.
 

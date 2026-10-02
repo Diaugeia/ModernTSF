@@ -39,7 +39,7 @@ task_modes: ["time_series"]
 ## Provenance and license
 
 - Source: the AKShare Python library (https://github.com/akfamily/akshare, MIT-licensed code) fetching daily prices; AKShare's README acknowledges third-party vendors (Eastmoney, Sina Finance, and others) and states that its data are for academic research. The per-endpoint vendor was not traced.
-- Data license: not stated. MIT covers AKShare's code, not the market data, and vendor redistribution terms are unknown, so `license` and `redistribution` are `unknown`.
+- Data license: not stated. MIT covers AKShare's code, not the market data. AKShare's README Statement (https://github.com/akfamily/akshare#statement) says: "All data provided by AKShare is just for academic research purpose" and "Please follow the relevant open-source protocol used by AKShare"; this is a research-use notice from the aggregator, not a grant from the vendors, whose terms for redistribution were not traced. The CSI index provider (China Securities Index Co., Ltd., https://www.csindex.com.cn) owns the CSI 300 index and its constituent list under its own legal notice, which could not be read (the site needs JavaScript); the per-stock prices come from exchange-derived vendor feeds, so redistribution stays `unknown`.
 - Real-time data releases are mirrored to the Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`stock_hs300/`); check the vendor terms before publishing a release.
 
 ## Structure and statistics

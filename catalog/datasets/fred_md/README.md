@@ -39,7 +39,7 @@ FRED-MD is a monthly database of US macroeconomic indicators (output, labor, hou
 ## Provenance and license
 
 - Source: FRED-MD by McCracken and Ng, https://www.stlouisfed.org/research/economists/mccracken/fred-databases; cite the 2016 JBES paper.
-- License: the FRED-MD page has no explicit license. FRED's legal terms (https://fred.stlouisfed.org/legal/) say third-party series may be copyrighted and need the owner's permission for anything beyond personal use; cite the source and note access via FRED. Hence `license` and `redistribution` are `unknown`; do not publish copies without checking those terms.
+- License: checked the FRED-MD page (https://www.stlouisfed.org/research/economists/mccracken/fred-databases), which states no license, copyright or reuse terms for the CSV files, and FRED's legal terms (https://fred.stlouisfed.org/legal/), which say that before using series "owned by third parties for anything other than your own personal use, you must contact the data owner" and prohibit mirroring or scraping all of FRED; FRED-MD series are drawn from many original owners. No FRED-MD-specific grant exists, so `license` and `redistribution` stay `unknown`; do not publish copies.
 - TFB packaging: https://arxiv.org/abs/2403.20150.
 - This preset points to `dataset/FRED-MD/FRED-MD.csv`, which is not shipped.
 
