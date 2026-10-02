@@ -16,8 +16,8 @@ length: 52696
 channels: 21
 channel_kind: "channels"
 target: "OT"
-missing_values: "no NaN; the raw -9999 missing-value sentinel remains in OT (50 rows), max. PAR (30) and wv (1)"
-protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
+missing_values: "no NaN; the file holds -9999 sentinels in OT (50 rows), max. PAR (30) and wv (1), which the preset replaces with NaN and imputes causally (forward fill, back fill only at the series start) before scaling"
+protocol: "TSFLab: -9999 sentinels imputed causally, chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
 literature_protocol: "LTSF: lookback 96 (336 and 512 also searched), horizons 96/192/336/720, chronological 7:1:2, MSE/MAE on z-scored data"
 seq_lens: [96, 336, 512]
 pred_lens: [96, 192, 336, 720]
@@ -61,7 +61,7 @@ Measured on `dataset/weather/weather.csv` (read-only).
 ## Standard protocol and known pitfalls
 
 - **Split.** 7:1:2 chronological, scaling on training rows only. The test split is roughly mid-October to December 2020 and the training split is January to August, so seasonal shift between train and test is large.
-- **Sentinels.** `-9999` marks missing readings. They stay in `OT` (50 rows), `max. PAR` (30), and `wv` (1) and become extreme outliers after z-scoring; clean or mask them before comparing against papers that report on this file as-is.
+- **Sentinels.** `-9999` marks missing readings in `OT` (50 rows), `max. PAR` (30), and `wv` (1). The preset sets `missing_sentinels = [-9999]`, so they become NaN and are filled causally before scaling (forward fill, then back fill only for a leading gap); all affected rows fall in the training split (rows 7,244 to 31,773 of 52,696, measured). Left in place they inflate the training standard deviation of `OT` from 18.2 to 384.0, of `max. PAR` from 573.5 to 643.4, and of `wv` from 1.67 to 52.1, with z-scores down to -192 (measured on the training split). Results therefore differ from papers that use the file as-is and from earlier TSFLab weather runs. Remove the parameter to reproduce the as-is protocol.
 - **Target.** `"S"` and `"MS"` both forecast `OT`: the loader moves the named target to the last channel in `MS` mode, so the alphabetical column order of this file does not change the target.
 - **Encoding.** Column names containing the micro and superscript characters were stored with replacement characters; do not select columns by those names.
 - **Intermittent channels.** `rain (mm)` and `raining (s)` are mostly zero, so MSE is dominated by smooth channels while MAPE-style metrics are undefined.
@@ -87,6 +87,9 @@ experiment task unless explicitly overridden below.
 
 ```json
 {
+  "missing_sentinels": [
+    -9999
+  ],
   "scale": true,
   "split_ratio": [
     0.7,

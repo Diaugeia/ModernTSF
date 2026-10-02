@@ -120,6 +120,9 @@ DATASET_NAME_MAP = {
     "cauair_ts": "tsflab.data.datasets.cauair",
     "ultratraffic_st": "tsflab.data.datasets.ultratraffic",
     "ultratraffic_ts": "tsflab.data.datasets.ultratraffic",
+    # Real-time tracks frozen at a release as static datasets.
+    "realtime_panel_st": "tsflab.data.datasets.realtime_panel",
+    "realtime_panel_ts": "tsflab.data.datasets.realtime_panel",
     # Synthetic node-structured dataset for spatiotemporal-mode smoke tests.
     "synthetic_st": "tsflab.data.datasets.synthetic_st",
 }

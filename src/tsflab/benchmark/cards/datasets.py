@@ -225,12 +225,12 @@ def _item_contract(record: DatasetRecord) -> str:
             "Windowed history/target values and timestamp marks; after batching, "
             "values use `[batch, time, channels]`."
         )
-    if record.loader in {"cauair_st", "synthetic_st", "ultratraffic_st"}:
+    if record.loader in {"cauair_st", "synthetic_st", "ultratraffic_st", "realtime_panel_st"}:
         return (
             "Each item is `(value_history, value_future, covariate_history, covariate_future)`; "
             "values use `[time, nodes]` and covariates `[time, nodes, features]` before batching."
         )
-    if record.loader in {"cauair_ts", "ultratraffic_ts"}:
+    if record.loader in {"cauair_ts", "ultratraffic_ts", "realtime_panel_ts"}:
         return (
             "Each item contains history/future values shaped `[time, nodes]` (nodes become "
             "channels) plus timestamp marks before batching; covariates are dropped."

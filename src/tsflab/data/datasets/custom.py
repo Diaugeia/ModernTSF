@@ -27,7 +27,9 @@ class Dataset_Custom(ForecastingDataset):
         scale: bool = True,
         target_channel: int | None = None,
         norm_each_channel: bool = False,
+        missing_sentinels: list[float] | None = None,
     ):
+        self.missing_sentinels = list(missing_sentinels or [])
         super().__init__(
             root_path,
             data_path,
@@ -40,6 +42,17 @@ class Dataset_Custom(ForecastingDataset):
             target_channel,
             norm_each_channel,
         )
+
+    def _impute_sentinels(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """Replace sentinel values by NaN, then fill causally.
+
+        Forward fill uses only past values; the back fill touches only NaNs
+        before a series' first valid reading, so no later value leaks into an
+        interior gap. A column with no valid value becomes 0.
+        """
+        values = frame.astype("float64")
+        values = values.mask(values.isin(self.missing_sentinels))
+        return values.ffill().bfill().fillna(0.0)
 
     def _read_data(
         self,
@@ -67,6 +80,9 @@ class Dataset_Custom(ForecastingDataset):
             df_data = cast(pd.DataFrame, df_raw.loc[:, [*covariates, target]].copy())
         else:
             df_data = cast(pd.DataFrame, df_raw.loc[:, [target]].copy())
+
+        if self.missing_sentinels:
+            df_data = self._impute_sentinels(df_data)
 
         if scale:
             train_len = int(split_ratio[0] / sum(split_ratio) * num_samples)

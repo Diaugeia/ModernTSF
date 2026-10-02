@@ -1,0 +1,13 @@
+# S&P 500 constituents, daily log returns frozen as a static dataset (see docs/en/realtime.md).
+# Reads the track's panel store at dataset/realtime/stock_sp500 (or set dataset.params.revision to pull a Hub revision).
+[dataset]
+name = "realtime_panel_ts"
+alias = "rt_stock_sp500"
+track = "realtime"
+path = "./dataset/realtime/stock_sp500"
+
+[dataset.params]
+track = "stock_sp500"
+# version is not pinned: no release of this track is available locally; pin the release used in a study.
+split_ratio = [0.7, 0.1, 0.2]
+scale = true
