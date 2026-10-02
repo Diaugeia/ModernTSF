@@ -19,7 +19,7 @@ import numpy as np
 from torch.utils.data import Dataset
 
 from tsflab.catalog.registry import DATASET_REGISTRY
-from tsflab.data.calendar import node_calendar
+from tsflab.data.calendar import node_calendar, time_marks
 from tsflab.data.ultratraffic_store import load_panel
 from tsflab.data.schemas.datasets.ultratraffic import DatasetParameterConfig
 
@@ -47,6 +47,9 @@ class _UltraTrafficBase(Dataset):
             self.value_mean = self.value_std = None
         self.values = values
         self.covariates = node_calendar(panel.index, values.shape[1]) if calendar else None
+        # (T, 6) year/month/day/weekday/hour/minute, as the custom CSV loader emits.
+        self.marks = (time_marks(panel.index) if calendar
+                      else np.zeros((len(values), 6), np.float32))
         self.num_nodes = values.shape[1]
         self.adj_mx = None  # the archive carries no station coordinates
         start = {"train": 0, "val": train_end, "test": int(cuts[1] * total)}[flag]
@@ -91,15 +94,20 @@ class Dataset_UltraTraffic_ST(_UltraTrafficBase):
 
 
 class Dataset_UltraTraffic_TS(_UltraTrafficBase):
-    """Plain time-series layout: stations are channels, zero calendar stamps."""
+    """Plain time-series layout: stations are channels, real calendar marks.
+
+    Marks are ``(year, month, day, weekday, hour, minute)`` per step, built from
+    the panel timestamps exactly like the custom CSV loader's marks.
+    """
 
     spatiotemporal = False
 
     def __getitem__(self, index: int) -> Tuple:
         center = int(self.idx[index])
-        hist, fut, _, _ = self._window(center)
+        hist, fut, h0, _ = self._window(center)
         return (np.ascontiguousarray(hist), np.ascontiguousarray(fut),
-                np.zeros((hist.shape[0], 6), np.float32), np.zeros((fut.shape[0], 6), np.float32))
+                np.ascontiguousarray(self.marks[h0:center + 1]),
+                np.ascontiguousarray(self.marks[center + 1:center + 1 + self.pred_len]))
 
 
 def register() -> None:

@@ -58,7 +58,7 @@ The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3
 
 - **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
 - **Bundle contract.** `input_dim = 3` keeps the value plus two calendar covariates (time-in-day, day-in-week) appended by `tsf data prepare --from traffic --add-time`; `scale = false` leaves values unscaled, so scale the value channel upstream or flip `scale` if the model expects z-scored input.
-- **Window split.** Window centres are split chronologically by `tsf data prepare --from traffic --splits` (default 0.7,0.1,0.2); the window indices depend on the converter's `--seq-len` and `--pred-len` (default 96 each), so convert with 12 and 12 for the 12-in/12-out protocol and rebuild the bundle to change either. The converter also stores whole-series `mean`/`std` in `his.npz`, so any `scale = true` variant would use statistics that include validation and test data.
+- **Window split.** Window centres are split chronologically by `tsf data prepare --from traffic --splits` (default 0.7,0.1,0.2); the window indices depend on the converter's `--seq-len` and `--pred-len` (default 12 each, the PeMS 12-in/12-out protocol; rebuild the bundle to change either). The converter fits the `mean`/`std` in `his.npz` on the training rows only (rows before `train_end`, covering the training windows' history and targets) and records `seq_len`, `pred_len`, `train_end`, and the window counts in `his.npz` and `split.json`, so a `scale = true` variant does not use validation or test statistics. Bundles built by older converter versions (96/96 defaults, whole-series statistics) should be rebuilt.
 - **Adjacency.** `adj_mx.npy` comes from the converter's `--adj` input; check how it was built before comparing graph models across papers.
 - **Metrics.** The repository evaluator has no masked-metric option; DCRNN-style papers mask zero (missing) targets, so unmasked numbers are not comparable.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
@@ -74,7 +74,7 @@ The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3
 
 ## Input and output contract
 
-Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching.
+Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching. There are no separate timestamp marks: calendar information, when present, is carried by the covariates.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -97,11 +97,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/pems04.toml`; fetch
-published files with `tsf data download pems04` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/pems04.toml`. Not published. Convert a raw value array and adjacency into the node bundle with `tsf data prepare --from traffic --values <values.npz> --adj <adj> --output-dir ./dataset/pems04 --add-time --freq-min <minutes>` (defaults: 12-step history and horizon, statistics fitted on the training rows only). Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

@@ -78,7 +78,7 @@ Measured from the local parquet store and manifest under `dataset/` (read-only).
 
 ## Input and output contract
 
-Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching.
+Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching. There are no separate timestamp marks: calendar information, when present, is carried by the covariates.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -109,11 +109,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/ultratraffic_ba_st.toml`; fetch
-published files with `tsf data download ultratraffic_ba_st` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/ultratraffic_ba_st.toml`. Not published. Build the local parquet store from the UltraTraffic archive with `tsf data prepare --from ultratraffic --archive <TrafficCL.zip>` (writes `./dataset/ultratraffic` by default). Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

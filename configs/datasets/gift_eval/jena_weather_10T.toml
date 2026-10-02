@@ -1,12 +1,12 @@
-# GIFT-EVAL dataset: jena_weather
+# GIFT-EVAL dataset: jena_weather/10T
 # pred_len follows GIFT-EVAL "short" term (1x).
 # Other terms:  medium = 480 (10x),  long = 720 (15x)
 
 [dataset]
 name = "gift_eval"
-alias = "gift_eval/jena_weather"
+alias = "gift_eval/jena_weather_10T"
 path = "./dataset/gift_eval"
-id = "jena_weather"
+id = "jena_weather/10T"
 
 [dataset.params]
 scale = true

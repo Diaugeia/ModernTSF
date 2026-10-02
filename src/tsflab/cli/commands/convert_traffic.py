@@ -40,6 +40,7 @@ Then point a dataset config at it::
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import pickle
 
@@ -89,6 +90,29 @@ def _add_time_features(values: np.ndarray, freq_min: int) -> np.ndarray:
     return np.concatenate([values, tod, dow], axis=-1).astype(np.float32)
 
 
+def split_windows(
+    t: int, seq_len: int, pred_len: int, splits: tuple[float, float, float]
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Chronological train/val/test window-centre indices."""
+    centers = np.arange(seq_len - 1, t - pred_len)
+    n_tr, n_va = int(len(centers) * splits[0]), int(len(centers) * splits[1])
+    return centers[:n_tr], centers[n_tr : n_tr + n_va], centers[n_tr + n_va :]
+
+
+def train_range_stats(
+    values: np.ndarray, train_centers: np.ndarray, pred_len: int
+) -> tuple[np.ndarray, np.ndarray, int]:
+    """Per-channel mean/std over the rows the training windows can see.
+
+    The range is ``[0, last_train_center + pred_len]`` (history and targets of
+    training windows), so validation/test-only rows never enter the statistics.
+    Returns ``(mean, std, train_end)`` with ``train_end`` an exclusive row bound.
+    """
+    train_end = int(train_centers[-1]) + pred_len + 1 if len(train_centers) else len(values)
+    block = values[:train_end].reshape(-1, values.shape[-1])
+    return block.mean(0), block.std(0), train_end
+
+
 def main() -> None:
     """Convert raw traffic arrays into a TSFLab node bundle."""
     p = argparse.ArgumentParser(description="Convert traffic data to a node bundle")
@@ -99,8 +123,8 @@ def main() -> None:
     )
     p.add_argument("--adj-key", default=None, help="Key inside an .npz adjacency file")
     p.add_argument("--output-dir", required=True, help="Bundle output directory")
-    p.add_argument("--seq-len", type=int, default=96, help="History length")
-    p.add_argument("--pred-len", type=int, default=96, help="Forecast horizon")
+    p.add_argument("--seq-len", type=int, default=12, help="History length (PeMS protocol: 12)")
+    p.add_argument("--pred-len", type=int, default=12, help="Forecast horizon (PeMS protocol: 12)")
     p.add_argument("--add-time", action="store_true", help="Append calendar covariates")
     p.add_argument("--freq-min", type=int, default=5, help="Minutes per step (for --add-time)")
     p.add_argument(
@@ -117,27 +141,38 @@ def main() -> None:
         values = _add_time_features(values[..., :1], args.freq_min)
 
     t, n, c = values.shape
-    mean = values.reshape(-1, c).mean(0)
-    std = values.reshape(-1, c).std(0)
+    r_tr, r_va, r_te = (float(x) for x in args.splits.split(","))
+    train_c, val_c, test_c = split_windows(t, args.seq_len, args.pred_len, (r_tr, r_va, r_te))
+    # Statistics come from the training range only, so scale=true cannot leak
+    # validation/test information.
+    mean, std, train_end = train_range_stats(values, train_c, args.pred_len)
 
     os.makedirs(args.output_dir, exist_ok=True)
-    np.savez(os.path.join(args.output_dir, "his.npz"), data=values, mean=mean, std=std)
+    np.savez(
+        os.path.join(args.output_dir, "his.npz"),
+        data=values, mean=mean, std=std, train_end=np.int64(train_end),
+        seq_len=np.int64(args.seq_len), pred_len=np.int64(args.pred_len),
+    )
 
     if args.adj:
         adj = _load_adjacency(args.adj, args.adj_key).astype(np.float32)
         np.save(os.path.join(args.output_dir, "adj_mx.npy"), adj)
 
-    # Window centres valid for the chosen history/horizon, split chronologically.
-    lo, hi = args.seq_len - 1, t - args.pred_len
-    centers = np.arange(lo, hi)
-    r_tr, r_va, _ = (float(x) for x in args.splits.split(","))
-    n_tr, n_va = int(len(centers) * r_tr), int(len(centers) * r_va)
-    np.save(os.path.join(args.output_dir, "idx_train.npy"), centers[:n_tr])
-    np.save(os.path.join(args.output_dir, "idx_val.npy"), centers[n_tr : n_tr + n_va])
-    np.save(os.path.join(args.output_dir, "idx_test.npy"), centers[n_tr + n_va :])
+    np.save(os.path.join(args.output_dir, "idx_train.npy"), train_c)
+    np.save(os.path.join(args.output_dir, "idx_val.npy"), val_c)
+    np.save(os.path.join(args.output_dir, "idx_test.npy"), test_c)
+    split_info = {
+        "seq_len": args.seq_len, "pred_len": args.pred_len, "splits": [r_tr, r_va, r_te],
+        "rows": t, "train_end": train_end,
+        "windows": {"train": len(train_c), "val": len(val_c), "test": len(test_c)},
+        "stats": "mean/std fitted on rows [0, train_end) only",
+    }
+    with open(os.path.join(args.output_dir, "split.json"), "w", encoding="utf-8") as f:
+        json.dump(split_info, f, indent=2)
+    centers = np.concatenate([train_c, val_c, test_c])
 
     adj_note = f", adj {n}x{n}" if args.adj else ", no adjacency"
-    print(f"Wrote bundle to {args.output_dir}  data={values.shape}{adj_note}  windows={len(centers)}")
+    print(f"Wrote bundle to {args.output_dir}  data={values.shape}{adj_note}  windows={len(centers)}  train_end={train_end}")
 
 
 if __name__ == "__main__":

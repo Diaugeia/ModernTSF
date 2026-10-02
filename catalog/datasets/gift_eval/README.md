@@ -54,7 +54,7 @@ All numbers are source-reported (GIFT-Eval paper, Table 13, and the repository's
 
 - Registry loader: `gift_eval`
 - Data root: `./dataset/gift_eval`; each preset selects a series by `id`.
-- Presets: 53
+- Presets: 55
 
 | Preset | Domain | Frequency | Horizon |
 | --- | --- | --- | --- |
@@ -90,7 +90,9 @@ All numbers are source-reported (GIFT-Eval paper, Table 13, and the repository's
 | [`gift_eval/hierarchical_sales_D`](hierarchical_sales_D/README.md) | Sales | daily (1d) | 30 |
 | [`gift_eval/hierarchical_sales_W`](hierarchical_sales_W/README.md) | Sales | weekly (1w) | 8 |
 | [`gift_eval/hospital`](hospital/README.md) | Healthcare | monthly (1mo) | 12 |
-| [`gift_eval/jena_weather`](jena_weather/README.md) | Nature | not recorded (the id has no frequency suffix) | 48 |
+| [`gift_eval/jena_weather_10T`](jena_weather_10T/README.md) | Nature | 10-minute (10min) | 48 |
+| [`gift_eval/jena_weather_D`](jena_weather_D/README.md) | Nature | daily (1d) | 30 |
+| [`gift_eval/jena_weather_H`](jena_weather_H/README.md) | Nature | hourly (1h) | 48 |
 | [`gift_eval/kdd_cup_2018_with_missing_D`](kdd_cup_2018_with_missing_D/README.md) | Nature | daily (1d) | 30 |
 | [`gift_eval/kdd_cup_2018_with_missing_H`](kdd_cup_2018_with_missing_H/README.md) | Nature | hourly (1h) | 48 |
 | [`gift_eval/m4_daily`](m4_daily/README.md) | Finance / economics | daily (1d) | 14 |

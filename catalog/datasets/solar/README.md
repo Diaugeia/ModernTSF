@@ -61,7 +61,7 @@ Measured on `dataset/solar/solar.txt` (read-only); hour of day is derived assumi
 
 - **Zeros at night.** About 55% of all values are exactly zero (hours 0-4 and 19-23 are all zero, measured). Relative-error metrics such as MAPE are undefined there, z-scoring turns the night level into a large negative constant, and a large share of the error budget is the day-night mask rather than cloud-driven variation.
 - **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
-- **No timestamps.** The file has no date column; the loader assigns the same constant calendar mark (all-zero date) to every step, so models that rely on time marks receive no calendar information. Daily periodicity must be learned from the values.
+- **Synthetic timestamps.** The file has no date column. The preset sets `start = "2006-01-01 00:00"` and `freq = "10min"` (LSTNet solar: calendar year 2006, 10-minute steps; 52,560 rows = 365 x 144), so row i is stamped `start + i * freq` and the loader emits real `(year, month, day, weekday, hour, minute)` marks. This assumes row 0 is 00:00 on 2006-01-01 (the card's measured night-hour pattern is consistent with it but does not prove it). Remove `start` to restore constant all-zero marks. Daily periodicity is now available to models that use time marks.
 - **Target.** `target = "0"` selects the first plant for `features = "S"`; `"MS"` forecasts the last plant.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
 
@@ -76,7 +76,7 @@ Measured on `dataset/solar/solar.txt` (read-only); hour of day is derived assumi
 
 ## Input and output contract
 
-Each item provides history/target windows and timestamp marks; after batching, values use `[batch, time, channels]`.
+Each item provides history/target windows and timestamp marks `(year, month, day, weekday, hour, minute)` synthesised from the preset's `start` and `freq` (the file has no date column); after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -85,12 +85,14 @@ experiment task unless explicitly overridden below.
 
 ```json
 {
+  "freq": "10min",
   "scale": true,
   "split_ratio": [
     0.7,
     0.1,
     0.2
   ],
+  "start": "2006-01-01 00:00",
   "target": "0"
 }
 ```
@@ -103,11 +105,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/solar.toml`; fetch
-published files with `tsf data download solar` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/solar.toml`. Not published and not downloadable with TSFLab: place the data file at the local path above (`./dataset/solar/solar.txt`) yourself; `tsf data prepare` has no converter for it. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

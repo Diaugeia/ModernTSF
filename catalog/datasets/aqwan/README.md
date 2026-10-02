@@ -15,7 +15,7 @@ time_span: "2013-03-01 00:00 to 2017-02-28 23:00"
 length: 35064
 channels: 11
 channel_kind: "channels"
-target: "OT (the column the preset names; by TFB convention the last column, WSPM)"
+target: "WSPM (wind speed, the last channel; the preset names it explicitly)"
 missing_values: "the UCI original has NA cells (5,146 NA cells at Wanshouxigong); the TFB file has no NaN, so they were filled, and the categorical wind direction column was dropped"
 protocol: "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 96/336/512, horizons 96/192/336/720"
 literature_protocol: "TFB: lookback 96, 336 or 512, horizons 96/192/336/720, chronological 6:2:2; this preset's default split is 7:1:2"
@@ -60,7 +60,7 @@ The repository neither ships nor pins this file (`dataset/` is local and the Hub
 - **Split.** TSFLab uses a chronological 7:1:2 split for this dataset. Results reported under other splits (6:2:2) are not directly comparable.
 - **Imputation.** The TFB file's NaN-free values were filled; the filling method is not documented, so errors at formerly missing hours are not real measurements.
 - **Heavy tails.** PM2.5 and PM10 spike during haze episodes; z-scoring on the training split leaves outliers, and MSE is dominated by a few events.
-- **Target column.** The last column is `WSPM` (wind speed), not a pollutant, so `features = "MS"` forecasts wind speed; use `"S"` with `target` set to a pollutant such as `PM2.5` if that is the goal.
+- **Target column.** The preset sets `target = "WSPM"` (wind speed, the last channel), not a pollutant, so `features = "S"` and `"MS"` forecast wind speed; set `target` to a pollutant such as `PM2.5` if that is the goal. TFB has no `OT` convention: its reader keeps the channel names stored in the file (the original UCI names), so `OT` does not exist in the TFB files; this was derived from the TFB reader, not from a local copy. TFB ships these files in a long `date,data,cols` layout; the `custom` loader needs a wide CSV (`date` plus one column per channel), so pivot first. The loader raises if `target` is absent.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
 
 <!-- dataset-card:canonical:start -->
@@ -74,7 +74,7 @@ The repository neither ships nor pins this file (`dataset/` is local and the Hub
 
 ## Input and output contract
 
-Each item provides history/target windows and timestamp marks; after batching, values use `[batch, time, channels]`.
+Each item provides history/target windows and timestamp marks `(year, month, day, weekday, hour, minute)` parsed from the file's date column; after batching, values use `[batch, time, channels]`.
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -89,7 +89,7 @@ experiment task unless explicitly overridden below.
     0.1,
     0.2
   ],
-  "target": "OT"
+  "target": "WSPM"
 }
 ```
 
@@ -101,11 +101,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/aqwan.toml`; fetch
-published files with `tsf data download aqwan` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/aqwan.toml`. Not published and not downloadable with TSFLab: place the data file at the local path above (`./dataset/AQWan/AQWan.csv`) yourself; `tsf data prepare` has no converter for it. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

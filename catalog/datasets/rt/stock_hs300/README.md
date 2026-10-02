@@ -73,7 +73,7 @@ No local copy of `dataset/realtime/stock_hs300` exists in a development checkout
 
 ## Input and output contract
 
-Each item contains history/future values shaped `[time, nodes]` (nodes become channels) plus timestamp marks before batching; covariates are dropped.
+Each item contains history/future values shaped `[time, channels]` plus timestamp marks `(year, month, day, weekday, hour, minute)` from the panel index (all zeros when `calendar = false`).
 
 Sequence length, label length, feature mode, and batch size are supplied by the
 experiment task unless explicitly overridden below.
@@ -100,11 +100,7 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf data inspect --config configs/datasets/rt/stock_hs300.toml`; fetch
-published files with `tsf data download rt/stock_hs300` when the preset is
-listed by `tsf data download --list`, otherwise place the data at the local
-path above (see `tsf data prepare --help`). Reference this preset from an
-experiment configuration rather than duplicating its loader parameters.
+Inspect availability with `tsf data inspect --config configs/datasets/rt/stock_hs300.toml`. Not published as files. The panel store is written by the real-time track (see `docs/en/realtime.md` and `tsf realtime --help`) under the local path above, or pulled from a Hub revision via `dataset.params.revision`. Reference this preset from an experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints
 

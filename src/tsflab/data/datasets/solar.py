@@ -13,7 +13,11 @@ from tsflab.data.datasets.base import ForecastingDataset
 
 
 class Dataset_Solar(ForecastingDataset):
-    """Solar dataset for CSV-like text files without a date column."""
+    """Solar dataset for CSV-like text files without a date column.
+
+    Calendar marks are all constant unless ``start`` (and ``freq``) are given,
+    in which case timestamps are synthesised as ``start + i * freq``.
+    """
 
     def __init__(
         self,
@@ -27,7 +31,11 @@ class Dataset_Solar(ForecastingDataset):
         scale: bool = True,
         target_channel: int | None = None,
         norm_each_channel: bool = False,
+        start: str | None = None,
+        freq: str = "10min",
     ):
+        self.start = start
+        self.freq = freq
         super().__init__(
             root_path,
             data_path,
@@ -76,8 +84,11 @@ class Dataset_Solar(ForecastingDataset):
 
         data = np.asarray(data)
 
-        df_stamp = df_raw.copy()
-        df_stamp["date"] = 0
+        df_stamp = pd.DataFrame(index=df_raw.index)
+        if self.start:
+            df_stamp["date"] = pd.date_range(self.start, periods=num_samples, freq=self.freq)
+        else:
+            df_stamp["date"] = 0  # no date column: constant (all-zero-ish) marks
         time_stamp = np.asarray(self._build_time_stamp(df_stamp))
 
         series_data = np.asarray(data[border1:border2])
