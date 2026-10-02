@@ -64,15 +64,29 @@ literature weekly.
 See the [model workflow](docs/en/workflows.md#add-a-model-or-method). In short:
 
 1. Deduplicate and extract the paper; inspect pinned official code when available.
-2. Match defining operations against `src/tsflab/models/_components/`.
-3. Run `tsf model scaffold` with paper/source facts and component decisions.
-4. Implement locally, complete the card, and declare focused manifest tests.
-5. Run `tsf model add --name <Name>`; atomic admission performs verification and
-   rolls catalog registration back if a gate fails.
+2. Fix the retrieval-layer facts first, because readers find a model through them:
+   a `tagline` (at most 120 characters), `tags` (including one architecture family),
+   and the six-slot `composition`
+   (`normalization|decomposition|temporal|channel|head|loss`). Match the defining
+   operations against existing components with `tsf component search` and
+   `tsf component show`.
+3. Run `tsf model scaffold` with the paper/source facts and component decisions.
+   It creates an unregistered workspace.
+4. Implement locally, complete the card (including `## Key ideas`), and declare
+   focused tests in `verification/models.toml`.
+5. Run `tsf model add --name <Name>`. Admission registers the model, regenerates
+   the cards, runs verification and the audits, and rolls the registration back if
+   any gate fails.
 
 ## Adding a dataset
 
-See the [data workflow](docs/en/workflows.md#data).
+See the [data workflow](docs/en/workflows.md#data). A dataset has a preset, a
+card, and exactly one TSFLab protocol (split, scaling, lookbacks, horizons) in the
+card's `protocol` field; the protocol used in the literature, when different, goes
+in `literature_protocol`. Dataset files live under `dataset/` and are never
+committed. Smoke and synthetic inputs under `configs/fixtures/` are test fixtures,
+not datasets. Check a new card with `tsf dataset audit` and profile the data with
+`tsf dataset analyze <preset>`.
 
 ## Verifying
 
@@ -87,6 +101,19 @@ uv run tsf repo audit
 The final repository gate requires CPU construction, forward, backward, boundaries,
 active gradients, finite outputs, and state-dict round trips; do not waive a failed
 contract with documentation.
+
+## Documentation
+
+Human documentation (this file, `README.md`, `docs/en/`, and the resource cards)
+describes public behavior and CLI workflows. Cards and generated tables are
+projections of code: change the model, spec, config, or schema first, then run
+`uv run tsf repo cards`. `uv run tsf repo audit` checks that the documentation
+and cards agree with the code.
+
+## Releases
+
+There is no changelog file. Each tagged release is a GitHub Release whose notes
+are generated from the merged pull requests, so write clear pull-request titles.
 
 ## Licensing
 

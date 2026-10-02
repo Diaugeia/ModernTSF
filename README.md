@@ -41,9 +41,9 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | Module | What it does |
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
-| 🧩 **Code & interface** | 199 methods as peers in one flat catalog, composed from 48 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
-| 🗃️ **Data** | 84 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
-| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery |
+| 🧩 **Code & interface** | 199 methods as peers in one flat catalog, composed from 48 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison; every card opens with a tagline, tags, and a six-slot composition |
+| 🗃️ **Data** | 84 dataset presets (73 conventional, including the GIFT-Eval family, and 11 spatiotemporal or covariate), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
+| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf dataset analyze` profiles a dataset and `tsf component compose` dry-runs a recombination for AutoResearch |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
 ---
@@ -78,16 +78,19 @@ tsf run configs/runs/example.toml
 Scaffolded run configs inherit the installed catalog through `tsflab://`
 paths, so upgrading TSFLab upgrades their defaults.
 
-**Direct CLI discovery:**
+**Read the catalog progressively:**
 
 ```bash
-uv run tsf model list --details
-uv run tsf dataset list
-uv run tsf catalog search "reversible normalization"   # one line per match
-uv run tsf component show revin --depth 1             # 0 line, 1 interface, 2 card, 3 paths
+uv run tsf catalog                                      # counts, then the next commands
+uv run tsf catalog search "reversible normalization"    # L0: one line per match
+uv run tsf model show PatchTST                          # L1: facts, composition, key ideas
+uv run tsf component show revin --depth 2               # L2: full card (--depth 3: paths)
+uv run tsf dataset analyze etth1                        # profile a dataset, map it to components
 uv run tsf realtime list
-uv run tsf agent task list
 ```
+
+Search accepts `--kind model|component|dataset` and, for models, `--capability`.
+See [docs/en/workflows.md](docs/en/workflows.md#reading-the-catalog).
 
 ---
 
@@ -140,7 +143,7 @@ The literature is also scanned weekly by the `paper-intake` workflow. See
 
 ## 📖 Documentation
 
-- [Workflow documentation](docs/en/README.md): models, data, verification, experiments
+- [Workflow documentation](docs/en/README.md): catalog, models, data, AutoResearch, verification, experiments
 - [Projects and the Hub](docs/en/hub.md): `tsf init`, `hf://` assets, weights bundles
 - [Real-time tracks](docs/en/realtime.md): rounds, forecasts, scoring, weekly automation
 
@@ -153,7 +156,8 @@ Exact command options stay in `tsf <command> --help`.
 | Path | Contents |
 | --- | --- |
 | `src/tsflab/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
-| `configs/`, `catalog/`, `verification/` | Experiment and real-time track configs, dataset cards, verification evidence |
+| `configs/`, `catalog/`, `verification/` | Run, model, and dataset presets, real-time track configs, `configs/fixtures/` (smoke and synthetic test inputs, not datasets), dataset cards, verification evidence |
+| `dataset/` | Local dataset bytes fetched with `tsf dataset download` (not packaged) |
 | `apps/web/` | TSFLab Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
 | `experiments/` | Local research workspace; only `*/scripts/` is tracked |
 
