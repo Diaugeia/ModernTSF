@@ -1,6 +1,6 @@
 ---
 name: inspect-dataset
-description: Inspect, profile, or visualize an existing ModernTSF dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, or raw sample plots; not for result plots or model predictions.
+description: Inspect, profile, or visualize an existing ModernTSF dataset. Use for resolved shapes, trend and seasonality characteristics, split checks, leakage checks, model-selection profiles, or raw sample plots; not for result plots or model predictions.
 ---
 
 # Inspect a dataset
@@ -17,8 +17,12 @@ inferred characteristics.
 ```bash
 uv run tsf dataset show <name>
 uv run tsf dataset inspect --config configs/datasets/<name>.toml --split train --per-channel
+uv run tsf dataset analyze <name>        # structured profile for model selection
 uv run tsf dataset plot --config configs/datasets/<name>.toml --split train --num-samples 3
 ```
+
+`analyze` writes `work_dirs/profiles/<name>/profile.{json,md}` from train statistics plus
+labelled train/val/test shift; use it before choosing models.
 
 Check split boundaries, tensor dimensions, missing values, target-channel
 behavior, leakage across splits, inferred seasonal period, and adjacency or
