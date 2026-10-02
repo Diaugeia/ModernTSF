@@ -332,7 +332,7 @@ def test_topk_dense_mix():
     assert soft.dtype == w.dtype
     soft[:, 0].sum().backward()
     assert torch.isfinite(w.grad).all()
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         topk_dense_mix(w, 5, 0.1)
     assert_reference("topk_expert_router_mix", {"hard": hard, "soft": soft})
 

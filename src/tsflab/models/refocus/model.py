@@ -78,7 +78,7 @@ class EncoderBlock(nn.Module):
         core = self.fc2(core)
         core_fft = torch.fft.rfft(core, dim=-1)
         pooled_fft = self.pooling(core_fft)
-        core = torch.fft.irfft(pooled_fft, n=core.shape[-1], dim=-1)
+        core = torch.fft.irfft(pooled_fft.contiguous(), n=core.shape[-1], dim=-1)
         core = F.gelu(self.fc3(self.fc_core(core) + self.fc_ori(inp)))
         core = self.fc4(core)
         res = self.norm1(inp + self.dropout(core))

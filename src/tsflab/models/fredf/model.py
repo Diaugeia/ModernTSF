@@ -47,7 +47,7 @@ class FrequencyDynamicFusionBlock(nn.Module):
         transfer = torch.view_as_complex(self.transfer)  # [K, D_out, D_in]
         transferred = torch.einsum("bkd,ked->bke", spectrum, transfer)
         fused = transferred * self.fusion_weights().to(transferred.real.dtype)[None, :, None]
-        return torch.fft.irfft(fused, n=self.length, dim=1, norm="ortho")
+        return torch.fft.irfft(fused.contiguous(), n=self.length, dim=1, norm="ortho")
 
     def decoupled_reference(self, values: torch.Tensor) -> torch.Tensor:
         """Literal Algorithm 1 form (K masked copies), kept to verify equivalence."""
@@ -58,8 +58,7 @@ class FrequencyDynamicFusionBlock(nn.Module):
         for m in range(self.bins):
             single = torch.zeros_like(spectrum)
             single[:, m] = spectrum[:, m] @ transfer[m].transpose(0, 1)
-            total = total + torch.fft.irfft(
-                single, n=self.length, dim=1, norm="ortho"
+            total = total + torch.fft.irfft(single.contiguous(), n=self.length, dim=1, norm="ortho"
             ) * weights[m]
         return total
 

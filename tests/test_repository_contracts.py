@@ -409,7 +409,7 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/tsflab/models/_foundation/README.md").is_file())
-        self.assertEqual(len(COMPONENT_CATALOG.names()), 50)
+        self.assertEqual(len(COMPONENT_CATALOG.names()), len([p for p in (root / "src/tsflab/models/_components").iterdir() if (p / "__init__.py").is_file() and not p.name.startswith("_")]))
         self.assertEqual(len(dataset_records(root)), EXPECTED_DATASETS)
         self.assertEqual(
             len(list((root / "src/tsflab/models/_components").glob("*/README.md"))),

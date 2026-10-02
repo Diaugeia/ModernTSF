@@ -49,27 +49,31 @@ class PaperStructureTests(unittest.TestCase):
         model = factory().eval()
         x = torch.randn(2, 24, 3)
         base = model(x)
-        # Perturbing the time-branch stack alone changes the output ...
+        # Perturbing the time-branch stack alone changes the output ... (a random
+        # perturbation: a constant shift per position is removed by the LayerNorm)
+        torch.manual_seed(1)
         with torch.no_grad():
-            model.encoder_time[0].mlp.fc2.weight.add_(1.0)
+            model.encoder_time[0].mlp.fc2.weight.add_(torch.randn_like(model.encoder_time[0].mlp.fc2.weight))
         self.assertFalse(torch.allclose(model(x), base))
         # ... and so does perturbing the variate-branch stack alone.
         model = factory().eval()
         base = model(x)
         with torch.no_grad():
-            model.encoder_var[0].mlp.fc2.weight.add_(1.0)
+            model.encoder_var[0].mlp.fc2.weight.add_(torch.randn_like(model.encoder_var[0].mlp.fc2.weight))
         self.assertFalse(torch.allclose(model(x), base))
 
     def test_variate_branch_mixes_channels_but_time_branch_alone_does_not(self):
+        # The variate branch scans channels causally, so a change in the first
+        # channel reaches the later ones; the time branch keeps channels apart.
         x = torch.randn(2, 24, 3)
         changed = x.clone()
-        changed[:, :, 2] += torch.randn(2, 24)
+        changed[:, :, 0] += torch.randn(2, 24)
         time_only = factory(1, 0).eval()
         out, out_changed = time_only(x), time_only(changed)
-        torch.testing.assert_close(out[:, :, :2], out_changed[:, :, :2], rtol=1e-4, atol=1e-4)
+        torch.testing.assert_close(out[:, :, 1:], out_changed[:, :, 1:], rtol=1e-4, atol=1e-4)
         both = factory(1, 1).eval()
         self.assertFalse(
-            torch.allclose(both(x)[:, :, :2], both(changed)[:, :, :2], atol=1e-6)
+            torch.allclose(both(x)[:, :, 1:], both(changed)[:, :, 1:], atol=1e-6)
         )
 
     def test_single_encoder_variants_and_invalid_depth(self):

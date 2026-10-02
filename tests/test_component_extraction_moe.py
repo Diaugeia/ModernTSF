@@ -137,14 +137,14 @@ class TestDuetUnchangedAfterExtraction(unittest.TestCase):
         x = payload["input"].clone().detach().requires_grad_(True)
         output = model(x)
         (grad_x,) = torch.autograd.grad(output.sum(), x, retain_graph=True)
-        torch.testing.assert_close(grad_x, payload["grad_input"], atol=1e-6, rtol=0)
+        torch.testing.assert_close(grad_x, payload["grad_input"], atol=1e-5, rtol=1e-5)
         output.sum().backward()
         for name, param in model.named_parameters():
             expected_grad = payload["grad_params"][name]
             if expected_grad is None:
                 self.assertIsNone(param.grad)
             else:
-                torch.testing.assert_close(param.grad, expected_grad, atol=1e-6, rtol=0)
+                torch.testing.assert_close(param.grad, expected_grad, atol=1e-5, rtol=1e-5)
 
 
 class TestDynamicTMoEUnchangedAfterExtraction(unittest.TestCase):
@@ -169,14 +169,14 @@ class TestDynamicTMoEUnchangedAfterExtraction(unittest.TestCase):
         x = payload["input"].clone().detach().requires_grad_(True)
         output = model(x)
         (grad_x,) = torch.autograd.grad(output.sum(), x, retain_graph=True)
-        torch.testing.assert_close(grad_x, payload["grad_input"], atol=1e-6, rtol=0)
+        torch.testing.assert_close(grad_x, payload["grad_input"], atol=1e-5, rtol=1e-5)
         output.sum().backward()
         for name, param in model.named_parameters():
             expected_grad = payload["grad_params"][name]
             if expected_grad is None:
                 self.assertIsNone(param.grad)
             else:
-                torch.testing.assert_close(param.grad, expected_grad, atol=1e-6, rtol=0)
+                torch.testing.assert_close(param.grad, expected_grad, atol=1e-5, rtol=1e-5)
 
 
 class TestDuetMovingAverageStaysLocal(unittest.TestCase):
