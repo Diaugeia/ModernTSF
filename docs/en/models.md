@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -114,6 +114,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `MQRNN` | [`configs/models/MQRNN.toml`](../../configs/models/MQRNN.toml) | covariate, quantile-output, time-series | [README](../../src/tsflab/models/mqrnn/README.md) |
 | `MSGNet` | [`configs/models/MSGNet.toml`](../../configs/models/MSGNet.toml) | time-series | [README](../../src/tsflab/models/msgnet/README.md) |
 | `MTGNN` | [`configs/models/MTGNN.toml`](../../configs/models/MTGNN.toml) | spatiotemporal | [README](../../src/tsflab/models/mtgnn/README.md) |
+| `MTLinear` | [`configs/models/MTLinear.toml`](../../configs/models/MTLinear.toml) | time-series | [README](../../src/tsflab/models/mtlinear/README.md) |
 | `MTSMixer` | [`configs/models/MTSMixer.toml`](../../configs/models/MTSMixer.toml) | time-series | [README](../../src/tsflab/models/mtsmixer/README.md) |
 | `MultiPatchFormer` | [`configs/models/MultiPatchFormer.toml`](../../configs/models/MultiPatchFormer.toml) | time-series | [README](../../src/tsflab/models/multipatchformer/README.md) |
 | `NBeats` | [`configs/models/NBeats.toml`](../../configs/models/NBeats.toml) | time-series | [README](../../src/tsflab/models/nbeats/README.md) |

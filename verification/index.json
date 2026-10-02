@@ -714,6 +714,13 @@
       "subject_sha256": "3a84583f6529b544c9200d7e19dce05a2fda9502e28147fcd1420b71e86ba7a6",
       "verified_at": "2026-10-02T18:17:24.233150Z"
     },
+    "MTLinear": {
+      "evidence": "verification/evidence/MTLinear.json",
+      "sha256": "b564d218b4e70c1ec840c0553be7d6e14bd932699c94f6bab65c59704eb600b0",
+      "status": "passed",
+      "subject_sha256": "1fb0e838dd3ff2dbeca3eaacfc92eb0d6dd505b3d1bb5d5990a7d80878695a59",
+      "verified_at": "2026-10-02T18:57:23.041516Z"
+    },
     "MTSMixer": {
       "evidence": "verification/evidence/MTSMixer.json",
       "sha256": "2004733b07b945212cfe1d07c0fbe18fb35c7827cdfd1b55e8ea0ded92268fdb",

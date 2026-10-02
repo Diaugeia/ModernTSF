@@ -1062,3 +1062,9 @@ structure = ['reversible instance normalization', 'lossless single-level Haar DW
 profile = 'standard'
 test = 'tests/test_frequency_wavelet_attention_forecasters.py'
 structure = ['PatchTST-style patch embedding', 'stage-1 compress-to-sensor cross-attention', 'stage-2 sensor-broadcast cross-attention', 'flatten forecast head']
+
+[models.MTLinear]
+profile = 'standard'
+test = 'tests/test_mtlinear.py'
+reference_test = 'tests/test_mtlinear.py::MTLinearTests::test_clustering_matches_complete_linkage_reference'
+reference_sources = ['https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/models/MTLinear.py', 'https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/utils/grad_manip.py', 'https://github.com/azencot-group/MTLinear/blob/7d0d9fb71d0e3652829ed28dda5acc558b27f528/exp/exp_main.py']

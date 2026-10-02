@@ -371,4 +371,5 @@ MODEL_CATALOG = ModelCatalog({
     "TimePro": "tsflab.models.timepro.spec",
     "CANet": "tsflab.models.canet.spec",
     "CoRe": "tsflab.models.core.spec",
+    "MTLinear": "tsflab.models.mtlinear.spec",
 })
