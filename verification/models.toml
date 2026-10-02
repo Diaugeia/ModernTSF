@@ -1062,3 +1062,9 @@ structure = ['reversible instance normalization', 'lossless single-level Haar DW
 profile = 'standard'
 test = 'tests/test_frequency_wavelet_attention_forecasters.py'
 structure = ['PatchTST-style patch embedding', 'stage-1 compress-to-sensor cross-attention', 'stage-2 sensor-broadcast cross-attention', 'flatten forecast head']
+
+[models.SAMformer]
+profile = 'standard'
+test = 'tests/test_samformer.py'
+reference_test = 'tests/test_samformer.py'
+reference_sources = ['https://github.com/romilbert/samformer/blob/71f10eaa696f2a098798779ee14b6ecd6b69bcd9/samformer_pytorch/samformer/samformer.py', 'https://github.com/romilbert/samformer/blob/71f10eaa696f2a098798779ee14b6ecd6b69bcd9/samformer_pytorch/samformer/utils/sam.py']

@@ -980,6 +980,13 @@
       "subject_sha256": "3807dc5f9494faa4174c305737c671d9e9aca878d41af31eb166d94a38f32674",
       "verified_at": "2026-10-02T18:17:24.233150Z"
     },
+    "SAMformer": {
+      "evidence": "verification/evidence/SAMformer.json",
+      "sha256": "ce7b765b7a27eb2253de0f78bdb54e4b98263090b6bf31204ccf3fa85a85a681",
+      "status": "passed",
+      "subject_sha256": "f61b2b9bd72de9edb26d629c5cb33f66bebb5bc729d93d140847fceb56ddd0c1",
+      "verified_at": "2026-10-02T18:53:08.687702Z"
+    },
     "SCINet": {
       "evidence": "verification/evidence/SCINet.json",
       "sha256": "54b6e9e7dad3dfd73395c54a3e6d415d32676a27c1495caea60b9cacbd58ca40",

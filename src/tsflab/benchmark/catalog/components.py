@@ -267,6 +267,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("RMSNorm", "MambaBlock", "MambaResidualBlock"),
             ("mamba", "mixer", "rmsnorm", "ssm", "state-space"),
         ),
+        ComponentSpec(
+            "sharpness_aware",
+            "tsflab.models._components.sharpness_aware",
+            "First-order sharpness-aware minimization expressed as a loss evaluated at adversarially perturbed weights.",
+            ("sharpness_aware_loss",),
+            ("adversarial-weights", "optimizer-agnostic", "sam", "sharpness", "training-objective", "functional-call"),
+        ),
         ComponentSpec("masking", "tsflab.models._components.masking", "Attention mask construction.", keywords=("attention", "causal", "mask")),
         ComponentSpec(
             "hyper_state_scan",
