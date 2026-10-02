@@ -3,6 +3,21 @@
 All notable changes to ModernTSF are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow semantic versioning.
 
+## [Unreleased]
+
+### Added
+
+- Real-time tracks on public, mostly non-Chinese sources: `weather_openmeteo_temp`,
+  `solar_openmeteo_ghi` (Open-Meteo), `air_airnow_us` (EPA AirNow files, no key),
+  `air_openaq_us` / `air_openaq_eu` (OpenAQ reference monitors), `grid_ercot`
+  (ERCOT public files), `grid_eia_us` / `solar_eia_us` (EIA-930), and
+  `stock_sp500`.
+
+### Changed
+
+- `stock_nasdaq100` reads the Nasdaq API first, then the Yahoo chart API (both
+  split-adjusted); Sina stays as the last resort.
+
 ## [1.0.0rc2] — 2026-09-30 (release candidate)
 
 ### Added

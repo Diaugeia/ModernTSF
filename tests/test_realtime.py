@@ -185,7 +185,7 @@ def test_equity_panel_stores_log_returns_and_resumes_from_cache(tmp_path: Path, 
 
 
 def test_nasdaq_historical_fallback_parses_quoted_closes(monkeypatch) -> None:
-    from moderntsf.realtime.sources import nasdaq100
+    from moderntsf.realtime.sources import nasdaq100, us_prices
 
     rows = [{"date": "09/25/2026", "close": "$1,341.07"}, {"date": "09/24/2026", "close": "$335.92"}]
     seen = {}
@@ -194,10 +194,11 @@ def test_nasdaq_historical_fallback_parses_quoted_closes(monkeypatch) -> None:
         seen["path"] = path
         return {"tradesTable": {"rows": rows}}
 
-    monkeypatch.setattr(nasdaq100, "_get", fake_get)
-    close = nasdaq100._nasdaq("BRK-B", pd.Timestamp("2026-09-24"), pd.Timestamp("2026-09-25"), "qfq")
+    monkeypatch.setattr(us_prices, "nasdaq_get", fake_get)
+    close = us_prices.nasdaq_close("BRK-B", pd.Timestamp("2026-09-24"), pd.Timestamp("2026-09-25"))
     assert seen["path"] == "quote/BRK.B/historical"
-    assert close.sort_index().tolist() == [335.92, 1341.07]
-    monkeypatch.setattr(nasdaq100, "_get", lambda path, **params: {"data": {"rows": [
+    assert close.tolist() == [335.92, 1341.07]
+    assert nasdaq100._PREFERRED[:2] == [us_prices.nasdaq_close, us_prices.yahoo_close]  # Sina is last
+    monkeypatch.setattr(nasdaq100, "nasdaq_get", lambda path, **params: {"data": {"rows": [
         {"symbol": "brk.b "}, {"symbol": "AAPL"}, {"symbol": "AAPL"}]}})
     assert nasdaq100.constituents() == ["AAPL", "BRK-B"]
