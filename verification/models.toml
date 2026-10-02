@@ -670,6 +670,10 @@ test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_test = 'tests/test_foundation_retrieval_forecasters.py'
 reference_sources = ['https://github.com/Gemost/PULSE/blob/b26449764b72bfc6aa0d5b961d702f0b59da3848/models/PULSE.py']
 
+[models.PGN]
+profile = 'standard'
+test = 'tests/test_pgn.py'
+
 [models.PWS]
 profile = 'standard'
 test = 'tests/test_probabilistic_forecasters.py'
