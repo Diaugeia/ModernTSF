@@ -36,3 +36,14 @@ def test_scaffold_templates_use_the_moderntsf_namespace() -> None:
                     if head in LEGACY:
                         offending.append((module.__name__, stripped))
     assert offending == []
+
+
+def test_scaffold_literals_emit_valid_toml_and_python_booleans() -> None:
+    import tomllib
+
+    from moderntsf.benchmark.commands.new_model import _literal, _python_literal
+
+    for written, toml_value in (("True", True), ("false", False), (None, True)):
+        literal = _literal("bool", written)
+        assert tomllib.loads(f"flag = {literal}")["flag"] is toml_value
+        assert _python_literal("bool", literal) in {"True", "False"}

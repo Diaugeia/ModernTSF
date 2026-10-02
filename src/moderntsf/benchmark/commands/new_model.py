@@ -51,6 +51,8 @@ def _parse_params(spec: str | None) -> list[tuple[str, str, str | None]]:
 def _literal(kind: str, value: str | None) -> str:
     if value is None:
         return {"int": "128", "float": "0.1", "str": '"value"', "bool": "true"}[kind]
+    if kind == "bool":  # TOML booleans are lower-case whatever the caller wrote
+        return "true" if value.strip().lower() in {"true", "1", "yes"} else "false"
     return value if kind != "str" else f'"{value.strip(chr(34))}"'
 
 

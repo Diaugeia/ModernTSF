@@ -124,11 +124,16 @@ def main() -> int:
         CATALOG.write_text(_insert_catalog(args.name, module, original), encoding="utf-8")
         _run("verify", "model", args.name)
         _run("model", "audit", args.name)
+        # Cards and the model index are projections of the catalog, so they can
+        # only be regenerated once the entry exists; doctor checks them after.
+        _run("repo", "cards")
         _run("repo", "doctor", "--strict", "--models", args.name)
         _run("component", "audit")
         _run("repo", "audit")
     except (RuntimeError, ValueError) as exc:
         CATALOG.write_text(original, encoding="utf-8")
+        subprocess.run([sys.executable, "-m", "moderntsf.benchmark.cli", "repo", "cards"],
+                       cwd=ROOT, check=False, capture_output=True)
         print(f"Model admission rolled back: {exc}", file=sys.stderr)
         return 1
     print(f"Added verified model {args.name!r} to the flat catalog")
