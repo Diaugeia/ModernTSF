@@ -404,11 +404,11 @@ class RepositoryContractTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/tsflab/models/_foundation/README.md").is_file())
-        self.assertEqual(len(COMPONENT_CATALOG.names()), 48)
+        self.assertEqual(len(COMPONENT_CATALOG.names()), 49)
         self.assertEqual(len(dataset_records(root)), EXPECTED_DATASETS)
         self.assertEqual(
             len(list((root / "src/tsflab/models/_components").glob("*/README.md"))),
-            48,
+            49,
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),

@@ -244,6 +244,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("GatedFusion",),
             ("fusion", "gate", "gated", "mixture", "sigmoid"),
         ),
+        ComponentSpec(
+            "softmax_gate",
+            "tsflab.models._components.softmax_gate",
+            "Softmax feature gate: x * softmax(Linear(x)) over the last axis (PatchTSMixer gated attention).",
+            ("SoftmaxGate",),
+            ("gate", "gated-attention", "softmax", "feature", "mixer"),
+        ),
         ComponentSpec("graph_utils", "tsflab.models._components.graph_utils", "Graph supports, Laplacians, and Chebyshev bases.", keywords=("adjacency", "chebyshev", "graph", "laplacian", "support")),
         ComponentSpec(
             "graph_spectral",

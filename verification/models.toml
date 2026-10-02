@@ -617,6 +617,12 @@ profile = 'standard'
 test = 'tests/test_transformer_patch_forecasters_a.py'
 reference_test = 'tests/test_transformer_patch_forecasters_a.py'
 
+[models.PatchTSMixer]
+profile = 'standard'
+test = 'tests/test_patchtsmixer_structure.py'
+reference_test = 'tests/test_patchtsmixer_structure.py'
+reference_sources = ['https://github.com/huggingface/transformers/blob/3693f8d26311305e914735a6373fb03468d6aaa0/src/transformers/models/patchtsmixer/modeling_patchtsmixer.py']
+
 [models.Pathformer]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_c.py'

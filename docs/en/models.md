@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -124,6 +124,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `OLinear` | [`configs/models/OLinear.toml`](../../configs/models/OLinear.toml) | time-series | [README](../../src/tsflab/models/olinear/README.md) |
 | `PaiFilter` | [`configs/models/PaiFilter.toml`](../../configs/models/PaiFilter.toml) | time-series | [README](../../src/tsflab/models/paifilter/README.md) |
 | `PatchMLP` | [`configs/models/PatchMLP.toml`](../../configs/models/PatchMLP.toml) | time-series | [README](../../src/tsflab/models/patchmlp/README.md) |
+| `PatchTSMixer` | [`configs/models/PatchTSMixer.toml`](../../configs/models/PatchTSMixer.toml) | time-series | [README](../../src/tsflab/models/patchtsmixer/README.md) |
 | `PatchTST` | [`configs/models/PatchTST.toml`](../../configs/models/PatchTST.toml) | time-series | [README](../../src/tsflab/models/patchtst/README.md) |
 | `Pathformer` | [`configs/models/Pathformer.toml`](../../configs/models/Pathformer.toml) | time-series | [README](../../src/tsflab/models/pathformer/README.md) |
 | `PAttn` | [`configs/models/PAttn.toml`](../../configs/models/PAttn.toml) | time-series | [README](../../src/tsflab/models/pattn/README.md) |
