@@ -130,6 +130,12 @@ test = 'tests/test_recent_forecasters_a.py'
 reference_test = 'tests/test_recent_forecasters_a.py'
 reference_sources = ['https://github.com/decisionintelligence/CoRA/blob/1292f7b114e26d477675291004acb018e81896ca/ts_benchmark/plugin/plugin.py']
 
+[models.CoRe]
+profile = 'standard'
+test = 'tests/test_core_tta.py'
+reference_test = 'tests/test_core_tta.py'
+reference_sources = ['https://github.com/yyddou/CoReTTA/blob/7e3861f24e3aaece9fffc048fd585b3d283835d8/tta/core.py']
+
 [models.COSA]
 profile = 'standard'
 test = 'tests/test_special_forecasters.py'

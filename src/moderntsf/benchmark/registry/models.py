@@ -359,4 +359,5 @@ MODEL_CATALOG = ModelCatalog({
     "Gateformer": "moderntsf.models.gateformer.spec",
     "TimePro": "moderntsf.models.timepro.spec",
     "CANet": "moderntsf.models.canet.spec",
+    "CoRe": "moderntsf.models.core.spec",
 })
