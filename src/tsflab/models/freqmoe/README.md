@@ -20,7 +20,7 @@ composition: ["normalization=local:per-block-instance-standardization", "decompo
 - `FrequencyBandMixtureOfExperts` (`freq_band_moe`) reconstructs a denoised series from learned contiguous frequency bands combined by an input-dependent gate.
 - Each `FrequencyExtensionBlock` standardizes the series, upsamples the rFFT spectrum from `seq_len` to `seq_len + pred_len` bins with a complex `nn.Linear`, applies `ComplexReLU`/`ComplexDropout`, refines with a second complex linear, and inverts.
 - Blocks are chained on the backcast residual and their forecast segments are summed.
-- `band_boundaries` is cast to integer indices and so receives no gradient, as in the official code.
+- `band_boundaries` is a fixed buffer (the official code casts it to integers, so it never trains), although the paper describes learning it; the component offers an opt-in `learnable_boundaries` that this model does not enable.
 
 <!-- model-card:canonical:start -->
 ## Input and output
@@ -48,14 +48,16 @@ Inspected official file: `models/FreqMoE.py` (`FreqDecompMoE`, `Block`,
 `ComplexReLU`, `ComplexDropout`, `Model`), at revision
 `b34e93703159a22fdc9f97f0be4fa32b5600a3bf`.
 
-**Paper-driven local implementation.** The official `band_boundaries`
-parameter is cast to `long()` indices before being used to slice the
-frequency axis; this integer cast blocks autograd, so — exactly matching the
-official behavior — `band_boundaries` never receives a gradient from the
-training objective even though it is a registered parameter. This is a
-property of the official design (confirmed by reading `models/FreqMoE.py`
-line-by-line), not an omission introduced locally, and is recorded here so
-gradient-flow checks intentionally exclude that one parameter. `ComplexReLU`
+**Paper-driven local implementation.** The paper says the band boundaries are
+learned end-to-end, but the official `band_boundaries` parameter is cast to
+`long()` indices before slicing the frequency axis; this integer cast blocks
+autograd, so the official boundaries never train. This implementation matches
+the official behavior: `band_boundaries` is a fixed (non-trainable) buffer with
+the same state-dict key as the former parameter, so older checkpoints load and
+outputs are unchanged. It is therefore no longer in `parameters()` and gradient
+checks no longer need to exclude it. The shared component offers an opt-in
+`learnable_boundaries=True` (straight-through gradient) that this model does not
+enable. `ComplexReLU`
 and `ComplexDropout` remain tiny, paper-specific glue and stay model-local
 rather than becoming shared components. The external repository is
 reference-only; no source file was copied or adapted.
@@ -76,14 +78,16 @@ Inspected official file: `models/FreqMoE.py` (`FreqDecompMoE`, `Block`,
 `ComplexReLU`, `ComplexDropout`, `Model`), at revision
 `b34e93703159a22fdc9f97f0be4fa32b5600a3bf`.
 
-**Paper-driven local implementation.** The official `band_boundaries`
-parameter is cast to `long()` indices before being used to slice the
-frequency axis; this integer cast blocks autograd, so — exactly matching the
-official behavior — `band_boundaries` never receives a gradient from the
-training objective even though it is a registered parameter. This is a
-property of the official design (confirmed by reading `models/FreqMoE.py`
-line-by-line), not an omission introduced locally, and is recorded here so
-gradient-flow checks intentionally exclude that one parameter. `ComplexReLU`
+**Paper-driven local implementation.** The paper says the band boundaries are
+learned end-to-end, but the official `band_boundaries` parameter is cast to
+`long()` indices before slicing the frequency axis; this integer cast blocks
+autograd, so the official boundaries never train. This implementation matches
+the official behavior: `band_boundaries` is a fixed (non-trainable) buffer with
+the same state-dict key as the former parameter, so older checkpoints load and
+outputs are unchanged. It is therefore no longer in `parameters()` and gradient
+checks no longer need to exclude it. The shared component offers an opt-in
+`learnable_boundaries=True` (straight-through gradient) that this model does not
+enable. `ComplexReLU`
 and `ComplexDropout` remain tiny, paper-specific glue and stay model-local
 rather than becoming shared components. The external repository is
 reference-only; no source file was copied or adapted.

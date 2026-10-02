@@ -20,11 +20,16 @@ each network depth: shallow layers get high frequencies, deep layers get low
 frequencies (layer `num_layers - 1` includes bin 0). For `n = num_bins`, `L =
 num_layers`, layer `i`:
 
-- tiling regime (`L == 1` or `alpha <= 1/L`): `start = int(n * (1 - (i+1)/L))`,
-  `width = int(n / L)`.
+- tiling regime (`L == 1` or `alpha <= 1/L`): shared integer edges
+  `e_k = (n * k) // L`; layer `i` is `[e_{L-1-i}, e_{L-i})`. The bands partition
+  `[0, n)` exactly (no gaps, no overlap, layer 0 ends at `n`, layer `L-1` starts at 0)
+  whenever `n >= L`.
 - sliding regime (`alpha > 1/L`): `start = int(n * (1 - alpha) * (1 - i/(L-1)))`,
-  `width = int(alpha * n)`; adjacent layers overlap.
-- `end = min(n, start + max(width, 1))`; the range is `[start, end)`.
+  `end = start + ceil(alpha * n)` (rounded up so layer 0 reaches the last bin);
+  adjacent layers overlap.
+- `end` is clipped to `n` and to at least `start + 1`; the range is `[start, end)`.
+  With `n < L` the tiling cannot avoid empty bands, so each band keeps one bin and
+  bands overlap.
 
 ## Origin and granularity
 
@@ -49,17 +54,17 @@ the fusion with the time branch.
   frequency axis at dim 1; returns `spectrum[:, start:end]` (a view, dtype and
   device preserved). `ValueError` for `ndim < 2`.
 - No parameters, buffers, or state; attributes `num_layers`, `alpha`.
-- CPU-confirmed examples for 17 bins: `L=3, alpha=0.3` gives
-  `(11,16), (5,10), (0,5)`; `L=2, alpha=0.3` gives `(8,16), (0,8)`.
+- Examples for 17 bins: `L=3, alpha=0.3` gives `(11,17), (5,11), (0,5)`;
+  `L=2, alpha=0.3` gives `(8,17), (0,8)`. (Before the fix these were
+  `(11,16), (5,10), (0,5)` and `(8,16), (0,8)`, leaving bins 10 and 16 uncovered.)
 
 ## Invariants and equivalence evidence
 
-- no fixture and no dedicated unit test: nothing under `tests/` imports
-  `HierarchicalFrequencySampler`. It is covered only indirectly by the
-  `dualformer` model tests through the consumer.
-- Integer truncation means the "non-overlapping" tiling is not exact: the
-  bands can leave gaps (in the 17-bin example above, bin 10 and bin 16 belong
-  to no layer). Layer 0 never includes the last bin in the tiling regime.
+- `tests/test_component_numeric_fixes.py` checks exact tiling (union equals every
+  bin, adjacent bands meet, layer 0 ends at `n`) over many bin and layer counts, and
+  that sliding windows reach both ends. The default `alpha=1.0` (full-width windows)
+  is unchanged. Consumer-level behaviour is covered by the `dualformer` model tests.
+- no fixture.
 
 ## Variants and options
 
@@ -70,7 +75,7 @@ sliding windows (larger `alpha`). There is no log-spaced or learned variant.
 
 Use to give each depth a fixed, deterministic frequency slice of a
 `[batch, freq, ...]` spectrum (high to low). Do not use when bands must be
-exactly partitioned or learned (see `freq_band_moe` for learned boundaries),
+learned (see `freq_band_moe` for learned boundaries),
 or when the frequency axis is not dim 1.
 
 ## Related components

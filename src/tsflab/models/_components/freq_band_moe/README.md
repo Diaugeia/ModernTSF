@@ -40,15 +40,20 @@ boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_score
 
 ## Interface
 
-`FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int)`
+`FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int, learnable_boundaries: bool = False, boundary_temperature: float = 1.0)`
 
 - `expert_num` (int >= 1): number of bands/experts. `seq_len` (int >= 1): exact
   time length accepted; `freq_len = seq_len // 2 + 1`. Violations raise
   `ValueError`.
-- Parameters / state-dict keys: `band_boundaries` (shape
-  `[max(expert_num - 1, 0)]`, init `torch.rand`), `gating_network.0.weight/bias`
-  (`[F, F]`, `[F]`), `gating_network.2.weight/bias` (`[expert_num, F]`,
-  `[expert_num]`). No buffers.
+- `learnable_boundaries` (default `False`): fixed boundaries, as in the official
+  code. `True`: boundaries train (see Variants). `boundary_temperature` (> 0): soft
+  edge width in bins for the straight-through gradient, used only when learnable.
+- State-dict keys: `band_boundaries` (shape `[max(expert_num - 1, 0)]`, init
+  `torch.rand`; a registered buffer by default, an `nn.Parameter` when
+  `learnable_boundaries=True`; the key is the same in both, so checkpoints saved
+  from the former Parameter, or from either mode, load into either mode),
+  `gating_network.0.weight/bias` (`[F, F]`, `[F]`), `gating_network.2.weight/bias`
+  (`[expert_num, F]`, `[expert_num]`).
 - `forward(x)`: `x` floating `[batch, channels, seq_len]`; wrong rank or last
   length raises `ValueError`. Returns `(combined, boundaries, gating_scores)`:
   `combined` same shape as `x`; `boundaries` shape `[expert_num + 1]` in
@@ -62,24 +67,33 @@ boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_score
   boundary vector length and monotonicity, and gate rows summing to 1.
 - no fixture: no pre-refactor tensor fixture; consumer-level behaviour is
   covered by the `freqmoe` model tests in the same file.
-- Quirk confirmed by a CPU check: the band edges are produced by an integer
-  cast, so `band_boundaries.grad` is `None` after backward; the boundaries are
-  registered as a parameter but receive no gradient and stay at their random
-  initialization (only the gating MLP trains). Do not rely on them being learned.
+- `tests/test_component_numeric_fixes.py`: the default module is bit-identical
+  to the former implementation (checked once against the pre-change code, with
+  the old state dict loaded); `band_boundaries` is a buffer with no gradient and
+  round-trips through `state_dict`; with `learnable_boundaries=True` the forward
+  output equals the fixed module's and `band_boundaries.grad` is finite and nonzero.
+- Paper vs code: the paper (Sec. on the frequency-decomposition MoE) says the
+  boundaries are learned end-to-end, but the official code casts them to integers,
+  which blocks every gradient. The default follows the official code (fixed,
+  random-initialization boundaries; a buffer, so the module no longer advertises a
+  parameter that cannot train). Learning is opt-in.
 - Bands that round to zero width are empty (their mask is all zero). With
   `expert_num == 1` the single band covers all bins and `boundaries == [0, 1]`.
 
 ## Variants and options
 
-Only `expert_num` and `seq_len`. Boundaries are shared over channels and batch;
+`learnable_boundaries=True` turns `band_boundaries` into a Parameter trained with
+a straight-through estimator: the forward uses the exact hard 0/1 band masks, the
+backward uses soft masks `sigmoid((bin + 0.5 - edge) / T)` differences, with
+`edge = boundary * freq_len`. `boundary_temperature` is `T` (bins). This is not in
+the paper or official code. Boundaries are shared over channels and batch;
 only the gate depends on the input, and it sees the channel-averaged amplitude
 spectrum.
 
 ## When to use and when not to use
 
 Use as a front-end that gates frequency bands of a `[B, C, T]` window with a
-fixed window length. Do not use when the boundaries must actually be learned
-(they get no gradient as written), when the sequence length varies, or when the
+fixed window length. Pass `learnable_boundaries=True` when the boundaries should be learned. Do not use when the sequence length varies, or when the
 normalization should be handled by a shared `revin` (this module normalizes
 internally and restores scale itself).
 
@@ -94,8 +108,8 @@ decomposition), `topk_expert_router` (routing over experts without a spectrum).
 
 Implementation: [`__init__.py`](__init__.py)
 
-- `FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int)`
-  Decompose a series into learned frequency bands and gate their mixture.
+- `FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int, learnable_boundaries: bool=False, boundary_temperature: float=1.0)`
+  Decompose a series into frequency bands and gate their mixture.
 
 ```python
 from tsflab.models._components.freq_band_moe import FrequencyBandMixtureOfExperts
