@@ -34,13 +34,9 @@ Harness use these Agent assets directly. Claude Code uses `CLAUDE.md` and
   and resource cards. Keep it task-oriented and limited to public APIs.
 - Agent-only procedures live in `.agents/`; do not send users there as product
   documentation.
-- Descriptive truth lives in model cards; runtime truth lives in schemas, specs,
-  configs, and tests. Generated indexes are projections, never a second registry.
-
-## Retrieval
-Read the catalog progressively: `tsf catalog` (what exists), `tsf catalog search
-<terms>` (one line each), `tsf <model|component|dataset> show <name>` (contract), and
-`--depth 2|3` (full card, files) only when a decision needs it.
+- Descriptive truth lives in cards; runtime truth in schemas, specs, configs, and
+  tests. Read cards progressively: `tsf catalog`, `tsf catalog search`, `tsf <kind>
+  show <name>`, and `--depth 2|3` only when a decision needs it.
 
 ## Work and verification
 Use the matching Skill for repeatable work. Read the relevant section of
