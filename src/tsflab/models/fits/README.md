@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/VEWOXIC/FITS"
 revision: "d040bb015b6299da26d879b90dd19c80fb72c160"
 license: "Apache-2.0"
+tagline: "Low-pass rFFT, learned complex frequency interpolation to the extended length, then irFFT; roughly 10k parameters."
+tags: ["linear", "frequency", "lightweight", "channel-independent", "baseline"]
+composition: ["normalization=local:instance-mean-std-centering", "decomposition=none", "temporal=local:complex-frequency-interpolation", "channel=local:channel-independent-shared-weights", "head=local:zero-padded-irfft-extension", "loss=loss:mse"]
 ---
 # FITS
 
-FITS (Frequency Interpolation Time Series analysis) is a lightweight time series forecasting model that operates entirely in the complex frequency domain. Instead of processing raw time-domain sequences, FITS applies rFFT to compress the input, performs low-pass filtering to discard high-frequency noise, and uses frequency-domain interpolation to map the compressed representation to the target prediction length, enabling competitive forecasting performance with only approximately 10k parameters — small enough for edge-device deployment.
+## Key ideas
+
+- Keeps only the first `cut_freq` rFFT bins of the standardized window (low-pass filter).
+- `ComplexFrequencyInterpolation` is one complex affine map from retained input bins to the bins of the `seq_len + pred_len` spectrum, shared across channels unless `individual=True`.
+- Zero-pads the spectrum, applies irFFT over the full length, rescales by `(seq_len + pred_len) / seq_len`, and keeps the last `pred_len` steps.
+- Normalization is a local detached mean/std centering restored on the output; there is no `revin` or decomposition.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MAFS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "f1f0d23760738c66dc20c78d24c705631d4843b87abbf4c386813e6be3808368",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "621a09d6af2e7e6edb56a75da4c9cdd056de828b93e20898cf3ed06c47c65125",
   "paper": {
     "title": "Many Minds, One Goal: Time Series Forecasting via Sub-task Specialization and Inter-agent Cooperation",
     "venue": "NeurIPS 2025",

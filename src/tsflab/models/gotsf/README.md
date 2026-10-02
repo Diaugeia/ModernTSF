@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/netop-team/gotsf"
 revision: "31b17e55a0cb6f41bfe25230db3f81567efd58f3"
 license: "MIT"
+tagline: "Interval-conditioned experts with membership confidences, reweighted at inference to emphasize a chosen target range."
+tags: ["mlp", "goal-oriented", "channel-independent", "mixture-of-experts"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:interval-conditioned-mlp-encoder", "channel=local:channel-independent-shared-weights", "head=local:interval-regression-and-confidence-heads", "loss=loss:mse"]
 ---
 # GOTSF
 
-GOTSF is a time series forecasting model built around a goal-oriented training methodology that enables forecasting models to bias their predictions toward application-specified regions of interest at inference time without retraining. The model partitions the prediction space into fine-grained segments during training, which are dynamically reweighted and aggregated at inference time to emphasize whichever target range an application specifies.
+## Key ideas
+
+- Splits the value range into `num_intervals` disjoint bins; each bin's midpoint and half-width condition a shared channel-independent MLP (`history_encoder` plus `interval_encoder`).
+- A regression head and a membership-confidence head produce a forecast and a confidence per interval (`interval_outputs`).
+- `forecast_interval` averages the forecasts of bins intersecting a target interval, weighted by confidence, so the emphasized range can change without retraining; plain `forward` uses all bins.
+- `goal_oriented_loss` trains one bin with an exponential soft-boundary weight (`decay`) plus a membership BCE term; the default runner loss is still `mse` on `forward`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

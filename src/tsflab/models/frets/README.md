@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/aikunyi/FreTS"
 revision: "6de28ab19f83955087e2690cdfbb29b065ab0b9c"
 license: "Apache-2.0"
+tagline: "Complex-valued MLPs applied in the frequency domain over channels and over time, with a two-layer direct forecast head."
+tags: ["mlp", "frequency", "channel-mixing", "baseline"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:frequency-domain-complex-mlp", "channel=local:frequency-channel-learner", "head=local:two-layer-ffn-direct-head", "loss=loss:mse"]
 ---
 # FreTS
 
-FreTS is a multivariate time series forecasting model that applies redesigned multi-layer perceptrons directly in the frequency domain, operating on both the real and imaginary components of the frequency spectrum to capture global dependencies and exploit the energy compaction property of the Fourier transform.
+## Key ideas
+
+- Embeds each scalar by a learned vector (`dimension_extension`), giving a `[batch, channels, time, embed]` tensor.
+- `FrequencyChannelLearner` and `FrequencyTemporalLearner` each do rFFT, a full complex-matrix MLP (`ComplexFrequencyMLP`, ReLU plus softshrink sparsity), and irFFT, over the channel axis and the time axis respectively.
+- The channel learner is skipped when `channel_independence` is set or `enc_in < 3` (real spectrum is degenerate).
+- A residual connection and a flatten, two-layer LeakyReLU MLP produce the horizon directly.
 
 <!-- model-card:canonical:start -->
 ## Input and output

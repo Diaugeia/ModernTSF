@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/Muyiiiii/LatentTSF"
 revision: "7c8ae947ee1220bf4e788ace6bc2f0f122cb26c2"
 license: "MIT"
+tagline: "Autoencoder latent states forecast by a DLinear backbone, trained with latent MSE and cosine alignment."
+tags: ["linear", "latent-space", "decomposition", "autoencoder", "two-stage-training"]
+composition: ["normalization=local:latent-state-layer-norm", "decomposition=component:series_decomposition", "temporal=component:dlinear", "channel=local:latent-autoencoder-channel-expansion", "head=local:autoencoder-decoder", "loss=loss:mse+local:latent-mse-and-cosine-alignment"]
 ---
 # LatentTSF
 
-LatentTSF is a time series forecasting model that shifts the forecasting paradigm from observation-space regression to latent state prediction. It employs an AutoEncoder to project each observation into a learned higher-dimensional latent state space, then performs all forecasting entirely within that space, allowing the model to capture structured temporal dynamics rather than fitting noisy observations directly. This addresses the "Latent Chaos" phenomenon where standard observation-space models achieve accurate predictions while learning temporally disordered representations.
+## Key ideas
+
+- `LatentStateAutoencoder` expands each time step's channel vector into a higher-dimensional latent state; it is pretrained on reconstruction (`pretrain`, MAE by default) and then frozen.
+- Forecasting happens entirely in latent space with the shared `DLinearBackbone` (`dlinear`, which uses `series_decomposition`), after a non-affine `LayerNorm` on the latent states.
+- The predicted latent states are decoded back to observations by the frozen autoencoder decoder.
+- `training_objective` adds latent MSE and cosine alignment to the target's encoded states on top of the forecast MSE (`mse_weight`, `cosine_weight`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

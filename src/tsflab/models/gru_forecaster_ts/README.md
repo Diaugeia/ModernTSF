@@ -5,10 +5,17 @@ paper: "https://arxiv.org/abs/1412.3555"
 paper_title: "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling"
 venue: "arXiv preprint"
 year: 2014
+tagline: "GRU encoder over the normalized window with a direct linear decode of its final hidden state to the horizon."
+tags: ["rnn", "baseline", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:gru-final-state-encoder", "channel=local:channel-mixing-gru-input", "head=local:linear-direct-multi-horizon-head", "loss=loss:mse"]
 ---
 # GRUForecasterTS
 
-GRUForecasterTS is a standard Gated Recurrent Unit (GRU) sequence-to-sequence forecaster registered for the time-series forecasting setting. It accepts a fixed-length historical window of univariate or multivariate values and produces a fixed-length forecast horizon by unrolling the GRU recurrence over the input and decoding the final hidden state.
+## Key ideas
+
+- An `nn.GRU` reads all channels jointly at each step, so channels are mixed in the recurrent state.
+- The last layer's final state is mapped by one linear `head` to `pred_len * enc_in` values (direct multi-horizon, no autoregressive decoding).
+- `revin` normalizes the input and denormalizes the forecast (`use_revin`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

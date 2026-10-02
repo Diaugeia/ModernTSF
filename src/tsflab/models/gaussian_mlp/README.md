@@ -5,16 +5,17 @@ paper: ""
 paper_title: "Gaussian-head MLP (TSFLab parametric probabilistic baseline)"
 venue: "TSFLab"
 year: 2026
+tagline: "Flatten-MLP predicting per-step Gaussian location and positive scale, trained by negative log-likelihood."
+tags: ["mlp", "probabilistic", "distribution-output", "baseline", "channel-mixing"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:flatten-mlp-backbone", "channel=local:flattened-channel-mixing", "head=component:gaussian_parameter_head", "loss=loss:nll_gaussian"]
 ---
 # GaussianMLP
 
-GaussianMLP is a simple **parametric probabilistic** baseline: an MLP maps the
-flattened input window to per-step Gaussian parameters `(loc, scale)` for every
-horizon step and channel, returning `(B, pred_len, C, 2)` with a strictly
-positive scale (`softplus + eps`). It is trained by maximum likelihood
-(`nll_gaussian`) and scored with the closed-form Gaussian CRPS plus
-coverage / width. It serves as the minimal reference for the `distribution`
-output type — the parametric counterpart to the quantile models.
+## Key ideas
+
+- Flattens the `seq_len * enc_in` window and passes it through a ReLU/dropout MLP (`backbone`).
+- `gaussian_parameter_head` emits `loc` and `softplus + eps` scale per horizon step and channel, stacked as `(B, pred_len, C, 2)`.
+- Declares `output_type = "distribution"`; trained with `nll_gaussian`. Cross-channel and cross-horizon covariance are not modeled.
 
 <!-- model-card:canonical:start -->
 ## Input and output

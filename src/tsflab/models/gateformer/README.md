@@ -6,8 +6,18 @@ paper_title: "Gateformer: Advancing Multivariate Time Series Forecasting through
 venue: "arXiv preprint"
 year: 2025
 
+tagline: "Gate-fused global-window and patch-attention variate embeddings, then cross-variate attention and a second gate."
+tags: ["transformer", "patching", "channel-mixing", "attention-variant", "gating"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:patch-transformer-encoder+component:positional_encoding+component:flatten_forecast_head", "channel=local:cross-variate-attention+component:gated_fusion", "head=local:linear-variate-token-head", "loss=loss:mse"]
 ---
 # Gateformer
+
+## Key ideas
+
+- Each variate gets a global embedding (the whole window projected to `d_model`, as in the inverted embedding) and a temporal embedding (patches encoded by a shared Transformer across patches, flattened by `flatten_forecast_head`).
+- `gate_global_temporal` (`gated_fusion`) blends the two embeddings per variate.
+- A variate-wise Transformer encoder attends across variates, and `gate_variate` blends its output with its input.
+- A linear layer projects each variate token to `pred_len`; normalization is local mean/std standardization restored on the output.
 
 <!-- model-card:canonical:start -->
 ## Input and output

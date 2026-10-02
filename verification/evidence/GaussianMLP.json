@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GaussianMLP",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "bdf0592ff169900822860c1e91ee24f6bd90838d4c8039eb2a3f42582e0249fa",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "e1f50fc4e5199b9c4c6be559b6e7215ec65ab0bdfc1cd935bc2b7a24b254c2bf",
   "paper": {
     "title": "Gaussian-head MLP (TSFLab parametric probabilistic baseline)",
     "venue": "TSFLab",

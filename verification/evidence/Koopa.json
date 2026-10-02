@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Koopa",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "e3d362724f48641e4de11710dd9df199896d2a59de6d2413719027942c081e9e",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "c8363b933f34f49a60f56d30d1ee7ace1f70af4734abf4fe3f6563d0c0e5c88b",
   "paper": {
     "title": "Koopa: Learning Non-stationary Time Series Dynamics with Koopman Predictors",
     "venue": "NeurIPS 2023",

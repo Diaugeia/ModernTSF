@@ -8,10 +8,18 @@ year: 2021
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "2fb5b84ecef67c45a759f7cf82023d27afe27882"
 license: "MIT"
+tagline: "ProbSparse self-attention encoder with distilling convolutions and a generative one-shot decoder."
+tags: ["transformer", "attention-variant", "sparse-attention", "long-horizon", "channel-mixing"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:self_attention_family+component:transformer_encdec", "channel=component:embed", "head=local:generative-one-shot-decoder-projection", "loss=loss:mse"]
 ---
 # Informer
 
-Informer is a Transformer-based model for long-sequence time-series forecasting in the standard univariate and multivariate setting. It introduces ProbSparse self-attention to achieve O(L log L) time and memory complexity, a self-attention distilling mechanism that halves cascading layer inputs to handle extreme-length inputs, and a generative-style decoder that produces the entire output sequence in a single forward pass, dramatically reducing inference latency on long-horizon tasks.
+## Key ideas
+
+- `ProbAttention` (`self_attention_family`) scores queries by sparsity and attends only with the top queries, giving O(L log L) attention.
+- `ConvLayer` distilling between encoder layers halves the sequence length (`distil`).
+- The decoder (`transformer_encdec`) takes the label window plus placeholder horizon in one pass and projects to `c_out`, with causal ProbSparse self-attention and full cross-attention.
+- `DataEmbedding` (`embed`) embeds values (mixing channels) and time marks; there is no instance normalization or decomposition.
 
 <!-- model-card:canonical:start -->
 ## Input and output

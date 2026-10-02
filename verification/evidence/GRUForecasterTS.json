@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "GRUForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "5c8fc20d367b3429436953e5d8f25a5170f1e9fda0fc1ade2eebce4d92858269",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "011c91768ba8781096ca2350f2327d6aa4aba1313378893d1971ee3be1410f56",
   "paper": {
     "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
     "venue": "arXiv preprint",

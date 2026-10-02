@@ -5,10 +5,17 @@ paper: "https://gaussianprocess.org/gpml/chapters/"
 paper_title: "Gaussian Processes for Machine Learning"
 venue: "MIT Press"
 year: 2006
+tagline: "Sparse RBF-kernel posterior-mean approximation with learned inducing inputs and horizon targets, shared across channels."
+tags: ["statistical", "kernel-method", "gaussian-process", "baseline", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:sparse-rbf-kernel-posterior-mean", "channel=local:channel-independent-shared-weights", "head=local:learned-inducing-horizon-targets", "loss=loss:mse"]
 ---
 # GaussianProcessTS
 
-GaussianProcessTS is a sparse RBF-kernel posterior-mean approximation using learned inducing inputs and horizon targets for channel-wise lag forecasting.
+## Key ideas
+
+- Treats every channel's lookback as a query vector and compares it to `num_inducing` learned inducing inputs with an RBF kernel (`_kernel`, learned length scale).
+- Solves `(K_zz + noise I)^-1` against learned inducing horizon targets to get posterior-mean coefficients, then forecasts `K_xz @ coefficients`.
+- Inducing pairs, length scale and noise are fit by gradient descent; this is not exact GP regression and returns no posterior covariance.
 
 <!-- model-card:canonical:start -->
 ## Input and output

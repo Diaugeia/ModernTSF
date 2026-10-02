@@ -8,8 +8,18 @@ year: 2024
 code: "https://github.com/ZhuoLinLi-shu/Extralonger"
 revision: "4adb3ec1f0d0a844e9726273a225e640802417cd"
 license: "MIT"
+tagline: "Parallel temporal, spatial and mixed attention routes fused with fixed 1:1:2 weights for extra-long traffic horizons."
+tags: ["transformer", "gnn", "spatiotemporal", "attention-variant", "calendar-embedding", "long-horizon"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-and-mixed-route-self-attention", "channel=component:graph_masked_attention", "head=local:fixed-weight-route-fusion", "loss=loss:mse"]
 ---
 # Extralonger
+
+## Key ideas
+
+- Temporal route compresses the node axis into a per-step embedding, adds time-of-day and day-of-week embeddings, and runs self-attention over time (`SelfAttentionBlock`).
+- Spatial route compresses the time axis per node, appends a learned node embedding, and attends over nodes with `GlobalLocalGraphAttention`, which averages dense and adjacency-masked softmax attention (`graph_masked_attention`).
+- Mixed route applies temporal attention, then a second attention pass with the feature axis as tokens (`mix_temporal_layers`, `mix_spatial_layers`).
+- Fuses the routes as `(temporal + spatial + 2 * mixed) / 4` with fixed weights; the adjacency mask is built from the runner-supplied `adj_mx` plus self-loops.
 
 <!-- model-card:canonical:start -->
 ## Input and output

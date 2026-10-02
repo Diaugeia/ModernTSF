@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/dantian123121/HMformer"
 revision: "18e014934a7c7010c16822689f5332dd1ebd49a6"
 license: "NOASSERTION"
+tagline: "Parallel patch-Transformer branches at doubling patch scales with rotary attention and stride-two cross-scale mixing."
+tags: ["transformer", "patching", "multi-scale", "channel-independent", "attention-variant"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:rotary-attention-patch-branches", "channel=local:channel-independent-shared-weights", "head=local:sum-of-flattened-branch-forecasts", "loss=loss:mse"]
 ---
 # HMformer
 
-HMformer is a Transformer-based multivariate time-series forecasting model that proposes a hierarchical multi-scale framework to overcome the limitations of the original Transformer architecture when applied to real-world time series with complex multi-scale periodicities. It employs a hierarchical cross-scale mixing mechanism, a scale-adaptive feature expansion design, and a multi-branch complementary prediction strategy to capture intricate multi-scale temporal dynamics while retaining the Transformer's strength in modeling long-range dependencies.
+## Key ideas
+
+- Each `ScaleBranch` patches every channel (patch length and stride double per scale), embeds patches with a `Conv1d`, and runs post-norm Transformer blocks with `RotarySelfAttention`.
+- Latent width doubles from fine to coarse branches (scale-adaptive feature expansion); a stride-two `Conv1d` (`cross_scale`) passes each branch's tokens to the next coarser branch.
+- Each branch has its own flatten-and-linear predictor and the branch forecasts are summed; scales that do not fit `seq_len` are dropped.
+- Channels are folded into the batch so all share weights; no instance normalization is used.
 
 <!-- model-card:canonical:start -->
 ## Input and output

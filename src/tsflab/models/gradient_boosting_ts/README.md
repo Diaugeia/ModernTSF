@@ -5,10 +5,18 @@ paper: "https://doi.org/10.1214/aos/1013203451"
 paper_title: "Greedy function approximation: A gradient boosting machine"
 venue: "Annals of Statistics, 2001"
 year: 2001
+tagline: "Differentiable additive soft-tree stages trained end to end, each updating a learned residual input state."
+tags: ["tree", "ensemble", "boosting", "baseline", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:stagewise-residual-backcast", "temporal=component:soft_tree+local:additive-stagewise-corrections", "channel=local:flattened-channel-mixing", "head=local:linear-base-plus-tree-corrections", "loss=loss:mse"]
 ---
 # GradientBoostingTS
 
-GradientBoostingTS is an independent differentiable additive-tree baseline with sequential learned residual-state updates.
+## Key ideas
+
+- A linear `base` forecast is corrected by `num_estimators` soft decision trees (`SoftDecisionTree` from `soft_tree`), each scaled by `learning_rate`.
+- After each stage a learned backcast (`backcasts[i]`, tanh) subtracts the tree's explanation from the input state, mimicking boosting on residuals.
+- All stages are trained jointly by gradient descent rather than fitting frozen pseudo-residuals, so it is not scikit-learn gradient boosting.
+- Works on the flattened `seq_len * enc_in` window inside `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

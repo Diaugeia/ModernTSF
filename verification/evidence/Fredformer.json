@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Fredformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "0b649448416ae03382e2ad6fa3e0e92b407f8b11287e310811f53396ca1534b3",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "2b3a1c165961e5daaf401db797e60115d266d17a55a09b7952b4a2da1b03f95a",
   "paper": {
     "title": "Fredformer: Frequency Debiased Transformer for Time Series Forecasting",
     "venue": "KDD 2024",

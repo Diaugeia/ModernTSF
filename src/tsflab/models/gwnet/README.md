@@ -8,10 +8,18 @@ year: 2019
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Stacked causal dilated gated convolutions with diffusion graph convolution over fixed and learned adaptive adjacency."
+tags: ["gnn", "cnn", "spatiotemporal", "graph-learning", "dilated-convolution"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:gated_dilated_conv", "channel=component:diffusion_conv+component:adaptive_node_embedding_adjacency+component:graph_utils", "head=local:skip-sum-two-layer-conv-head", "loss=loss:mse"]
 ---
 # GWNet
 
-GWNet (Graph WaveNet) is a spatiotemporal graph neural network that serves the spatiotemporal forecasting setting on node-structured data. It jointly models hidden spatial dependencies via a learned adaptive adjacency matrix and long-range temporal trends via stacked dilated 1D causal convolutions whose receptive field grows exponentially with depth — enabling end-to-end, scalable traffic and sensor-network forecasting.
+## Key ideas
+
+- `gated_dilated_conv` applies filter and gate causal convolutions with dilation `2**layer` per `WaveNetGraphLayer`, so the receptive field grows exponentially.
+- `DiffusionConv2d` propagates over three supports: forward and reverse random-walk supports from the given adjacency (`adj_to_supports`, `graph_utils`) and a learned adaptive adjacency from source/target node embeddings (`adaptive_node_embedding_adjacency`).
+- Each layer has a residual path with `BatchNorm2d` and emits a skip connection; skips are summed across layers.
+- A ReLU/1x1-conv head maps the summed skip features straight to the `pred_len` horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

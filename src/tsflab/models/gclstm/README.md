@@ -8,10 +8,18 @@ year: 2019
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "LSTM with all four gates computed by Chebyshev spectral graph convolution of node input and state; node-wise readout."
+tags: ["gnn", "rnn", "spatiotemporal", "covariates", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:graph-conv-lstm-cell", "channel=component:graph_spectral", "head=local:node-wise-linear-horizon-readout", "loss=loss:mse"]
 ---
 # GCLSTM
 
-GCLSTM is a node-level air-quality forecaster that combines spectral graph filtering with LSTM temporal state. This clean-room implementation computes Chebyshev responses jointly for values, covariates, and recurrent state inside all four LSTM gates, then applies a node-wise direct multi-horizon readout.
+## Key ideas
+
+- `chebyshev_supports` (`graph_spectral`) turns the adjacency into scaled-Laplacian Chebyshev supports of order `Ks`.
+- `GraphConvLSTMCell` computes input, forget, output and candidate gates jointly from `ChebyshevGraphProjection` of concatenated input and hidden state.
+- The cell is unrolled over `seq_len` on value plus calendar-covariate channels (`to_spatiotemporal`, fitted to `1 + cov_dim`).
+- A linear layer maps the final node state to all `pred_len` steps.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/d-gcc/LightTS"
 revision: "362ca172791559766f6a055be8f2cbed1bad5530"
 license: "NOASSERTION"
+tagline: "Continuous and interval down-sampled views through bottleneck information-exchange MLPs plus a linear highway."
+tags: ["mlp", "lightweight", "multi-scale", "channel-mixing", "downsampling"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:continuous-and-interval-sampling-ie-blocks", "channel=local:channel-information-exchange-ie-block", "head=local:ie-block-forecast-plus-linear-highway", "loss=loss:mse"]
 ---
 # LightTS
 
-LightTS is a lightweight MLP-based model for multivariate time-series forecasting. It applies simple MLP structures on top of two complementary down-sampling strategies — interval sampling and continuous sampling — to efficiently capture temporal patterns while using a fraction of the compute required by Transformer or RNN-based approaches.
+## Key ideas
+
+- Each series is reshaped two ways: contiguous non-overlapping chunks (`sample_continuous`) and strided interval samples (`sample_interval`).
+- `InformationExchangeBlock` projects over time through a bottleneck, adds an identity-initialized channel projection, and maps to output rows; the two sampling views use separate blocks and are summarized by linear layers.
+- A final `forecast_block` exchanges information across the variables of the concatenated features, and a `highway` linear layer from the raw window is added to the output.
+- `seq_len` must be divisible by `chunk_size`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

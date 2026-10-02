@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ImplicitForecaster",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "0816b92f11e9877d2a553ab113a620500030c63cf260e7fbcfacdcd307969209",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "f157b135db37bde4fb9a9ba9f7ab313f829e6669bece517ab554a983de5626ec",
   "paper": {
     "title": "Towards Accurate Time Series Forecasting via Implicit Decoding",
     "venue": "NeurIPS 2025",

@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Pure-PyTorch selective-scan Mamba blocks over time tokens, then a linear map from history length to horizon."
+tags: ["ssm", "channel-mixing", "normalization", "portable"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=component:mamba", "channel=local:channel-mixing-input-projection", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # MambaSimple
 
-MambaSimple is a time series forecasting model built on the Mamba selective state space architecture. It adapts Mamba's selective scan mechanism — where SSM parameters are functions of the input, allowing the model to selectively propagate or forget information — into a pure PyTorch implementation that requires no custom CUDA operators, making it portable across CPU, CUDA, and MPS backends.
+## Key ideas
+
+- Each time step's channel vector is projected to `d_model` and processed by `MambaResidualBlock`s (`mamba`), the selective state-space scan written in plain PyTorch with no CUDA kernels.
+- A final RMSNorm and channel projection restore `enc_in` features, then a `Linear(seq_len, pred_len)` along time produces the horizon.
+- Each variate is standardized over its window and restored on the output; time marks are ignored.
 
 <!-- model-card:canonical:start -->
 ## Input and output

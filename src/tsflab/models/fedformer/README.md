@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/MAZiqing/FEDformer"
 revision: "c0f6b972def125691434d62be1ecadf710ae921a"
 license: "MIT"
+tagline: "Fourier-enhanced block and frequency cross-attention in a progressive seasonal-trend decomposition encoder-decoder."
+tags: ["transformer", "frequency", "decomposition", "attention-variant", "channel-mixing", "long-horizon"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:fourier-enhanced-block-and-frequency-attention", "channel=component:forecast_embedding", "head=local:seasonal-projection-plus-accumulated-trend", "loss=loss:mse"]
 ---
 # FEDformer
 
-FEDformer is a Transformer-based model for long-term multivariate and univariate time-series forecasting that combines seasonal-trend decomposition with a frequency-enhanced attention mechanism. The decomposition component captures the global profile of the series while Transformer blocks model finer-grained structure; exploiting the sparse Fourier representation of most time series yields linear complexity in sequence length, making FEDformer more efficient than standard Transformers.
+## Key ideas
+
+- Replaces self-attention with `FrequencyEnhancedBlock`: rFFT, a learned per-head complex kernel on a selected subset of modes, then irFFT (`mode_select` low or random).
+- `FrequencyEnhancedAttention` does decoder cross-attention on the selected Fourier modes of queries, keys and values with a tanh score.
+- Applies `series_decomposition` after every encoder and decoder sub-layer; the decoder accumulates three projected trend updates per layer on top of a mean-initialized trend.
+- Only the Fourier variant is implemented (no wavelet); channels are mixed in the value embedding (`forecast_embedding`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

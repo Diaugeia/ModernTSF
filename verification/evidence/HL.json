@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "HL",
   "status": "passed",
-  "verified_at": "2026-10-02T17:47:30.307033Z",
-  "subject_sha256": "8c477c7e3d04cae9c82307bf4feb6ca9d1a91bad65a9c2a90a9b93fc4d71a821",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "ed196fb39706889bae611189b5617d71a27529dbc72b13622586a3be891a14b5",
   "paper": {
     "title": "Historical-last persistence baseline (no associated paper)",
     "venue": "N/A (classical baseline)",

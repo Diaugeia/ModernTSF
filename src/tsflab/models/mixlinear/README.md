@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/aitianma/MixLinear"
 revision: "42dbb98a5bbe64c13bc75b3cc07a9dc4acf20106"
 license: "NOASSERTION"
+tagline: "Ultra-light segment linear path plus low-rank complex spectral path on downsampled series, interpolated to horizon."
+tags: ["linear", "frequency", "lightweight", "channel-independent", "multi-scale"]
+composition: ["normalization=local:per-series-mean-centering", "decomposition=none", "temporal=local:segment-path-and-low-rank-spectral-path", "channel=local:channel-independent-shared-weights", "head=local:linear-interpolation-to-horizon", "loss=loss:mse"]
 ---
 # MixLinear
 
-MixLinear is an ultra-lightweight multivariate time-series forecasting model for the standard time-series forecasting setting. It mixes time-domain linear projections (both intra-segment and inter-segment) with frequency-domain linear projections over a low-dimensional latent space, reducing the parameter scale of the core linear layers from O(n²) to O(n) while retaining competitive accuracy — making it well suited for resource-constrained deployment.
+## Key ideas
+
+- Centers each series and average-pools it by `downsample`, shrinking the length before the linear layers.
+- `SegmentTrendPath` splits the reduced series into segments, encodes each to a small `hidden_rank`, mixes across segments linearly, and decodes.
+- `LowRankSpectralPath` applies a complex rank-constrained operator `U(VF)` to the FFT of the reduced series (`spectral_rank`), cutting core parameters from O(n^2) to O(n).
+- The two path outputs are summed and linearly interpolated to `pred_len`; weights are shared across channels.
 
 <!-- model-card:canonical:start -->
 ## Input and output

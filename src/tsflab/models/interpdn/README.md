@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/leonardokong486/interPDN"
 revision: "7918983539d3d135a395dcccb3d66be29d2b02d2"
 license: "Apache-2.0"
+tagline: "Per-step probability distributions over two interleaved normal-quantile support sets, expected and mixed by confidence."
+tags: ["mlp", "decomposition", "channel-independent", "distributional-head", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:ema-trend-seasonal-split", "temporal=local:conv-and-linear-seasonal-trend-decoders", "channel=local:channel-independent-shared-weights", "head=local:support-set-probability-expectation", "loss=loss:mse"]
 ---
 # InterPDN
 
-InterPDN (interleaved dual-branch Probability Distribution Network) is a time series forecasting model for standard multivariate or univariate sequences. Rather than predicting a scalar at each future step, it directly constructs a discrete probability distribution per step; the regression output is computed as the expectation over a predefined support set. A dual-branch architecture with interleaved support sets, coarse temporal-scale branches for long-term trend, and self-supervised consistency constraints between branches further improves robustness.
+## Key ideas
+
+- Splits each channel into an exponential-moving-average trend and a seasonal remainder (`_ema`).
+- Two `DistributionBranch`es decode seasonal and trend inputs and emit softmax logits over `support_size` bins for every horizon step; the bins are normal quantiles on two interleaved support sets (`support_first`, `support_second`).
+- Each branch returns the expectation over its support and the branches are mixed by their maximum-probability confidence.
+- Only the point forecast is returned (probabilities kept in `last_probabilities`); the paper's coarse-scale branches and consistency losses are not implemented.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/wanghq21/MICN"
 revision: "370c69b841d72246556ca05dd23163c560c22b5a"
 license: "NOASSERTION"
+tagline: "Multi-scale branches of strided local conv, isometric global conv and transposed restore on the seasonal part."
+tags: ["cnn", "decomposition", "multi-scale", "channel-mixing", "long-horizon"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:multi-scale-isometric-convolution-branches", "channel=local:channel-mixing-linear-embedding", "head=local:linear-history-to-horizon-seasonal-plus-trend", "loss=loss:mse"]
 ---
 # MICN
 
-MICN (Multi-scale Isometric Convolution Network) is a long-term time-series forecasting model presented at ICLR 2023. It adopts a multi-scale branch structure where each branch extracts local temporal features via down-sampled convolution and captures global correlations via isometric convolution, achieving linear complexity with respect to sequence length while outperforming Transformer-based methods on standard benchmarks.
+## Key ideas
+
+- `MultiScaleDecomposition` averages several moving-average decompositions (`series_decomposition`) into one seasonal and one trend component.
+- Each `IsometricConvolutionBranch` downsamples with a strided depthwise conv (local pattern), adds a global isometric convolution over the shortened sequence, and restores length with a transposed conv; `MICLayer` merges the scales.
+- The seasonal part is refined with a residual and mapped by a linear history-to-horizon layer; the trend part gets its own linear map and the two forecasts are summed.
+- Calendar embedding is omitted; the input embedding is a linear map over channels.
 
 <!-- model-card:canonical:start -->
 ## Input and output

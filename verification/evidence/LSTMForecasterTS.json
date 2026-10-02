@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LSTMForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "e7fc8e590934c4efbfd068d7ad790fba76daf0d409516f4e6dfb7eb7f74b2b24",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "4645df571a2ef38f6173ce2e48b5547d8ddb27ee0141154575b9caacdc4f9668",
   "paper": {
     "title": "Long Short-Term Memory",
     "venue": "Neural Computation",

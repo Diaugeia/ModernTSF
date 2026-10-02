@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/chenzRG/Fredformer"
 revision: "fa64775ea1012e313cbe30fe2c9b7e493a798aae"
 license: "NOASSERTION"
+tagline: "Per-band energy-equalized rFFT spectrum with a shared channel-attention Transformer per band, then a linear head."
+tags: ["transformer", "frequency", "channel-mixing", "attention-variant", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:frequency-band-split-and-equalization", "temporal=local:per-band-transformer-encoder", "channel=local:channel-attention-per-frequency-band", "head=local:linear-seq-to-pred-head", "loss=loss:mse"]
 ---
 # Fredformer
 
-Fredformer is a Transformer-based model for multivariate time series forecasting that addresses the frequency bias problem, where attention mechanisms tend to over-weight low-frequency (high-energy) components while ignoring high-frequency features. It applies frequency-equalised attention across patch-level frequency bands to produce more balanced and accurate forecasts.
+## Key ideas
+
+- Splits the rFFT spectrum into contiguous bands (`split_frequency_bands`) and rescales each band to unit RMS energy (`FrequencyEqualization`) to counter frequency bias.
+- `FrequencyBandAttention` applies one shared `nn.TransformerEncoder` whose tokens are the channels, independently within every band.
+- A sigmoid `band_gate` blends the Transformer output back into the equalized band before restoring band energy and inverting the FFT.
+- The reconstructed history goes through a linear `seq_len -> pred_len` head; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

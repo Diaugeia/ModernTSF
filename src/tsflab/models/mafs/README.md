@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/h505023992/MAFS"
 revision: "4fb26b02824a144d149964b372da98071fc79687"
 license: "MIT"
+tagline: "Variate-token Transformer agents exchange messages over a learnable topology graph; a voter aggregates forecasts."
+tags: ["transformer", "multi-agent", "channel-mixing", "graph-learning", "ensemble"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:per-agent-variate-token-embedding", "channel=local:variate-token-attention-agents+local:agent-topology-graph-communication", "head=local:voting-aggregation-of-agent-heads", "loss=loss:mse"]
 ---
 # MAFS
 
-MAFS (Multi-Agent Forecasting System) is a time series forecasting framework that replaces the conventional single-model paradigm with a cooperative system of specialized agents. The forecasting task is decomposed into multiple sub-tasks — covering different temporal perspectives such as varying resolutions or signal characteristics — each handled by a dedicated iTransformer-based agent. Agents communicate through learnable topology graphs (ring, star, chain, or fully connected), and a lightweight voting aggregator integrates their outputs into the final prediction for each channel.
+## Key ideas
+
+- Each of `num_agents` agents embeds every variate's whole window into a token and runs its own `AgentEncoderLayer` stack (attention across variates).
+- After every layer agents exchange messages through a symmetric, self-looped, degree-normalized adjacency built from learnable `edge_logits` masked by a star, ring, chain or fully-connected topology (`normalized_adjacency`).
+- A confidence gate blends each agent's state with its neighbourhood context, and an input-conditioned softmax `voter` weights the agents.
+- The output is a head on the voted representation plus the voted sum of per-agent heads; `specialization_loss` exposes the paper's multi-scale prefix pre-training stage but is not used by the default runner.
 
 <!-- model-card:canonical:start -->
 ## Input and output

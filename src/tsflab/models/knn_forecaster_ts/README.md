@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1109/TIT.1967.1053964"
 paper_title: "Nearest Neighbor Pattern Classification"
 venue: "IEEE Transactions on Information Theory"
 year: 1967
+tagline: "Soft nearest-reference forecaster: distance-kernel weights over learned reference windows blend learned continuations."
+tags: ["statistical", "retrieval", "nearest-neighbor", "baseline", "channel-mixing"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:soft-kernel-nearest-reference-weights", "channel=local:flattened-channel-mixing", "head=local:kernel-weighted-learned-futures", "loss=loss:mse"]
 ---
 # KNNForecasterTS
 
-KNNForecasterTS is a differentiable nearest-reference forecaster. It compares each input window with learned reference windows and uses soft distance-kernel weights to combine their learned future continuations.
+## Key ideas
+
+- Holds `num_prototypes` learned reference windows (`reference_windows`) and matching learned future continuations (`reference_futures`) as parameters.
+- `neighbor_weights` is a softmax of negative scaled mean squared distance between the whole input window (all channels) and every reference (`kernel_gamma`).
+- The forecast is the weighted sum of reference futures; it is not a hard KNN over a stored training set.
 
 <!-- model-card:canonical:start -->
 ## Input and output

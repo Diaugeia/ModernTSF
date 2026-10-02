@@ -8,10 +8,17 @@ year: 1997
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "Per-node LSTM with shared weights over value plus calendar covariates and a two-layer MLP horizon head."
+tags: ["rnn", "spatiotemporal", "covariates", "baseline", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:lstm-per-node-encoder", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-horizon-head", "loss=loss:mse"]
 ---
 # LSTM
 
-LSTM is a per-node vanilla Long Short-Term Memory sequence predictor applied in the spatiotemporal forecasting setting. Each spatial node is modeled independently as a univariate sequence, with the LSTM gates learning to selectively retain or forget information across timesteps — providing a simple but effective recurrent baseline for node-structured time series data.
+## Key ideas
+
+- Each node is treated as its own sequence (nodes folded into the batch), so no graph or cross-node interaction is used.
+- `to_spatiotemporal` supplies the value plus `cov_dim` calendar covariates, which are linearly projected (`input_projection`) before a multi-layer `nn.LSTM`.
+- The last hidden state feeds a `Linear` - GELU - `Linear` head that emits all `pred_len` steps directly.
 
 <!-- model-card:canonical:start -->
 ## Input and output

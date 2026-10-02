@@ -8,10 +8,19 @@ year: 2026
 code: "https://github.com/shiyu-coder/Kronos"
 revision: "67b630e67f6a18c9e9be918d9b4337c960db1e9a"
 license: "MIT"
+tagline: "Binary-spherical-quantized coarse/fine subtokens per record, decoded by a causal Transformer, coarse then fine."
+tags: ["transformer", "discrete-tokens", "autoregressive", "channel-mixing", "financial", "normalization"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:causal-decoder-transformer-with-kv-cache", "channel=local:channel-mixing-record-tokenizer", "head=local:coarse-to-fine-subtoken-heads-expected-bit-decode", "loss=loss:mse"]
 ---
 # Kronos
 
-Kronos is a decoder-only foundation model pre-trained on over 12 billion financial candlestick (K-line) records from 45 global exchanges, covering tasks including price-series forecasting, volatility prediction, and synthetic market-data generation. Its defining design discretizes each multivariate record with Binary Spherical Quantization into coarse and fine subtokens, then predicts those subtokens sequentially with a causal Transformer.
+## Key ideas
+
+- `HierarchicalTokenizer` maps each multichannel record to a spherical latent and binarizes it with a straight-through Binary Spherical Quantization (`code_bits`), split into equal coarse and fine halves.
+- Coarse and fine bit halves are embedded separately and fused (`_embed_bits`, `fusion`) into one token per step.
+- `CausalBlock`s are a decoder-only Transformer with an incremental key/value cache (`prefill`, `step`) that generates the horizon autoregressively.
+- The fine prediction is conditioned on a differentiable expected coarse code (`fine_context`); `tokenizer_loss` gives the hierarchical reconstruction objective.
+- Trained from scratch with a compact affine tokenizer and 8-bit default vocabulary; it has no pretrained Kronos weights.
 
 <!-- model-card:canonical:start -->
 ## Input and output
