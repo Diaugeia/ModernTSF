@@ -226,7 +226,7 @@ def compose_command(args: list[str], root: Path) -> int:
     if wants_build and result["ok"] and not result["executable"]["ok"]:
         status = 1
     if wants_build and status == 0:
-        from tsflab.catalog import composition_build as build
+        from tsflab.research import composition_build as build
 
         target = Path(parsed.root).resolve() if parsed.root else root
         try:
