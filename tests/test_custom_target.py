@@ -35,3 +35,23 @@ def test_ms_moves_target_to_last_channel(tmp_path) -> None:
 def test_missing_target_fails_with_a_clear_error(tmp_path) -> None:
     with pytest.raises(ValueError, match="target column"):
         _load(_csv(tmp_path), "S", target="missing")
+
+
+def test_missing_sentinels_are_imputed_causally_before_scaling(tmp_path) -> None:
+    n = 100
+    ot = np.arange(1, n + 1, dtype=float)
+    ot[[0, 1, 50, 51, 99]] = -9999  # leading, interior and trailing gaps
+    pd.DataFrame({"date": pd.date_range("2020-01-01", periods=n, freq="h").astype(str),
+                  "OT": ot, "a": np.ones(n)}).to_csv(tmp_path / "data.csv", index=False)
+    kw = dict(root_path=str(tmp_path), data_path="data.csv", size=(8, 0, 4), features="S", target="OT",
+              split_ratio=(1.0, 0.0, 0.0), scale=False)
+    raw = Dataset_Custom(**kw)
+    clean = Dataset_Custom(**kw, missing_sentinels=[-9999])
+    assert raw.data.min() == -9999
+    out = clean.data[:, 0]
+    assert out[0] == out[1] == 3.0  # back fill only at the series start
+    assert out[50] == out[51] == 50.0  # forward fill from the past, never from the future
+    assert out[99] == 99.0
+    assert out.min() == 3.0
+    scaled = Dataset_Custom(**{**kw, "scale": True}, missing_sentinels=[-9999])
+    assert abs(scaled.data).max() < 3

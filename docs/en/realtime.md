@@ -85,6 +85,18 @@ with a content hash. Releases are mirrored to the Hugging Face dataset
 `Diaugeia/TSFLab-RealTime` (owner overridable with `TSFLAB_HUB_OWNER`), one commit per release, so every round can be
 reproduced from a pinned revision.
 
+## Tracks as static datasets
+
+Every track also has a static dataset preset, `rt_<track>` (`configs/datasets/rt/`),
+so catalog models can be trained and compared on a frozen snapshot with the usual
+`tsf run`. The `realtime_panel_ts` / `realtime_panel_st` loaders read the track's
+panel store at a pinned release (`version`) or Hub `revision`, fill gaps causally,
+split chronologically 7:1:2 with one z-score from the training rows, and add
+calendar marks; tracks whose mode is `spatiotemporal` use the node-covariate
+layout of `forecast.export_bundle`. Provide the store under
+`dataset/realtime/<track>` or set `revision` to pull one from the Hub. Static results are not live results: only the
+rolling rounds evaluate data that did not exist at submission time.
+
 ## Rounds
 
 `tsf realtime open` creates a round on the latest release:

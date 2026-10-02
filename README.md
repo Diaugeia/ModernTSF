@@ -116,7 +116,7 @@ uv run tsf realtime forecast --track traffic_pems_sb --model DLinear   # produce
 uv run tsf realtime replay --track traffic_pems_sb --end 2023-12-25 --weeks 12   # backtest the protocol
 ```
 
-See [docs/en/realtime.md](docs/en/realtime.md).
+Each track is also a frozen static dataset (`rt_<track>`, `tsf dataset list`). See [docs/en/realtime.md](docs/en/realtime.md).
 
 ---
 
