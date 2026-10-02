@@ -500,6 +500,13 @@ profile = 'standard'
 test = 'tests/test_ssm_sequence_forecasters.py'
 reference_test = 'tests/test_ssm_sequence_forecasters.py'
 
+[models.MambaTS]
+profile = 'standard'
+test = 'tests/test_mambats.py'
+reference_test = 'tests/test_mambats.py'
+reference_sources = ['https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/models/MambaTS.py', 'https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/layers/mamba_ssm/mixer2_seq_simple.py', 'https://github.com/XiudingCai/MambaTS-pytorch/blob/3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d/layers/mamba_ssm/mamba_simple.py']
+structure = ['variable-major patch-token layout', 'convolution-free selective SSM with selective-parameter dropout', 'add-then-norm residual stream', 'variable permutation training with per-sample transition costs', 'asymmetric TSP scan-order decoding', 'shared flatten head with instance de-normalisation']
+
 [models.MegaCRN]
 profile = 'standard'
 test = 'tests/test_graph_forecasters_b.py'

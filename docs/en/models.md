@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -103,6 +103,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `MAFS` | [`configs/models/MAFS.toml`](../../configs/models/MAFS.toml) | time-series | [README](../../src/tsflab/models/mafs/README.md) |
 | `MAGE` | [`configs/models/MAGE.toml`](../../configs/models/MAGE.toml) | spatiotemporal | [README](../../src/tsflab/models/mage/README.md) |
 | `MambaSimple` | [`configs/models/MambaSimple.toml`](../../configs/models/MambaSimple.toml) | time-series | [README](../../src/tsflab/models/mambasimple/README.md) |
+| `MambaTS` | [`configs/models/MambaTS.toml`](../../configs/models/MambaTS.toml) | time-series | [README](../../src/tsflab/models/mambats/README.md) |
 | `MegaCRN` | [`configs/models/MegaCRN.toml`](../../configs/models/MegaCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/megacrn/README.md) |
 | `MGSFformer` | [`configs/models/MGSFformer.toml`](../../configs/models/MGSFformer.toml) | spatiotemporal | [README](../../src/tsflab/models/mgsfformer/README.md) |
 | `MICN` | [`configs/models/MICN.toml`](../../configs/models/MICN.toml) | time-series | [README](../../src/tsflab/models/micn/README.md) |

@@ -338,6 +338,37 @@ def test_mamba_default_init() -> None:
     assert torch.equal(block.D, torch.ones(8))
 
 
+def test_mamba_options_keep_default_keys_and_extend_cleanly() -> None:
+    default = MambaBlock(6, 8, 2, 3, 4)
+    optioned = MambaBlock(6, 8, 2, 3, 4, x_dropout=0.3, reference_dt_init=True)
+    assert set(default.state_dict()) == set(optioned.state_dict())
+    no_conv = MambaBlock(6, 8, 2, 3, 4, use_conv=False)
+    assert not any(k.startswith("conv1d") for k in no_conv.state_dict())
+    x = randn(2, 5, 6, seed=3)
+    assert no_conv(x).shape == x.shape
+    with pytest.raises(ValueError):
+        MambaBlock(6, 8, 2, 3, 4, x_dropout=1.0)
+
+
+def test_mamba_reference_dt_init_bias_inverts_to_step_range() -> None:
+    block = MambaBlock(6, 64, 2, 3, 4, reference_dt_init=True)
+    step = torch.nn.functional.softplus(block.dt_proj.bias)
+    assert step.min() >= 1e-4 - 1e-7 and step.max() <= 0.1 + 1e-6
+    assert block.dt_proj.weight.abs().max() <= 2 ** -0.5 + 1e-6
+
+
+def test_mamba_x_dropout_only_acts_in_training() -> None:
+    block = seed_params(MambaBlock(6, 8, 2, 3, 4, x_dropout=0.5), scale=0.2)
+    x = randn(2, 7, 6, seed=2)
+    block.eval()
+    torch.testing.assert_close(block(x), block(x))
+    block.train()
+    torch.manual_seed(0)
+    first = block(x)
+    torch.manual_seed(1)
+    assert not torch.allclose(first, block(x))
+
+
 def test_rmsnorm_contract() -> None:
     n = RMSNorm(6)
     x = randn(2, 5, 6, seed=1) * 3
