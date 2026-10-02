@@ -210,6 +210,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("amplitude", "fft", "frequency", "period", "spectrum"),
         ),
         ComponentSpec(
+            "fft_extrapolation_conv",
+            "tsflab.models._components.fft_extrapolation_conv",
+            "Zero-padded rfft convolution with per-bin complex weight and bias mapping a history to a horizon, with optional channel mixing of weight sets.",
+            ("FFTExtrapolationConv",),
+            ("complex", "convolution", "fft", "frequency-domain", "horizon", "zero-padding"),
+        ),
+        ComponentSpec(
             "flatten_forecast_head",
             "tsflab.models._components.flatten_forecast_head",
             "Shared or channel-wise linear forecast head over two flattened feature axes.",
@@ -364,6 +371,13 @@ COMPONENT_CATALOG = ComponentCatalog(
         ),
         ComponentSpec("transformer_encdec", "tsflab.models._components.transformer_encdec", "Shared Transformer encoder and decoder blocks.", keywords=("attention", "decoder", "encoder", "transformer")),
         ComponentSpec("tst_transformer", "tsflab.models._components.tst_transformer", "Time-series Transformer encoder blocks.", keywords=("attention", "encoder", "time-series", "transformer")),
+        ComponentSpec(
+            "weight_set_router",
+            "tsflab.models._components.weight_set_router",
+            "Low-rank weight sharing: softmax-with-temperature routing matrix over a few weight sets and the per-channel linear mix of those sets.",
+            ("WeightSetRouter", "mix_weight_sets"),
+            ("low-rank", "routing", "softmax", "temperature", "weight-sharing"),
+        ),
         ComponentSpec(
             "wavelet",
             "tsflab.models._components.wavelet",

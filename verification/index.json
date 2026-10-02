@@ -322,6 +322,13 @@
       "subject_sha256": "7304f9dc561c05da20cea524dc9141a7bb3bf8aeb625d8696644247ea832b9ea",
       "verified_at": "2026-10-02T18:16:31.428230Z"
     },
+    "DiPELinear": {
+      "evidence": "verification/evidence/DiPELinear.json",
+      "sha256": "c1a2240ab7f27f4e7118c384cd4ff4abe808e10533f3e184e6c77a6696d188bb",
+      "status": "passed",
+      "subject_sha256": "83212f6074acd19e8ea7bc1fa74af0ab019373f783a830edc624766c1f3f8eed",
+      "verified_at": "2026-10-02T18:56:39.294229Z"
+    },
     "DistDF": {
       "evidence": "verification/evidence/DistDF.json",
       "sha256": "9452352d5478dcd1439e4880ed6698138183525d9753d429b6206528d4c9fdc0",

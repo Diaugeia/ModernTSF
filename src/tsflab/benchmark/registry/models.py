@@ -378,4 +378,6 @@ MODEL_CATALOG = ModelCatalog({
     "PatchTSMixer": "tsflab.models.patchtsmixer.spec",
     "AdaMSHyper": "tsflab.models.adamshyper.spec",
     "PENGUIN": "tsflab.models.penguin.spec",
+    "DiPELinear": "tsflab.models.dipelinear.spec",
+    "PGN": "tsflab.models.pgn.spec",
 })
