@@ -32,8 +32,7 @@ Harness use these Agent assets directly. Claude Code uses `CLAUDE.md` and
 ## Information layers
 - Human-facing material lives in `README.md`, `CONTRIBUTING.md`, English `docs/`,
   and resource cards. Keep it task-oriented and limited to public APIs.
-- Agent-only procedures live in `.agents/`; do not send users there as product
-  documentation.
+- Agent-only procedures live in `.agents/`, never presented as product docs.
 - Descriptive truth lives in cards; runtime truth in schemas, specs, configs, and
   tests. Read cards progressively: `tsf catalog`, `tsf catalog search`, `tsf <kind>
   show <name>`, and `--depth 2|3` only when a decision needs it.
