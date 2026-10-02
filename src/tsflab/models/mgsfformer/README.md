@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/GestaltCogTeam/MGSFformer"
 revision: "ff665a422a0ae001cfdd1b60ec9b4338a5ab406e"
 license: "NOASSERTION"
+tagline: "Five temporal granularities, residual de-redundancy between them, temporal and spatial attention, and dynamic fusion."
+tags: ["transformer", "spatiotemporal", "multi-scale", "attention-variant", "normalization", "air-quality"]
+composition: ["normalization=component:revin", "decomposition=local:residual-de-redundant-multi-granularity", "temporal=local:per-station-temporal-attention", "channel=local:station-spatial-attention", "head=local:dynamic-fusion-of-granularity-heads", "loss=loss:mse"]
 ---
 # MGSFformer
 
-MGSFformer is a Multi-Granularity Spatiotemporal Fusion Transformer designed for node-level air quality prediction. It consists of three specialised sub-modules: a residual de-redundant block that eliminates information redundancy between data of different temporal granularities, a spatiotemporal attention block that captures correlations across monitoring stations and time, and a dynamic fusion block that adaptively weights and integrates multi-granularity predictions.
+## Key ideas
+
+- `_granularity` builds averaged-and-upsampled copies of the embedded series at factors 1, 3, 6, 12 and 24; `ResidualDeRedundant` subtracts what each coarser level can be predicted from the next finer one.
+- `SpatioTemporalAttention` applies temporal attention per station and then spatial attention across stations at each step, once per granularity.
+- Each granularity has its own flatten-and-linear head and `DynamicFusion` combines the forecasts with sample- and node-specific softmax weights.
+- `seq_len` must be a multiple of 24; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

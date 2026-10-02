@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "iTransformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "bca02b7ac59cf5b68c4da5c2d0449f0b876c053b9eaea08b51f253fa196abf48",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "969e4324aabf8942526411177abc3b725ffef6175e030461520e729542424ebc",
   "paper": {
     "title": "iTransformer: Inverted Transformers Are Effective for Time Series Forecasting",
     "venue": "ICLR 2024",

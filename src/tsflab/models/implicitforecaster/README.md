@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/rakuyorain/Implicit-Forecaster"
 revision: "e3e7f77fb0489c2b5e58eac990096668b8b0aff4"
 license: "Apache-2.0"
+tagline: "Decoder that predicts amplitude and phase for a pool of frequencies and composes the horizon by inverse rFFT."
+tags: ["mlp", "frequency", "decoder", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:mlp-encoder-with-history-spectrum", "channel=local:channel-independent-shared-weights", "head=local:amplitude-phase-irfft-wave-composition", "loss=loss:mse"]
 ---
 # ImplicitForecaster
 
-ImplicitForecaster (IF) is a time-series forecasting decoding module accepted at NeurIPS 2025. Rather than generating long-horizon forecasts by independently predicting each time point, it implicitly decomposes the target sequence into constituent waves parameterized by frequency, amplitude, and phase, capturing both long-term and short-term dynamics in a holistic manner and consistently boosting mainstream backbone models.
+## Key ideas
+
+- A channel-wise MLP `encoder` of the window is concatenated with the history rFFT magnitude (amplitude branch) or phase angle (phase branch).
+- `amplitude_head` predicts non-negative amplitudes and `phase_sine_head` / `phase_cosine_head` predict continuous phase coordinates (`atan2`) for a pool of `frequency_pool` samples' worth of bins.
+- `torch.polar` and `irfft` compose the wave pool into a signal and the first `pred_len` steps are the forecast, instead of predicting each time point independently.
+- `revin` wraps the model; the paper presents the decoder as a replacement head for other backbones, here paired with a compact MLP encoder.
 
 <!-- model-card:canonical:start -->
 ## Input and output

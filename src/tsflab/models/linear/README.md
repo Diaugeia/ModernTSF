@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/cure-lab/LTSF-Linear"
 revision: "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6"
 license: "Apache-2.0"
+tagline: "Single learnable history-to-horizon linear map applied along time to each channel, optionally one map per channel."
+tags: ["linear", "baseline", "lightweight", "channel-independent", "ltsf-linear"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # Linear
 
-Linear is one of the embarrassingly simple one-layer linear models from the LTSF-Linear family that directly maps the full historical input window to the prediction horizon via a single learnable linear projection applied independently per channel, serving as a strong baseline that outperforms complex Transformer-based models on long-term time series forecasting.
+## Key ideas
+
+- One affine map `W` of shape `pred_len x seq_len` (`ChannelWiseLinear`) forecasts every channel independently.
+- Weights are shared across channels by default; `individual=True` gives each channel its own map (a repository extension).
+- No normalization, decomposition or nonlinearity; the plain baseline behind DLinear and NLinear.
 
 <!-- model-card:canonical:start -->
 ## Input and output

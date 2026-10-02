@@ -8,10 +8,18 @@ year: 2021
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Jointly learns a discrete node graph via Gumbel-Softmax edge sampling and a bidirectional diffusion graph-GRU seq2seq."
+tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "covariates", "probabilistic-graph"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder-projection", "loss=loss:mse"]
 ---
 # GTS
 
-GTS jointly learns a discrete probabilistic graph and a diffusion-recurrent forecaster for multiple time series. This clean-room implementation encodes each node's observed history, classifies every directed edge, samples edges with straight-through Gumbel-Softmax during training, and uses the sampled graph in bidirectional graph-GRU recurrence.
+## Key ideas
+
+- `DiscreteGraphDiscovery` encodes each node's history, classifies every directed edge, and samples edges with straight-through Gumbel-Softmax in training (probabilities in evaluation).
+- The supplied adjacency is only a weak edge-logit prior and the target of `graph_prior_loss`, which is not applied by default.
+- `LearnedDiffusion` does bidirectional polynomial (Chebyshev-style) propagation on the sampled graph inside `GraphGRUCell`, stacked as `RecurrentStack` encoder and decoder.
+- The decoder generates the horizon autoregressively from a zero start, projecting each step to one value per node.
 
 <!-- model-card:canonical:start -->
 ## Input and output

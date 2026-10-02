@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/lllucky111/FeTS"
 revision: "d908e434b70f3cf69065004e295db13cdb9790b2"
 license: "NOASSERTION"
+tagline: "Patch tokens scored by a Fourier-plus-polynomial basis into a binary feature mask, then local-conv and global fusion."
+tags: ["cnn", "patching", "frequency", "channel-independent", "normalization", "feature-selection"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:fourier-poly-mask-adaptive-features+local:local-global-conv-fusion", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # FeTS
 
-FeTS (Feature-Aware Framework for Time Series) is a multivariate time-series forecasting model accepted at AAAI 2026. It learns adaptive temporal importance weightings over input feature-time combinations to selectively emphasize the most informative dimensions, improving forecasting accuracy across standard benchmarks in the standard time-series forecasting setting.
+## Key ideas
+
+- `FourierPolyMask` scores each patch-token dimension with a cosine, sine and polynomial basis and thresholds at the mean to get a binary mask; the forward mask is exact and a sigmoid straight-through estimator carries gradients.
+- `adaptive_features` uses the mask to gate a learned local aggregation kernel over neighbouring feature dimensions, added residually to the patch tokens.
+- A local `Conv1d` branch and a global mean branch are concatenated and fused (`fusion`), then flattened and projected linearly to the horizon.
+- Uses overlapping patches with channels folded into the batch and `revin` around the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

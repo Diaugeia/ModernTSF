@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/Meteor-Stars/LSINet"
 revision: "57358db80ce633c5fcd2019ece3c2e39fd4f4074"
 license: "NOASSERTION"
+tagline: "Patch MLP replacing attention with a shared sparse interaction matrix learned from a position-only memory table."
+tags: ["mlp", "patching", "channel-independent", "sparse-interaction", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-mixing-sti-blocks+component:sparse_connection_router+component:positional_encoding", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # LSINet
 
-LSINet is a lightweight, fully MLP-based forecaster that replaces self-attention with a Multihead Sparse Interaction Mechanism (MSIM): a per-head 0/1 interaction matrix over time patches, learned from a position-only memory table (not from the input) via a sparsity-induced Bernoulli/Gumbel-softmax relaxation, and reused unchanged across every sample and channel (Shared Interaction Learning, SIL).
+## Key ideas
+
+- `SharedSparseConnectionRouter` (`sparse_connection_router`) builds one 0/1 interaction matrix per head over time patches from a learnable memory table, not from the input, with a top-k hard mask (`density`).
+- `SparseTemporalInteractionBlock` combines a time-invariant patch-mixing MLP, propagation of per-head values through the shared sparse matrix, a time-updating MLP, and a feature-integration MLP with residuals.
+- Patches have a learnable position embedding (`positional_encoding`); channels are folded into the batch so every sample and channel reuses the same connections.
+- `FlattenForecastHead` maps patch features to the horizon inside `revin`; the paper's auxiliary sparsity loss is not wired in.
 
 <!-- model-card:canonical:start -->
 ## Input and output

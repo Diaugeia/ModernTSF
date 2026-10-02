@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/Zhveh7/FTP"
 revision: "964b6f614a1294f136d03049ee67b35f68605422"
 license: "MIT"
+tagline: "Pure-MLP multiscale channel-independent and channel-mixed patch branches fused with a Channel Enhancement stream."
+tags: ["mlp", "patching", "multi-scale", "channel-mixing", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:multiscale-patch-mlp-global-local", "channel=local:ci-cm-fusion-and-channel-enhancement", "head=local:two-layer-mlp-head", "loss=loss:mse"]
 ---
 # FTP
 
-FTP (FusionTimePatch) is a pure-MLP multivariate forecaster that unifies channel-independent and channel-mixed processing across multiple temporal patch spans.
+## Key ideas
+
+- `_GlobalLocalLevel` has a channel-independent (`ci`) and a channel-mixed (`cm`) path, each combining patch-level (local) and whole-window (global) linear features; levels are applied recursively with patch lengths `patch_unit * (i+1)`.
+- `channel_enhancement` scores latent dimensions and channels and adds a dominant-channel summary back to every channel; the paper's sampling is replaced by the probability-weighted expectation.
+- `_FTPEncoderLayer` fuses the CI, CM and CE streams linearly, concatenates the original embedding, and projects back to `seq_len`.
+- An MLP head maps each channel to `pred_len`; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

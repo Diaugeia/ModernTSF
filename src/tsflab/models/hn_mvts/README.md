@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/av-savchenko/HN-MVTS"
 revision: "e86c58a315576cef021d99e04b9b5fef55ddd6d6"
 license: "Apache-2.0"
+tagline: "Hypernetwork maps a learnable per-channel embedding to that channel's final-layer weights on a shared temporal MLP."
+tags: ["mlp", "hypernetwork", "normalization", "regularization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:linear-gelu-temporal-encoder", "channel=local:hypernetwork-channel-embedding-weights", "head=local:hypernetwork-generated-projection", "loss=loss:mse"]
 ---
 # HN_MVTS
 
-HN_MVTS integrates a hypernetwork-based generative prior with any base neural-network forecaster for multivariate time-series forecasting. The hypernetwork takes a learnable embedding matrix of time-series components as input and generates the weights of the base model's final layer, acting as a data-adaptive regulariser that improves generalisation and long-range predictive accuracy — used only during training so it adds no inference overhead. This approach bridges the gap between high-accuracy channel-dependent models and the robustness of channel-independent models.
+## Key ideas
+
+- `channel_embedding` (one learnable vector per channel) goes through a one-hidden-layer `hypernetwork` that outputs the channel's `pred_len x d_model` projection weights and bias (`generated_projection`).
+- A shared channel-independent `Linear(seq_len, d_model)` plus GELU is the base temporal encoder.
+- Forecast is the per-channel einsum of encoder features with the generated weights, inside `revin`.
+- In this local code the hypernetwork also runs at inference; the paper's training-only prior is not separated.
 
 <!-- model-card:canonical:start -->
 ## Input and output

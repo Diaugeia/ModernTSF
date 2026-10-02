@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/thuml/Koopa"
 revision: "a2e0bb77ec7c1a25e8e0579ba517ffb41358b844"
 license: "MIT"
+tagline: "Fourier split of invariant and variant dynamics, each advanced by a global or window-estimated Koopman operator."
+tags: ["mlp", "koopman", "decomposition", "frequency", "normalization"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=local:fourier-dominant-mode-split", "temporal=local:global-and-local-koopman-operators", "channel=local:channel-mixing-measurement-function", "head=local:operator-rollout-decoder-summed-over-blocks", "loss=loss:mse"]
 ---
 # Koopa
 
-Koopa is a time series forecasting model for univariate and multivariate sequence prediction. It leverages modern Koopman theory to disentangle time-variant and time-invariant components of non-stationary time series, using a Fourier filter for decomposition and stackable Koopman Predictor blocks that advance each type of dynamics forward with learned linear operators.
+## Key ideas
+
+- `FourierDynamicsSplit` keeps the top `alpha` fraction of rFFT bins by batch-average energy as the time-invariant part; the remainder is time-variant.
+- `GlobalKoopmanPredictor` advances invariant latents with one learned shared transition; `LocalKoopmanPredictor` estimates a ridge-DMD operator (`estimate_operator`) from the latest `seg_len` latent states.
+- `MeasurementFunction` encodes the channel vector at each step to a latent and decodes after rolling the operator forward `pred_len` steps.
+- `KoopmanBlock`s are stacked residually: each subtracts its reconstructions and adds its forecast contribution.
 
 <!-- model-card:canonical:start -->
 ## Input and output

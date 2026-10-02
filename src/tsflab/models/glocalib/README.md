@@ -8,14 +8,18 @@ year: 2025
 code: "https://github.com/Muyiiiii/NeurIPS-25-Glocal-IB"
 revision: "1ee232e6d6b28329010db0305899511cb7fc9016"
 license: "NOASSERTION"
+tagline: "Variational channel encoder with KL and masked-view latent-alignment auxiliary loss added to a small linear forecaster."
+tags: ["mlp", "regularization", "probabilistic", "representation-learning", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:linear-seq-to-pred-map", "channel=local:variational-channel-encoder", "head=local:linear-value-decoder", "loss=loss:mse+local:kl-and-latent-alignment-aux-loss"]
 ---
 # GlocalIB
 
-Glocal-IB is a plug-in regularizer that aligns the latent embeddings of two
-views of a series through a global-local Information Bottleneck: a projector on
-one branch is pulled toward a stop-gradient embedding of the other branch,
-improving representation quality. It is originally a **time-series imputation**
-method (masked view vs complete view).
+## Key ideas
+
+- `_VariationalSequenceEncoder` maps each time step to a diagonal-Gaussian latent (reparameterized in training, mean at inference), with an analytic KL term to a standard normal.
+- In training a randomly masked copy of the window is encoded and a `projector` of its mean is aligned to the stop-gradient clean latent (`cos_align` or `contrastive`).
+- `kl_weight * KL + align_weight * alignment` is exposed as `aux_loss` on top of the forecasting loss.
+- Forecast is a linear map over time then a linear value decoder, with `revin` (no affine) around it. Originally an imputation method; this is a forecasting adaptation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

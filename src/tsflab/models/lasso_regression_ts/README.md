@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1111/j.2517-6161.1996.tb02080.x"
 paper_title: "Regression Shrinkage and Selection via the Lasso"
 venue: "Journal of the Royal Statistical Society: Series B, 1996"
 year: 1996
+tagline: "One shared linear lag-to-horizon map per channel with an L1 weight penalty exposed as an auxiliary training loss."
+tags: ["linear", "statistical", "regularization", "channel-independent", "baseline"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:linear-lag-projection", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear", "loss=loss:mse+local:l1-weight-penalty-aux-loss"]
 ---
 # LassoRegressionTS
 
-LassoRegressionTS applies a shared channel-wise lag projection to the forecast horizon and exposes the Lasso L1 weight penalty through `aux_loss` for the standard trainer.
+## Key ideas
+
+- A single `nn.Linear(seq_len, pred_len)` is applied along time to every channel with shared coefficients.
+- `aux_loss = l1_penalty * |W|_1` is exposed so the standard trainer adds the Lasso penalty to the forecasting loss.
+- Fit by gradient descent rather than coordinate descent, so coefficients are only approximately sparse.
 
 <!-- model-card:canonical:start -->
 ## Input and output

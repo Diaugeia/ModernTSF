@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "InterPDN",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "388311ff6694a939eed70637f65e3f50aeed8eabc095cac95bfa0b8dbe9aec4c",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "f8b76bb15e359069617f87775606c3b7004b773d965eb35c8b0837085b52ca3b",
   "paper": {
     "title": "Time Series Forecasting via Direct Per-Step Probability Distribution Modeling",
     "venue": "AAAI 2026",

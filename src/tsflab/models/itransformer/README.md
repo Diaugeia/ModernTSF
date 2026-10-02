@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/thuml/iTransformer"
 revision: "c2426e68ca13f74aaec08045c5c724d8ad328124"
 license: "MIT"
+tagline: "Inverted tokens: each variate's whole lookback is one token, attention runs across variates, FFN acts per variate."
+tags: ["transformer", "channel-mixing", "normalization", "inverted-tokens", "calendar-covariates"]
+composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:per-variate-linear-token-embedding", "channel=local:variate-token-self-attention", "head=local:linear-variate-token-projection", "loss=loss:mse"]
 ---
 # iTransformer
 
-iTransformer is a Transformer-based model for multivariate time series forecasting that inverts the conventional token design: instead of embedding multiple variates at the same timestamp into one token, it embeds the entire time series of each individual variate into a single variate token. Attention is then applied across variates to capture inter-channel correlations, while the feed-forward network learns nonlinear temporal representations per variate.
+## Key ideas
+
+- `InvertedEmbedding` projects a variate's entire `seq_len` series to one `d_model` token (`nn.Linear(seq_len, d_model)`); the six calendar mark columns, if given, become extra auxiliary tokens.
+- `InvertedEncoderLayer` is a post-norm `nn.MultiheadAttention` over the variate axis, so attention captures inter-channel correlation while the feed-forward network learns per-variate temporal features.
+- A linear `projection` maps each variate token to `pred_len`; auxiliary tokens are dropped.
+- Each variate is standardized over its window and restored on the output (`use_norm`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

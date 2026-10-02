@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Graph-GRU encoder-decoder whose node-specific filters come from hierarchical node, calendar and horizon meta embeddings."
+tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "meta-learning", "calendar-embedding"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:meta-graph-gru-encoder-decoder", "channel=component:adaptive_node_embedding_adjacency+local:meta-parameter-graph-filters", "head=local:autoregressive-linear-decoder", "loss=loss:mse"]
 ---
 # HimNet
 
-HimNet (Heterogeneity-Informed Spatiotemporal Meta-Network) is a spatiotemporal learning model designed for node-structured or graph-structured data. It captures spatiotemporal heterogeneity by learning spatial and temporal embeddings as a clustering process, then derives location- and time-specific parameters from meta-parameter pools using a hierarchical meta-graph GRU encoder-decoder with an adaptively learned graph topology.
+## Key ideas
+
+- `_meta` concatenates a node embedding, time-of-day and day-of-week embeddings and a horizon embedding, then projects them to a per-node meta vector.
+- `MetaGraphConvolution` builds a graph from that vector (`adaptive_node_embedding_adjacency`) and generates node-specific weights and biases from weight banks indexed by it, with Chebyshev-style polynomial order `cheb_k`.
+- `MetaGraphGRUCell`s form the encoder and an autoregressive decoder that feeds back its own prediction at each horizon step.
+- The supplied `adj_mx` is ignored; topology is learned only from the embeddings.
 
 <!-- model-card:canonical:start -->
 ## Input and output

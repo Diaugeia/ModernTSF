@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Graph-GRU encoder-decoder whose dynamic graph comes from hidden-state queries over a learnable meta-node memory bank."
+tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "memory-bank"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:meta-graph-gru-encoder-decoder", "channel=local:meta-node-bank-dynamic-graph", "head=local:autoregressive-linear-decoder", "loss=loss:mse"]
 ---
 # MegaCRN
 
-MegaCRN (Meta-Graph Convolutional Recurrent Network) is a spatiotemporal forecasting model designed for graph-structured node data such as road-network traffic. It addresses the heterogeneity and non-stationarity inherent in traffic streams by learning dynamic graph structures through a Meta-Graph Learner backed by a learnable Meta-Node Bank, plugged into a GCRN encoder-decoder. This allows the model to disentangle locations and time slots with different patterns and adapt robustly to anomalous conditions.
+## Key ideas
+
+- Hidden states query a trainable `memory` bank by attention; memory-derived node embeddings give a dynamic meta-graph (`_meta_graph`) that is blended with the supplied adjacency through a learned `graph_mix`.
+- `MetaGraphCell` is a GRU whose gates use graph-polynomial features of order `cheb_k`; the graph is refreshed at every encoder step.
+- The decoder runs autoregressively, feeding its previous prediction plus future time features and the memory-derived node embedding.
+- Contrastive memory losses and teacher forcing from the paper are not implemented.
 
 <!-- model-card:canonical:start -->
 ## Input and output

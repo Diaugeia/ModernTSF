@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "FreTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "8cf644d34dd5f313d6acc0ed3c14ea260a9ad0f27f188860b492b1a358add896",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "653124f12380caaf367e1c2867c7541f97b249528a4b2a2fca88d7233b3b9dd8",
   "paper": {
     "title": "Frequency-domain MLPs are More Effective Learners in Time Series Forecasting",
     "venue": "NeurIPS 2023",

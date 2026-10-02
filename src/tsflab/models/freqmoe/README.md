@@ -9,8 +9,18 @@ code: "https://github.com/sunbus100/FreqMoE-main"
 revision: "b34e93703159a22fdc9f97f0be4fa32b5600a3bf"
 license: "unlicensed (no LICENSE file in repository; inspected only for read-only paper-structure clarification, no source copied)"
 
+tagline: "Band-wise frequency mixture of experts denoises the window; residual complex frequency-extension blocks forecast."
+tags: ["mlp", "frequency", "mixture-of-experts", "decomposition", "channel-independent"]
+composition: ["normalization=local:per-block-instance-standardization", "decomposition=component:freq_band_moe", "temporal=local:residual-frequency-extension-blocks", "channel=local:channel-independent-shared-weights", "head=local:irfft-horizon-extension-summed-blocks", "loss=loss:mse"]
 ---
 # FreqMoE
+
+## Key ideas
+
+- `FrequencyBandMixtureOfExperts` (`freq_band_moe`) reconstructs a denoised series from learned contiguous frequency bands combined by an input-dependent gate.
+- Each `FrequencyExtensionBlock` standardizes the series, upsamples the rFFT spectrum from `seq_len` to `seq_len + pred_len` bins with a complex `nn.Linear`, applies `ComplexReLU`/`ComplexDropout`, refines with a second complex linear, and inverts.
+- Blocks are chained on the backcast residual and their forecast segments are summed.
+- `band_boundaries` is cast to integer indices and so receives no gradient, as in the official code.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1162/neco.1997.9.8.1735"
 paper_title: "Long Short-Term Memory"
 venue: "Neural Computation"
 year: 1997
+tagline: "LSTM encoder over the normalized multichannel window with a direct linear decode of its final hidden state."
+tags: ["rnn", "baseline", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:lstm-final-state-encoder", "channel=local:channel-mixing-lstm-input", "head=local:linear-direct-multi-horizon-head", "loss=loss:mse"]
 ---
 # LSTMForecasterTS
 
-LSTMForecasterTS is a clean-room LSTM baseline that encodes a fixed history and directly projects the final hidden state to a multistep forecast.
+## Key ideas
+
+- An `nn.LSTM` consumes all channels jointly at every step, so channels are mixed in the recurrent state.
+- The last layer's final hidden state goes through one linear `head` to `pred_len * enc_in` values (direct multi-horizon, no autoregression).
+- `revin` normalizes the input and denormalizes the forecast (`use_revin`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

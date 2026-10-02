@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1007/s10994-006-6226-1"
 paper_title: "Extremely Randomized Trees"
 venue: "Machine Learning 2006"
 year: 2006
+tagline: "Ensemble of soft decision trees with frozen random axis-aligned splits and learned leaf forecasts, trained by gradient."
+tags: ["tree", "ensemble", "baseline", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree+local:frozen-random-splits", "channel=local:flattened-channel-mixing", "head=local:mean-of-tree-leaf-forecasts", "loss=loss:mse"]
 ---
 # ExtraTreesTS
 
-ExtraTreesTS is an independent differentiable ensemble with frozen random axis-aligned splits and learned leaf forecasts.
+## Key ideas
+
+- Samples a feature axis and a threshold per split once from a seeded generator and freezes them (`fixed_split_weight`, `fixed_threshold` of `soft_tree`); only leaf forecasts are learned.
+- Routes the flattened `seq_len * enc_in` window softly through each tree (`SoftDecisionTree`) and averages the `num_estimators` trees' forecasts, so it is gradient-fit rather than the Extra-Trees algorithm.
+- Wraps the ensemble in reversible instance normalization (`revin`); no decomposition or channel-specific weights.
 
 <!-- model-card:canonical:start -->
 ## Input and output

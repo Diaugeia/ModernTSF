@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/hqh0728/HDMixer"
 revision: "da17f94b63b869633556b6bf65a5c68e3f322e2b"
 license: "NOASSERTION"
+tagline: "Pure-MLP model with learned variable-length patches and separate within-patch, across-patch and variable mixers."
+tags: ["mlp", "patching", "channel-mixing", "normalization", "mixer"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:length-extendable-patcher+local:within-and-across-patch-mlp-mixers", "channel=local:cross-variable-mlp-mixer", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # HDMixer
 
-HDMixer is a pure MLP-based time series forecasting model for multivariate prediction that addresses two limitations of standard patch-based approaches: fixed-length patches lose temporal boundary information (e.g., peaks and periods are cut arbitrarily), and existing methods focus mainly on long-range cross-patch dependencies while ignoring short-range within-patch and cross-variable interactions. HDMixer introduces a Length-Extendable Patcher (LEP) to enrich patch boundary information and a Hierarchical Dependency Explorer (HDE) that models all three dependency levels — within-patch (short-term), across-patch (long-term), and cross-variable — using pure MLPs.
+## Key ideas
+
+- `LengthExtendablePatcher` predicts a center shift and width scale for each nominal patch and samples it from the series by bilinear `grid_sample`, so patch boundaries are learned rather than fixed.
+- `HierarchicalDependencyBlock` applies separate residual pre-norm `AxisMixer` MLPs over the within-patch axis, the patch axis, the variable axis and the embedding axis.
+- A flatten-and-linear `head` maps all patch features to the horizon; `revin` wraps the model.
+- The mixers are model-local rather than the shared `mixer_block` because each axis is mixed on its own.
 
 <!-- model-card:canonical:start -->
 ## Input and output

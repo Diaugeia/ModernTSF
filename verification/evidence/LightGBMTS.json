@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LightGBMTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "a470dfcea409a53342beb3f443f8b71f930c0e388c03185c696684f92854c5cf",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "aebc22b0bf7d7ddc33219a8003591b1cb6df53e2b8c6f94872b4b852d21d6614",
   "paper": {
     "title": "LightGBM: A Highly Efficient Gradient Boosting Decision Tree",
     "venue": "NeurIPS 2017",

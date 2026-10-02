@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/MAGE"
 revision: "f1fdd27da4e72a140c4f341f94d368fbcaec7507"
 license: "NOASSERTION"
+tagline: "Sparse top-k mixture of low-rank adaptive graph experts with linear node complexity and calendar prompts."
+tags: ["gnn", "spatiotemporal", "mixture-of-experts", "graph-learning", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:flattened-history-linear-embedding", "channel=local:sparse-mixture-of-adaptive-graph-experts", "head=local:linear-horizon-head", "loss=loss:mse"]
 ---
 # MAGE
 
-MAGE (Mixture of Adaptive Graph Experts) is a spatiotemporal learning model for node-structured or graph-structured data. It introduces a sparse yet balanced mixture-of-experts strategy in which each expert perceives a unique underlying graph topology through kernel-based functions with linear complexity relative to the number of nodes, overcoming the noise amplification caused by ReLU activations in existing adaptive graph learning methods.
+## Key ideas
+
+- `AdaptiveGraphExpert` propagates with a factorised low-rank kernel `softmax(E_target) softmax(E_source)` applied to node features, so cost is linear in nodes and no `N x N` adjacency is built.
+- `MixtureGraphBlock` routes every node to its top-k experts (`topk`) by raw-logit selection, a masked softmax, and a 5% dense mix for balance, then applies an RMSNorm feed-forward.
+- Each node embeds its whole window (value plus calendar channels, `to_calendar_spatiotemporal`) with a linear layer, plus a pooled calendar embedding.
+- Three blocks are applied with 1, 2 and 3 recurrent passes (`recur_num` experts); the last result is subtracted from a skip, and a linear head gives the horizon. The supplied adjacency is unused, and the expert-count training loss is omitted.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,17 @@ year: null
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "Parameter-free persistence baseline repeating each node's last observed value over the whole horizon."
+tags: ["statistical", "baseline", "persistence", "naive", "spatiotemporal"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:last-observation-persistence", "channel=none", "head=none", "loss=loss:mse"]
 ---
 # HL
 
-HL (Historical Last) is a naive spatiotemporal forecasting baseline that repeats the last observed value across every node and every step of the prediction horizon. It serves as a lower-bound reference in graph- and node-structured benchmarks, providing the simplest possible prediction without any learning.
+## Key ideas
+
+- Returns `x_enc[:, -1:, :]` expanded across `pred_len`; no learned parameters and no graph or covariates are used.
+- Serves as the lower-bound reference for graph and node-structured benchmarks.
+- Kept model-local because the `last_value_center` component assumes a head between subtract and restore, which HL lacks.
 
 <!-- model-card:canonical:start -->
 ## Input and output

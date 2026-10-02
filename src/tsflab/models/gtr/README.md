@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/macovaseas/GTR"
 revision: "d94161906151bdc0c94f4d21c2b0ca356aeb3135"
 license: "Apache-2.0"
+tagline: "Learned full-cycle memory retrieved by absolute index, fused with the window by 2D convolution, then residual MLP."
+tags: ["mlp", "retrieval", "cnn", "normalization", "plug-in"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:global-cycle-retrieval-and-2d-conv-fusion+local:residual-mlp", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # GTR
 
-GTR (Global Temporal Retriever) is a lightweight, plug-and-play module for multivariate time series forecasting that extends any host model's temporal receptive field beyond the immediate input window by maintaining an adaptive global temporal embedding of the full cycle and dynamically retrieving and aligning relevant long-range historical segments with the current input, fusing them via 2D convolution and residual connections.
+## Key ideas
+
+- `GlobalTemporalRetriever` holds a trainable `cycle_length x enc_in` matrix, retrieves the segment at the window's cycle positions, and aligns it with a linear map over time.
+- A `[2, P+1]` `Conv2d` mixes the window row with the retrieved reference row and a residual adds the result back to the input.
+- A two-layer GELU MLP with a skip connection and a linear projection produce the horizon per channel; `revin` wraps the model.
+- The common interface assumes start index 0; `forecast_at(..., start_index=...)` takes real absolute positions.
 
 <!-- model-card:canonical:start -->
 ## Input and output

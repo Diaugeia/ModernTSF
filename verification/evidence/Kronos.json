@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Kronos",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "1c856c97143e5c9ec452b29707fab6173a00bf82cf463fdf96292d1e419eef3f",
+  "verified_at": "2026-10-02T18:16:58.174354Z",
+  "subject_sha256": "aabe3615dc3b3679f4c0827641aa794234c0140bd992dd56ea949dacf5fededf",
   "paper": {
     "title": "Kronos: A Foundation Model for the Language of Financial Markets",
     "venue": "AAAI 2026",

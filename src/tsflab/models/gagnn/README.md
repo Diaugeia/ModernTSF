@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/Friger/GAGNN"
 revision: "509ac7d6eb55914979fc45f6d23e967021cfd270"
 license: "MIT"
+tagline: "GRU city encoder plus learned soft city-to-group assignment with group-level message passing for air quality."
+tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "covariates", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:gru-node-encoder", "channel=local:group-aware-city-group-message-passing", "head=local:linear-multi-horizon-head", "loss=loss:mse"]
 ---
 # GAGNN
 
-GAGNN is a covariate prediction model for node-level air quality forecasting, corresponding to the original air quality prediction setting. It constructs both a city graph and a city group graph to capture spatial and latent dependencies between cities, using hierarchical group-aware attention and message-passing to predict future air quality indices at each node.
+## Key ideas
+
+- A shared `nn.GRU` encodes each node's history (value plus calendar covariates through `to_spatiotemporal`) into one state per city.
+- `GroupAwareLayer` softly assigns cities to learned latent groups, pools them, passes messages between groups through a softmax group affinity, and returns group context to the cities.
+- City-graph propagation over the normalized supplied adjacency, group features, and a residual are fused and layer-normalized, repeated for `num_layers`.
+- A linear head maps each node state directly to all `pred_len` steps.
 
 <!-- model-card:canonical:start -->
 ## Input and output

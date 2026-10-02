@@ -5,10 +5,18 @@ paper: "https://proceedings.neurips.cc/paper/2017/hash/6449f44a102fde848669bdd9e
 paper_title: "LightGBM: A Highly Efficient Gradient Boosting Decision Tree"
 venue: "NeurIPS 2017"
 year: 2017
+tagline: "Differentiable additive soft trees of varying depth over a learned soft lag-feature gate, with residual state updates."
+tags: ["tree", "ensemble", "boosting", "baseline", "feature-selection", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:stagewise-residual-backcast", "temporal=component:soft_tree+local:additive-stagewise-corrections", "channel=local:flattened-channel-mixing", "head=local:linear-base-plus-tree-corrections", "loss=loss:mse+local:feature-gate-sparsity-aux-loss"]
 ---
 # LightGBMTS
 
-LightGBMTS is an independent differentiable additive-tree baseline with learned lag-feature gating and compact varying-depth stages.
+## Key ideas
+
+- A learned sigmoid gate (`feature_logits`) softly selects lag features of the flattened window before the base linear map and every tree.
+- `num_estimators` `SoftDecisionTree`s (`soft_tree`) of cycling depth `1 + index % tree_depth` add scaled corrections to a linear base forecast; learned backcasts update the input state between stages.
+- `aux_loss = 1e-4 * mean(gate)` encourages sparse feature use; `revin` wraps the model.
+- It does not implement LightGBM's histogram split search, leaf-wise growth, GOSS or EFB.
 
 <!-- model-card:canonical:start -->
 ## Input and output

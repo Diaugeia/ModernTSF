@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1115/1.3662552"
 paper_title: "A New Approach to Linear Filtering and Prediction Problems"
 venue: "Journal of Basic Engineering"
 year: 1960
+tagline: "Differentiable alpha-beta level/velocity filter with learned per-channel gains and linear extrapolation."
+tags: ["statistical", "state-space-filter", "channel-independent", "baseline", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:alpha-beta-constant-velocity-filter", "channel=local:channel-independent-learned-gains", "head=local:linear-extrapolation-of-level-and-velocity", "loss=loss:mse"]
 ---
 # KalmanFilterTS
 
-KalmanFilterTS is a differentiable fixed-gain alpha-beta filter for a constant-velocity state, with bounded learnable gains per channel.
+## Key ideas
+
+- Runs a recursive level/velocity update over the window with innovation gains `alpha` and `beta` (sigmoid of learnable logits, one pair per channel).
+- The forecast extrapolates `level + h * velocity` for horizon step `h`.
+- It is a fixed-gain specialization with no covariance recursion, unit time steps, and only `2 * enc_in` parameters.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/tianzhou2011/FiLM"
 revision: "2794355ff6258743a29715263414283782910521"
 license: "MIT"
+tagline: "Legendre-memory projection of each window, low-rank complex Fourier filtering, and a mixture of multiscale experts."
+tags: ["mlp", "frequency", "multi-scale", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:legendre-memory-and-low-rank-fourier-experts", "channel=local:channel-independent-shared-weights", "head=local:legendre-reconstruction-expert-mixture", "loss=loss:mse"]
 ---
 # FiLM
 
-FiLM (Frequency improved Legendre Memory) is a time-series forecasting model for the standard univariate and multivariate long-term forecasting setting. It applies Legendre polynomial projections to compress and approximate historical context, applies a Fourier-domain projection to remove high-frequency noise, and uses a low-rank approximation to reduce computation — yielding a plug-in representation module that can also enhance other deep learning forecasters.
+## Key ideas
+
+- `LegendreProjection` runs the translated-Legendre recurrence `C_t = A C_(t-1) + B x_t` (bilinear-discretized) to compress the history into polynomial coefficients.
+- `LowRankFourierLayer` keeps the lowest rFFT modes of the coefficient trajectory and filters them with complex low-rank factors (`order`, `rank`).
+- The last filtered state is reconstructed on the horizon grid by Legendre basis functions (`reconstruct`).
+- `FiLMExpert`s read the last `scale * pred_len` steps (default scales 1, 2, 4) and are combined by a learned `expert_mixture`; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output
