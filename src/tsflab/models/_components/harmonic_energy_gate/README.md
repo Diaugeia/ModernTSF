@@ -53,11 +53,11 @@ parameter-free.
 
 ## Invariants and equivalence evidence
 
-- no fixture and no dedicated unit test: nothing under `tests/` imports
-  `HarmonicEnergyGate`; only the `dualformer` model tests exercise it indirectly.
+- The `dualformer` model tests also exercise it indirectly.
 - CPU check: a pure sinusoid with 4 cycles over length 32 returns exactly 1.0.
 - The ratio is at most 1 up to the `1e-5` stabilizer, because harmonics are
   confined to bins below `nb` and counted once each unless clamped.
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/harmonic_energy_gate.pt`.
 
 ## Variants and options
 

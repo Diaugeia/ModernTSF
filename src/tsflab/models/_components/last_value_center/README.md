@@ -54,6 +54,7 @@ unlike `revin`.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/last_value_center.pt`.
 - `tests/fixtures/component_extraction_batch7.pt` holds pre-refactor outputs,
   state dicts, and input gradients for `nlinear`, `segrnn`, and `crossgnn` (with
   `anti_ood` true and false); `tests/test_component_extraction_batch7.py`

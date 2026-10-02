@@ -60,6 +60,7 @@ after the backbone, and the latent autoencoder of `latenttsf`.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/dlinear_shared.pt`, `tests/fixtures/components/dlinear_ind.pt`.
 - `test_dlinear_is_seasonal_plus_trend_forecasting` in
   `tests/test_compact_local_implementations.py` checks that the model output
   equals seasonal projection plus trend projection of the decomposition.

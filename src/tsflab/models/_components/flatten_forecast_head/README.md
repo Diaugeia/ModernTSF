@@ -46,6 +46,7 @@ only: the preceding encoder, the normalization, and any reshape into
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/flatten_forecast_head_shared.pt`, `tests/fixtures/components/flatten_forecast_head_ind.pt`.
 no fixture. `test_flatten_forecast_head_shared_and_individual_contracts` in
 `tests/test_repository_contracts.py` checks that shared output equals
 `linear(flatten(x))`, that individual output equals the stack of per-channel linears, the

@@ -54,12 +54,11 @@ All classes are `nn.Module`. Public symbols: `PositionalEmbedding`,
 
 ## Invariants and equivalence evidence
 
-no fixture. The module has no dedicated test; its consumers' forward passes are
-exercised only indirectly through the forward passes of its consumers
-(`transformer`, `informer`, `sensorformer`, `timeexpert`); no test imports
-it directly. I confirmed shapes by hand: `DataEmbedding(3, 8, "timeF")` on `[2, 10, 3]` values
-and `[2, 10, 6]` marks gives `[2, 10, 8]`; `PatchEmbedding(8, 4, 2, 2, 0.)` on
-`[2, 3, 10]` gives `[6, 5, 8]` and `n_vars=3`.
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/embed_data.pt`, `tests/fixtures/components/embed_patch.pt`, `tests/fixtures/components/embed_positional.pt`, `tests/fixtures/components/embed_temporal.pt`, `tests/fixtures/components/embed_token.pt`.
+- Shapes from the earlier hand check (`DataEmbedding(3, 8, "timeF")` on `[2, 10, 3]` values and
+  `[2, 10, 6]` marks gives `[2, 10, 8]`; `PatchEmbedding(8, 4, 2, 2, 0.)` on `[2, 3, 10]` gives
+  `[6, 5, 8]`, `n_vars=3`) are now asserted in the contract test; consumers (`transformer`,
+  `informer`, `sensorformer`, `timeexpert`) exercise it indirectly.
 
 ## Variants and options
 

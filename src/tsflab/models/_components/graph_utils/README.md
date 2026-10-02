@@ -59,6 +59,7 @@ Module-level functions (no `__all__`, no state):
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/graph_utils.pt`.
 - `tests/test_repository_contracts.py`
   (`test_shared_adjacency_normalizers_are_finite`): `adj_to_supports` returns float32
   and equals `transition_matrix(A)` and `transition_matrix(A.T)` on a graph with an

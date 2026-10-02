@@ -50,6 +50,7 @@ buffers or state of its own; no dtype handling beyond the convs'.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/gated_dilated_conv.pt`.
 - `tests/test_component_extraction_graph.py`:
   `test_wavenet_gated_dilated_conv_equivalence`,
   `test_gwnet_gated_dilated_conv_and_adaptive_adjacency_equivalence`,

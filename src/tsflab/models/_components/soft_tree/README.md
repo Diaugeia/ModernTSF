@@ -56,12 +56,12 @@ as `split_weight * split_mask` at every forward. No state across calls. Cost gro
 
 ## Invariants and equivalence evidence
 
-- no fixture: no recorded tensor fixture.
 - `tests/test_tree_baselines.py`: `test_depth_one_tree_is_exact_sigmoid_leaf_interpolation`
   checks the depth-1 closed form with temperature 2 and that leaf probabilities
   sum to one; `test_oblivious_tree_shares_one_decision_per_depth` checks the
   level-shared tree; `test_named_models_keep_distinct_compositions` and
   `test_complete_runtime_contract` run all seven consumers.
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/soft_tree.pt`.
 
 ## Variants and options
 

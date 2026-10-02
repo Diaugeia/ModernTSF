@@ -56,6 +56,7 @@ outputs (softmax over the amplitudes in both consumers).
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/dominant_periods.pt`.
 - `test_dominant_periods_matches_timesnet_msgnet_reference` in
   `tests/test_repository_contracts.py` checks periods, amplitudes, and the
   gradient of the amplitudes against an inline reference implementation.

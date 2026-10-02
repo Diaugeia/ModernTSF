@@ -69,12 +69,12 @@ static `selective_scan(u, delta, a, b, c, d)` with `u, delta: [B, L, d_inner]`,
 
 ## Invariants and equivalence evidence
 
-- no fixture: there is no pre-refactor tensor fixture for this component.
 - `tests/test_ssm_sequence_forecasters.py` asserts `s_mamba` layers are instances
   of the shared `MambaBlock` and exercises `bimamba`'s `MambaPlus` wrapper around it.
 - Causality (outputs at positions before a perturbation are unchanged) and the
   `[B, L, d_model]` shape were confirmed with a tiny CPU snippet while writing
-  this card; no committed test pins them.
+  this card; they are now pinned by the contract test below.
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/mamba.pt`.
 
 ## Variants and options
 

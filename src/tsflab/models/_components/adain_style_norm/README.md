@@ -61,6 +61,7 @@ documented consumer.
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/adain_style_norm.pt`.
 - `test_adain_rescales_normalized_features_to_style_statistics` in
   `tests/test_2025_query_gate_hyperstate_forecasters.py` checks that the output
   mean and (unbiased) std over the length axis equal the style statistics.

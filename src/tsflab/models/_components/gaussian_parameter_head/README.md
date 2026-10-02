@@ -44,6 +44,7 @@ autoregressive sampling, and scale normalization of covariates remain in the mod
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/gaussian_parameter_head_softplus.pt`, `tests/fixtures/components/gaussian_parameter_head_log1pexp.pt`.
 no fixture. `test_gaussian_parameter_head_preserves_both_scale_formulas` in
 `tests/test_repository_contracts.py` checks both transforms against their formulas
 plus `eps`, strict positivity, and gradient finiteness.

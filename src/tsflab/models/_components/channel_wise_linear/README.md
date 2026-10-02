@@ -60,6 +60,7 @@ mixing stay in the model. Consumers: `linear`, `nlinear`, `rlinear`, `dlinear`
 
 ## Invariants and equivalence evidence
 
+- Contract, invariant, gradient, and seeded numerical-regression tests: `tests/test_component_contracts_basic.py`, reference values in `tests/fixtures/components/channel_wise_linear_shared.pt`, `tests/fixtures/components/channel_wise_linear_ind.pt`.
 - `test_channel_wise_linear_matches_original_output_and_gradients` in
   `tests/test_repository_contracts.py`: shared and individual outputs and input
   gradients equal the direct `nn.Linear` formulation.

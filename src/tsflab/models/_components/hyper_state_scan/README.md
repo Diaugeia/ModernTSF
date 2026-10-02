@@ -53,11 +53,11 @@ never mix with one another.
 
 ## Invariants and equivalence evidence
 
-- no fixture: there is no recorded tensor fixture.
 - `tests/test_2025_query_gate_hyperstate_forecasters.py`:
   `test_diagonal_selective_scan_matches_manual_recurrence` checks the scan against
   an explicit loop; `test_grid_state_mixer_preserves_grid_shape` checks the shape;
   `test_timepro_forward_and_gradient` runs it inside `timepro` (with `d_state=1`).
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/hyper_state_scan.pt` and `hyper_state_scan_mixer.pt`.
 
 ## Variants and options
 

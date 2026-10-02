@@ -53,6 +53,7 @@ selection is not. Ties follow `torch.topk`. Stateless, same dtype/device as inpu
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/topk_expert_router_gate.pt`, `tests/fixtures/components/topk_expert_router_mix.pt`.
 - `tests/fixtures/duet_pre_refactor.pt` and
   `tests/fixtures/dynamic_tmoe_pre_refactor.pt`, driven by
   `tests/test_component_extraction_moe.py`, compare state-dict keys, shapes and

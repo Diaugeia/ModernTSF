@@ -51,7 +51,7 @@ bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
   for lengths 8 and 9 on `[2, 3, T]` tensors.
 - `test_haar_dwt_matches_closed_form_on_a_known_pair` in the same file checks
   `[2, 4, 6, 8]` against the closed form.
-- no fixture: no stored pre-refactor tensors; both tests above are closed-form.
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/haar_dwt1d.pt`.
 
 ## Variants and options
 

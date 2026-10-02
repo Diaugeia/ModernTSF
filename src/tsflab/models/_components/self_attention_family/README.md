@@ -84,14 +84,16 @@ len_q, d_head]` (heads before time), unlike the other cores, and
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/self_attention_family_flash.pt`, `tests/fixtures/components/self_attention_family_flow.pt`, `tests/fixtures/components/self_attention_family_full.pt`, `tests/fixtures/components/self_attention_family_layer.pt`, `tests/fixtures/components/self_attention_family_prob.pt`.
 - `tests/test_local_attention_forecasters.py`: `FullAttention` matches the
   scaled dot-product equation; `transformer` uses `FullAttention` in the encoder
   and decoder roles (decoder self-attention causal, cross-attention not);
   `informer` uses `ProbAttention` with distilling.
 - `tests/test_dualformer_forecaster.py` checks `AttentionLayer` wrapping
   `FullAttention` alongside a model-local core.
-- no fixture: there is no pre-refactor numeric fixture for this component, and
-  no test covers `FlowAttention`, `FlashAttention`, or `ReformerLayer` directly.
+- no pre-refactor fixture exists; the contract test also covers `FlowAttention`, `FlashAttention`
+  (matches `FullAttention` unmasked), and `ProbAttention`; `ReformerLayer` is only checked for its
+  optional-dependency behavior.
 
 ## Variants and options
 

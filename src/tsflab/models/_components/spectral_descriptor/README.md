@@ -56,6 +56,7 @@ entropy plus band ratios.
 - Differences from the official CoRe code are recorded in the `core` card:
   statistics are per sample (official: per batch) and band edges follow the
   paper's inclusive ranges (official: half-open thirds).
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/spectral_descriptor.pt`.
 
 ## Variants and options
 

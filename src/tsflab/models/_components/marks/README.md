@@ -57,12 +57,13 @@ Public symbols: `TIME_FEATURES`, `TSLIB_TIME_FEATURE_DIMS`,
 
 ## Invariants and equivalence evidence
 
-no fixture. `test_shared_spatiotemporal_adapter_shape` in
+`test_shared_spatiotemporal_adapter_shape` in
 `tests/test_repository_contracts.py` checks `[2, 12, 4, 3]` output and that channel 0
 equals the values. `tests/test_component_extraction_graph.py` runs many graph
 consumers on `to_spatiotemporal` output and uses `normalized_time_features` in a
-decoder reference model. The TSLib adapter functions have no direct test and no
-current model consumer in `src/`.
+decoder reference model. The TSLib adapter functions have no current model consumer in `src/`.
+
+- `tests/test_component_contracts_signal.py` pins the interface (shapes, dtype, state-dict keys, invariants, gradient flow, error cases) and a seeded numerical regression against `tests/fixtures/components/marks.pt`.
 
 ## Variants and options
 

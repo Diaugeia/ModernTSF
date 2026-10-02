@@ -60,6 +60,7 @@ sampling uses the global torch RNG unless a `generator` is passed.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_graph.py` checks the Interface shapes, dtype, errors, invariants, gradient flow, and seeded numerical regression against `tests/fixtures/components/node_visibility.pt`.
 - `tests/test_local_graph_forecasters.py`
   (`test_visifold_node_visibility_masks_and_regroups_during_training`) runs `visifold` in
   training mode through the full pipeline and checks output shape `(2, 3, 4)` and

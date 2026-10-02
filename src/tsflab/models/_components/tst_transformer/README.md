@@ -58,6 +58,7 @@ Float dtype/device follow the input.
 
 ## Invariants and equivalence evidence
 
+- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/tst_transformer_batchnorm.pt`, `tests/fixtures/components/tst_transformer_layernorm.pt`.
 - `tests/test_repository_contracts.py` asserts the dependency closure of
   `patchtst` contains `tst_transformer`.
 - `tests/test_probabilistic_attention_forecasters.py` exercises it through
