@@ -168,9 +168,15 @@ paper: "{paper_url}"
 paper_title: "{paper_title}"
 venue: "{venue}"
 year: {year}
-{source}
+{source}tagline: "SCAFFOLD: one line, at most 120 characters, mechanism first."
+tags: ["scaffold"]
+composition: ["normalization=SCAFFOLD", "decomposition=SCAFFOLD", "temporal=SCAFFOLD", "channel=SCAFFOLD", "head=SCAFFOLD", "loss=SCAFFOLD"]
 ---
 # {name}
+
+## Key ideas
+
+- SCAFFOLD: 2-6 bullets naming the defining mechanisms and the code that implements them.
 
 <!-- model-card:canonical:start -->
 ## Input and output

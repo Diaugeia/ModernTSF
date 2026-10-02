@@ -36,7 +36,9 @@ verified. Models and methods are peers; do not create family directories.
    import another named model package.
 4. Keep `spec.py` to factory, strict schema, config path, capabilities, declared
    components, and runtime contract; put descriptive and provenance facts in the
-   README front matter. Complete the card's method, structure, inputs/outputs,
+   README front matter. Fill the retrieval layer first, since agents read it before
+   anything else: `tagline`, `tags`, the six-slot `composition`, and `## Key ideas`
+   (rules in STANDARDS "Progressive disclosure"). Then complete inputs/outputs,
    links, local implementation, differences, components, and constraints.
 5. Add a preset (and a smoke preset when training is cheap), plus focused
    paper/equation and reference checks in `verification/models.toml` and `tests/`.

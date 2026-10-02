@@ -36,15 +36,16 @@ Variants and options, When to use and when not to use, Related components. Only 
 enforces both.
 
 ## Progressive disclosure
-Catalog retrieval has four depths for models, components, and datasets: L0 one line
-(`name`, `kind`, `summary`, `tags`; what search returns), L1 front matter plus
-interface/constraint sections, L2 the full card, L3 paths to open. Search at L0, open
-L1, escalate only when a decision needs it (`tsf <kind> show <name> --depth N`).
+Start at `tsf catalog` (what exists), search L0 lines (`tsf catalog search`: name,
+kind, tagline, tags), open L1 (`tsf <kind> show`: front matter, key ideas or interface,
+constraints), escalate to L2 card or L3 files only when a decision needs it. A model card
+adds `tagline` (<=120 chars), `tags` (with one architecture family), `composition`
+(six slots `normalization|decomposition|temporal|channel|head|loss=component:/local:/loss:/none`,
+naming only imported components), and a `## Key ideas` section before the generated block.
 
 ## Model cards and sources
-Each model `README.md` is the descriptive source of truth. Its front matter is a
-flat fact header; the generated block does not restate `summary`. The body maps
-operations to local code and states differences from paper and official code.
+Each model `README.md` is the descriptive source of truth: a flat fact header, a body
+mapping operations to local code, and differences from paper and official code.
 
 Required front matter is `name`, `summary`, `paper`, `paper_title`, `venue`, and
 `year`. When official code exists, add `code`, `revision`, and `license` together;
