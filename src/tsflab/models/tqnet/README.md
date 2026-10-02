@@ -8,9 +8,17 @@ year: 2025
 code: "https://github.com/ACAT-SCUT/TQNet"
 revision: "15e19cb23483ed52398566c4baa959168cfffa57"
 license: "Apache-2.0"
-
+tagline: "Phase-aligned learnable periodic table as attention query over the instance-normalized window, then a small MLP."
+tags: ["mlp", "attention-variant", "channel-mixing", "normalization", "lightweight", "covariates"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:periodic_query_bank+local:two-layer-mlp-backbone", "channel=local:temporal-query-channel-attention", "head=local:dropout-linear-head", "loss=loss:mse"]
 ---
 # TQNet
+
+## Key ideas
+
+- `PeriodicQueryBank` holds a learnable table indexed by calendar phase (`cycle`, hour or weekday from the marks); a window of it, one vector per lookback step, is the query.
+- A single `nn.MultiheadAttention` over channels-as-tokens uses that query against the normalized lookback as keys and values, fusing a global periodic prior with per-sample observations.
+- The attended result is added to the input, projected, passed through a small MLP with a residual, and mapped to the horizon under `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

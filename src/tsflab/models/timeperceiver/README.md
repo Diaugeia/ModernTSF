@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/efficient-learning-lab/TimePerceiver"
 revision: "7e30cc07b51c709f408409fd60a34c81ae8990be"
 license: "MIT"
+tagline: "Perceiver encoder-decoder: patches cross-attend into latent bottleneck, learnable timestamp queries decode the horizon."
+tags: ["transformer", "patching", "attention-variant", "channel-mixing", "normalization", "covariates"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-to-latent-cross-attention", "channel=local:joint-channel-patch-tokens-with-channel-embedding", "head=local:timestamp-query-cross-attention-decoder", "loss=loss:mse"]
 ---
 # TimePerceiver
 
-TimePerceiver is a time series forecasting model built around a Perceiver-style encoder-decoder architecture. It generalises the forecasting task to arbitrary temporal prediction objectives (extrapolation, interpolation, and imputation) by dividing sequences into patch tokens, encoding them through a set of latent bottleneck representations that interact with all input patches via cross-attention to capture both temporal and cross-channel dependencies, and decoding future patches with learnable queries corresponding to target timestamps. The design is paired with a unified training strategy that tightly aligns the encoder, decoder, and prediction objectives.
+## Key ideas
+
+- All channels' patch tokens (plus channel and position embeddings) are flattened into one set and compressed by cross-attention into `num_latents` latent vectors, then refined by latent Transformer blocks, so cost scales with the latent count.
+- Learnable target queries combined with projected calendar features of the forecast timestamps cross-attend to the latents (`decoder`) and a linear head emits all channels per step (or one per channel with `query_share=False`).
+- `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

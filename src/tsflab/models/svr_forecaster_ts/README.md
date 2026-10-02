@@ -5,10 +5,17 @@ paper: "https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-
 paper_title: "Support Vector Regression Machines"
 venue: "Advances in Neural Information Processing Systems 9"
 year: 1996
+tagline: "Differentiable epsilon-SVR: RBF kernel against learned support centres, linear readout, weights shared across channels."
+tags: ["statistical", "channel-independent", "lightweight", "baseline"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:rbf-kernel-support-centres", "channel=local:channel-independent-shared-weights", "head=local:kernel-feature-linear-readout", "loss=loss:mse"]
 ---
 # SVRForecasterTS
 
-SVRForecasterTS is a differentiable RBF-basis epsilon-regression adaptation with learned support centres and an explicit epsilon-insensitive loss helper.
+## Key ideas
+
+- Treats each channel's lookback as a query and computes Gaussian RBF features against `num_support` learned support centres (`kernel_gamma`).
+- A linear map plus bias over those kernel features gives the horizon; all channels share the same centres and coefficients.
+- `forward` stores an L2 penalty on the coefficients in `aux_loss`, and `epsilon_insensitive_loss` provides the SVR epsilon-insensitive objective as a helper; the registered training loss is unchanged.
 
 <!-- model-card:canonical:start -->
 ## Input and output

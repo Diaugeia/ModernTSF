@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/chenxiaodanhit/Sumba"
 revision: "a1f8f45d2c89e4feb6c8e9399178c95157336f3b"
 license: "NOASSERTION"
+tagline: "Dynamic graph as a convex combination of learnable low-rank matrix bases, with multi-kernel gated temporal convs."
+tags: ["cnn", "gnn", "graph-learning", "multi-scale", "normalization", "channel-mixing"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:multi-kernel-gated-depthwise-conv", "channel=local:structured-matrix-basis-dynamic-graph-conv", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # Sumba
 
-Sumba is a time series forecasting model for multivariate sequences that directly parameterizes spatial structures using a learnable matrix basis and a convex combination. Its dynamic spatial structure generation function operates within a well-constrained output space, producing lower-variance graph structures with interpretable dynamics, and combines dilated inception temporal convolution blocks with dynamic graph convolution to jointly model temporal dependencies and inter-variate correlations.
+## Key ideas
+
+- `StructuredMatrixBasis` keeps a few learnable low-rank row-stochastic matrices and mixes them with softmax coefficients predicted from the pooled hidden state, so each sample's graph is a convex combination in a constrained space.
+- `DynamicBasisGraphConv` propagates over that graph for several diffusion steps with a residual mix, then projects the concatenated steps.
+- `MultiScaleTemporalConv` runs gated depthwise causal convs with kernels (2, 3, 5) in each pre-LayerNorm `SumbaBlock`.
+- Each variable is z-scored over the lookback (statistics detached) and restored after a flatten linear head.
 
 <!-- model-card:canonical:start -->
 ## Input and output

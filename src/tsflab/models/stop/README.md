@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/STOP"
 revision: "8babb610ece36a4215b2f66e1ef4a154f0c4f440"
 license: "NOASSERTION"
+tagline: "Centralized messaging through a few learnable context units over trend/residual encodings and calendar prompts."
+tags: ["mlp", "attention-variant", "spatiotemporal", "decomposition", "covariates", "channel-mixing"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:long-short-linear-encoders+local:residual-mlp-mixer", "channel=local:centralized-context-unit-interaction", "head=local:dual-linear-temporal-spatial-heads", "loss=loss:mse"]
 ---
 # STOP
 
-STOP (Spatio-Temporal OOD Processor) is a spatiotemporal forecasting model that addresses out-of-distribution generalization in graph-structured data by replacing node-to-node message passing with a centralized messaging mechanism using Context-Aware Units, combined with a message perturbation mechanism and distributionally robust optimization to produce forecasts that generalize across spatial and temporal distribution shifts.
+## Key ideas
+
+- `SeriesDecomposition` splits each node's lookback; the trend and residual are encoded by separate linear maps and concatenated with time-of-day and day-of-week prompt embeddings.
+- `CentralizedInteraction` replaces node-to-node message passing: nodes aggregate into a small bank of learnable context units (`core`) and diffuse back, giving a context and a personalized remainder.
+- A refine MLP and a second residual mixer produce a spatial branch; two linear heads (temporal and spatial) are summed for the forecast.
+- `environment_forecasts` produces perturbed-message forecasts for the paper's robust-optimization idea, but it is not called by `forward`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

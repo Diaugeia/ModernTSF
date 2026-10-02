@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TexFilter",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "cd133d7d0b6b62f5e6daa4a310e1eb24a3c1ac507d89ac30d6639bfcef64c335",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "f1db552ebaeb75ad6a0d5868fb211ea5b9f13368593693e7d7bd0a64904315aa",
   "paper": {
     "title": "FilterNet: Harnessing Frequency Filters for Time Series Forecasting",
     "venue": "NeurIPS 2024",

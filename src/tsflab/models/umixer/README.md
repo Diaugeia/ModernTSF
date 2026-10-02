@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/XiangMa-Shaun/U-Mixer"
 revision: "4192e68b85c3f11b2e19c7084f862580d97a0a55"
 license: "NOASSERTION"
+tagline: "U-Net of patch/feature MLP-mixers with skip fusion, then a spectral-power stationarity correction before the head."
+tags: ["mlp", "patching", "multi-scale", "normalization", "channel-independent"]
+composition: ["normalization=component:revin+local:spectral-power-stationarity-correction", "decomposition=none", "temporal=local:unet-patch-feature-mixers", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # UMixer
 
-UMixer is a long-term time-series forecasting model published at AAAI 2024. It combines U-Net-style multi-scale skip connections with MLP-Mixer blocks to capture local temporal dependencies across patches and channels separately, and introduces a stationarity correction method that explicitly restores the non-stationary distribution of the data by constraining the difference in stationarity between the model input and output.
+## Key ideas
+
+- `AxisMixer` mixes along the patch axis and the feature axis; down mixers halve the patch count by average pooling, a bottleneck mixer follows, and up mixers interpolate back and fuse the saved skip tensors (`skip_fusion`).
+- `StationarityCorrection` rescales the output by the ratio of spectral power between the patch embeddings and the processed features, gated per feature, to restore the non-stationary scale.
+- Channels share weights; `revin` wraps the model and a flatten linear head predicts the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

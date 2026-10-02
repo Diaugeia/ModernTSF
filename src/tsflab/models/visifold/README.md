@@ -8,8 +8,17 @@ year: 2026
 code: "https://github.com/PlanckChang/VisiFold"
 revision: "cc035f7e803ca793b132bec3a834e8e2b39a9f99"
 license: "MIT"
+tagline: "Folds each node's whole history into one MLP token; training-only node masking, shuffling and subgraph attention."
+tags: ["transformer", "spatiotemporal", "attention-variant", "covariates", "graph-learning"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:history-folding-mlp-token", "channel=component:node_visibility+local:node-token-self-attention", "head=local:three-layer-mlp-head", "loss=loss:mse"]
 ---
 # VisiFold
+
+## Key ideas
+
+- Temporal folding: `fold_input` maps each node's full lookback to a single token, concatenated with time-of-day, day-of-week and learnable node embeddings, so spatial mixing is one attention pass over N node tokens instead of one per time step.
+- Node visibility (training only, from `node_visibility`): `random_mask_tokens` drops `mask_ratio` of nodes, `shuffle_tokens` permutes survivors, `group_into_subgraphs` splits them into `subgraph_size` groups so attention cost is bounded; the pipeline is inverted afterwards.
+- `SelfAttentionLayer` blocks attend within groups (no adjacency, `adj_mx` is unused) and an MLP head predicts the whole horizon per node; masked nodes get zero outputs in training.
 
 <!-- model-card:canonical:start -->
 ## Input and output

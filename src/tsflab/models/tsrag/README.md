@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/UConn-DSIS/TS-RAG"
 revision: "73ac807789d2e61b8a3dfc8514e3fc947fe185cc"
 license: "MIT"
+tagline: "Top-k retrieval of future segments from a knowledge base, fused with the query by an adaptive retrieval mixer."
+tags: ["mlp", "retrieval", "attention-variant", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:flatten-mlp-query-backbone", "channel=local:flattened-all-channel-embedding", "head=local:linear-forecast-projection", "loss=loss:mse"]
 ---
 # TSRAG
 
-TSRAG (TS-RAG) is a retrieval-augmented generation framework for zero-shot time-series forecasting built on top of pre-trained Time Series Foundation Models (TSFMs). It uses a pre-trained time-series encoder to retrieve semantically relevant segments from a dedicated knowledge base and then fuses them with the TSFM's internal representations via a learnable Adaptive Retrieval Mixer (ARM) module — enhancing generalisation and interpretability without requiring task-specific fine-tuning. The model targets the standard multivariate time-series forecasting setting.
+## Key ideas
+
+- `retrieve` embeds the query and candidate contexts by parameter-free adaptive pooling and takes the top-k nearest by Euclidean distance; `retrieved_projector` embeds their future windows.
+- `AdaptiveRetrievalMixer` runs self-attention plus an FFN over the query and retrieved items, then softmax-weights them and adds the result to the query as a skip.
+- `forecast_with_retrieval` accepts an external knowledge base (`retrieval_contexts`, `retrieval_futures`); `forward` uses a history-derived fallback of shifted windows, and there is no TSFM backbone or pre-built database in this implementation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

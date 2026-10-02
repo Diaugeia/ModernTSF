@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeAlign",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "6db2f3ea56301a8375f4383943f454d3c40351c956821746d3c1da6c31f96514",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "a72776f1ec0e0e1d940b3703247f56921906441ea9795c48476811de2545cb5b",
   "paper": {
     "title": "Bridging Past and Future: Distribution-Aware Alignment for Time Series Forecasting",
     "venue": "ICLR 2026",

@@ -8,10 +8,17 @@ year: 2017
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "2fb5b84ecef67c45a759f7cf82023d27afe27882"
 license: "MIT"
+tagline: "Vanilla encoder-decoder Transformer with full attention, causal decoder, cross-attention and a one-shot decoder window."
+tags: ["transformer", "covariates", "channel-mixing", "baseline"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:transformer_encdec+component:self_attention_family", "channel=component:embed", "head=local:decoder-linear-projection-last-pred-len", "loss=loss:mse"]
 ---
 # Transformer
 
-Transformer is the standard encoder-decoder attention architecture applied to time-series forecasting, with full scaled dot-product self-attention, causal decoder attention, encoder-decoder cross-attention, positional/value embeddings, and a one-shot forecast projection.
+## Key ideas
+
+- Embeds values and calendar marks with `DataEmbedding` (a linear map over channels per time step, so channels are mixed into one token).
+- `Encoder`/`EncoderLayer` stack with full self-attention (`FullAttention` in `AttentionLayer`); `Decoder` with a causal self-attention, encoder-decoder cross-attention, and a linear projection to the channels.
+- Takes the decoder input (label window plus placeholder horizon) and returns the last `pred_len` steps in one pass.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TCNForecasterTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "af8b51cbdc2eef9f4b694031583d01adc0e2400b0f28fe6f5111e7e46b696642",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "7df10c09d7ab3ee2bac87036f4c9262fec5246d31327ab621900286c7d275b1e",
   "paper": {
     "title": "An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling",
     "venue": "arXiv preprint",

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SWIFT",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "198f562f7056257d4e7c6757b870eb23124f819098e3c6f1d8fa643a4ef1b21c",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "2de8b1db9c576722cd56af4a14d8eb0e515655f56a9201f83d9351923bc7c1b9",
   "paper": {
     "title": "SWIFT: Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting",
     "venue": "arXiv",

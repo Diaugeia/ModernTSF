@@ -5,10 +5,17 @@ paper: "https://arxiv.org/abs/1803.01271"
 paper_title: "An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling"
 venue: "arXiv preprint"
 year: 2018
+tagline: "Dilated causal residual convolution stack over RevIN-normalized channels with a last-step direct multistep head."
+tags: ["cnn", "normalization", "channel-mixing", "baseline", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:dilated-causal-residual-conv", "channel=local:channel-mixing-first-conv", "head=local:last-step-linear-direct-multistep", "loss=loss:mse"]
 ---
 # TCNForecasterTS
 
-TCNForecasterTS is a clean-room temporal convolutional baseline with exponentially dilated causal residual blocks and a direct multistep forecast head.
+## Key ideas
+
+- Stacks `TemporalResidualBlock`s of two `CausalConv1d` layers with exponentially growing dilation (1, 2, ...) and residual connections.
+- All channels enter the first convolution together, so channels are mixed from the start (no channel independence).
+- A linear head on the final time step emits the whole horizon for every channel at once (direct multistep); `revin` wraps the model and `aux_loss` is zero.
 
 <!-- model-card:canonical:start -->
 ## Input and output

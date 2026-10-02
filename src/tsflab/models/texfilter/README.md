@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/aikunyi/FilterNet"
 revision: "cdb321c4e338e0c07b45cee92f54b3c5bd5a809e"
 license: "Apache-2.0"
+tagline: "Complex frequency-domain filter derived from a ReLU-gated embedded spectrum, then an MLP to the horizon."
+tags: ["mlp", "frequency", "channel-independent", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:contextual-shaping-fourier-filter", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-head", "loss=loss:mse"]
 ---
 # TexFilter
 
-TexFilter is the contextual shaping filter variant proposed within the FilterNet framework, targeting the standard univariate and multivariate time-series forecasting setting. It applies a learnable frequency filter in the Fourier domain — first embedding the input, computing an FFT, multiplying by a complex-valued learned weight (the "texture" filter) that mixes real and imaginary parts via ReLU-activated bilinear interactions, then inverting back to the time domain — to selectively pass or attenuate frequency components while preserving full-spectrum information.
+## Key ideas
+
+- `ContextualShapingFilter` takes the rFFT of each channel, maps it with a learned complex matrix to an embedded spectrum, and builds a data-dependent context by passing it through ReLU-activated complex gains.
+- The embedded spectrum is multiplied by this context and inverse-FFT'd back to an `embed_size` time axis.
+- A two-layer MLP maps that representation to the horizon, inside `revin` normalization; all channels share weights.
 
 <!-- model-card:canonical:start -->
 ## Input and output

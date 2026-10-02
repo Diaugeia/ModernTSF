@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/xwmaxwma/TimeExpert"
 revision: "f53b5220f22767a91040aaa04679c2eb9b2eb9c5"
 license: "unspecified (no LICENSE file at the pinned revision)"
+tagline: "Channel-independent patch Transformer whose attention is replaced by top-k temporal mixture of experts over patches."
+tags: ["transformer", "mixture-of-experts", "patching", "channel-independent", "attention-variant", "normalization"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=component:embed+component:topk_expert_attention", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # TimeExpert
 
-TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context.
+## Key ideas
+
+- `TopKExpertAttention` treats each key/value patch position as an expert; each query routes to its top-k most relevant ones, with an optional shared global expert (`shared`).
+- `TMOEBlock` pairs it with a residual feed-forward network, stacked `e_layers` times over `PatchEmbedding` tokens.
+- Channels are folded into the batch, so all share weights; `FlattenForecastHead` maps patch tokens to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/thuml/TimeXer"
 revision: "76011909357972bd55a27adba2e1be994d81b327"
 license: "NOASSERTION"
+tagline: "Patch tokens plus a global token per target series; the global token cross-attends to exogenous variate tokens."
+tags: ["transformer", "patching", "covariates", "attention-variant", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-self-attention-with-global-token", "channel=local:exogenous-variate-cross-attention", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # TimeXer
 
-TimeXer is a Transformer-based time series forecasting model for the standard time series forecasting setting that extends canonical Transformers to handle exogenous variables. It introduces deftly designed embedding layers that separately represent endogenous (target) variables via patch-wise self-attention and exogenous (external) variables via variate-wise cross-attention, with learned global endogenous tokens bridging causal information from exogenous series into endogenous temporal patches.
+## Key ideas
+
+- `EndogenousEmbedding` turns each target series into patch tokens plus one learnable global token.
+- `ExogenousEmbedding` embeds whole series as variate tokens plus a calendar token; in `TimeXerLayer` only the global token cross-attends to them, after patch self-attention.
+- Then the updated global token returns to the patch sequence through the feed-forward layer; a flatten linear head maps all tokens to the horizon.
+- With `features` other than M only the last variable is the target; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

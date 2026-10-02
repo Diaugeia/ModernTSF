@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "aca51f4dd9942fd654a4702147debe8646f205c21b190cf73a0a85cee5e3df3c",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "b4456ba1a899ab1ed3fad0721993909a4b44aa1417fd018b9beb0bfb9225dfaa",
   "paper": {
     "title": "TimeMixer: Decomposable Multiscale Mixing for Time Series Forecasting",
     "venue": "ICLR 2024",

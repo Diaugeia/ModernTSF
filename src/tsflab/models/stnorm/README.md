@@ -8,10 +8,17 @@ year: 2021
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "WaveNet-style gated dilated convs whose layers also see spatially and temporally normalized streams; no adjacency."
+tags: ["cnn", "spatiotemporal", "normalization", "covariates", "channel-mixing"]
+composition: ["normalization=local:spatial-and-temporal-normalization-streams", "decomposition=none", "temporal=local:gated-dilated-causal-conv", "channel=local:spatial-normalization-across-nodes", "head=local:relu-conv-skip-head", "loss=loss:mse"]
 ---
 # STNorm
 
-STNorm is a spatiotemporal forecasting model that augments a WaveNet-style backbone with two dedicated normalization modules — spatial normalization and temporal normalization — to separately refine high-frequency temporal components and local spatial components in multi-variate time-series data. It operates on node-structured data and does not require an externally provided static adjacency matrix.
+## Key ideas
+
+- Each `NormalizedTemporalLayer` concatenates the raw hidden state with a `SpatialNormalization` stream (statistics across nodes) and a `TemporalNormalization` stream (per-node statistics over batch and time, with running averages at eval) before the gated convolution.
+- The backbone is a Graph-WaveNet-like stack of tanh/sigmoid gated dilated causal convolutions with residual and skip connections; `adj_mx` is ignored.
+- Skip outputs are summed and a 1x1 conv head emits the pred_len values at the last time step.
 
 <!-- model-card:canonical:start -->
 ## Input and output

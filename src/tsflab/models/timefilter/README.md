@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/TROUBADOUR000/TimeFilter"
 revision: "dffde87e4fff0fdeeebbacde03dc1e432e15b3a1"
 license: "NOASSERTION"
+tagline: "Patch-level spatial-temporal graph filtered by a mixture of graph experts that keep only top-p affinities."
+tags: ["gnn", "mixture-of-experts", "graph-learning", "patching", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-embedding-graph-nodes", "channel=local:patch-graph-moe-filter", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # TimeFilter
 
-TimeFilter is a GNN-based model for multivariate time-series forecasting that performs adaptive, fine-grained dependency modelling at the patch level. It segments the input sequence into non-overlapping patches and constructs a spatial-temporal graph, then applies a Mixture-of-Experts dynamic router to filter irrelevant inter-channel correlations and an adaptive graph learning module to aggregate the most critical spatial-temporal dependencies, combining the complementary strengths of channel-independent and channel-dependent strategies without manual channel clustering.
+## Key ideas
+
+- `PatchGraphBuilder` turns every (channel, patch) into a node and builds a dense query/key affinity over all nodes, mixing channel and time dependencies.
+- `PatchSpecificGraphFilter` keeps the top-p fraction of each node's affinities as a sparse adjacency and routes each node to `num_experts` `RegionExpert` message-passing experts with a softmax router.
+- The affinity is recomputed from node features between filter layers; a flatten linear head maps each channel's patches to the horizon under `revin`.
+- A load-balancing `last_moe_loss` is computed but not added to the training loss.
 
 <!-- model-card:canonical:start -->
 ## Input and output

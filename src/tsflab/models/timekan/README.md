@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/huangst21/TimeKAN"
 revision: "3a7c366a9e8547fd8840c5d27f25ee3e30615e33"
 license: "Apache-2.0"
+tagline: "Frequency-band cascade over pooled scales, each band learned by Chebyshev KAN plus depthwise conv, then recombined."
+tags: ["kan", "frequency", "decomposition", "multi-scale", "channel-independent", "lightweight", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:cascaded-frequency-band-decomposition", "temporal=local:multi-order-chebyshev-kan", "channel=local:channel-independent-shared-weights", "head=local:band-mixing-readout+local:linear-forecast", "loss=loss:mse"]
 ---
 # TimeKAN
 
-TimeKAN is a time series forecasting model that combines Kolmogorov-Arnold Networks (KANs) with multi-scale frequency decomposition. It decomposes a mixed-frequency input series into individual frequency bands via Cascaded Frequency Decomposition (CFD) blocks, learns band-specific temporal patterns with Multi-order KAN Representation Learning (M-KAN) blocks that exploit the flexibility of KANs, and recombines the bands via Frequency Mixing blocks to produce accurate multi-horizon predictions. The architecture achieves state-of-the-art results while remaining extremely lightweight.
+## Key ideas
+
+- Builds a pyramid by average pooling and extracts frequency bands as the difference between a level and the FFT-upsampled next coarser level (`frequency_upsample`).
+- Each band is learned by `MultiOrderKAN`: a `ChebyshevKAN` of a band-specific order plus a circular depthwise convolution.
+- Bands are recombined from coarse to fine by adding upsampled mixed outputs; the finest level goes through a linear readout and a `Linear(seq_len, pred_len)` forecast, with each variable processed independently under `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

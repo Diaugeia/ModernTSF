@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/wwhenxuan/SymTime"
 revision: "24a938649e140d92e8bf642d37a11fd9624e7698"
 license: "MIT"
+tagline: "RevIN, trend/periodic split; patch Transformer on the periodic part and a linear trend head, summed."
+tags: ["transformer", "patching", "decomposition", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:series_decomposition", "temporal=local:patch-transformer-series-encoder", "channel=local:channel-independent-shared-weights", "head=local:periodic-flatten-head+local:linear-trend-head", "loss=loss:mse"]
 ---
 # SymTime
 
-SymTime is a pre-trained time-series foundation model that leverages synthetic series-symbol data to overcome data scarcity and imbalance in time-series analysis. Drawing on complex dynamic system theories, it generates unlimited high-quality time-series data paired with symbolic expressions, then pre-trains a Transformer-based series encoder jointly with a symbol encoder (built on a pre-trained LLM) through masked time-series modelling and masked language modelling. The resulting representations are fine-tuned for downstream forecasting tasks, serving the standard multivariate time-series forecasting setting.
+## Key ideas
+
+- `series_decomposition` (moving average, kernel 25) separates a trend from the periodic remainder after `revin` normalization.
+- The periodic part is cut into non-overlapping patches, embedded, and encoded by a pre-norm Transformer (`series_encoder`) with channels folded into the batch; `periodic_head` flattens patch tokens to the horizon.
+- The trend goes through a direct linear `trend_head` and the two forecasts are added before denormalization.
+- Only the downstream forecasting path exists: the symbol encoder and synthetic-data pre-training of the paper are not in the runtime.
 
 <!-- model-card:canonical:start -->
 ## Input and output

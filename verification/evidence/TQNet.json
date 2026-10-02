@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TQNet",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "e6691c7cbdb1ea23a83fa07434f524d646ca70984d2816a9afb4356a9b5b1d0e",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "b26d073c978bd8a094f3a0cb651755b04e0dc356b95e73da757e1c9b333fccb7",
   "paper": {
     "title": "Temporal Query Network for Efficient Multivariate Time Series Forecasting",
     "venue": "ICML 2025",

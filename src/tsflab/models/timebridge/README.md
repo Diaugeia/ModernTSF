@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/Hank0626/TimeBridge"
 revision: "0f9a83fbc3e1260c9ddd527c522dff0ce4b9554b"
 license: "MIT"
+tagline: "Patch attention that removes short-term trend within a variate, then attends across variates to keep cointegration."
+tags: ["transformer", "patching", "normalization", "attention-variant", "channel-mixing", "decomposition"]
+composition: ["normalization=component:revin", "decomposition=local:moving-average-stationarization-in-integrated-attention", "temporal=local:integrated-attention+local:patch-downsample", "channel=local:cointegrated-attention-across-variates", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # TimeBridge
 
-TimeBridge is a patch-based Transformer framework for multivariate long-term time-series forecasting that explicitly handles non-stationarity at two granularities: Integrated Attention removes short-term non-stationarity within each variate's patches to capture stable local dependencies, while Cointegrated Attention preserves non-stationarity across variates to model long-term cointegration relationships between channels.
+## Key ideas
+
+- `IntegratedAttention` attends over each variate's patch tokens with queries and keys taken from the series minus a moving-average trend (`stable_len`), so short-term non-stationarity is removed from the attention scores while values keep it.
+- `PatchDownsample` pools queries to `long_count` tokens and cross-attends to the full patch sequence.
+- `CointegratedAttention` attends across variates at each patch position on the raw (non-stationary) tokens to model long-term cross-channel relations.
+- `revin` normalizes the input; a flatten linear layer maps tokens to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

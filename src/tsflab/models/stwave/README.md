@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Haar wavelet low/high split, each band through temporal and sampled spectral graph attention, calendar-gated fusion."
+tags: ["transformer", "gnn", "wavelet", "frequency", "spatiotemporal", "decomposition", "covariates"]
+composition: ["normalization=none", "decomposition=local:haar-wavelet-low-high-split", "temporal=local:temporal-attention-gated-conv", "channel=local:spectral-graph-attention-query-sampling", "head=local:band-linear-heads-gated-fusion-readout", "loss=loss:mse"]
 ---
 # STWave
 
-STWave is a spatiotemporal forecasting model for traffic flow prediction that disentangles non-stationary traffic sequences into long-term (low-frequency) trend components and short-term (high-frequency) event components using discrete wavelet transform. A dual-channel encoder processes each frequency band separately with an efficient spectral graph attention mechanism that incorporates wavelet-based graph positional encoding and a query sampling strategy to reduce the quadratic complexity of full graph attention while preserving spatial expressiveness.
+## Key ideas
+
+- `wavelet_disentangle` splits the series into low-frequency trend and high-frequency event components with a differentiable two-band Haar transform, instead of the haar_dwt1d component.
+- Separate low and high `DualEncoder` stacks each apply a `TemporalModule` (attention plus gated causal conv) then `SpectralGraphAttention` with Laplacian-eigenvector position encoding.
+- Graph attention is masked to adjacency plus top-energy sampled queries to cut the quadratic cost.
+- `AdaptiveFusion` gates low and high forecasts with a future-calendar embedding before a linear readout.
 
 <!-- model-card:canonical:start -->
 ## Input and output

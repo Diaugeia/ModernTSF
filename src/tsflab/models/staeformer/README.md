@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Vanilla Transformer on spatiotemporal adaptive embeddings, alternating temporal and spatial attention; no graph conv."
+tags: ["transformer", "spatiotemporal", "attention-variant", "covariates", "channel-mixing"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-axis-attention-blocks", "channel=local:spatial-axis-attention-blocks", "head=local:mixed-flatten-linear-projection", "loss=loss:mse"]
 ---
 # STAEformer
 
-STAEformer is a spatiotemporal Transformer for node-structured graph data such as traffic networks. It introduces a novel spatio-temporal adaptive embedding that jointly encodes intrinsic spatial relations between nodes and chronological temporal patterns, enabling a standard (vanilla) Transformer encoder—without complex graph convolutions—to achieve state-of-the-art performance on traffic forecasting benchmarks.
+## Key ideas
+
+- Concatenates value, time-of-day, day-of-week, optional node and a learnable `adaptive_embedding` of shape (seq_len, nodes) into one token per node and step.
+- Alternates pre-norm self-attention along time and along nodes (`AxisAttentionBlock`), so spatial relations come from attention plus the adaptive embedding, not an adjacency matrix (`adj_mx` is ignored).
+- Flattens the time axis and maps it to the horizon with one linear layer (`use_mixed_proj`), or a two-step projection when disabled.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/RCR-LYY/TimeCAP"
 revision: "16b8fdadc9844a2aea8c65518f3c5f9c44001b60"
 license: "MIT"
+tagline: "Overlapping channel groups with meta-router tokens for intra/inter-group attention; blended GRU and one-shot heads."
+tags: ["transformer", "patching", "channel-mixing", "attention-variant", "normalization", "hybrid"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-projection+local:temporal-first-masked-attention", "channel=local:overlapping-channel-groups+local:meta-router-attention", "head=local:autoregressive-gru-one-shot-sigmoid-fusion", "loss=loss:mse"]
 ---
 # TimeCAP
 
-TimeCAP is a time series forecasting model for multivariate sequence prediction. It is the first purely channel-aware pre-training framework for multivariate time series, systematically integrating complementary autoregressive and one-shot generative paradigms via a flexible channel-grouping learning approach and an adaptive meta-routing mechanism that captures both intra-group local patterns and global inter-channel coherence.
+## Key ideas
+
+- Channels are cut into overlapping groups (`group_size`, `group_stride`); each group has its own patch projection and a learned meta-router token per patch.
+- `channel_aware_mask` restricts intra-group attention to tokens of the same patch and routers-to-group attention to the same patch, so communication across groups goes through router tokens only.
+- Group outputs are scatter-averaged back to channels.
+- `dual_head_forecast` blends a GRU autoregressive head and a flatten one-shot linear head with a sigmoid weight that shifts toward one-shot over the horizon (`fusion_alpha`, `fusion_midpoint`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

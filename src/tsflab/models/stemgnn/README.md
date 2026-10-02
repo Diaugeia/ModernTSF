@@ -8,10 +8,17 @@ year: 2020
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Latent GRU-attention correlation graph, Chebyshev graph terms and a learned DFT-domain filter in residual blocks."
+tags: ["gnn", "frequency", "spatiotemporal", "graph-learning", "channel-mixing"]
+composition: ["normalization=none", "decomposition=local:backcast-residual-removal", "temporal=local:spectral-temporal-block-dft-filter", "channel=local:latent-correlation-graph+local:chebyshev-graph-terms", "head=local:two-layer-linear-horizon", "loss=loss:mse"]
 ---
 # StemGNN
 
-StemGNN (Spectral Temporal Graph Neural Network) is a spatiotemporal model for multivariate time-series forecasting that captures inter-series correlations and temporal dependencies jointly in the spectral domain. It combines a Graph Fourier Transform (GFT) for spatial correlation and a Discrete Fourier Transform (DFT) for temporal patterns in a unified end-to-end framework, learning the inter-series graph structure automatically from data without pre-defined priors.
+## Key ideas
+
+- Learns the inter-series graph from data (`LatentCorrelationGraph`): per-node GRU summary, query/key attention, symmetrised, no predefined adjacency.
+- Each `SpectralTemporalBlock` takes Chebyshev graph terms, applies a learned complex filter in the rFFT domain, then inverse FFT and linear forecast.
+- Two blocks are stacked; the first emits a backcast subtracted from the input before the second, and the forecasts are summed then mapped to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

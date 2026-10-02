@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Gated trend/seasonal split of node embeddings: GRU and dynamic-graph diffusion for trend, cross-attention for seasonal."
+tags: ["hybrid", "gnn", "spatiotemporal", "decomposition", "graph-learning", "covariates", "attention-variant"]
+composition: ["normalization=none", "decomposition=local:learned-gate-trend-seasonal-split", "temporal=local:trend-gru+local:seasonal-cross-attention", "channel=local:dynamic-graph-diffusion+local:laplacian-spatial-embedding", "head=local:concat-linear-output", "loss=loss:mse"]
 ---
 # STDN
 
-STDN is a spatiotemporal learning model for node-structured graph data. It constructs a dynamic graph to represent traffic flow and captures global dynamics through novel spatio-temporal embeddings, then applies a trend-seasonality decomposition module to disentangle trend-cyclical and seasonal components for each node, before passing them through an encoder-decoder network.
+## Key ideas
+
+- Adds a Laplacian-eigenvector spatial embedding to time-of-day and weekday embeddings, and splits projected values into trend and seasonal parts with a sigmoid gate (`trend_gate`).
+- Trend branch: a GRU summary per node builds a top-k sparse softmax graph per batch, and `DynamicDiffusion` propagates the summary over it, repeated across the horizon.
+- Seasonal branch: future time/horizon embeddings are queries in multi-head attention over the seasonal history (`history_attention`).
+- Concatenates both futures and maps them to one value per node with a linear layer.
 
 <!-- model-card:canonical:start -->
 ## Input and output

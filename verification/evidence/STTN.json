@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STTN",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "3c8c86115f7a4f006fd562098d1e7863b0cff9d87204812373d4a0e3b67b0782",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "dd5acf18dafe5d7ee512b132791477cf10e4762eff3a5fc5f587a69784d285b5",
   "paper": {
     "title": "Spatial-Temporal Transformer Networks for Traffic Flow Forecasting",
     "venue": "arXiv preprint",
