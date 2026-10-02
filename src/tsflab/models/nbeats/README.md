@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/philipperemy/n-beats"
 revision: "06a4e209ada80bf1f403ced5228261784dfb26ed"
 license: "MIT"
+tagline: "Doubly residual stacks of FC blocks emitting backcast and forecast through trend, seasonality, or generic bases."
+tags: ["mlp", "decomposition", "basis-expansion", "channel-independent", "interpretable"]
+composition: ["normalization=none", "decomposition=local:trend-seasonality-basis-stacks", "temporal=local:fully-connected-residual-blocks", "channel=local:channel-independent-shared-weights", "head=local:basis-expansion-forecast", "loss=loss:mse"]
 ---
 # NBeats
 
-N-BEATS is a deep neural architecture for univariate and multivariate time series point forecasting. It is built on a deep stack of fully-connected blocks, each producing a backcast (reconstruction of the input) and a forecast, linked by backward and forward residual connections. Two configurations exist: a generic version relying solely on deep learning primitives, and an interpretable version whose basis expansion functions correspond to trend and seasonality components.
+## Key ideas
+
+- `NBeatsBlock` is a four-layer ReLU MLP whose two theta heads are projected by a basis: `trend_basis`, `seasonality_basis`, or a learned generic matrix.
+- Blocks are chained with backward residual links (the input minus the backcast) and forward links (forecasts are summed).
+- Default stacks are trend, seasonality, then generic (`stack_types`, `thetas_dim`); `share_weights_in_stack` shares blocks.
+- Each channel is treated as a univariate series folded into the batch.
 
 <!-- model-card:canonical:start -->
 ## Input and output

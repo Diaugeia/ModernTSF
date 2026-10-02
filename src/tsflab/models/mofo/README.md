@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/MoFo"
 revision: "2d14b47ea839c3809952b412340d72393f2521dc"
 license: "MIT"
+tagline: "Period-structured 2D patches with attention whose scores are biased by cycle distance through a learnable relaxation."
+tags: ["transformer", "periodicity", "attention-variant", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:period-modulated-attention", "channel=local:channel-independent-shared-weights", "head=local:per-step-future-query-projection", "loss=loss:mse"]
 ---
 # MoFo
 
-MoFo is a Transformer-based long-term time-series forecasting model for the standard time-series setting. It explicitly models periodic patterns by constructing period-structured 2D patch tensors through discrete sampling and introduces a period-aware modulator that applies a learnable regulated relaxation function to guide attention coefficients toward periodic trends, achieving high memory efficiency and fast training speed.
+## Key ideas
+
+- `period_structured_patches` reshapes the series into cycles by phase using the `periodic` length (default 24).
+- Each future step is a learned query that attends only to the history values at the same phase across cycles (`PeriodModulatedAttention`).
+- `RegulatedRelaxation` converts cycle distance into a learnable additive log-bias on the attention scores.
+- Channels share weights (`cias` must be 1); `revin` without affine wraps the model and `projection` maps each query to a scalar.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/decisionintelligence/pathformer"
 revision: "ea85d82932215e171357da47b3bc82d502344758"
 license: "NOASSERTION"
+tagline: "Multi-scale Transformer with dual (local and global) patch attention experts mixed by an input-dependent router."
+tags: ["transformer", "multi-scale", "patching", "mixture-of-experts", "attention-variant", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:adaptive-multi-scale-pathway", "channel=local:channel-independent-shared-weights", "head=local:linear-over-time-head", "loss=loss:mse"]
 ---
 # Pathformer
 
-Pathformer is a multi-scale Transformer for multivariate time-series forecasting that integrates temporal resolution and temporal distance in a unified framework. It divides the input series into patches of multiple sizes (multi-scale division), applies dual attention over each scale to capture both global correlations and local details, and routes the information through adaptive pathways that dynamically adjust the multi-scale modelling process based on the varying temporal dynamics of each input.
+## Key ideas
+
+- `DualScaleAttention` embeds samples, applies local attention inside each patch, then global attention across patches, for one patch size.
+- `AdaptivePathway` holds one such expert per patch size and mixes them with a router fed by mean, standard deviation, mean absolute difference, and spectral concentration.
+- Routing is dense and differentiable; the top-k pathways are only recorded in `last_topk` for inspection.
+- Pathway layers are residual with LayerNorm, followed by `nn.Linear(seq_len, pred_len)`; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

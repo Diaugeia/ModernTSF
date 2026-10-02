@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1038/323533a0"
 paper_title: "Learning Representations by Back-Propagating Errors"
 venue: "Nature"
 year: 1986
+tagline: "Per-channel MLP that maps the lag window straight to the horizon over the time axis, wrapped in RevIN."
+tags: ["mlp", "channel-independent", "normalization", "baseline", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:lag-window-mlp", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # MLPForecasterTS
 
-MLPForecasterTS is a clean-room channel-wise multilayer perceptron that maps each fixed lag window directly to a multistep forecast.
+## Key ideas
+
+- Transposes to `[batch, channels, seq_len]` so one `nn.Sequential` MLP (Linear, GELU, Dropout blocks) acts over time and is shared by every channel.
+- Ends in a single `nn.Linear(d_model, pred_len)` that emits the whole multistep forecast directly (no recursion).
+- Reversible instance normalization (`revin`) normalizes inputs and de-normalizes the forecast; `use_revin=False` disables it.
 
 <!-- model-card:canonical:start -->
 ## Input and output

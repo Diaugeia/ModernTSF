@@ -6,8 +6,18 @@ paper_title: "Sensorformer: Cross-patch attention with global-patch compression 
 venue: "arXiv"
 year: 2025
 
+tagline: "PatchTST-style patches with two-stage sensor attention: per-variable summary tokens, then patches attend back."
+tags: ["transformer", "patching", "attention-variant", "channel-mixing", "sparse-attention"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:embed+component:global_patch_compression_attention", "channel=component:global_patch_compression_attention", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # Sensorformer
+
+## Key ideas
+
+- `PatchEmbedding` (`embed`) replicate-pads by `stride`, extracts overlapping patches per variable, and embeds them with positions.
+- `GlobalPatchCompressionAttention` stage one uses each variable's last patch as the query over all variables' patches to build one Sensor summary token per variable.
+- Stage two lets every patch of every variable attend to those summaries, capturing cross-variable and cross-time dependence without full quadratic cross-patch attention.
+- `FlattenForecastHead` maps each variable's final patches to the horizon; there is no instance normalization.
 
 <!-- model-card:canonical:start -->
 ## Input and output

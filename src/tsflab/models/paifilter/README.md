@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/aikunyi/FilterNet"
 revision: "cdb321c4e338e0c07b45cee92f54b3c5bd5a809e"
 license: "Apache-2.0"
+tagline: "Learnable complex frequency mask on the rFFT of the input (plain shaping filter), then a two-layer MLP, inside RevIN."
+tags: ["mlp", "frequency", "filter", "channel-independent", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:plain-shaping-frequency-filter", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-head", "loss=loss:mse"]
 ---
 # PaiFilter
 
-PaiFilter implements the plain shaping filter variant from the FilterNet framework for time series forecasting. It adopts a universal frequency kernel for signal filtering and temporal modeling, using randomly initialized learnable weight parameters that are multiplied with the input to selectively pass or attenuate frequency components. This design allows FilterNet-style forecasting without the contextual gating of the full FilterNet model, serving as an efficient baseline for frequency-domain time series forecasting.
+## Key ideas
+
+- `PlainShapingFilter` multiplies the rFFT spectrum by a learnable complex weight per frequency bin (initialized to identity) and inverts it.
+- A two-layer MLP (`forecast`, GELU) maps the filtered window to the horizon, shared across channels.
+- `revin` wraps the model for distribution shift.
 
 <!-- model-card:canonical:start -->
 ## Input and output

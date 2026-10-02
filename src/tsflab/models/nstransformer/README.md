@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/thuml/Nonstationary_Transformers"
 revision: "c4ec40675d11d50b3d9923657f408d0db6f90f56"
 license: "MIT"
+tagline: "Encoder-decoder Transformer with series stationarization and de-stationary attention (learned tau and delta)."
+tags: ["transformer", "normalization", "attention-variant", "non-stationary", "channel-mixing"]
+composition: ["normalization=local:series-stationarization", "decomposition=none", "temporal=local:de-stationary-attention-encoder-decoder", "channel=local:channel-mixing-value-embedding", "head=local:linear-projection-to-channels", "loss=loss:mse"]
 ---
 # NSTransformer
 
-NSTransformer (Non-stationary Transformer) is a time series forecasting model that addresses the over-stationarization problem in Transformer-based forecasters. It augments any standard Transformer backbone with two interdependent modules — Series Stationarization, which normalises input statistics and restores them in the output for improved predictability, and De-stationary Attention, which recovers intrinsic non-stationary information into the computed temporal dependencies by approximating distinguishable attentions learned from the raw, un-normalised series.
+## Key ideas
+
+- The input is standardized with detached per-window mean and standard deviation and the statistics are restored on the output.
+- Two `Projector` MLPs (`tau_learner`, `delta_learner`) learn a scale `tau` and a shift `delta` from the raw series and its statistics.
+- `DeStationaryAttention` rescales scores by `tau` and adds `delta` so the stationarized input recovers non-stationary information.
+- A learned future-query decoder (`future_queries`) attends to the encoded history; `projection` maps tokens back to channels.
 
 <!-- model-card:canonical:start -->
 ## Input and output

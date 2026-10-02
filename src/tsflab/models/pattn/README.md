@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Minimal patch Transformer: one self-attention layer on patch tokens, no positional encoding or FFN, linear head."
+tags: ["transformer", "patching", "channel-independent", "normalization", "baseline", "lightweight"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:single-self-attention-patch-layer", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # PAttn
 
-PAttn is a deliberately simple patch-based Transformer baseline for time-series forecasting, introduced in the NeurIPS 2024 Spotlight paper "Are Language Models Actually Useful for Time Series Forecasting?". It pads and unfolds the input into overlapping patches, linearly embeds each patch per channel, processes the patch tokens with a single self-attention encoder block, then flattens and linearly projects to the forecast horizon, demonstrating that this minimal architecture matches or exceeds much heavier LLM-based forecasters.
+## Key ideas
+
+- Overlapping patches (length 16, stride 8, replicate-padded) are linearly embedded with `patch_projection`.
+- A single `nn.MultiheadAttention` layer with residual LayerNorm processes the tokens, with no positional embedding and no feed-forward sublayer.
+- Tokens are flattened into `forecast_projection`, a single linear layer to `pred_len`.
+- Channels are folded into the batch and each window is standardized with its own mean and standard deviation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

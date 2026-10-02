@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "ReFocus",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "9897a5410697977d23c53ff82acc493d05bbb24b227257757d8ff7a95f5ffef7",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "20d0f886398870f0e7271695e1b3bc3199213dd106d8fe136d494d673a433c9c",
   "paper": {
     "title": "ReFocus: Reinforcing Mid-Frequency and Key-Frequency Modeling for Multivariate Time Series Forecasting",
     "venue": "arXiv",

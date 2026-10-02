@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/luodhhh/ModernTCN"
 revision: "56a9a2c018385cd5acef015378cae7f084d1b11c"
 license: "MIT"
+tagline: "Pure-conv forecaster: large-kernel depthwise convolutions with variable- and feature-grouped ConvFFNs on patch stems."
+tags: ["cnn", "large-kernel", "patching", "multi-scale", "channel-mixing", "decomposition", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:series_decomposition", "temporal=local:large-kernel-depthwise-conv-blocks", "channel=local:variable-grouped-convffn", "head=local:multi-scale-flatten-linear-head", "loss=loss:mse"]
 ---
 # ModernTCN
 
-Each variable is patch-embedded independently. A ModernTCN block applies large-kernel depthwise convolution over patches, normalization, a variable-grouped ConvFFN, a reshape, and a feature-grouped ConvFFN. Multi-stage representations optionally feed one forecast head.
+## Key ideas
+
+- `LargeKernelDepthwiseConv` applies a large depthwise kernel (default 13) plus an optional small-kernel branch for the training-time reparameterization described in the paper.
+- `ModernTCNBlock` keeps the variable axis and runs two grouped pointwise ConvFFNs, first per variable and then per feature.
+- A patch-embedding stem and optional downsampling stages feed `ModernTCNBackbone`; with `use_multi_scale` the head concatenates all stage outputs.
+- `decomposition=True` uses `series_decomposition` to run separate seasonal and trend backbones (off by default); `revin` normalizes each backbone.
 
 <!-- model-card:canonical:start -->
 ## Input and output

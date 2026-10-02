@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/aohu1105/PMDformer"
 revision: "d9296b7b857d8e1075838759ec5d0aa3f3539f7e"
 license: "NOASSERTION"
+tagline: "Patch-mean decoupling into shape tokens plus means, proximal variable attention, and trend-restoring attention."
+tags: ["transformer", "patching", "decomposition", "channel-mixing", "attention-variant", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:patch-mean-decoupling", "temporal=local:trend-restoration-attention", "channel=local:proximal-variable-attention", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # PMDformer
 
-PMDformer is a Transformer-based long-term time-series forecasting model for the standard time-series setting. It decouples patch-level local shape fluctuations from their mean (trend) level through Patch-Mean Decoupling (PMD), combines Proximal Variable Attention (PVA) to focus on the most relevant inter-variable interactions, and applies Trend Recovery Attention (TRA) to restore long-term trend information, improving both forecasting accuracy and computational efficiency.
+## Key ideas
+
+- `patch_mean_decouple` splits each patch into its mean and a zero-mean shape residual; only the residual is embedded.
+- Proximal variable attention (`proximal_attention`) lets the last patch token attend across variables, so each channel mixes only its most recent context.
+- `TrendRestorationAttention` computes Q and K from shape tokens only and adds the patch means to the values, restoring level information.
+- `projection` flattens all patch tokens to `pred_len`; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

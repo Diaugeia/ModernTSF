@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "S4",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "95d4b70853acd872e563df58392c85e65d89a94717372920aeb52bfbc4549d04",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "3807dc5f9494faa4174c305737c671d9e9aca878d41af31eb166d94a38f32674",
   "paper": {
     "title": "Efficiently Modeling Long Sequences with Structured State Spaces",
     "venue": "ICLR 2022",

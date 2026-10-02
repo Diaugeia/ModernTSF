@@ -5,10 +5,18 @@ paper: ""
 paper_title: "Patch Weighted Sum (TSFLab baseline)"
 venue: "TSFLab"
 year: 2026
+tagline: "Folds the window by period, refines period-position patches with a residual MLP, then weighted-sums to future periods."
+tags: ["mlp", "periodicity", "patching", "channel-independent", "normalization", "baseline", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:period-patch-analysis-mlp", "channel=local:channel-independent-shared-weights", "head=local:per-patch-weighted-sum-linear", "loss=loss:mse"]
 ---
 # PWS
 
-PWS (Patch Weighted Sum) is a deliberately minimal in-repo baseline for univariate and multivariate time-series forecasting. It splits the look-back window period-wise into fixed-size patches, refines each patch with a small analysis MLP, and produces the forecast with a learned map from historical periods to future periods. It has optional RevIN normalization but no attention or convolution.
+## Key ideas
+
+- The lookback is rearranged so each position within a `period` becomes a series over past periods.
+- Positions are grouped into patches of `patch_size`; each patch has its own residual `analysis_layers` MLP (default hidden 512, 256) over the period axis.
+- A per-patch `nn.Linear` (`weighted_sum_layers`) maps past periods to future periods and the output is unfolded to `pred_len`.
+- No attention or convolution; optional `revin` normalization.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Pyraformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "185e13add002b2a4ccfb953f9d6cdcfea1941b9230030b3addacebfd3d3ef323",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "9dc8799027397a8376f6b469e57175c5523efc659040b5a32eaff5d0b04d91c1",
   "paper": {
     "title": "Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting",
     "venue": "ICLR 2022",

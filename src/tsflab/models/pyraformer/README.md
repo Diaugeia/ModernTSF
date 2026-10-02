@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "3a4819420d14095354aae96750ce8c499ef5f05e"
 license: "MIT"
+tagline: "Pyramidal attention graph: strided-conv coarse scales plus intra-scale and parent-child links give O(1) signal paths."
+tags: ["transformer", "multi-scale", "attention-variant", "sparse-attention", "channel-mixing", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:pyramidal-attention-encoder", "channel=local:channel-mixing-value-embedding", "head=local:ancestor-chain-linear-head", "loss=loss:mse"]
 ---
 # Pyraformer
 
-Pyraformer is a Transformer-based time series forecasting model that builds a multi-resolution pyramidal attention module (PAM) over the input sequence. Inter-scale tree connections summarize temporal features at progressively coarser resolutions, while intra-scale connections between neighboring tokens model dependencies at each resolution. This design achieves O(1) maximum signal-path length with respect to sequence length and linear time and space complexity, making it efficient for long-range forecasting on both single-step and multi-step horizons.
+## Key ideas
+
+- `CoarseScaleConstructor` builds coarser scales with strided `Conv1d`s (`window_size`, default 4 x 4) and concatenates all scales into one node sequence.
+- `pyramid_neighbour_table` defines each node's attention set: `inner_size` neighbours at its scale plus its children and parent; `PyramidalAttention` attends only over that sparse set.
+- Inputs are a linear value embedding over all channels plus raw calendar marks and sinusoidal positions (no instance normalization).
+- The head concatenates the last finest node's ancestor chain across scales (`finest_ancestor_table`) and linearly emits `pred_len * enc_in` values.
 
 <!-- model-card:canonical:start -->
 ## Input and output

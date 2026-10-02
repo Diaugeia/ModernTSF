@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "MultiPatchFormer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "5de2d1bf332e1d2049d0e4e587c290d55d397c45c5228412982fd6219ead71bf",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "a244b8d88f8bdc332b5ac2c832a89763b8c95a7d6381763779ed261f8ad7ba6c",
   "paper": {
     "title": "A multiscale model for multivariate time series forecasting",
     "venue": "Scientific Reports 2025",

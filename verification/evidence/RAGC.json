@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RAGC",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "00e88dccc933cf83cbb82d9864d15e09ec34f2e0f2bb2b85d2d73905ba3c85f1",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "4c386753e2d6caae3f09958b64be56f0086ec24d81ebb91baa91578b5e3248bc",
   "paper": {
     "title": "Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution",
     "venue": "arXiv",

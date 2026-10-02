@@ -8,8 +8,19 @@ year: 2025
 code: "https://github.com/wkq-wukaiqi/RAGC"
 revision: "ee9cbb112b31ca704971a6b1d1c8ffdce6412b95"
 license: "Unlicensed (no LICENSE file in official repo; all rights reserved by default)"
+tagline: "Node-embedding adaptive graph convolution with a linear-time cosine operator and residual-difference blocks."
+tags: ["gnn", "spatiotemporal", "graph-learning", "covariates", "regularization", "traffic"]
+composition: ["normalization=none", "decomposition=local:residual-difference-graph-smoothing", "temporal=local:per-node-window-embedding-feedforward", "channel=component:regularized_adaptive_graph_conv", "head=local:residual-plus-skip-linear-heads", "loss=loss:mse"]
 ---
 # RAGC
+
+## Key ideas
+
+- Each node's lookback window is embedded by one linear layer and concatenated with a learned node embedding and time-of-day and day-of-week embeddings read from the calendar covariates.
+- `EfficientCosineGraphConv` (the cosine operator) builds a gated, cosine-normalized support from node embeddings and diffuses without materializing a dense adjacency, so cost is linear in the node count.
+- `StochasticSharedEmbedding` regularizes the node embedding during training (`sse_p`, `use_sse`).
+- Each block subtracts the graph-smoothed signal from the hidden state and accumulates it in a skip path; two linear heads (`regression_layer`, `regression_skip`) are summed.
+- `graph_regularization_loss` (Laplacian smoothness on `adj_mx`) is exposed as an optional ablation but is not called by `forward` or the trainer.
 
 <!-- model-card:canonical:start -->
 ## Input and output

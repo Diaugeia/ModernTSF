@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Recursive even/odd split with convolutional scaling and interaction at every tree node, then a linear forecaster."
+tags: ["cnn", "multi-scale", "downsampling", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:sci-tree-downsample-convolve-interact", "channel=local:channel-mixing-convolutions", "head=local:linear-over-time-head", "loss=loss:mse"]
 ---
 # SCINet
 
-SCINet is a CNN-based time-series forecasting model that exploits the property that temporal relations are largely preserved after downsampling. It uses a recursive downsample-convolve-interact architecture in which each layer splits the sequence into two sub-sequences, applies distinct convolutional filters to each, and then fuses them — enabling multi-resolution temporal feature extraction at O(L) complexity.
+## Key ideas
+
+- `SCIInteraction` splits the sequence into even and odd subsequences and cross-scales each with `exp(phi(.))` and `exp(psi(.))` of a `TemporalOperator` convolution of the other, then updates with `rho` and `eta`.
+- `SCITree` applies this recursively for `num_levels` (default 3) and `interleave`s the leaves back into time order.
+- `SCINetStack` adds a residual, then `nn.Linear(seq_len, pred_len)`; up to three stacks are chained by feeding the prediction back into the history.
+- Inputs are standardized per window and given a sinusoidal position encoding; the convolutions mix all channels.
 
 <!-- model-card:canonical:start -->
 ## Input and output

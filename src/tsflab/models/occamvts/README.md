@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/sisuolv/OccamVTS"
 revision: "a534df297263f0c0f087b513f6bc4acdf7eb1bf2"
 license: "NOASSERTION"
+tagline: "Compact distilled student: patch Transformer cross-attending a conv encoder over raw, spectrum, and periodic channels."
+tags: ["transformer", "patching", "frequency", "cross-modal", "distillation", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-transformer+local:conv-visual-branch", "channel=local:channel-independent-shared-weights", "head=local:cross-modal-fused-linear-head", "loss=loss:mse"]
 ---
 # OccamVTS
 
-OccamVTS is a knowledge-distillation-based time series forecasting model for the standard time-series setting. It reveals that 99% of large vision model (LVM) parameters are unnecessary for time series tasks and proposes a pyramid-style feature alignment combined with correlation and feature distillation to transfer only the essential low-level textural patterns from pre-trained LVMs into a compact lightweight network — improving accuracy by eliminating overfitting to irrelevant visual features while preserving essential temporal patterns.
+## Key ideas
+
+- Implements only the inference-time student; the large vision teacher and the distillation losses are not part of this module.
+- `temporal_encoder` runs a Transformer over overlapping patch tokens (`patch_len`, `stride`).
+- `visual_augmentation` stacks the raw series, its normalized FFT magnitude, and sine and cosine at `period`; `visual_encoder` convolves that stack.
+- `cross_modal` attention lets temporal tokens query the visual features, then pooled tokens go to a linear horizon head; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

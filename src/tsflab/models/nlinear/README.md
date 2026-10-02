@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/cure-lab/LTSF-Linear"
 revision: "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6"
 license: "Apache-2.0"
+tagline: "Subtracts the last observed value, applies one linear map over time, and adds the value back."
+tags: ["linear", "normalization", "channel-independent", "ltsf-linear", "baseline", "lightweight"]
+composition: ["normalization=component:last_value_center", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # NLinear
 
-NLinear is a normalized one-layer linear forecasting model from the LTSF-Linear family that subtracts the last observed value from the input sequence before applying a linear projection, then adds the subtracted value back to the output — a simple distribution-shift mitigation technique that improves accuracy over the plain Linear baseline on datasets with distribution drift.
+## Key ideas
+
+- `center_on_last_value` removes the last observation and `restore_last_value` adds it back, which counters distribution shift.
+- `channel_wise_linear` is a single `seq_len` to `pred_len` linear map, shared across channels unless `individual=True`.
+- No decomposition or nonlinearity; it is the minimal LTSF-Linear variant with level normalization.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,19 @@ year: 2026
 code: "https://github.com/Thinklab-SJTU/MMPD"
 revision: "8e42bfe0c4156eea920c4dd86eee4f1b8658143e"
 license: "NOASSERTION"
+tagline: "Multi-mode patch diffusion: denoiser conditioned on future-patch tokens; point forecast from an anchor step."
+tags: ["diffusion", "probabilistic", "patching", "channel-independent", "attention-variant", "loss-framework"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:future-query-cross-attention-backbone", "channel=local:channel-independent-flattened", "head=local:patch-consistent-denoiser-anchor", "loss=loss:mse+local:patch-diffusion-loss-method"]
 ---
 # MMPD
 
-MMPD (Multi-Mode Patch Diffusion) is a training-loss framework for patch-based time series forecasting models that replaces the standard MSE loss with a diffusion-based multi-mode objective, enabling models to generate diverse probabilistic forecasts corresponding to multiple plausible future outcomes. It is applicable to any patch-based backbone that outputs latent tokens for the future.
+## Key ideas
+
+- `FuturePatchBackbone` turns history patches into one token per future patch by cross-attending learned future queries to the patch embeddings.
+- `PatchConsistentDenoiser` predicts noise for noisy future patches, conditioned on the token, the diffusion step, and the left and right neighbouring patches, using AdaLN MLP blocks (`AdaLNMLPBlock`).
+- `diffusion_loss` mixes the noise-prediction loss with a deterministic anchor term (weight `diffusion_weight`); `sample` draws multi-mode trajectories.
+- `forward` returns the efficient anchor-step point forecast; the trainer does not call `diffusion_loss`, so the default pipeline scores that forecast with MSE.
+- Channels are flattened into the batch and series are standardized with detached mean and standard deviation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

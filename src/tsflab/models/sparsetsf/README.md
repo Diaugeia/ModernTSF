@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/lss-1138/SparseTSF"
 revision: "b8c2740eecc84d8095ffce49ba5acafe68e53bb8"
 license: "Apache-2.0"
+tagline: "Cross-period sparse forecasting: fold the window by period and forecast each phase's series with one tiny linear map."
+tags: ["linear", "periodicity", "lightweight", "channel-independent", "downsampling", "baseline"]
+composition: ["normalization=local:mean-centering", "decomposition=local:cross-period-phase-split", "temporal=local:cross-period-linear-forecaster", "channel=local:channel-independent-shared-weights", "head=local:phase-unfold-to-horizon", "loss=loss:mse"]
 ---
 # SparseTSF
 
-SparseTSF is an extremely lightweight model for long-term time series forecasting that achieves competitive performance with fewer than 1,000 parameters. Its core innovation is the Cross-Period Sparse Forecasting technique, which decouples periodicity and trend by downsampling the original sequence so that the model focuses on cross-period trend prediction rather than point-wise temporal modelling.
+## Key ideas
+
+- A one-channel moving-aggregation `Conv1d` (kernel about `period`) is added residually, then the window is reshaped into `period` phase series over `history_periods` cycles.
+- `forecaster` is a single `nn.Linear(history_periods, future_periods)` (or a small MLP with `model_type="mlp"`) shared by all phases and channels, predicting cross-period trend rather than point-wise values.
+- Outputs are interleaved back into time order, trimmed to `pred_len`, and the detached window mean is added back.
 
 <!-- model-card:canonical:start -->
 ## Input and output

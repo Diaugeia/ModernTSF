@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/TangPeiwang/PatchMLP"
 revision: "b36bbc92ecfc4732acaabb6d5e8c4ff487876f5d"
 license: "NOASSERTION"
+tagline: "Multi-scale patch MLP; moving-average split into channel-mixed smooth and channel-independent residual branches."
+tags: ["mlp", "patching", "decomposition", "multi-scale", "channel-mixing", "channel-independent", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=local:moving-average-series-decomp", "temporal=local:multi-scale-patch-embedding-mlp-encoder", "channel=local:channel-mixing-on-smooth-branch", "head=local:linear-projector", "loss=loss:mse"]
 ---
 # PatchMLP
 
-PatchMLP is a patch-based MLP model for long-term time series forecasting that attributes the effectiveness of recent Transformer models to their patch mechanism rather than to attention. It applies moving-average decomposition to separate smooth trend components from noise residuals, then processes the smooth branch with cross-variable channel mixing for semantic information exchange and handles the residual branch with channel-independent linear layers, achieving competitive accuracy without any attention operations.
+## Key ideas
+
+- `Emb` embeds the series at four patch scales (default lengths 48, 24, 12, 6, stride half the patch) and concatenates them.
+- A local moving-average `SeriesDecomp` (`moving_avg=13`) splits the embedding into smooth and residual parts.
+- The smooth branch uses `Encoder(channel_mixing=True)`, an MLP over channels with a multiplicative gate; the residual branch is channel-independent.
+- The two branches are summed and `projector` maps `d_model` to `pred_len`; inputs are standardized per window (`use_norm`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

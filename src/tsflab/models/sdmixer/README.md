@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/SDMixer/SDMixer"
 revision: "c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a"
 license: "NOASSERTION"
+tagline: "Top-k FFT season/trend split: channel-sparse temporal Mixer for trend, spectral enhancement for season, sparse fusion."
+tags: ["mlp", "mixer", "frequency", "decomposition", "sparse-attention", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:top-k-fft-seasonal-trend-split", "temporal=local:sparse-temporal-mixer+local:frequency-enhancement-branch+local:sparse-cross-attention-fusion", "channel=local:channel-sparse-variable-mixing", "head=local:linear-over-time-head", "loss=loss:mse"]
 ---
 # SDMixer
 
-SDMixer is a dual-stream sparse Mixer forecaster for multivariate time series forecasting. It splits each input sequence via top-k FFT magnitude masking into an energy-dominant seasonal component and a residual trend, models the trend with a channel-sparse temporal Mixer and the season with a frequency-domain enhancement branch, then fuses the two with a trend-conditioned sparse cross-attention gate.
+## Key ideas
+
+- `SpectralDecomposition` keeps the top-k amplitude frequency bins per series as the season and treats the residual as the trend.
+- `SparseTemporalFlow` mixes variables with a linear layer, keeps only the largest-magnitude channels per step (`channel_sparse_ratio`), then mixes over time with an MLP.
+- `FrequencyFlow` enhances the season by applying a learned linear layer to the real part of its spectrum.
+- `SparseCrossMixer` lets trend queries attend to the frequency branch with top-k sparsified weights and adds a sigmoid-gated residual; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/Nixtla/neuralforecast"
 revision: "6c4f3e557d0ed672314323edba972eb550cb3550"
 license: "Apache-2.0"
+tagline: "Stacked MLP blocks with max-pool input sampling and interpolated low-resolution forecasts, one frequency band per stack."
+tags: ["mlp", "multi-scale", "decomposition", "interpolation", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:hierarchical-residual-stacks", "temporal=local:pooled-mlp-blocks", "channel=local:channel-independent-shared-weights", "head=local:interpolated-forecast-coefficients", "loss=loss:mse"]
 ---
 # NHiTS
 
-NHiTS (Neural Hierarchical Interpolation for Time Series) is a time-series forecasting model that addresses long-horizon prediction by stacking MLP blocks with multi-rate data sampling and hierarchical interpolation. Each block in the stack emphasises a different frequency band of the signal, and the blocks' outputs are combined to synthesise the final forecast.
+## Key ideas
+
+- `NHiTSBlock` pools its input with `n_pool_kernel_size` (max or average pooling) before an MLP, so each stack sees a different input rate.
+- Each block predicts only `ceil(pred_len / n_freq_downsample)` forecast coefficients and expands them to the horizon by interpolation (`interpolation_mode`).
+- Blocks are chained with backward residuals (input minus backcast) and forward summation, starting from a last-value forecast.
+- `revin` (no affine) wraps the model; every channel is folded into the batch.
 
 <!-- model-card:canonical:start -->
 ## Input and output

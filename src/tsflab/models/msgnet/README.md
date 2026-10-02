@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/YoZhibo/MSGNet"
 revision: "953b8330a2ca469dab4955e804b46a61eb08a9c2"
 license: "NOASSERTION"
+tagline: "FFT-selected periods, each with its own learned MixHop graph over series plus attention inside period segments."
+tags: ["gnn", "graph-learning", "frequency", "multi-scale", "attention-variant", "channel-mixing"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=component:dominant_periods+local:period-segment-self-attention", "channel=local:adaptive-mixhop-graph", "head=local:linear-over-time-head", "loss=loss:mse"]
 ---
 # MSGNet
 
-MSGNet is a time series forecasting model for multivariate sequence prediction. It captures varying inter-series correlations across multiple time scales by combining frequency domain analysis (FFT-based period extraction) with an adaptive mixhop graph convolution layer, while self-attention handles intra-series dependencies within each scale — all without requiring an external adjacency matrix.
+## Key ideas
+
+- `dominant_periods` picks the top-k FFT periods; `MultiScaleGraphBlock` runs one `ScaleGraphBranch` per period and softmax-weights them by spectral strength.
+- Within a branch the series is cut into period segments and `nn.MultiheadAttention` models intra-series dependence inside each segment.
+- `AdaptiveMixHopGraph` learns a low-rank adjacency per scale and propagates with MixHop (`gcn_depth`, `propalpha`) to capture inter-series relations.
+- A single `nn.Linear(seq_len, pred_len)` head follows the blocks; inputs are standardized with detached statistics.
 
 <!-- model-card:canonical:start -->
 ## Input and output
