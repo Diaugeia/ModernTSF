@@ -67,6 +67,7 @@ include = ["moderntsf*"]
 
 [tool.setuptools.package-data]
 "moderntsf.tsf_core" = ["schema/*.json"]
+"moderntsf.data" = ["profile_rules.toml"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

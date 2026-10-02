@@ -339,12 +339,17 @@ def component_command(args: list[str]) -> int:
 
     if not args or args[0] in {"-h", "--help", "help"}:
         print(
-            "usage: tsf component {list,show,match,audit} [args...]\n"
+            "usage: tsf component {list,show,match,compose,audit} [args...]\n"
             "       tsf component list [--json]\n"
+            "       tsf component compose <spec.toml> [--json]   (dry run)\n"
             "       tsf component match <requirements...> [--limit N] [--json]"
         )
         return 0
     action, rest = args[0], args[1:]
+    if action == "compose":
+        from moderntsf.benchmark.catalog.composition import compose_command
+
+        return compose_command(rest, ROOT)
     if action == "audit":
         if rest:
             print("tsf component audit takes no arguments", file=sys.stderr)
@@ -444,5 +449,5 @@ def component_command(args: list[str]) -> int:
                     "implementation before reuse."
                 )
         return 0
-    print("usage: tsf component {list,show,match,audit} [args...]", file=sys.stderr)
+    print("usage: tsf component {list,show,match,compose,audit} [args...]", file=sys.stderr)
     return 2

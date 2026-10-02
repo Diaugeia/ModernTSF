@@ -200,9 +200,16 @@ Use an existing CSV preset or create a loader-backed dataset:
 uv run tsf dataset add --name my_data --pattern custom \
   --path ./dataset/my_data/my_data.csv --target OT
 uv run tsf dataset inspect --config configs/datasets/my_data.toml
+uv run tsf dataset analyze my_data      # model-selection profile (JSON + markdown)
 uv run tsf dataset show my_data
 uv run tsf dataset audit
 ```
+
+`dataset analyze <preset>` (or `--path FILE`) profiles the training split (length,
+missingness, scale, periods, seasonality, trend, forecastability, cross-channel
+structure, outliers) plus train/validation shift, recommends lookback candidates, and
+maps findings to catalog components and models. Test-split shift is labelled
+diagnostic-only. Results go to `work_dirs/profiles/<name>/`.
 
 `dataset prepare`, `convert-traffic`, and `gift-download` provide explicit
 conversion/download operations; inspect their `--help` before writing. Scaling
