@@ -55,7 +55,7 @@ default preset is compact (`K=3`, one block per branch) rather than the complete
 paper sweep, and branches that cannot fit the configured history are omitted.
 Training recipes and reported weights are not reproduced. The reference-only
 repository was inspected at the pinned revision; no external source code was copied. Strict evidence is in
-`../../../verification/evidence/HMformer.json`.
+`../../../../verification/evidence/HMformer.json`.
 
 ## Shared components
 
@@ -90,7 +90,7 @@ default preset is compact (`K=3`, one block per branch) rather than the complete
 paper sweep, and branches that cannot fit the configured history are omitted.
 Training recipes and reported weights are not reproduced. The reference-only
 repository was inspected at the pinned revision; no external source code was copied. Strict evidence is in
-`../../../verification/evidence/HMformer.json`.
+`../../../../verification/evidence/HMformer.json`.
 
 ## In TSFLab
 Default config: `configs/models/HMformer.toml`; model specification: `spec.py`; local implementation: `model.py`.

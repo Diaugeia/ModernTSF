@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Pinned source inspection: `src/tsflab/models/cauair.py` was examined at the recorded
+Pinned source inspection: `src/models/cauair.py` was examined at the recorded
 revision to confirm implementation details. The local module was written for
 TSFLab; no external source file is copied.
 
@@ -76,7 +76,7 @@ Inputs are `x_enc [B, seq_len, N]` plus historical and future weather `[B, time,
 
 ## Verification
 
-Pinned source inspection: `src/tsflab/models/cauair.py` was examined at the recorded
+Pinned source inspection: `src/models/cauair.py` was examined at the recorded
 revision to confirm implementation details. The local module was written for
 TSFLab; no external source file is copied.
 

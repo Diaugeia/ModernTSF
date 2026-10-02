@@ -3,11 +3,11 @@ name: "LassoRegressionTS"
 summary: "LassoRegressionTS applies a shared channel-wise lag projection to the forecast horizon and exposes the Lasso L1 weight penalty through `aux_loss` for the standard trainer."
 paper: "https://doi.org/10.1111/j.2517-6161.1996.tb02080.x"
 paper_title: "Regression Shrinkage and Selection via the Lasso"
-venue: "Journal of the Royal Statistical Society: Series B, 1996"
+venue: "Journal of the Royal Statistical Society Series B 1996"
 year: 1996
 tagline: "One shared linear lag-to-horizon map per channel with an L1 weight penalty exposed as an auxiliary training loss."
 tags: ["linear", "statistical", "regularization", "channel-independent", "baseline"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:linear-lag-projection", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear", "loss=loss:mse+local:l1-weight-penalty-aux-loss"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:l1-weight-penalty-aux-loss"]
 ---
 # LassoRegressionTS
 
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x); title: Regression Shrinkage and Selection via the Lasso; venue/year: Journal of the Royal Statistical Society: Series B, 1996 / 1996
+- [paper](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x); title: Regression Shrinkage and Selection via the Lasso; venue/year: Journal of the Royal Statistical Society Series B 1996 / 1996
 - codebase: not available
 
 ## Local implementation

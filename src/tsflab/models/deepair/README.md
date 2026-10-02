@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Pinned source inspection: `src/tsflab/models/deepair.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/models/deepair.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 - Local implementation: confirmed from the paper; the unlicensed secondary reference was inspected at the pinned revision; no external source code was copied.
 - Evidence verifies spatial aggregation, all five distinct branches, weighted merge, marks/future covariates, graph sensitivity, gradients, serialization, CPU, and boundaries.
@@ -74,7 +74,7 @@ Inputs are `x_enc [B, seq_len, N]`, historical/future node covariates, and `spat
 
 ## Source and verification
 
-Pinned source inspection: `src/tsflab/models/deepair.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/models/deepair.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 - Local implementation: confirmed from the paper; the unlicensed secondary reference was inspected at the pinned revision; no external source code was copied.
 - Evidence verifies spatial aggregation, all five distinct branches, weighted merge, marks/future covariates, graph sensitivity, gradients, serialization, CPU, and boundaries.

@@ -9,7 +9,7 @@ code: "https://github.com/Master-PLC/DistDF"
 revision: "21b050fc230d35c7e1c4507c8da3dcd81dc9e1b9"
 license: "MIT"
 tagline: "Training objective matching joint history-forecast Gaussian moments (Bures-Wasserstein) on a compact linear forecaster."
-tags: ["linear", "loss-function", "distribution-alignment", "normalization", "channel-independent", "lightweight"]
+tags: ["linear", "loss-framework", "distribution-alignment", "normalization", "channel-independent", "lightweight"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=local:linear-forecast", "loss=loss:mse+local:joint-bures-wasserstein-distribution-loss"]
 ---
 # DistDF
@@ -50,7 +50,7 @@ Bures-Wasserstein expression, and combines it with MSE.
 The paper uses several external backbones; this entry supplies a compact shared
 linear carrier. Batch-channel pairs form empirical samples and positive jitter
 stabilizes small covariances. Experiments must call `training_loss` to activate
-DistDF. Evidence is in `../../../verification/evidence/DistDF.json`.
+DistDF. Evidence is in `../../../../verification/evidence/DistDF.json`.
 
 ## Shared components
 
@@ -82,7 +82,7 @@ Bures-Wasserstein expression, and combines it with MSE.
 The paper uses several external backbones; this entry supplies a compact shared
 linear carrier. Batch-channel pairs form empirical samples and positive jitter
 stabilizes small covariances. Experiments must call `training_loss` to activate
-DistDF. Evidence is in `../../../verification/evidence/DistDF.json`.
+DistDF. Evidence is in `../../../../verification/evidence/DistDF.json`.
 
 ## In TSFLab
 Default config: `configs/models/DistDF.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.

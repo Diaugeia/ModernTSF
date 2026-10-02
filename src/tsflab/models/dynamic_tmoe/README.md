@@ -53,7 +53,7 @@ The paper's training orchestrator creates, aligns, and prunes modules and mutate
 the anomaly gallery; `forward` deliberately does none of those stateful actions.
 This compact entry uses a fixed five-expert pool, learnable repository, and a
 small routing floor to preserve gradients. Evidence is in
-`../../../verification/evidence/DynamicTMoE.json`.
+`../../../../verification/evidence/DynamicTMoE.json`.
 
 The top-k concentration step (zero non-selected experts, blend back a routing
 floor, renormalize) is the same formula DUET's post-router mixing used, so it
@@ -93,7 +93,7 @@ The paper's training orchestrator creates, aligns, and prunes modules and mutate
 the anomaly gallery; `forward` deliberately does none of those stateful actions.
 This compact entry uses a fixed five-expert pool, learnable repository, and a
 small routing floor to preserve gradients. Evidence is in
-`../../../verification/evidence/DynamicTMoE.json`.
+`../../../../verification/evidence/DynamicTMoE.json`.
 
 The top-k concentration step (zero non-selected experts, blend back a routing
 floor, renormalize) is the same formula DUET's post-router mixing used, so it

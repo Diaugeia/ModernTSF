@@ -3,7 +3,7 @@ name: "Sensorformer"
 summary: "Sensorformer patches each variable's window the way PatchTST does, then refines the patch representations with a stack of two-stage Sensor Attention Blocks: stage one compresses every variable's patches into one 'Sensor' summary token via cross-attention (using the variable's last patch as query and all variables' patches as key/value), and stage two lets every patch attend back to those summaries, jointly extracting cross-variable and cross-time dependencies at a fraction of pure cross-patch self-attention's cost; a shared linear head then maps each variable's flattened final patch representations to the forecast horizon."
 paper: "https://arxiv.org/abs/2501.03284"
 paper_title: "Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 
 tagline: "PatchTST-style patches with two-stage sensor attention: per-variable summary tokens, then patches attend back."
@@ -27,7 +27,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2501.03284); title: Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting; venue/year: arXiv / 2025
+- [paper](https://arxiv.org/abs/2501.03284); title: Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting; venue/year: arXiv preprint / 2025
 - codebase: not available
 
 ## Local implementation

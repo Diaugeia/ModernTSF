@@ -3,11 +3,11 @@ name: "RAGC"
 summary: "RAGC forecasts node-structured spatiotemporal series through a stochastically regularized, node-embedding adaptive graph convolution at its core. It embeds each lookback window per node, concatenates it with a stochastic-shared-embedding-regularized node embedding and time-of-day/day-of-week embeddings, and stacks feed-forward + adaptive-graph-convolution blocks whose graph operator (the 'Efficient Cosine Operator') builds a gated cosine-normalized support from the node embeddings and diffuses it with a linear-time kernel trick that never materializes a dense adjacency; each block subtracts the graph-smoothed signal from the running state (a residual-difference mechanism) while accumulating the smoothed signal in a skip path, and both paths are projected to the forecast horizon and summed."
 paper: "https://arxiv.org/abs/2506.07179"
 paper_title: "Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/wkq-wukaiqi/RAGC"
 revision: "ee9cbb112b31ca704971a6b1d1c8ffdce6412b95"
-license: "Unlicensed (no LICENSE file in official repo; all rights reserved by default)"
+license: "NOASSERTION"
 tagline: "Node-embedding adaptive graph convolution with a linear-time cosine operator and residual-difference blocks."
 tags: ["gnn", "spatiotemporal", "graph-learning", "covariates", "regularization", "traffic"]
 composition: ["normalization=none", "decomposition=local:residual-difference-graph-smoothing", "temporal=local:per-node-window-embedding-feedforward", "channel=component:regularized_adaptive_graph_conv", "head=local:residual-plus-skip-linear-heads", "loss=loss:mse"]
@@ -30,8 +30,8 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2506.07179); title: Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution; venue/year: arXiv / 2025
-- [codebase](https://github.com/wkq-wukaiqi/RAGC); revision: `ee9cbb112b31ca704971a6b1d1c8ffdce6412b95`; license: `Unlicensed (no LICENSE file in official repo; all rights reserved by default)`
+- [paper](https://arxiv.org/abs/2506.07179); title: Efficient Traffic Forecasting on Large-Scale Road Network by Regularized Adaptive Graph Convolution; venue/year: arXiv preprint / 2025
+- [codebase](https://github.com/wkq-wukaiqi/RAGC); revision: `ee9cbb112b31ca704971a6b1d1c8ffdce6412b95`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -43,6 +43,8 @@ under Shared components), and the default preset is
 [`configs/models/RAGC.toml`](../../../../configs/models/RAGC.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 TSFLab rewrites RAGC locally after reading the paper (arXiv:2506.07179) and inspecting the pinned official codebase (`wkq-wukaiqi/RAGC@ee9cbb112b31ca704971a6b1d1c8ffdce6412b95`, specifically `models/RAGC.py` and `main.py`). The local implementation keeps the paper's defining operations, rewritten as the reusable `regularized_adaptive_graph_conv` component: Stochastic Shared Embedding (`StochasticSharedEmbedding`, matching the official `SSE` module's row-swap-by-probability behavior exactly) and the Efficient Cosine Operator's gated cosine support plus kernel-trick diffusion (`EfficientCosineGraphConv`, matching the official `cos_gconv` branch's `emb_w1`/`emb_w2` gate/filter and `LinearizedSematicGraphConvolutional`'s two-einsum degree-normalized hop). The per-block residual-difference wiring (`hidden = hidden - smoothed; skips += smoothed`) and the dual regression heads (`regression_layer` on the residual state, `regression_skip` on the accumulated skip) also match the official `forward`.
 
@@ -76,6 +78,8 @@ Traffic prediction is a critical task in spatial-temporal forecasting with broad
 Default config: `configs/models/RAGC.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
 
 ## Verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 TSFLab rewrites RAGC locally after reading the paper (arXiv:2506.07179) and inspecting the pinned official codebase (`wkq-wukaiqi/RAGC@ee9cbb112b31ca704971a6b1d1c8ffdce6412b95`, specifically `models/RAGC.py` and `main.py`). The local implementation keeps the paper's defining operations, rewritten as the reusable `regularized_adaptive_graph_conv` component: Stochastic Shared Embedding (`StochasticSharedEmbedding`, matching the official `SSE` module's row-swap-by-probability behavior exactly) and the Efficient Cosine Operator's gated cosine support plus kernel-trick diffusion (`EfficientCosineGraphConv`, matching the official `cos_gconv` branch's `emb_w1`/`emb_w2` gate/filter and `LinearizedSematicGraphConvolutional`'s two-einsum degree-normalized hop). The per-block residual-difference wiring (`hidden = hidden - smoothed; skips += smoothed`) and the dual regression heads (`regression_layer` on the residual state, `regression_skip` on the accumulated skip) also match the official `forward`.
 

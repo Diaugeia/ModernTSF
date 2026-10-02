@@ -40,7 +40,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-This clean-room baseline uses oblivious soft trees and conditions each stage on prior forecast context. It does not implement CatBoost's permutation-based ordered boosting, ordered target statistics, categorical-feature processing, or external library API. No CatBoost source code was inspected or copied. Evidence is in `../../../verification/evidence/CatBoostTS.json`.
+This clean-room baseline uses oblivious soft trees and conditions each stage on prior forecast context. It does not implement CatBoost's permutation-based ordered boosting, ordered target statistics, categorical-feature processing, or external library API. No CatBoost source code was inspected or copied. Evidence is in `../../../../verification/evidence/CatBoostTS.json`.
 
 ## Shared components
 
@@ -67,7 +67,7 @@ Default config: `configs/models/CatBoostTS.toml`; model specification: `spec.py`
 
 ## Verification
 
-This clean-room baseline uses oblivious soft trees and conditions each stage on prior forecast context. It does not implement CatBoost's permutation-based ordered boosting, ordered target statistics, categorical-feature processing, or external library API. No CatBoost source code was inspected or copied. Evidence is in `../../../verification/evidence/CatBoostTS.json`.
+This clean-room baseline uses oblivious soft trees and conditions each stage on prior forecast context. It does not implement CatBoost's permutation-based ordered boosting, ordered target statistics, categorical-feature processing, or external library API. No CatBoost source code was inspected or copied. Evidence is in `../../../../verification/evidence/CatBoostTS.json`.
 
 ## Citation
 

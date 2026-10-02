@@ -10,7 +10,7 @@ revision: "42dbb98a5bbe64c13bc75b3cc07a9dc4acf20106"
 license: "NOASSERTION"
 tagline: "Ultra-light segment linear path plus low-rank complex spectral path on downsampled series, interpolated to horizon."
 tags: ["linear", "frequency", "lightweight", "channel-independent", "multi-scale"]
-composition: ["normalization=local:per-series-mean-centering", "decomposition=none", "temporal=local:segment-path-and-low-rank-spectral-path", "channel=local:channel-independent-shared-weights", "head=local:linear-interpolation-to-horizon", "loss=loss:mse"]
+composition: ["normalization=local:mean-centering", "decomposition=none", "temporal=local:segment-path-and-low-rank-spectral-path", "channel=local:channel-independent-shared-weights", "head=local:linear-interpolation-to-horizon", "loss=loss:mse"]
 ---
 # MixLinear
 

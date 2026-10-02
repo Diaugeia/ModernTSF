@@ -9,7 +9,7 @@ code: "https://github.com/macovaseas/GTR"
 revision: "d94161906151bdc0c94f4d21c2b0ca356aeb3135"
 license: "Apache-2.0"
 tagline: "Learned full-cycle memory retrieved by absolute index, fused with the window by 2D convolution, then residual MLP."
-tags: ["mlp", "retrieval", "cnn", "normalization", "plug-in"]
+tags: ["mlp", "retrieval", "cnn", "normalization", "plug-in", "channel-independent"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=local:global-cycle-retrieval-and-2d-conv-fusion+local:residual-mlp", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # GTR
@@ -55,7 +55,7 @@ the disclosed forecast path. The common interface uses a zero start because its
 batch contract has no absolute sample index; callers with that information use
 `forecast_at(..., start_index=...)`. The cycle memory is learned locally and is not an external
 historical database. The reference-only project was inspected at the pinned revision; no external source code was copied.
-Strict evidence is in `../../../verification/evidence/GTR.json`.
+Strict evidence is in `../../../../verification/evidence/GTR.json`.
 
 ## Shared components
 
@@ -90,7 +90,7 @@ the disclosed forecast path. The common interface uses a zero start because its
 batch contract has no absolute sample index; callers with that information use
 `forecast_at(..., start_index=...)`. The cycle memory is learned locally and is not an external
 historical database. The reference-only project was inspected at the pinned revision; no external source code was copied.
-Strict evidence is in `../../../verification/evidence/GTR.json`.
+Strict evidence is in `../../../../verification/evidence/GTR.json`.
 
 ## In TSFLab
 Default config: `configs/models/GTR.toml`; model specification: `spec.py`; local implementation: `model.py`.

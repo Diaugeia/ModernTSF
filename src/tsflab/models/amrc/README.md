@@ -9,7 +9,7 @@ code: "https://github.com/MazelTovy/AMRC"
 revision: "c0d742c6dad73c2fa5ed1c40ae57affc6740f40e"
 license: "NOASSERTION"
 tagline: "Training objective adding adaptive prefix-masking loss and embedding-similarity penalty to a compact linear forecaster."
-tags: ["mlp", "normalization", "channel-independent", "masking", "loss-function", "representation-learning"]
+tags: ["mlp", "normalization", "channel-independent", "masking", "loss-framework", "representation-learning"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=local:linear-embedding-encoder", "channel=local:channel-independent-shared-weights", "head=local:linear-predictor", "loss=loss:mse+local:adaptive-masking-loss+local:embedding-similarity-penalty"]
 ---
 # AMRC
@@ -52,7 +52,7 @@ The paper is backbone-agnostic, so this entry supplies a compact
 channel-independent carrier. Default mask candidates are evenly spaced unless
 the caller supplies stochastic lengths. Generic point-forecast training uses
 `forward`; experiments must call `training_loss` to activate AML and ESP.
-Executable evidence is in `../../../verification/evidence/AMRC.json`.
+Executable evidence is in `../../../../verification/evidence/AMRC.json`.
 
 ## Shared components
 
@@ -84,7 +84,7 @@ The paper is backbone-agnostic, so this entry supplies a compact
 channel-independent carrier. Default mask candidates are evenly spaced unless
 the caller supplies stochastic lengths. Generic point-forecast training uses
 `forward`; experiments must call `training_loss` to activate AML and ESP.
-Executable evidence is in `../../../verification/evidence/AMRC.json`.
+Executable evidence is in `../../../../verification/evidence/AMRC.json`.
 
 ## In TSFLab
 Default config: `configs/models/AMRC.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.

@@ -10,7 +10,7 @@ revision: "67b630e67f6a18c9e9be918d9b4337c960db1e9a"
 license: "MIT"
 tagline: "Binary-spherical-quantized coarse/fine subtokens per record, decoded by a causal Transformer, coarse then fine."
 tags: ["transformer", "discrete-tokens", "autoregressive", "channel-mixing", "financial", "normalization"]
-composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:causal-decoder-transformer-with-kv-cache", "channel=local:channel-mixing-record-tokenizer", "head=local:coarse-to-fine-subtoken-heads-expected-bit-decode", "loss=loss:mse+local:hierarchical-tokenizer-reconstruction"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:causal-decoder-transformer-with-kv-cache", "channel=local:channel-mixing-record-tokenizer", "head=local:coarse-to-fine-subtoken-heads-expected-bit-decode", "loss=loss:mse+local:hierarchical-tokenizer-reconstruction"]
 ---
 # Kronos
 
@@ -61,7 +61,7 @@ The local tokenizer is an affine encoder/decoder rather than the paper's large
 Transformer autoencoder, and the default eight-bit vocabulary is smaller than
 the reported twenty-bit setup. It therefore exposes the architecture for local
 experiments but is not a zero-shot Kronos checkpoint. The reference-only source
-was inspected at the pinned revision; no external source code was copied. Evidence is in `../../../verification/evidence/Kronos.json`.
+was inspected at the pinned revision; no external source code was copied. Evidence is in `../../../../verification/evidence/Kronos.json`.
 
 ## Shared components
 
@@ -101,7 +101,7 @@ The local tokenizer is an affine encoder/decoder rather than the paper's large
 Transformer autoencoder, and the default eight-bit vocabulary is smaller than
 the reported twenty-bit setup. It therefore exposes the architecture for local
 experiments but is not a zero-shot Kronos checkpoint. The reference-only source
-was inspected at the pinned revision; no external source code was copied. Evidence is in `../../../verification/evidence/Kronos.json`.
+was inspected at the pinned revision; no external source code was copied. Evidence is in `../../../../verification/evidence/Kronos.json`.
 
 ## In TSFLab
 Default config: `configs/models/Kronos.toml`; model specification: `spec.py`; local implementation: `model.py`.

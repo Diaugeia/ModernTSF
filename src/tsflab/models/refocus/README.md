@@ -3,11 +3,11 @@ name: "ReFocus"
 summary: "ReFocus reinforces mid-frequency and key-frequency spectral content for multivariate forecasting: it reversibly normalizes each instance, subtracts a beta-scaled moving-average trend to attenuate the dominant low-frequency band (AMEO), embeds the residual into the frequency domain with dense complex-linear projections, and refines it through a stack of Energy-based Key-Frequency Picking Blocks (EKPB) that stochastically pool one channel's spectrum per frequency bin (weighted by spectral energy) and fuse that shared key-frequency representation back into every channel before projecting to the forecast horizon."
 paper: "https://arxiv.org/abs/2502.16890"
 paper_title: "ReFocus: Reinforcing Mid-Frequency and Key-Frequency Modeling for Multivariate Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/Levi-Ackman/ReFocus"
 revision: "5b883b29f364b52a73835f1465e993433f94a1ed"
-license: "unlicensed (no LICENSE file present in the repository; inspected only for read-only paper-structure clarification, no source copied)"
+license: "NOASSERTION"
 
 tagline: "Beta-scaled moving-average residual favors mid frequencies; complex frequency-linear encoder picks key frequencies."
 tags: ["mlp", "frequency", "decomposition", "channel-mixing", "normalization"]
@@ -30,8 +30,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2502.16890); title: ReFocus: Reinforcing Mid-Frequency and Key-Frequency Modeling for Multivariate Time Series Forecasting; venue/year: arXiv / 2025
-- [codebase](https://github.com/Levi-Ackman/ReFocus); revision: `5b883b29f364b52a73835f1465e993433f94a1ed`; license: `unlicensed (no LICENSE file present in the repository; inspected only for read-only paper-structure clarification, no source copied)`
+- [paper](https://arxiv.org/abs/2502.16890); title: ReFocus: Reinforcing Mid-Frequency and Key-Frequency Modeling for Multivariate Time Series Forecasting; venue/year: arXiv preprint / 2025
+- [codebase](https://github.com/Levi-Ackman/ReFocus); revision: `5b883b29f364b52a73835f1465e993433f94a1ed`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -43,6 +43,8 @@ under Shared components), and the default preset is
 [`configs/models/ReFocus.toml`](../../../../configs/models/ReFocus.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official files: `models/LiNo.py` (the paper's `Model` class),
 `layers/FLinear.py` (`FLinear`, `Filter`), `layers/Encoder.py` (the EKPB
@@ -80,6 +82,8 @@ model parameters are: `enc_in=7`, `d_model=128`, `d_pick=32`, `layers=2`, `dropo
 <!-- model-card:canonical:end -->
 
 ## Source and verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official files: `models/LiNo.py` (the paper's `Model` class),
 `layers/FLinear.py` (`FLinear`, `Filter`), `layers/Encoder.py` (the EKPB

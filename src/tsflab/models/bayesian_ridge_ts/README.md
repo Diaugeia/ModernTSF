@@ -3,7 +3,7 @@ name: "BayesianRidgeTS"
 summary: "BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation."
 paper: "https://doi.org/10.1162/neco.1992.4.3.415"
 paper_title: "Bayesian Interpolation"
-venue: "Neural Computation"
+venue: "Neural Computation 1992"
 year: 1992
 tagline: "Linear lag regression whose weights carry a learned Gaussian prior precision, trained as a differentiable MAP objective."
 tags: ["statistical", "linear", "probabilistic", "baseline", "channel-independent", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1162/neco.1992.4.3.415); title: Bayesian Interpolation; venue/year: Neural Computation / 1992
+- [paper](https://doi.org/10.1162/neco.1992.4.3.415); title: Bayesian Interpolation; venue/year: Neural Computation 1992 / 1992
 - codebase: not available
 
 ## Local implementation

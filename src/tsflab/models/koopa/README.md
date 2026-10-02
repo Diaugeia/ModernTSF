@@ -10,7 +10,7 @@ revision: "a2e0bb77ec7c1a25e8e0579ba517ffb41358b844"
 license: "MIT"
 tagline: "Fourier split of invariant and variant dynamics, each advanced by a global or window-estimated Koopman operator."
 tags: ["mlp", "koopman", "decomposition", "frequency", "normalization"]
-composition: ["normalization=local:instance-mean-std-normalization", "decomposition=local:fourier-dominant-mode-split", "temporal=local:global-and-local-koopman-operators", "channel=local:channel-mixing-measurement-function", "head=local:operator-rollout-decoder-summed-over-blocks", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=local:fourier-dominant-mode-split", "temporal=local:global-and-local-koopman-operators", "channel=local:channel-mixing-measurement-function", "head=local:operator-rollout-decoder-summed-over-blocks", "loss=loss:mse"]
 ---
 # Koopa
 

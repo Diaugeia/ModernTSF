@@ -52,7 +52,7 @@ linear fusion, original-embedding concatenation, and an MLP horizon head.
 The paper samples dominant channels probabilistically; this point forecaster
 uses the probability-weighted expectation for deterministic execution. The
 preset is compact and does not claim dataset-specific tuned widths or depths.
-Evidence is in `../../../verification/evidence/FTP.json`.
+Evidence is in `../../../../verification/evidence/FTP.json`.
 
 ## Shared components
 
@@ -84,7 +84,7 @@ linear fusion, original-embedding concatenation, and an MLP horizon head.
 The paper samples dominant channels probabilistically; this point forecaster
 uses the probability-weighted expectation for deterministic execution. The
 preset is compact and does not claim dataset-specific tuned widths or depths.
-Evidence is in `../../../verification/evidence/FTP.json`.
+Evidence is in `../../../../verification/evidence/FTP.json`.
 
 ## In TSFLab
 Default config: `configs/models/FTP.toml`; model specification: `spec.py`; local implementation: `model.py`.

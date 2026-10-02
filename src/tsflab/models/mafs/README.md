@@ -56,7 +56,7 @@ training objective sums the configured criterion on the final forecast and the
 fixed-graph homogeneous prefix `specialization_loss`. This is a joint
 multi-task approximation of the paper's separate ten-epoch specialization stage
 followed by frozen-agent collaboration; there is no staged schedule or freezing. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
-is in `../../../verification/evidence/MAFS.json`.
+is in `../../../../verification/evidence/MAFS.json`.
 
 ## Shared components
 
@@ -92,7 +92,7 @@ training objective sums the configured criterion on the final forecast and the
 fixed-graph homogeneous prefix `specialization_loss`. This is a joint
 multi-task approximation of the paper's separate ten-epoch specialization stage
 followed by frozen-agent collaboration; there is no staged schedule or freezing. The reference implementation was inspected at the pinned revision; no external source code was copied. Evidence
-is in `../../../verification/evidence/MAFS.json`.
+is in `../../../../verification/evidence/MAFS.json`.
 
 ## In TSFLab
 Default config: `configs/models/MAFS.toml`; model specification: `spec.py`; local implementation: `model.py`.

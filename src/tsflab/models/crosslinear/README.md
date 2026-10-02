@@ -9,7 +9,7 @@ code: "https://github.com/mumiao2000/CrossLinear"
 revision: "d22366e2f59ced560a02b2b1c7cc673e3c02a13f"
 license: "MIT"
 tagline: "Linear forecaster with a time-invariant cross-variate conv embedding and patch projection for exogenous variables."
-tags: ["linear", "patching", "channel-mixing", "normalization", "lightweight", "exogenous-variables"]
+tags: ["linear", "patching", "channel-mixing", "normalization", "lightweight", "covariates"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-projection-position-blend", "channel=local:cross-correlation-conv-embedding", "head=local:global-flatten-linear-head", "loss=loss:mse"]
 ---
 # CrossLinear

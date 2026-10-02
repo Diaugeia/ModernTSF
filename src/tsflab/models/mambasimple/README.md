@@ -10,7 +10,7 @@ revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
 tagline: "Pure-PyTorch selective-scan Mamba blocks over time tokens, then a linear map from history length to horizon."
 tags: ["ssm", "channel-mixing", "normalization", "portable"]
-composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=component:mamba", "channel=local:channel-mixing-input-projection", "head=local:linear-horizon-projection", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=component:mamba", "channel=local:channel-mixing-linear-embedding", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # MambaSimple
 

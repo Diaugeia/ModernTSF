@@ -9,7 +9,7 @@ code: "https://github.com/TROUBADOUR000/AMD"
 revision: "000d377a1ed8946aa817ff357cdf1de64b99abb9"
 license: "MIT"
 tagline: "Avg-pool multi-scale mixing, patch-sequential blocks, and an MoE of MLP predictors gated by the scale embedding."
-tags: ["mlp", "multi-scale", "moe", "channel-mixing", "normalization", "aux-loss", "time-series"]
+tags: ["mlp", "multi-scale", "mixture-of-experts", "channel-mixing", "normalization", "aux-loss"]
 composition: ["normalization=component:revin", "decomposition=local:multi-scale-decomposable-mixing", "temporal=local:patch-sequential-dependency-interaction", "channel=local:optional-channel-mlp", "head=local:adaptive-multi-predictor-synthesis", "loss=loss:mse+local:expert-importance-balance"]
 ---
 # AMD
@@ -42,7 +42,13 @@ under Shared components), and the default preset is
 
 ## Differences
 
-No additional implementation differences are recorded in the preserved card notes. This is an explicit documentation gap, not an equivalence claim.
+Paper and official code (pinned revision `000d377`, `models/tsAMD.py`, `models/common.py`, `models/tsmoe.py`) were checked; the local module is an independent rewrite. MDM, DDI, the noisy gate (log1p below the k-th logit, expm1 above, scaled by 10, then softmax) and the importance loss follow the official modules. Recorded differences:
+
+- The official `AMS` loops over channels in Python with one shared gate and one shared expert set; the local module computes all channels in one batched pass (same math, same shared parameters). The gate input is the MDM time embedding and the experts read the DDI output, as in the official model.
+- The importance loss reproduces the official `cv_squared`: gates are expanded over the horizon before the batch sum, so the variance uses the `experts * pred_len` element count, summed over channels. It is exposed as `model.aux_loss` (scaled by `moe_loss_coef`, default 1.0 like the official `loss_coef`) in training mode only and is added to the criterion by the shared trainer; it is `None` in evaluation. The official `forward` returns `(forecast, moe_loss)` and its loop adds the loss only in training.
+- Official hard-codes `ff_dim=2048`, `num_experts=8`, `top_k=2` and calls the BatchNorm switch `layernorm`; TSFLab exposes them as `ff_dim`, `num_experts`, `top_k` and `batchnorm` (the normalization is BatchNorm1d over flattened `channels * length` features, so `enc_in` and `seq_len` are fixed at construction). The official `target_slice` output selection is dropped.
+- Shape validation is added: `seq_len` must be divisible by `patch` and by `mix_layer_scale**mix_layer_num`, and `top_k <= num_experts`. The official scripts use `seq_len=512` while the contract fixture uses 96; the preset values (`n_block=1`, `alpha=0.0`, `mix_layer_num=3`, `patch=16`, `dropout=0.1`) follow the official scripts.
+- RevIN is the shared `revin` component with affine parameters, matching the official RevIN.
 
 ## Shared components
 
@@ -53,6 +59,16 @@ No additional implementation differences are recorded in the preserved card note
 The contract fixture uses `seq_len=96` and `pred_len=12`. Default
 model parameters are: `enc_in=7`, `n_block=1`, `alpha=0.0`, `mix_layer_num=3`, `mix_layer_scale=2`, `patch=16`, `dropout=0.1`, `num_experts=8`, `top_k=2`, `ff_dim=2048`, `moe_loss_coef=1.0`, `use_revin=True`, `batchnorm=True`
 <!-- model-card:canonical:end -->
+
+## Source and verification
+
+Paper and official code (pinned revision `000d377`, `models/tsAMD.py`, `models/common.py`, `models/tsmoe.py`) were checked; the local module is an independent rewrite. MDM, DDI, the noisy gate (log1p below the k-th logit, expm1 above, scaled by 10, then softmax) and the importance loss follow the official modules. Recorded differences:
+
+- The official `AMS` loops over channels in Python with one shared gate and one shared expert set; the local module computes all channels in one batched pass (same math, same shared parameters). The gate input is the MDM time embedding and the experts read the DDI output, as in the official model.
+- The importance loss reproduces the official `cv_squared`: gates are expanded over the horizon before the batch sum, so the variance uses the `experts * pred_len` element count, summed over channels. It is exposed as `model.aux_loss` (scaled by `moe_loss_coef`, default 1.0 like the official `loss_coef`) in training mode only and is added to the criterion by the shared trainer; it is `None` in evaluation. The official `forward` returns `(forecast, moe_loss)` and its loop adds the loss only in training.
+- Official hard-codes `ff_dim=2048`, `num_experts=8`, `top_k=2` and calls the BatchNorm switch `layernorm`; TSFLab exposes them as `ff_dim`, `num_experts`, `top_k` and `batchnorm` (the normalization is BatchNorm1d over flattened `channels * length` features, so `enc_in` and `seq_len` are fixed at construction). The official `target_slice` output selection is dropped.
+- Shape validation is added: `seq_len` must be divisible by `patch` and by `mix_layer_scale**mix_layer_num`, and `top_k <= num_experts`. The official scripts use `seq_len=512` while the contract fixture uses 96; the preset values (`n_block=1`, `alpha=0.0`, `mix_layer_num=3`, `patch=16`, `dropout=0.1`) follow the official scripts.
+- RevIN is the shared `revin` component with affine parameters, matching the official RevIN.
 
 ## Citation
 

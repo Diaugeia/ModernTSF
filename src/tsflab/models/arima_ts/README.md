@@ -3,11 +3,11 @@ name: "ARIMATS"
 summary: "ARIMATS is a differentiable conditional ARIMA(p,1,q) recurrence with shared coefficients, historical one-step innovations, and zero expected future innovations."
 paper: "https://search.worldcat.org/title/Time-series-analysis-forecasting-and-control/oclc/1422106714"
 paper_title: "Time Series Analysis: Forecasting and Control"
-venue: "Holden-Day (book) / N/A (classical baseline)"
+venue: "Holden-Day 1970"
 year: 1970
 tagline: "Differentiable conditional ARIMA(p,1,q) recurrence with shared AR/MA coefficients fit by gradient descent."
 tags: ["statistical", "autoregressive", "baseline", "lightweight", "channel-independent"]
-composition: ["normalization=none", "decomposition=local:first-order-differencing", "temporal=local:conditional-arima-recurrence", "channel=local:channel-independent-shared-coefficients", "head=local:cumulative-sum-of-forecast-differences", "loss=loss:mse"]
+composition: ["normalization=none", "decomposition=local:first-order-differencing", "temporal=local:conditional-arima-recurrence", "channel=local:channel-independent-shared-weights", "head=local:cumulative-sum-of-forecast-differences", "loss=loss:mse"]
 ---
 # ARIMATS
 
@@ -26,7 +26,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://search.worldcat.org/title/Time-series-analysis-forecasting-and-control/oclc/1422106714); title: Time Series Analysis: Forecasting and Control; venue/year: Holden-Day (book) / N/A (classical baseline) / 1970
+- [paper](https://search.worldcat.org/title/Time-series-analysis-forecasting-and-control/oclc/1422106714); title: Time Series Analysis: Forecasting and Control; venue/year: Holden-Day 1970 / 1970
 - codebase: not available
 
 ## Local implementation

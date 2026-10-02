@@ -3,7 +3,7 @@ name: "ElasticNetTS"
 summary: "ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`."
 paper: "https://doi.org/10.1111/j.1467-9868.2005.00503.x"
 paper_title: "Regularization and Variable Selection via the Elastic Net"
-venue: "Journal of the Royal Statistical Society, Series B"
+venue: "Journal of the Royal Statistical Society Series B 2005"
 year: 2005
 tagline: "Shared linear lag regression trained with an L1/L2 elastic-net weight penalty added through aux_loss."
 tags: ["statistical", "linear", "baseline", "channel-independent", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1111/j.1467-9868.2005.00503.x); title: Regularization and Variable Selection via the Elastic Net; venue/year: Journal of the Royal Statistical Society, Series B / 2005
+- [paper](https://doi.org/10.1111/j.1467-9868.2005.00503.x); title: Regularization and Variable Selection via the Elastic Net; venue/year: Journal of the Royal Statistical Society Series B 2005 / 2005
 - codebase: not available
 
 ## Local implementation

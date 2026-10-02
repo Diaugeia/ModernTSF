@@ -3,7 +3,7 @@ name: "AWEMixer"
 summary: "AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head."
 paper: "https://arxiv.org/abs/2511.04722"
 paper_title: "AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/hit636/AWEMixer"
 revision: "8e660f93c2535e6eb64ba47647babf21f3dbacfa"
@@ -29,7 +29,7 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2511.04722); title: AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting; venue/year: arXiv / 2025
+- [paper](https://arxiv.org/abs/2511.04722); title: AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting; venue/year: arXiv preprint / 2025
 - [codebase](https://github.com/hit636/AWEMixer); revision: `8e660f93c2535e6eb64ba47647babf21f3dbacfa`; license: `Apache-2.0`
 
 ## Local implementation

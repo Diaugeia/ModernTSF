@@ -3,7 +3,7 @@ name: "DPWMixer"
 summary: "DPWMixer replaces average-pooling multi-scale downsampling with a lossless Haar wavelet pyramid, forecasting every resolution with a dual-path (global-linear trend plus patch-MLP local) mixer and fusing the per-channel, per-scale forecasts with a learned softmax weighting."
 paper: "https://arxiv.org/abs/2512.02070"
 paper_title: "DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/hit636/DPWMixer"
 revision: "0a787be2aeba845914bd4ea88428a1ddb982abad"
@@ -28,7 +28,7 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2512.02070); title: DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting; venue/year: arXiv / 2025
+- [paper](https://arxiv.org/abs/2512.02070); title: DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting; venue/year: arXiv preprint / 2025
 - [codebase](https://github.com/hit636/DPWMixer); revision: `0a787be2aeba845914bd4ea88428a1ddb982abad`; license: `Apache-2.0`
 
 ## Local implementation

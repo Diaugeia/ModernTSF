@@ -10,7 +10,7 @@ revision: "d040bb015b6299da26d879b90dd19c80fb72c160"
 license: "Apache-2.0"
 tagline: "Low-pass rFFT, learned complex frequency interpolation to the extended length, then irFFT; roughly 10k parameters."
 tags: ["linear", "frequency", "lightweight", "channel-independent", "baseline"]
-composition: ["normalization=local:instance-mean-std-centering", "decomposition=none", "temporal=local:complex-frequency-interpolation", "channel=local:channel-independent-shared-weights", "head=local:zero-padded-irfft-extension", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:complex-frequency-interpolation", "channel=local:channel-independent-shared-weights", "head=local:zero-padded-irfft-extension", "loss=loss:mse"]
 ---
 # FITS
 

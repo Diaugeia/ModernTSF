@@ -10,7 +10,7 @@ revision: "df199624259776515a2d287c32b5db459a629f5d"
 license: "MIT"
 tagline: "Parallel graph layers where a learned pivotal-node membership gates a temporally windowed graph convolution."
 tags: ["gnn", "spatiotemporal", "graph-learning", "covariates", "cnn"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-span-window-and-conv", "channel=local:pivotal-node-graph-convolution+local:adaptive-graph", "head=local:flatten-mlp-readout", "loss=loss:mse"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-span-window-and-conv", "channel=local:pivotal-node-graph-convolution+local:adaptive-graph", "head=local:flatten-mlp-head", "loss=loss:mse"]
 ---
 # STPGNN
 

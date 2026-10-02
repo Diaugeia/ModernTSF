@@ -9,8 +9,8 @@ code: "https://github.com/tsinghua-fib-lab/Traffic-Benchmark"
 revision: "b9f8e40b4df9b58f5ad88432dc070cbbbcdc0228"
 license: "MIT"
 tagline: "Graph-GRU encoder-decoder whose directed graphs are regenerated each step by hypernetworks from hidden state."
-tags: ["rnn", "gnn", "graph-learning", "spatiotemporal", "covariates", "autoregressive-decoding"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:dynamic-graph-gru-encoder-decoder", "channel=local:hypernetwork-dynamic-directed-graphs+local:static-forward-reverse-transitions", "head=local:linear-projection-autoregressive-decoder", "loss=loss:mse"]
+tags: ["rnn", "gnn", "graph-learning", "spatiotemporal", "covariates", "autoregressive"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dynamic-graph-gru-encoder-decoder", "channel=local:hypernetwork-dynamic-directed-graphs+local:static-forward-reverse-transitions", "head=local:autoregressive-linear-decoder", "loss=loss:mse"]
 ---
 # DGCRN
 

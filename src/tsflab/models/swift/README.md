@@ -3,14 +3,14 @@ name: "SWIFT"
 summary: "SWIFT reversibly normalizes each instance (RevIN), maps every channel's sub-series with a single-level, lossless Haar wavelet decomposition into an approximation and a detail band, fuses those two bands with a small shared depthwise convolution (cross-band information fusion), maps the fused coefficients from input-length to horizon-length with a single linear layer or a shallow MLP (the sub-series mapper), and reconstructs the forecast with the matching inverse Haar transform before denormalizing."
 paper: "https://arxiv.org/abs/2501.16178"
 paper_title: "SWIFT: Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/Lancelot-Xie/SWIFT"
 revision: "f1f4be7c4eeae09e75749b22090bc1b21cf33641"
-license: "unlicensed (repository README displays an MIT badge but no LICENSE file is present in the tree; inspected only for read-only paper-structure clarification, no source copied)"
+license: "NOASSERTION"
 tagline: "RevIN plus one-level Haar wavelet split, a shared depthwise conv across bands, linear sub-series map, inverse Haar."
 tags: ["linear", "wavelet", "frequency", "decomposition", "channel-independent", "lightweight", "normalization"]
-composition: ["normalization=component:revin", "decomposition=component:haar_dwt1d", "temporal=local:cross-band-conv-fusion", "channel=local:channel-independent-shared-mapper", "head=local:sub-series-mapper+component:haar_dwt1d", "loss=loss:mse"]
+composition: ["normalization=component:revin", "decomposition=component:haar_dwt1d", "temporal=local:cross-band-conv-fusion", "channel=local:channel-independent-shared-weights", "head=local:sub-series-mapper+component:haar_dwt1d", "loss=loss:mse"]
 ---
 # SWIFT
 
@@ -29,8 +29,8 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2501.16178); title: SWIFT: Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting; venue/year: arXiv / 2025
-- [codebase](https://github.com/Lancelot-Xie/SWIFT); revision: `f1f4be7c4eeae09e75749b22090bc1b21cf33641`; license: `unlicensed (repository README displays an MIT badge but no LICENSE file is present in the tree; inspected only for read-only paper-structure clarification, no source copied)`
+- [paper](https://arxiv.org/abs/2501.16178); title: SWIFT: Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting; venue/year: arXiv preprint / 2025
+- [codebase](https://github.com/Lancelot-Xie/SWIFT); revision: `f1f4be7c4eeae09e75749b22090bc1b21cf33641`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -42,6 +42,8 @@ under Shared components), and the default preset is
 [`configs/models/SWIFT.toml`](../../../../configs/models/SWIFT.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). The repository README shows an MIT badge, but the tree contains no LICENSE file. It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official files: `models/SWIFT_Linear.py`, `models/SWIFT_MLP.py`,
 `layers/RevIN.py`, at revision `f1f4be7c4eeae09e75749b22090bc1b21cf33641`.
@@ -72,6 +74,8 @@ model parameters are: `enc_in=7`, `hidden_size=0`, `conv_kernel=3`, `use_convdro
 <!-- model-card:canonical:end -->
 
 ## Source and verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). The repository README shows an MIT badge, but the tree contains no LICENSE file. It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official files: `models/SWIFT_Linear.py`, `models/SWIFT_MLP.py`,
 `layers/RevIN.py`, at revision `f1f4be7c4eeae09e75749b22090bc1b21cf33641`.

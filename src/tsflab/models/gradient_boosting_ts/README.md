@@ -3,7 +3,7 @@ name: "GradientBoostingTS"
 summary: "GradientBoostingTS is an independent differentiable additive-tree baseline with sequential learned residual-state updates."
 paper: "https://doi.org/10.1214/aos/1013203451"
 paper_title: "Greedy function approximation: A gradient boosting machine"
-venue: "Annals of Statistics, 2001"
+venue: "Annals of Statistics 2001"
 year: 2001
 tagline: "Differentiable additive soft-tree stages trained end to end, each updating a learned residual input state."
 tags: ["tree", "ensemble", "boosting", "baseline", "channel-mixing", "normalization"]
@@ -26,7 +26,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1214/aos/1013203451); title: Greedy function approximation: A gradient boosting machine; venue/year: Annals of Statistics, 2001 / 2001
+- [paper](https://doi.org/10.1214/aos/1013203451); title: Greedy function approximation: A gradient boosting machine; venue/year: Annals of Statistics 2001 / 2001
 - codebase: not available
 
 ## Local implementation
@@ -40,7 +40,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-This clean-room baseline applies all soft-tree stages end-to-end and updates an input-space residual through learned backcasts. It does not fit each tree to frozen loss pseudo-residuals or reproduce scikit-learn. The cited work supplies the stage-wise additive principle only; no external source code was inspected or copied. Evidence is in `../../../verification/evidence/GradientBoostingTS.json`.
+This clean-room baseline applies all soft-tree stages end-to-end and updates an input-space residual through learned backcasts. It does not fit each tree to frozen loss pseudo-residuals or reproduce scikit-learn. The cited work supplies the stage-wise additive principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/GradientBoostingTS.json`.
 
 ## Shared components
 
@@ -67,7 +67,7 @@ Default config: `configs/models/GradientBoostingTS.toml`; model specification: `
 
 ## Verification
 
-This clean-room baseline applies all soft-tree stages end-to-end and updates an input-space residual through learned backcasts. It does not fit each tree to frozen loss pseudo-residuals or reproduce scikit-learn. The cited work supplies the stage-wise additive principle only; no external source code was inspected or copied. Evidence is in `../../../verification/evidence/GradientBoostingTS.json`.
+This clean-room baseline applies all soft-tree stages end-to-end and updates an input-space residual through learned backcasts. It does not fit each tree to frozen loss pseudo-residuals or reproduce scikit-learn. The cited work supplies the stage-wise additive principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/GradientBoostingTS.json`.
 
 ## Citation
 

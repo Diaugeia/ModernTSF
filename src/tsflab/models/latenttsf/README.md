@@ -88,7 +88,7 @@ autoencoder fitting. Key params:
 `d_model`, `d_ff`, `mse_weight`, `cosine_weight`, `use_latent_norm`,
 `ae_train_epochs`, `ae_lr`, `ae_loss`, plus DLinear's `kernel_size`/`individual`.
 Raise `ae_train_epochs` toward 500 for paper-faithful AE pretraining. Verify with
-`uv run tsf smoke --model LatentTSF`.
+`uv run tsf run --smoke --model LatentTSF`.
 
 ## Source and verification
 

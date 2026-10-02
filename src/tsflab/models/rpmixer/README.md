@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Pinned source inspection: `src/tsflab/models/rpmixer.py` was examined at the recorded
+Pinned source inspection: `src/models/rpmixer.py` was examined at the recorded
 revision to confirm implementation details. The local module was written for
 TSFLab; no external source file is copied.
 
@@ -77,7 +77,7 @@ Default config: `configs/models/RPMixer.toml`; model specification: `spec.py`; i
 
 ## Verification
 
-Pinned source inspection: `src/tsflab/models/rpmixer.py` was examined at the recorded
+Pinned source inspection: `src/models/rpmixer.py` was examined at the recorded
 revision to confirm implementation details. The local module was written for
 TSFLab; no external source file is copied.
 
