@@ -383,4 +383,7 @@ MODEL_CATALOG = ModelCatalog({
     "FreDF": "tsflab.models.fredf.spec",
     "GPHT": "tsflab.models.gpht.spec",
     "SAMBA": "tsflab.models.samba.spec",
+    "MTLinear": "tsflab.models.mtlinear.spec",
+    "LIFT": "tsflab.models.lift.spec",
+    "TimeMachine": "tsflab.models.timemachine.spec",
 })
