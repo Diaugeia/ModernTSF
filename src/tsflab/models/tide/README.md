@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Dense residual MLP encoder-decoder on history plus projected calendar covariates, with a global linear skip."
+tags: ["mlp", "covariates", "channel-independent", "normalization", "lightweight"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:dense-residual-mlp-encoder-decoder", "channel=local:channel-independent-shared-weights", "head=local:temporal-decoder+local:global-linear-residual", "loss=loss:mse"]
 ---
 # TiDE
 
-TiDE (Time-series Dense Encoder) is an MLP-based encoder-decoder model for long-term time series forecasting, serving the standard time series prediction setting with optional covariate support. It encodes the historical time series together with past and future covariates using dense MLP layers, then decodes to produce future predictions — combining the simplicity and speed of linear models with the expressiveness needed for nonlinear dependencies. TiDE is 5-10x faster than comparable Transformer-based models on standard benchmarks.
+## Key ideas
+
+- Past and future time features are projected per step (`feature_projection`), flattened with the normalized lookback and fed to a stack of `ResidualBlock`s (encoder) and a dense decoder that emits one vector per horizon step.
+- A per-step `temporal_decoder` combines each decoded vector with the future covariate projection.
+- A global `Linear(seq_len, pred_len)` residual on the lookback is added; every channel runs through the same weights, with series statistics undone at the end.
 
 <!-- model-card:canonical:start -->
 ## Input and output

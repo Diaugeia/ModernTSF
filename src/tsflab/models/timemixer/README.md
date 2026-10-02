@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/kwuking/TimeMixer"
 revision: "e24610583b36fdd8c76cc17a8df4e65759a5f460"
 license: "Apache-2.0"
+tagline: "MLP mixing across downsampled scales: seasonal bottom-up, trend top-down, then a sum of per-scale predictors."
+tags: ["mlp", "decomposition", "multi-scale", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:series_decomposition+local:dft-top-k-seasonal-option", "temporal=local:past-decomposable-mixing", "channel=local:channel-linear-embedding-and-predictor", "head=local:future-multipredictor-mixing", "loss=loss:mse"]
 ---
 # TimeMixer
 
-TimeMixer is a fully MLP-based model for both long-term and short-term time series forecasting. It decomposes and mixes temporal patterns across multiple sampling scales: a Past-Decomposable-Mixing (PDM) block separates and aggregates seasonal and trend components in fine-to-coarse and coarse-to-fine directions, while a Future-Multipredictor-Mixing (FMM) block ensembles scale-specific predictors to leverage complementary forecasting information.
+## Key ideas
+
+- Average-pools the input into `down_sampling_layers + 1` scales, each with its own `revin` and linear channel embedding.
+- `PastDecomposableMixing` splits each scale (moving average via `series_decomposition`, or `DFTDecomposition` top-k seasonal when `decomp_method=dft_decomp`), mixes seasonal parts fine-to-coarse and trend parts coarse-to-fine with `TemporalMixer` MLPs, and adds a feed-forward residual.
+- Future-multipredictor mixing: every scale has its own temporal and channel linear predictor and the per-scale forecasts are summed.
+- Default config uses the moving-average decomposition.
 
 <!-- model-card:canonical:start -->
 ## Input and output

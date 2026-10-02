@@ -8,10 +8,17 @@ year: 2026
 code: "https://github.com/BenchCouncil/TimeMosaic"
 revision: "214423b7f0b4653d04620814380a9301580285cc"
 license: "NOASSERTION"
+tagline: "Per-region soft choice among patch sizes, then prompt-conditioned attention and one linear head per horizon segment."
+tags: ["transformer", "patching", "multi-scale", "channel-independent", "normalization", "attention-variant"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:adaptive-granularity-patch-embedding+local:prompt-attention", "channel=local:channel-independent-shared-weights", "head=local:segment-wise-linear-heads", "loss=loss:mse"]
 ---
 # TimeMosaic
 
-TimeMosaic is a time-series forecasting model designed to handle temporal heterogeneity in multivariate data. It employs adaptive patch embedding to dynamically adjust segmentation granularity based on local information density, and a segment-wise decoder that treats each prediction horizon as a related but distinct sub-task, adapting to horizon-specific difficulty rather than applying a single uniform decoder.
+## Key ideas
+
+- `adaptive_patch_tokens` splits history into regions, a `granularity_classifier` softmax chooses among patch sizes per region, and candidate embeddings are repeat-aligned to a common token count and blended.
+- Each horizon segment has a learned prompt token prepended to the keys and values of a shared attention layer (`segment_prompts`).
+- Each segment gets its own linear head over the flattened tokens (`segment_heads`), then segments are concatenated; trained end-to-end without the paper's frozen foundation backbone.
 
 <!-- model-card:canonical:start -->
 ## Input and output

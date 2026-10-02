@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/xiaowangbc/WDformer"
 revision: "c741e4e428f802df41b8b113ad4a4d5241da4805"
 license: "unspecified (no LICENSE file at the pinned revision)"
+tagline: "Haar subband tokens per variate, differential-attention encoder over variates, inverse Haar of pseudo-subbands."
+tags: ["transformer", "wavelet", "frequency", "attention-variant", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=component:wavelet", "temporal=local:subband-linear-embedding", "channel=component:differential_attention+local:variate-token-encoder", "head=local:pseudo-subband-projection+component:wavelet", "loss=loss:mse"]
 ---
 # WDformer
 
-WDformer embeds each variate as a Haar-wavelet-subband token, attends over variate tokens with a differential-attention encoder (subtracting two softmax attention maps to cancel common-mode noise), and maps back to a forecast by projecting to pseudo-subband coefficients that a fixed inverse wavelet transform reassembles.
+## Key ideas
+
+- `DecimatedWaveletTransform` (Haar, `wave_size` levels) splits each variate's history, and each subband gets its own linear embedding concatenated into one token per variate (inverted, variate-token layout).
+- `DifferentialAttention` layers (`DifferentialSelfAttentionLayer`) subtract two softmax attention maps to cancel common-mode noise, with RMSNorm and SwiGLU feed-forward and a layer-dependent lambda schedule.
+- A linear projector emits pseudo-subband coefficients and the inverse wavelet transform reassembles the forecast; calendar marks, if given, are appended as extra variates.
 
 <!-- model-card:canonical:start -->
 ## Input and output

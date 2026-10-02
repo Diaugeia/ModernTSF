@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/Secure-and-Intelligent-Systems-Lab/WPMixer"
 revision: "74104c9dddd54d279eb8323f48934b4fd75fcae7"
 license: "MIT"
+tagline: "Orthogonal wavelet split into resolutions, each patched and token/feature-mixed by MLPs, then softmax-weighted."
+tags: ["mlp", "wavelet", "frequency", "decomposition", "patching", "multi-scale", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:orthogonal-wavelet-analysis", "temporal=local:patch-token-feature-mixer-per-resolution", "channel=local:channel-independent-shared-weights", "head=local:per-resolution-linear-softmax-weighted-sum", "loss=loss:mse"]
 ---
 # WPMixer
 
-WPMixer (Wavelet Patch Mixer) is an MLP-based model for long-term time series forecasting in the standard time series setting. It combines three complementary techniques: multi-resolution wavelet decomposition to extract information in both frequency and time domains, patching to capture extended historical context and local patterns with an extended look-back window, and MLP mixing layers to incorporate global temporal information — significantly outperforming state-of-the-art MLP-based and Transformer-based models in a computationally efficient manner.
+## Key ideas
+
+- `OrthogonalWaveletAnalysis` computes a fixed multi-level Haar/db1/db2 decomposition (approximation plus details) with strided convolutions, replacing the pre-built wavelet component.
+- One `ResolutionMixer` per resolution: patch embedding, a token-mixing MLP over patches, a feature-mixing MLP, and a flatten linear forecast to the full horizon.
+- Resolution forecasts are combined with learnable softmax weights (`resolution_logits`) rather than an inverse wavelet transform, inside `revin`; `no_decomposition=True` leaves a single branch.
 
 <!-- model-card:canonical:start -->
 ## Input and output

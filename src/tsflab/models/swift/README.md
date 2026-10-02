@@ -8,9 +8,18 @@ year: 2025
 code: "https://github.com/Lancelot-Xie/SWIFT"
 revision: "f1f4be7c4eeae09e75749b22090bc1b21cf33641"
 license: "unlicensed (repository README displays an MIT badge but no LICENSE file is present in the tree; inspected only for read-only paper-structure clarification, no source copied)"
-
+tagline: "RevIN plus one-level Haar wavelet split, a shared depthwise conv across bands, linear sub-series map, inverse Haar."
+tags: ["linear", "wavelet", "frequency", "decomposition", "channel-independent", "lightweight", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:haar_dwt1d", "temporal=local:cross-band-conv-fusion", "channel=local:channel-independent-shared-mapper", "head=local:sub-series-mapper+component:haar_dwt1d", "loss=loss:mse"]
 ---
 # SWIFT
+
+## Key ideas
+
+- Each channel is normalized with `revin` and split by `HaarDWT1D` into approximation and detail bands of half length.
+- A small shared Conv1d with residual fuses the two bands (cross-band information fusion).
+- `SubSeriesMapper`, a linear layer or shallow ELU MLP, maps coefficients to horizon length, shared across channels unless `not_independent=True` gives one per channel.
+- `HaarIDWT1D` reconstructs the forecast and `revin` denormalizes it.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Transformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "e4bf8fdd39a9cefb0645c9e8c57a2f81decea0fdf7970d4a672d6e6ff9dd1ec9",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "672431917b505ef4bda7ab5dc18b20ba3c20da8c353376aeb6dd31ef6c2c6f3b",
   "paper": {
     "title": "Attention Is All You Need",
     "venue": "NeurIPS 2017",

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimeCAP",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "d9f6d439f245654b3d566c135365156eec0acf69be0a06908c2470c888944e87",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "61540500f76996639eaa48f0c6aeef194c1ceabc4bf281cc52cb88d301c10b49",
   "paper": {
     "title": "TimeCAP: A Channel-Aware Pre-Training Framework for Multivariate Time Series Forecasting",
     "venue": "AAAI 2026",

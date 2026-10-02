@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Folds the series into 2D by FFT-detected dominant periods and applies inception 2D convs, amplitude-weighted."
+tags: ["cnn", "frequency", "multi-scale", "channel-mixing", "covariates", "normalization"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=component:dominant_periods+local:period-2d-inception-conv", "channel=local:channel-linear-embedding-and-projection", "head=local:linear-length-extension+local:output-projection", "loss=loss:mse"]
 ---
 # TimesNet
 
-TimesNet is a task-general time series analysis backbone for the standard time-series forecasting setting. It observes that real-world time series exhibit multi-periodicity, then transforms the 1D sequence into a set of 2D tensors (one per detected period) so that intraperiod and interperiod variations map to columns and rows respectively — enabling powerful 2D vision-style convolution kernels (via a parameter-efficient inception block) to model complex temporal patterns that are difficult to capture in 1D.
+## Key ideas
+
+- `dominant_periods` picks the top-k FFT periods of the hidden series; `TimesBlock` pads and reshapes it to (periods, period length) images per period so rows capture inter-period and columns intra-period variation.
+- `Inception2D` (parallel 1/3/5 kernels, averaged) is applied in a two-layer conv stack on each image; outputs are reshaped back and summed with softmax amplitude weights plus a residual.
+- The lookback is first extended to seq_len + pred_len by a linear map on the time axis, so the forecast is the last pred_len steps of the encoded sequence.
 
 <!-- model-card:canonical:start -->
 ## Input and output

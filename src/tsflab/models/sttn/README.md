@@ -8,10 +8,17 @@ year: 2020
 code: "https://github.com/xumingxingsjtu/STTN"
 revision: "d24f8d331a6d81b819cfe0a9430793ae028d25ad"
 license: "NOASSERTION"
+tagline: "Per-step spatial Transformer (attention gated against a fixed adjacency) then per-node temporal Transformer, stacked."
+tags: ["transformer", "spatiotemporal", "attention-variant", "covariates", "graph-learning"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-self-attention-transformer", "channel=local:spatial-transformer-gated-with-fixed-adjacency", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # STTN
 
-STTN (Spatial-Temporal Transformer Networks) is a spatiotemporal forecasting model designed for node-structured traffic and sensor-network data. It combines a spatial Transformer that dynamically models directed spatial dependencies with a self-attention mechanism — capturing real-time node-to-node relationships without a fixed adjacency matrix — with a temporal Transformer that captures long-range bidirectional temporal dependencies, yielding competitive accuracy especially for long-horizon traffic flow forecasting.
+## Key ideas
+
+- `SpatialTransformer` computes dynamic multi-head attention across nodes at every time step and gates it against a fixed row-normalized adjacency projection with a sigmoid, so spatial links are learned but anchored to the graph.
+- `TemporalTransformer` applies self-attention over time per node; both use post-norm residual blocks with feed-forward layers (`SpatialTemporalBlock`).
+- Input is value plus `cov_dim` calendar features, embedded with a learnable positional parameter; a flatten linear layer maps to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

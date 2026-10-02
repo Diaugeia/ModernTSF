@@ -8,10 +8,17 @@ year: 2021
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Tensor ODE blocks mixing graph propagation with dilated temporal conv over spatial and semantic graphs, gated fusion."
+tags: ["gnn", "cnn", "spatiotemporal", "graph-learning", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dilated-causal-conv+local:tensor-ode-block", "channel=local:spatial-and-semantic-graph-branches", "head=local:gated-fusion-flatten-linear", "loss=loss:mse"]
 ---
 # STGODE
 
-STGODE is a spatiotemporal learning model for node-structured traffic and graph data that captures continuous spatial-temporal dynamics through a tensor-based ordinary differential equation (ODE). By coupling a semantic adjacency matrix with a temporal dilated convolution structure, it overcomes the over-smoothing limitation of shallow GNNs and captures both structural and semantic long-range dependencies between nodes.
+## Key ideas
+
+- `TensorODEBlock` integrates a derivative made of graph propagation, a temporal convolution and a node state term with learnable step size, giving deep propagation without stacking many GNN layers.
+- Two `ODEBranch`es run in parallel: one on the row-normalised physical adjacency, one on a semantic graph derived from adjacency profiles; both wrap the ODE in dilated causal convolutions.
+- A sigmoid gate fuses the branches and a linear layer maps the flattened history to the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

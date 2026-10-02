@@ -8,10 +8,17 @@ year: 2016
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "79641b1c75246ab2d8c53bb52f2ac72588be0cdc"
 license: "Apache-2.0"
+tagline: "Gated dilated causal convolutions with residual/skip connections per channel, pooled into a direct multistep head."
+tags: ["cnn", "channel-independent", "normalization", "baseline"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:gated_dilated_conv", "channel=local:channel-independent-shared-weights", "head=local:skip-sum-pool-linear-horizon", "loss=loss:mse"]
 ---
 # WaveNet
 
-WaveNet is a modified integration of DeepMind's stacked dilated causal convolution architecture for the standard univariate and multivariate time-series forecasting setting. The core network applies multiple blocks of exponentially dilated causal convolutions with gated tanh/sigmoid activations and residual plus skip connections, giving a large temporal receptive field with relatively few parameters. In TSFLab the original audio-generation head is replaced with a direct multi-step regression head (via a 1×1 convolution over the skip summaries) and RevIN instance normalization is wrapped around the network for stable long-horizon forecasting.
+## Key ideas
+
+- `GatedCausalLayer` applies tanh/sigmoid gated dilated convolutions (`gated_dilated_conv`) with dilations 1, 2, 4... per block, plus residual and skip 1x1 convs.
+- Each channel is a univariate series folded into the batch, so weights are shared across channels.
+- Skip outputs are summed, passed through ReLU/1x1 conv, average-pooled and mapped to the horizon by a linear layer (a direct multistep head replaces the audio output); `revin` wraps the network.
 
 <!-- model-card:canonical:start -->
 ## Input and output

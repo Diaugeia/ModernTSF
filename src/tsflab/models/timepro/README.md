@@ -5,9 +5,17 @@ paper: "https://arxiv.org/abs/2505.20774"
 paper_title: "TimePro: Efficient Multivariate Long-term Time Series Forecasting with Variable- and Time-Aware Hyper-state"
 venue: "arXiv preprint"
 year: 2025
-
+tagline: "Bidirectional selective-SSM scan over the variate axis, with scalar state grid-mixed across time patches and variates."
+tags: ["ssm", "patching", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:patch-embedding-folded-into-variate-token", "channel=component:hyper_state_scan+local:bidirectional-variate-axis-scan", "head=local:final-norm-linear-projector", "loss=loss:mse"]
 ---
 # TimePro
+
+## Key ideas
+
+- Each channel is patched and embedded, then all patch embeddings of a channel are concatenated into one token per variate, so the scan runs over the variate axis.
+- `ProMamba` runs a diagonal selective scan (`diagonal_selective_scan`, scalar state, `d_state=1`) and reshapes the state into a (time-patch, variate) grid that `GridStateMixer` mixes locally before read-out: the hyper-state. The paper's CUDA-only deformable conv is replaced by a portable depthwise conv.
+- `ProBlock` runs forward and reversed scans plus an MLP; a LayerNorm and linear projector emit the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "WDformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "8f2572dc40bc75c42dd269f136f8c11982897235b43529e9ef827be930ec310d",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "07c6fdf8b53abd1d4f688f96b8eed7ccb893ae4e386339378ec5b143d2300ac5",
   "paper": {
     "title": "WDformer: A Wavelet-based Differential Transformer Model for Time Series Forecasting",
     "venue": "arXiv",

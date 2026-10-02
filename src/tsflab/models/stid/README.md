@@ -8,10 +8,17 @@ year: 2022
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "MLP over per-node history plus learnable node, time-of-day and day-of-week identity embeddings; no graph."
+tags: ["mlp", "spatiotemporal", "covariates", "lightweight", "channel-independent"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:history-linear-projection", "channel=local:node-identity-embedding", "head=local:linear-horizon-head", "loss=loss:mse"]
 ---
 # STID
 
-STID (Spatial-Temporal IDentity) is an MLP-based spatiotemporal forecasting model designed for node-structured or graph-structured data. It attaches learnable spatial identity embeddings (one per node) and temporal identity embeddings (time-of-day and day-of-week) to the input, then encodes all features with simple multi-layer perceptrons to predict future node values, achieving strong performance with minimal complexity.
+## Key ideas
+
+- Flattens each node's lookback (values plus calendar features) into one vector with a linear layer.
+- Concatenates a learnable node embedding and time-of-day and day-of-week embeddings taken from the latest step, then fuses them with a linear projection.
+- Encodes with residual pointwise MLP blocks (`ResidualPointwiseBlock`) and a linear head to the horizon; `adj_mx` is unused.
 
 <!-- model-card:canonical:start -->
 ## Input and output

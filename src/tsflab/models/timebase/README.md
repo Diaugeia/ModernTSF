@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/hqh0728/TimeBase"
 revision: "369b330f3d77371fcc7e8c75c808d01330c40899"
 license: "MIT"
+tagline: "Period-segment linear map into a few basis components and back, giving a tiny low-rank forecaster."
+tags: ["linear", "lightweight", "decomposition", "channel-independent", "normalization"]
+composition: ["normalization=local:period-mean-subtraction", "decomposition=none", "temporal=local:segment-level-basis-linear-map", "channel=local:channel-independent-shared-weights", "head=local:basis-to-segment-linear", "loss=loss:mse+local:basis-orthogonality-aux"]
 ---
 # TimeBase
 
-TimeBase is an ultra-lightweight network for long-term time series forecasting that extracts core basis temporal components from the input window and transforms traditional point-level prediction into efficient segment-level forecasting, exploiting the temporal pattern similarity and low-rank structure inherent in long-horizon time series data.
+## Key ideas
+
+- Folds the lookback into `period_len` x segment grids and compresses the segment axis to `basis_num` basis components with `ts2basis`, then expands to future segments with `basis2ts` (segment-level, low-rank forecasting).
+- Subtracts a per-period or per-series mean before the maps and adds it back afterwards (`use_period_norm`).
+- During training `aux_loss` adds `orthogonal_weight` times `cal_orthogonal_loss` on the basis activations to keep bases decorrelated.
+- Weights are shared across channels unless `individual=True` creates a pair per channel.
 
 <!-- model-card:canonical:start -->
 ## Input and output

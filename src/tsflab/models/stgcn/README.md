@@ -8,10 +8,17 @@ year: 2018
 code: "https://github.com/GestaltCogTeam/BasicTS"
 revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
+tagline: "Stacked gated temporal convolutions around Chebyshev graph convolutions in sandwich blocks; fully convolutional."
+tags: ["gnn", "cnn", "spatiotemporal", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:gated-causal-temporal-conv", "channel=component:graph_spectral+local:chebyshev-graph-convolution", "head=local:flatten-mlp-head", "loss=loss:mse"]
 ---
 # STGCN
 
-STGCN (Spatio-Temporal Graph Convolutional Network) is a deep learning framework for node-level spatiotemporal forecasting, originally developed for traffic speed prediction. It combines graph convolution layers that capture spatial dependencies between nodes on a road network with temporal convolution layers that model short- and long-range time patterns, using fully convolutional structures to achieve fast training and compact parameterisation compared to recurrent alternatives.
+## Key ideas
+
+- Each `SpatioTemporalBlock` sandwiches a Chebyshev graph convolution (`ChebyshevGraphConvolution`, supports from `graph_spectral.chebyshev_supports`) between two GLU-gated causal convolutions (`TemporalGate`).
+- Two blocks with LayerNorm and dropout, then a flatten MLP maps the whole history to the horizon per node.
+- Consumes value plus time-of-day/day-of-week features via `to_spatiotemporal` and a fixed adjacency.
 
 <!-- model-card:canonical:start -->
 ## Input and output

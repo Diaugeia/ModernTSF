@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/stitsyuk/xPatch"
 revision: "d12eecaa11409109582f5e2ffdebcc2cffd47b3e"
 license: "Apache-2.0"
+tagline: "Exponential smoothing seasonal-trend split feeding a linear trend MLP stream and a patch-CNN seasonal stream, fused."
+tags: ["mlp", "cnn", "decomposition", "patching", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:exponential-moving-average-decomposition", "temporal=local:linear-trend-stream+local:patch-cnn-seasonal-stream", "channel=local:channel-independent-shared-weights", "head=local:fusion-mlp", "loss=loss:mse"]
 ---
 # xPatch
 
-xPatch is a dual-stream time series forecasting model that combines an exponential seasonal-trend decomposition module with two parallel processing streams — an MLP-based linear stream and a CNN-based non-linear stream — both using patch-based channel-independent representations, and further employs a robust arctangent loss function and a sigmoid learning rate schedule to prevent overfitting.
+## Key ideas
+
+- `ExponentialDecomposition` (EMA, or Holt double smoothing with `ma_type=dema`) splits the normalized series into seasonal and trend parts with a recurrence rather than a moving-average kernel.
+- `LinearTrendStream` is a pooled, LayerNorm'd MLP on the trend; `NonlinearPatchStream` embeds seasonal patches then applies depthwise and pointwise Conv1d with batch norm and a residual.
+- `DualStreamForecaster` concatenates both stream forecasts and fuses them with an MLP; channels are folded into the batch and `revin` wraps the model.
+- The paper's arctangent loss and sigmoid learning-rate schedule are not part of the model code; the default loss is MSE.
 
 <!-- model-card:canonical:start -->
 ## Input and output

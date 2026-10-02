@@ -8,8 +8,18 @@ year: 2025
 code: "https://github.com/Jimmy-7664/ST-SSDL"
 revision: "a98331d3a45a081778f3abb608897902a60e301d"
 license: "MIT"
+tagline: "Chebyshev graph-conv GRU encoder-decoder with a learnable prototype memory that retrieves an expected-pattern state."
+tags: ["rnn", "gnn", "spatiotemporal", "retrieval", "graph-learning", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:chebyshev-graph-gru-encoder+component:deviation_memory", "channel=component:graph_utils+local:prototype-conditioned-adaptive-graph", "head=local:autoregressive-graph-gru-decoder", "loss=loss:mse"]
 ---
 # ST-SSDL
+
+## Key ideas
+
+- Encodes the lookback with a Chebyshev graph-convolutional GRU (`ChebGRUCell`) over static adjacency supports from `graph_utils`.
+- Queries a learnable prototype bank (`PrototypeMemory` from `deviation_memory`) with the last hidden state to retrieve a soft expected-pattern vector appended to the decoder state.
+- Builds a data-driven decoding graph from the prototype-augmented state and decodes the horizon autoregressively with a second `ChebGRUCell`, feeding future calendar covariates.
+- The paper's contrastive and deviation losses live in `Model.auxiliary_losses`, which needs a historical reference window and is not called by `forward` or the runner, so training uses the default loss.
 
 <!-- model-card:canonical:start -->
 ## Input and output

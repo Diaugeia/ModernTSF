@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SVTime",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "d68ce4932d3c17fa860edd4bd9d7ee26f9bf8597f753345863ef3eb042f7c7bc",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "7b8d8cb848fbb5277ba472c03d8b37ae809996689fdf674e731f3075761871c1",
   "paper": {
     "title": "SVTime: Small Time Series Forecasting Models Informed by \\\"Physics\\\" of Large Vision Model Forecasters",
     "venue": "arXiv preprint",

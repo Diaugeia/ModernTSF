@@ -8,10 +8,17 @@ year: 2024
 code: "https://github.com/Kongwy5689/STPGNN"
 revision: "df199624259776515a2d287c32b5db459a629f5d"
 license: "MIT"
+tagline: "Parallel graph layers where a learned pivotal-node membership gates a temporally windowed graph convolution."
+tags: ["gnn", "spatiotemporal", "graph-learning", "covariates", "cnn"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-span-window-and-conv", "channel=local:pivotal-node-graph-convolution+local:adaptive-graph", "head=local:flatten-mlp-readout", "loss=loss:mse"]
 ---
 # STPGNN
 
-STPGNN (Spatio-Temporal Pivotal Graph Neural Network) is a spatiotemporal learning model for node-structured traffic forecasting that explicitly identifies and models pivotal nodes — nodes with a large number of connections to other nodes — which are disproportionately difficult to predict with standard graph neural networks. It consists of a Pivotal Node Identification Module, a Pivotal Graph Convolution Module for capturing complex spatio-temporal dependencies around these high-connectivity nodes, and a parallel architecture that simultaneously processes both pivotal and non-pivotal nodes.
+## Key ideas
+
+- `PivotalNodeIdentification` scores nodes by physical plus learned-affinity degree, exposes the top-k pivotal set and a smooth sigmoid membership, and returns a learned adaptive graph added to the physical one.
+- `PivotalGraphConvolution` averages a sliding temporal window with learned weights, propagates over the graph, and is multiplied by pivotal membership.
+- `ParallelSTLayer` runs the pivotal path, an ordinary graph path and a temporal conv in parallel, fuses them linearly with a residual LayerNorm; a flatten MLP reads out the horizon.
 
 <!-- model-card:canonical:start -->
 ## Input and output

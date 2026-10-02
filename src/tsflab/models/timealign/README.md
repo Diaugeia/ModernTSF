@@ -8,10 +8,17 @@ year: 2026
 code: "https://github.com/TROUBADOUR000/TimeAlign"
 revision: "ab2dff5bde250f82e29d8755f87a494921857d71"
 license: "NOASSERTION"
+tagline: "Patch-MLP forecaster trained with a future-reconstruction branch and local/global representation alignment losses."
+tags: ["mlp", "patching", "channel-independent", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-mlp-branch", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-decoder", "loss=loss:mse+local:reconstruction-and-alignment-aux"]
 ---
 # TimeAlign
 
-TimeAlign is a lightweight, plug-and-play framework for time series forecasting that aligns past and future representations to bridge the distributional gap between historical inputs and future targets. It establishes a new representation paradigm by aligning auxiliary features via a reconstruction task and feeding them back into any base forecaster, with gains arising primarily from correcting frequency mismatches between historical inputs and future outputs.
+## Key ideas
+
+- The predictor is a `PatchMLPBranch`: non-overlapping patches, linear embedding, residual MLP layers, flatten decoder, wrapped in `revin` (non-affine).
+- A second `PatchMLPBranch` reconstructs the future from the target during training, and `DistributionAlignment` pulls each projected history state toward the matching detached future state with local (cosine) and global (relation-matrix) terms.
+- `training_objective` returns prediction MSE plus `w_recon` times reconstruction MSE plus `w_align` times alignment; `forward` uses only the history predictor, so inference cost stays that of a plain patch MLP.
 
 <!-- model-card:canonical:start -->
 ## Input and output

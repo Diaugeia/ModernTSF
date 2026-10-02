@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/google-research/google-research/tree/5b09c22d73a9d35eb6c5d2a99b95677a45053466/tsmixer"
 revision: "5b09c22d73a9d35eb6c5d2a99b95677a45053466"
 license: "Apache-2.0"
+tagline: "MLP-Mixer stack alternating time-mixing and feature-mixing, with a temporal linear projection; no attention."
+tags: ["mlp", "channel-mixing", "lightweight", "baseline"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:mixer_block", "channel=component:mixer_block", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # TSMixer
 
-TSMixer is an MLP-Mixer-style model for multivariate time-series forecasting that alternates mixing operations along the time dimension and the feature (channel) dimension. By stacking MLP blocks that operate on transposed views of the input, it efficiently extracts both temporal dynamics and cross-variate correlations without any attention mechanism, achieving competitive accuracy while remaining easy to implement.
+## Key ideas
+
+- Each `MixerBlock` applies an MLP along the time axis and an MLP along the feature axis, with residual connections.
+- Stacked `e_layers` times, then `ChannelWiseLinear` maps seq_len to pred_len on the time axis.
+- Pure MLP, no attention; this version applies no instance normalization.
 
 <!-- model-card:canonical:start -->
 ## Input and output

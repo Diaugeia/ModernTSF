@@ -5,10 +5,17 @@ paper: "https://arxiv.org/abs/1603.02754"
 paper_title: "XGBoost: A Scalable Tree Boosting System"
 venue: "KDD 2016"
 year: 2016
+tagline: "Differentiable boosted ensemble of soft decision trees with column masks, shrinkage and backcast-corrected inputs."
+tags: ["tree", "baseline", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree", "channel=local:flattened-channel-time-input-with-column-masks", "head=local:linear-base-plus-shrunken-tree-corrections", "loss=loss:mse+local:leaf-l1-l2-regularization"]
 ---
 # XGBoostTS
 
-XGBoostTS is an independent differentiable additive-tree baseline with column masks, shrinkage, and leaf-value regularization.
+## Key ideas
+
+- Each of `num_estimators` `SoftDecisionTree`s (`soft_tree`) sees the flattened lookback of all channels under its own fixed random column mask (`column_fraction`).
+- The forecast is a linear base plus `learning_rate`-shrunken tree corrections; between trees the input state is reduced by a tanh of a learned backcast of the correction, a differentiable stand-in for residual fitting.
+- `aux_loss` adds L1/L2 penalties on leaf values; `revin` wraps the model. Trained by gradient descent, not by boosting.
 
 <!-- model-card:canonical:start -->
 ## Input and output

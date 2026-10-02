@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "TimePro",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "ed097e5c5a321f95e9cde6277366d8ac53b1fa3ecc43074d59e62df8b034d4eb",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "dfd2da9949b875d3f9d84fad7b4958e940fedcf5cbc1ae324e359e1e2a4e1bb9",
   "paper": {
     "title": "TimePro: Efficient Multivariate Long-term Time Series Forecasting with Variable- and Time-Aware Hyper-state",
     "venue": "arXiv preprint",

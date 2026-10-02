@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "STNorm",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "cda01b5ce4bd19d24bbb842613037e2c790675730bf0382c3861c3b893cad6d0",
+  "verified_at": "2026-10-02T18:18:57.177494Z",
+  "subject_sha256": "1a9bc8dd546c12c306ef3d283072a280e155870b547e1edf754556169d72be1d",
   "paper": {
     "title": "ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting",
     "venue": "KDD 2021",

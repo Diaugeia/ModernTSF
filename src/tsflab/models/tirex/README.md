@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/NX-AI/tirex"
 revision: "2226da4c9fa298ff34ad5af05369851674d622e5"
 license: "LicenseRef-NXAI-Community"
+tagline: "Decoder-only xLSTM-style scalar-memory blocks over value/mask patch tokens with missing future tokens, quantile output."
+tags: ["rnn", "probabilistic", "patching", "channel-independent", "normalization"]
+composition: ["normalization=local:instance-z-score-detached", "decomposition=none", "temporal=local:scalar-lstm-memory-blocks", "channel=local:channel-independent-shared-weights", "head=component:quantile_head+local:multi-patch-residual-projection", "loss=loss:quantile"]
 ---
 # TiRex
 
-TiRex is a decoder-only probabilistic forecaster built around xLSTM-style scalar recurrent memory. Past values and observation masks are patched into tokens; missing future patches allow the recurrent state to propagate uncertainty across a multi-patch horizon.
+## Key ideas
+
+- Each channel's z-scored history becomes patch tokens of values plus an observation mask (`ResidualProjection`); zero-valued missing-mask tokens for future patches let the recurrent state roll forward across the horizon.
+- `ScalarLSTMBlock` stacks RMSNorm, a stabilised exponential-gated `ScalarMemory` recurrence, and a feed-forward residual.
+- Future tokens are projected to per-step features and `QuantileHead` outputs quantiles (default 0.1 to 0.9), so training must use the quantile loss.
+- Pre-trained weights and optimized xLSTM kernels are not reproduced.
 
 <!-- model-card:canonical:start -->
 ## Input and output

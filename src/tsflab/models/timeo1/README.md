@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/Master-PLC/Time-o1"
 revision: "c93d4c545ee0fe4929d0b8ba37268d0da161bb9d"
 license: "MIT"
+tagline: "Training objective aligning leading per-variate SVD label components, carried by a small MLP-plus-linear forecaster."
+tags: ["mlp", "linear", "channel-independent", "lightweight", "label-alignment"]
+composition: ["normalization=none", "decomposition=local:per-variate-svd-label-basis", "temporal=local:mlp-plus-linear-skip", "channel=local:channel-independent-shared-weights", "head=local:mlp-plus-linear-skip", "loss=loss:mse+local:svd-transformed-label-alignment"]
 ---
 # TimeO1
 
-Time-o1 is a model-agnostic transformation-augmented training objective. The local module exposes its per-variate SVD basis fitting and transformed-label loss alongside a small independent temporal backbone required by the repository's model contract.
+## Key ideas
+
+- `fit_projection` computes a per-variate SVD basis from standardized training labels; `transform` projects forecasts and targets onto it.
+- `transformed_alignment_loss` mixes an L1 loss on the top `rank_ratio` components with a squared-error term via `alpha` (the Time-o1 objective).
+- The forecaster is only a runnable carrier (MLP plus linear skip, channel independent); the generic runner trains with MSE and does not call the Time-o1 loss, so experiment code must fit the projection and call it.
 
 <!-- model-card:canonical:start -->
 ## Input and output

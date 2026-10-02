@@ -5,14 +5,17 @@ paper: "https://arxiv.org/abs/2510.09780"
 paper_title: "SVTime: Small Time Series Forecasting Models Informed by \\\"Physics\\\" of Large Vision Model Forecasters"
 venue: "arXiv preprint"
 year: 2025
+tagline: "Patch-specific linear maps across periods give the seasonal forecast; backcast residual feeds a gated trend term."
+tags: ["linear", "decomposition", "patching", "channel-independent", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=local:backcast-residual-trend", "temporal=local:patch-wise-period-map", "channel=local:channel-independent-shared-weights", "head=local:scalar-gated-trend-seasonal-sum", "loss=loss:mse"]
 ---
 # SVTime
 
-SVTime is a compact time-series forecasting model that distils inter-period
-consistency and patch-wise variety from large vision forecasters into
-patch-specific linear period maps. A backcast-residual decomposition separates
-the period-oriented forecast from a learned trend correction and combines them
-with a scalar gate.
+## Key ideas
+
+- Reshapes the lookback into whole periods and applies a separate learned inter-period linear map per within-period patch (`PatchWisePeriodMap`), producing both a backcast and future periods.
+- The backcast residual `history - backcast` is projected linearly as a trend and mixed with the period forecast by a learned scalar sigmoid gate.
+- Wrapped in reversible instance normalization (`revin`); the SVTime-t annealing constraint is deliberately not included.
 
 <!-- model-card:canonical:start -->
 ## Input and output

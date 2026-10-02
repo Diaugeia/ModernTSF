@@ -8,10 +8,17 @@ year: 2025
 code: "https://github.com/showmeon/TimeEmb"
 revision: "9adf3fba801b34642e7191b45e08aff224b26e67"
 license: "NOASSERTION"
+tagline: "Learned per-hour/day complex spectrum bank is subtracted as static part; a gated filter handles the rest, then an MLP."
+tags: ["mlp", "frequency", "decomposition", "covariates", "channel-independent", "lightweight", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:calendar-embedding-static-spectrum-split", "temporal=local:dynamic-spectrum-filter", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-head", "loss=loss:mse"]
 ---
 # TimeEmb
 
-TimeEmb is a lightweight time-series forecasting model that disentangles static (time-invariant) and dynamic (time-varying) components of a series. A global timestamp-aware embedding bank captures recurring stable patterns, while a frequency-domain filtering mechanism handles short-term fluctuations — the two streams are combined to produce multi-step forecasts. The model can also serve as a plug-in module to enhance existing forecasters with minimal overhead.
+## Key ideas
+
+- `GlobalCalendarEmbedding` stores a learnable complex rFFT spectrum per channel for each hour-of-day (and optionally day-of-week) slot, looked up from the timestamp marks.
+- The static spectrum is subtracted from the input spectrum; `DynamicSpectrumFilter` rescales the residual with a response gated by a conditioner on mean spectral energy, then the static part is added back.
+- Inverse FFT gives a filtered lookback that a two-layer MLP maps to the horizon, inside `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output
