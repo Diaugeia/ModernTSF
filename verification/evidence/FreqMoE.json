@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "FreqMoE",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "7c202724276913988fa021b4d26277da652b4d8366a856c07e11e0e1628656c1",
+  "verified_at": "2026-10-02T18:29:33.188258Z",
+  "subject_sha256": "94aba2d90069fe0e2d06e3bad3d722133db628142d9472326464b421cc44b4ff",
   "paper": {
     "title": "FreqMoE: Enhancing Time Series Forecasting through Frequency Decomposition Mixture of Experts",
     "venue": "AISTATS 2025",

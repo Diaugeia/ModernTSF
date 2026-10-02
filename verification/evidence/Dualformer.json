@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Dualformer",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:31.428230Z",
-  "subject_sha256": "5da9d4598bd9bbef3ed3cb6fdd378ec7287a70407aea3c02b00319ce102cb92d",
+  "verified_at": "2026-10-02T18:29:33.188258Z",
+  "subject_sha256": "dc080713307df1336d6c25d2a8ec1776ac31284ea1cb2ceba6f74b0592b3e624",
   "paper": {
     "title": "Dualformer: Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting",
     "venue": "arXiv preprint",

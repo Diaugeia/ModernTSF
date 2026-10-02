@@ -54,9 +54,11 @@ docstring, not evidenced by a second consumer.
 - Returns `[..., L_q, model_dim]`.
 - Parameters (state-dict keys): `fc_q`, `fc_k`, `fc_v`, `out_proj`, each `nn.Linear(model_dim, model_dim)`
   with `.weight`/`.bias`. No buffers; no dropout; stateless.
-- Quirk: a query row with no allowed key (an all-`False` mask row) makes the local
-  softmax produce NaN for that row, which propagates to the output. Callers must
-  keep at least one permitted key per row (`extralonger` ORs in the identity).
+- Fully masked rows: a query row with no allowed key (an all-`False` mask row) gets
+  an all-zero attention row (neither the dense nor the local term is applied), so its
+  output is the `out_proj` bias; outputs and gradients stay finite. Rows with at
+  least one allowed key are bit-identical to the plain formula. (`extralonger` ORs
+  in the identity, so it never hits this case.)
 - Quirk: the mask only changes the local half, so masked pairs still receive half of
   their dense probability; the layer is a soft bias, not a hard mask.
 
@@ -66,6 +68,9 @@ docstring, not evidenced by a second consumer.
   (`test_extralonger_global_local_attention_matches_paper_equation`) recomputes the
   equation by hand from the layer's own projections and compares both the masked
   output and the mask-free (plain dense attention) output.
+- `tests/test_component_numeric_fixes.py` checks that a fully masked row is finite
+  (bias-only output, finite gradients) and that rows with visible keys are
+  bit-identical to the hand-computed equation and unaffected by masking another row.
 - no fixture: no `.pt` fixture or pre-refactor copy exists, because the component
   was created directly for `extralonger` rather than extracted from existing code.
 

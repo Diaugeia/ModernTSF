@@ -68,7 +68,8 @@ class GlobalLocalGraphAttention(nn.Module):
             adj_mask: Optional boolean tensor broadcastable to
                 ``(..., L_q, L_kv)`` where ``True`` marks an allowed
                 (adjacent) pair. When ``None``, only the global (dense)
-                attention term is used.
+                attention term is used. A query row with no allowed key gets
+                an all-zero attention row (its output is ``out_proj`` bias).
 
         Returns:
             Tensor shaped ``(..., L_q, model_dim)``.
@@ -83,9 +84,15 @@ class GlobalLocalGraphAttention(nn.Module):
         attn = global_attn
         if adj_mask is not None:
             adj_mask = adj_mask.to(device=scores.device, dtype=torch.bool)
-            local_scores = scores.masked_fill(~adj_mask, float("-inf"))
+            adj_mask = adj_mask.expand(scores.shape)
+            visible = adj_mask.any(dim=-1, keepdim=True)
+            # A fully masked row would softmax over all -inf (NaN). Give such rows
+            # an all-visible stand-in mask so the softmax stays finite, then zero
+            # the whole attention row below. Rows with a visible key are unchanged.
+            safe_mask = adj_mask | ~visible
+            local_scores = scores.masked_fill(~safe_mask, float("-inf"))
             local_attn = torch.softmax(local_scores, dim=-1)
-            attn = (global_attn + local_attn) / 2.0
+            attn = torch.where(visible, (global_attn + local_attn) / 2.0, torch.zeros_like(global_attn))
 
         out = attn @ v  # (..., num_heads, len_q, head_dim)
         out = self._merge_heads(out, batch_shape, len_q)
