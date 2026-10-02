@@ -1,11 +1,12 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
 | Name | Preset | Capabilities | Model card |
 |---|---|---|---|
+| `AdaMSHyper` | [`configs/models/AdaMSHyper.toml`](../../configs/models/AdaMSHyper.toml) | time-series | [README](../../src/tsflab/models/adamshyper/README.md) |
 | `AGCRN` | [`configs/models/AGCRN.toml`](../../configs/models/AGCRN.toml) | spatiotemporal | [README](../../src/tsflab/models/agcrn/README.md) |
 | `AirCade` | [`configs/models/AirCade.toml`](../../configs/models/AirCade.toml) | covariate | [README](../../src/tsflab/models/aircade/README.md) |
 | `AirDualODE` | [`configs/models/AirDualODE.toml`](../../configs/models/AirDualODE.toml) | covariate | [README](../../src/tsflab/models/airdualode/README.md) |

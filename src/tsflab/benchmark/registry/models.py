@@ -372,4 +372,5 @@ MODEL_CATALOG = ModelCatalog({
     "CANet": "tsflab.models.canet.spec",
     "CoRe": "tsflab.models.core.spec",
     "PatchTSMixer": "tsflab.models.patchtsmixer.spec",
+    "AdaMSHyper": "tsflab.models.adamshyper.spec",
 })
