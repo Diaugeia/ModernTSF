@@ -42,6 +42,13 @@ profile = 'standard'
 test = 'tests/test_special_forecasters.py'
 reference_test = 'tests/test_special_forecasters.py'
 
+[models.ARMD]
+profile = 'standard'
+test = 'tests/test_armd.py'
+reference_test = 'tests/test_armd.py'
+reference_sources = ['https://github.com/daxin007/ARMD/blob/07a3dc4674f2f5cdf401e1a7f8895939bb2b07e2/Models/autoregressive_diffusion/armd.py', 'https://github.com/daxin007/ARMD/blob/07a3dc4674f2f5cdf401e1a7f8895939bb2b07e2/Models/autoregressive_diffusion/linear.py']
+structure = ['sliding-window deterministic diffusion chain', 'linear devolution network with learnable step weight', 'evolution-trend L1 objective with step weights', 'deterministic few-step DDIM forecast from the history window']
+
 [models.APN]
 profile = 'standard'
 test = 'tests/test_recent_forecasters_a.py'

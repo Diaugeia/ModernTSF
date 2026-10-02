@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 200 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
+TSFLab exposes 201 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 
@@ -15,6 +15,7 @@ Every entry is maintained as a local implementation; verification status is deri
 | `AMRC` | [`configs/models/AMRC.toml`](../../configs/models/AMRC.toml) | time-series | [README](../../src/tsflab/models/amrc/README.md) |
 | `APN` | [`configs/models/APN.toml`](../../configs/models/APN.toml) | time-series | [README](../../src/tsflab/models/apn/README.md) |
 | `ARIMATS` | [`configs/models/ARIMATS.toml`](../../configs/models/ARIMATS.toml) | time-series | [README](../../src/tsflab/models/arima_ts/README.md) |
+| `ARMD` | [`configs/models/ARMD.toml`](../../configs/models/ARMD.toml) | time-series | [README](../../src/tsflab/models/armd/README.md) |
 | `ASTGCN` | [`configs/models/ASTGCN.toml`](../../configs/models/ASTGCN.toml) | covariate, spatiotemporal | [README](../../src/tsflab/models/astgcn/README.md) |
 | `Aurora` | [`configs/models/Aurora.toml`](../../configs/models/Aurora.toml) | dense-modality-context, time-series | [README](../../src/tsflab/models/aurora/README.md) |
 | `Autoformer` | [`configs/models/Autoformer.toml`](../../configs/models/Autoformer.toml) | time-series | [README](../../src/tsflab/models/autoformer/README.md) |
