@@ -250,7 +250,7 @@ Data has three non-overlapping layers:
   card for GIFT-Eval. Each card pairs curated facts (domain, source, license,
   statistics, protocol, pitfalls) with a generated runtime block.
 
-There are 99 dataset presets: 75 conventional `time_series` presets (including the
+There are 101 dataset presets: 77 conventional `time_series` presets (including the
 GIFT-Eval series) and 24 spatiotemporal or covariate presets; 16 presets under
 `rt/` are frozen releases of the real-time tracks. Every dataset has
 exactly one TSFLab protocol, stated in its card (chronological split, scaling fitted
