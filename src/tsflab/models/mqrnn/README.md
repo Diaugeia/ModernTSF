@@ -5,14 +5,18 @@ paper: "https://arxiv.org/abs/1711.11053"
 paper_title: "A Multi-Horizon Quantile Recurrent Forecaster"
 venue: "NeurIPS 2017 Time Series Workshop"
 year: 2017
+tagline: "LSTM encoder with a global MLP emitting horizon contexts and a shared local MLP producing non-crossing quantiles."
+tags: ["rnn", "probabilistic", "quantile", "covariates", "channel-independent", "multi-horizon"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:lstm-encoder-global-decoder", "channel=local:channel-independent-shared-weights", "head=local:horizon-shared-local-mlp+component:quantile_head", "loss=loss:quantile"]
 ---
 # MQRNN
 
-MQRNN is a probabilistic direct multi-horizon forecaster: a shared LSTM encodes
-each series with historical temporal covariates, a global MLP jointly produces
-horizon-specific and horizon-agnostic contexts from the state and all
-known-future covariates, and one horizon-shared local MLP produces non-crossing
-quantiles.
+## Key ideas
+
+- A shared `nn.LSTM` encodes each series together with historical temporal covariates (from `x_mark_enc`).
+- `global_decoder` jointly maps the final state and every known-future covariate to horizon-specific and horizon-agnostic contexts (`decode_contexts`).
+- One `local_decoder` MLP, shared over horizons, combines those contexts with the matching future covariate.
+- `quantile_head` produces a monotone, non-crossing quantile grid `(B, pred_len, C, Q)`; `output_type = "quantile"` and the pinball (`quantile`) loss apply.
 
 <!-- model-card:canonical:start -->
 ## Input and output

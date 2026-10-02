@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "RidgeRegressionTS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "231bf43726fc3d710e8f2c631861aa7719a76e3b66a3a7f04cf39a907fa8041b",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "dcea7282590b7b62ff533b4470be51b47dc5b417ada6b2d92619d7eeea686b71",
   "paper": {
     "title": "Ridge Regression: Biased Estimation for Nonorthogonal Problems",
     "venue": "Technometrics",

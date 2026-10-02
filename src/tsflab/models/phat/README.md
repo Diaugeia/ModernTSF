@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/PoorOtterBob/PHAT"
 revision: "313987b52b5fc8184efba7fb9c8b5707c6f03448"
 license: "MIT"
+tagline: "Per-variable FFT periods fold the series into phase-by-cycle buckets; positive-negative attention plus a linear path."
+tags: ["transformer", "periodicity", "frequency", "attention-variant", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:period-bucket-positive-negative-attention", "channel=local:channel-independent-shared-weights", "head=local:linear-bucket-forecast-projection", "loss=loss:mse"]
 ---
 # PHAT
 
-PHAT (Period Heterogeneity-Aware Transformer) is a Transformer-based model for multivariate time series forecasting that explicitly models periodic heterogeneity — the fact that different variables exhibit distinct and dynamically changing periods. It organises inputs into a three-dimensional periodic bucket tensor and applies a positive-negative attention mechanism to capture both periodic alignment and periodic deviation.
+## Key ideas
+
+- `_periods` takes the top FFT periods of each variable (or a fixed `period_list`); `_bucket_path` reshapes the embedded series into a phase-by-cycle bucket.
+- `PositiveNegativeAttention` combines a positive softmax over phases that are closer than the query with a gated negative term over farther ones, plus an aligned same-phase attention, using distance masks.
+- Gated SiLU feed-forward blocks (`_PHATBlock`) follow the attention; the bucket is unfolded and projected to a scalar per step.
+- The final forecast is the mean of the bucket path (`forecast_projection`) and a plain `base_projection` linear path, inside `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

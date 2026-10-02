@@ -9,8 +9,18 @@ code: "https://github.com/Levi-Ackman/ReFocus"
 revision: "5b883b29f364b52a73835f1465e993433f94a1ed"
 license: "unlicensed (no LICENSE file present in the repository; inspected only for read-only paper-structure clarification, no source copied)"
 
+tagline: "Beta-scaled moving-average residual favors mid frequencies; complex frequency-linear encoder picks key frequencies."
+tags: ["mlp", "frequency", "decomposition", "channel-mixing", "normalization"]
+composition: ["normalization=component:revin", "decomposition=component:series_decomposition", "temporal=local:frequency-domain-complex-linear-encoder", "channel=component:energy_frequency_pooling", "head=local:complex-frequency-linear-projection", "loss=loss:mse"]
 ---
 # ReFocus
+
+## Key ideas
+
+- AMEO: `x - beta * moving_average(x)` (`EdgePaddedMovingAverage` from `series_decomposition`) attenuates the low-frequency trend band before encoding.
+- `FLinear` is a dense complex linear map from every input frequency bin to every output bin, used for the embedding, every encoder sub-layer, and the output `projection`.
+- `EncoderBlock` (EKPB) pools one channel's spectrum per frequency bin with a softmax energy distribution across channels via `EnergyBasedFrequencyPooling`, then fuses it with each channel's own features.
+- `revin` wraps the model; the output projection starts near identity when `initial=True`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/nnzhan/MTGNN"
 revision: "f811746fa7022ebf336f9ecd2434af5f365ecbf6"
 license: "MIT"
+tagline: "Learned directed graph, mix-hop propagation, and gated dilated temporal convolutions on a spatiotemporal tensor."
+tags: ["gnn", "graph-learning", "spatiotemporal", "cnn", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=component:gated_dilated_conv", "channel=local:learned-graph-mixhop", "head=local:last-step-mlp-head", "loss=loss:mse"]
 ---
 # MTGNN
 
-MTGNN is a spatiotemporal graph neural network for multivariate time-series forecasting that jointly learns the graph structure and performs message passing. It uses a graph learning module to automatically extract uni-directed inter-variable relations, a mix-hop propagation layer for multi-hop spatial aggregation, and dilated inception layers for multi-scale temporal convolution, all trained end-to-end without requiring a pre-defined graph.
+## Key ideas
+
+- `GraphConstructor` learns an asymmetric top-k adjacency from node embeddings and blends it with the predefined graph (`graph_mix`, `build_adj`).
+- `MixHop` propagates over the graph with an initial-state residual (`propalpha`), forward and transposed, inside each `MTGNNLayer`.
+- Temporal filtering uses the shared `gated_dilated_conv` with dilation growing over layers.
+- Input is built by `to_spatiotemporal` (values plus time marks) and the head reads the last time step to emit `pred_len` values per node.
 
 <!-- model-card:canonical:start -->
 ## Input and output

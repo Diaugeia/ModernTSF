@@ -8,10 +8,18 @@ year: 2022
 code: "https://github.com/state-spaces/s4"
 revision: "e757cef57d89e448c413de7325ed5601aceaac13"
 license: "Apache-2.0"
+tagline: "Stacked diagonal S4D layers using FFT long-convolution kernels from a ZOH-discretized complex state matrix."
+tags: ["ssm", "frequency", "long-range", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:diagonal-s4d-fft-convolution-blocks", "channel=local:channel-mixing-input-projection", "head=local:horizon-projection-over-time", "loss=loss:mse"]
 ---
 # S4
 
-S4 (Structured State Space Sequence model) is a general sequence model for time series forecasting that is built on the diagonal S4D variant of the structured state space framework. It uses an FFT-based long convolution kernel derived from a diagonalized state matrix, enabling efficient modeling of long-range dependencies without custom CUDA operators. In TSFLab the S4D layers are stacked with residual connections over the time axis, preceded by an input projection and followed by a linear forecast head mapping the sequence length to the prediction horizon.
+## Key ideas
+
+- `DiagonalSSMKernel` parameterizes a diagonal complex state matrix and ZOH-discretizes it (`zoh_discretize_diagonal`) to build a length-`seq_len` convolution kernel.
+- `DiagonalS4Layer` applies that kernel by FFT convolution with a skip term, then a GELU and a GLU-gated 1x1 convolution.
+- `S4ResidualBlock` adds pre-norm and residuals; blocks are stacked after `input_projection` (a linear map over all channels).
+- `horizon_projection` maps `seq_len` to `pred_len` over time and `output_projection` back to channels; inputs are standardized per window.
 
 <!-- model-card:canonical:start -->
 ## Input and output

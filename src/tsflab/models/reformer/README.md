@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "3a4819420d14095354aae96750ce8c499ef5f05e"
 license: "MIT"
+tagline: "Encoder over history plus future placeholders using shared-QK LSH bucket attention in reversible residual blocks."
+tags: ["transformer", "attention-variant", "sparse-attention", "reversible", "channel-mixing", "covariates"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:lsh-attention-reversible-encoder", "channel=local:channel-mixing-value-embedding", "head=local:last-pred-len-linear-projection", "loss=loss:mse"]
 ---
 # Reformer
 
-Reformer is a memory-efficient Transformer model adapted for the time-series forecasting setting. It replaces standard dot-product self-attention with locality-sensitive hashing (LSH) attention, reducing the attention complexity from O(L²) to O(L log L), and employs reversible residual layers to avoid storing all intermediate activations, making it practical for long input sequences.
+## Key ideas
+
+- `LSHSelfAttention` shares query and key projections, hashes them with random rotations over `n_hashes` rounds, sorts into buckets of `bucket_size`, and attends within each chunk and the previous one; duplicates across rounds get a log-multiplicity correction.
+- `ReversibleBlock` splits the width in half (`y1 = x1 + f(x2)`, `y2 = x2 + g(y1)`) and provides an `inverse`, as in the paper.
+- History and `pred_len` future placeholders (from `x_dec`) are embedded together by `TimeValueEmbedding` (value plus 6 calendar marks); the last `pred_len` positions are projected to `c_out`.
+- The attention is implemented with Python loops over buckets, so it is exact to the method but slow.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -5,10 +5,18 @@ paper: "https://doi.org/10.1023/A:1010933404324"
 paper_title: "Random Forests"
 venue: "Machine Learning, 2001"
 year: 2001
+tagline: "Average of differentiable soft decision trees, each splitting on a fixed random subspace of the flattened window."
+tags: ["tree", "ensemble", "differentiable", "normalization", "baseline"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree", "channel=local:flattened-joint-lag-input", "head=local:forest-average", "loss=loss:mse"]
 ---
 # RandomForestTS
 
-RandomForestTS is an independent differentiable forest baseline that averages soft trees with fixed random feature subspaces.
+## Key ideas
+
+- `SoftDecisionTree` gives a differentiable tree of depth `tree_depth` whose leaves output the full `pred_len * enc_in` forecast.
+- Each of `num_estimators` trees has a fixed random `split_mask` (`feature_fraction`) over the flattened `seq_len * enc_in` input, seeded by `random_seed`.
+- The forecast is the mean over trees (random-forest style bagging), trained by gradient descent rather than greedy splitting.
+- `revin` normalizes the input; all channels enter each tree jointly.
 
 <!-- model-card:canonical:start -->
 ## Input and output

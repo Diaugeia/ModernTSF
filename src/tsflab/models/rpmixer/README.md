@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "All-MLP mixer with FFT-domain complex temporal mixing and fixed random projections between nodes to diversify blocks."
+tags: ["mlp", "mixer", "frequency", "random-projection", "spatiotemporal", "channel-mixing"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:complex-fft-temporal-projection", "channel=local:fixed-random-projection-node-mixing", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # RPMixer
 
-RPMixer is a spatiotemporal forecasting model built on an all-MLP (all-Multi-Layer Perceptron) architecture that forgoes explicit graph-based spatial modeling in favour of general time series mixing. It addresses the tendency of standard MLP-mixer models to overfit on large-scale spatial-temporal datasets by inserting random projection layers between blocks to increase output diversity, exploiting the ensemble-like behaviour of deep residual networks where each block acts as a base learner. The approach achieves competitive or superior performance against both graph-based and general forecasting baselines on large spatial-temporal benchmarks.
+## Key ideas
+
+- `ComplexTemporalProjection` mixes the time axis in the frequency domain with a learnable complex `length x length` matrix (fft, matmul, ifft).
+- `FixedRandomProjection` projects across nodes through a frozen, per-block seeded Gaussian matrix to `random_dim`, and `spatial_reconstruction` maps it back, adding diversity between blocks without an explicit graph.
+- `RPMixerBlock` stacks the two with residual connections; `channel_wise_linear` decodes `seq_len` to `pred_len`.
+- There is no normalization or graph input.
 
 <!-- model-card:canonical:start -->
 ## Input and output

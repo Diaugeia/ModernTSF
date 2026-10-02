@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Sensorformer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "28c0de9f1044f0adea801a0a0af7516f7d8cbbd4296ca66f584b9d08d381b8a3",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "9f54de4bd5270c97d3bd64b301a3692a0b092e7d87902101edac96d723cdd780",
   "paper": {
     "title": "Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting",
     "venue": "arXiv",

@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/ClaudiaShu/Sonnet"
 revision: "bf3d4801d34c5e7261718490f287c6fb15cadfdb"
 license: "NOASSERTION"
+tagline: "Learnable wavelet atoms, spectral-coherence attention across variables, and a unitary Koopman operator over atoms."
+tags: ["hybrid", "wavelet", "frequency", "koopman", "attention-variant", "channel-mixing"]
+composition: ["normalization=none", "decomposition=local:learnable-wavelet-atoms", "temporal=local:stable-koopman-operator-over-wavelet-atoms", "channel=local:multivariable-coherence-attention", "head=local:conv-decoder-adaptive-pool", "loss=loss:mse"]
 ---
 # Sonnet
 
-Sonnet (Spectral Operator Neural Network) is a time series forecasting model for multivariate prediction. It applies learnable wavelet transformations to the input and incorporates spectral analysis using the Koopman operator. The core of its predictive skill is Multivariable Coherence Attention (MVCA), which leverages spectral coherence among variables to model inter-variable dependencies in the frequency domain, avoiding the pitfalls of naive self-attention for time series.
+## Key ideas
+
+- `LearnableWavelets` builds `num_wavelets` damped-cosine atoms with learnable parameters and modulates the embedded series by each atom.
+- `SpectralCoherence` (MVCA) scores variable pairs by FFT magnitude-squared coherence of their query and key and uses it as the attention weight.
+- `StableKoopman` evolves the atom axis with a norm-preserving operator `U D U^H` (QR-orthonormalized, unit-modulus diagonal).
+- The evolved atoms are recombined, passed through a small conv decoder, and `adaptive_avg_pool1d` resamples to `pred_len`; there is no instance normalization.
 
 <!-- model-card:canonical:start -->
 ## Input and output

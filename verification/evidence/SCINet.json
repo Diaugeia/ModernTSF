@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SCINet",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "a613c96e5ee28814d88693cc371a1f74a14bf56b488fb026f90ad04075cf1a08",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "e2afdf54faa027a2cad15877fcf3ba6ccfb99894d16362fd70a8a0abc4439116",
   "paper": {
     "title": "SCINet: Time Series Modeling and Forecasting with Sample Convolution and Interaction",
     "venue": "NeurIPS 2022",

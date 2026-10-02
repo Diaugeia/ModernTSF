@@ -8,10 +8,17 @@ year: 2023
 code: "https://github.com/plumprc/RTSF"
 revision: "0fec00104f754f4fbf795b9b4da5fa2459b32e76"
 license: "NOASSERTION"
+tagline: "RevIN around a single linear map over time, shared across channels unless individual."
+tags: ["linear", "normalization", "channel-independent", "baseline", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # RLinear
 
-RLinear is a time series forecasting model that combines Reversible Instance Normalisation (RevIN) with a single linear projection layer to perform long-term multivariate or univariate forecasting. Despite its simplicity, the model achieves competitive or state-of-the-art performance on standard benchmarks by exploiting the fact that affine mapping dominates forecasting accuracy and that RevIN transforms non-periodic trends into periodic-like patterns that a linear layer can capture effectively.
+## Key ideas
+
+- `revin` normalizes each instance and de-normalizes the forecast (`affine` and `subtract_last` options).
+- `channel_wise_linear` is one `seq_len` to `pred_len` map, per channel only if `individual=True`.
+- Optional input dropout (`dropout`) is the only regularizer; no decomposition or nonlinearity.
 
 <!-- model-card:canonical:start -->
 ## Input and output

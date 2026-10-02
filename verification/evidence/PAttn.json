@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PAttn",
   "status": "passed",
-  "verified_at": "2026-10-02T17:47:35.520826Z",
-  "subject_sha256": "7f36c6d9773db9f1d576d64686a943ddcef5905fb86a6373fbac7fae353d1537",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "fe7a83bc8940f52d158bfa8a206bbde9779fafcb660c3ea5b83c944b4922db0c",
   "paper": {
     "title": "Are Language Models Actually Useful for Time Series Forecasting?",
     "venue": "NeurIPS 2024",

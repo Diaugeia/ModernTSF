@@ -8,10 +8,18 @@ year: 2020
 code: "https://github.com/shuowang-ai/PM2.5-GNN"
 revision: "471fc60775f80492f4f224203d172868bc6eebac"
 license: "MIT"
+tagline: "Graph-GRU encoder over station history and graph-GRU decoder rolled out hour by hour with known-future covariates."
+tags: ["gnn", "rnn", "spatiotemporal", "covariates", "autoregressive", "air-quality"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:graph-gru-encoder-decoder", "channel=local:fixed-adjacency-graph-propagation", "head=local:autoregressive-linear-readout", "loss=loss:mse"]
 ---
 # PM25_GNN
 
-PM25_GNN is a graph neural network model for air quality (PM2.5 concentration) forecasting that integrates domain knowledge about pollutant diffusion processes to construct the graph topology and combines GNN layers with GRU-based temporal modeling to capture both fine-grained and long-term spatial-temporal dependencies across monitoring stations.
+## Key ideas
+
+- `GraphGRUCell` concatenates each node's input and state with its neighbours' (row-normalized `adj_mx` plus self loops) in both gates.
+- The encoder runs over the lookback with station values and time covariates built by `to_spatiotemporal`.
+- The decoder rolls out `pred_len` steps, feeding its previous prediction and the known-future covariates (`future_time_features`) into the next step.
+- Graph topology is fixed and supplied through `adj_mx` (identity when absent); nothing is learned about the graph.
 
 <!-- model-card:canonical:start -->
 ## Input and output

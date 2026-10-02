@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/Meteor-Stars/SEMixer"
 revision: "973c619ee4c380791bd70e6f71f6202ec274ce8e"
 license: "NOASSERTION"
+tagline: "Multiscale patch MLP-Mixer chain with Random Attention: Bernoulli patch-link masks, closed-form dropout average at eval."
+tags: ["mlp", "mixer", "multi-scale", "patching", "random-attention", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:multiscale-progressive-mixing-chain+component:positional_encoding", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # SEMixer
 
-SEMixer is a fully MLP-based multiscale forecaster that replaces learned attention with a Random Attention Mechanism (RAM): a randomly sampled patch-interaction mask trained with Bernoulli dropconnect and collapsed to a closed-form dropout-ensemble average at inference. A Multiscale Progressive Mixing Chain (MPMC) patchifies the normalized history at several scales and mixes them pairwise, finest-to-coarsest, so each scale's semantics are aligned with its neighbor before entering the next stage.
+## Key ideas
+
+- `ScaleEmbedding` patchifies the normalized history at each scale (`scale_factors`, default 1x2x4x8) with patch length and stride multiplied by the scale, and adds a learnable position table (`positional_encoding`).
+- `TemporalMixingBlock._random_attention` replaces learned attention with a Bernoulli patch-to-patch mask in training and a closed-form `(1 - connection_probability)` average at evaluation; inter-patch and intra-patch MLPs follow.
+- The progressive chain mixes the finest scale, then repeatedly concatenates the previous mixed tokens with the next scale's raw tokens and keeps the new-scale suffix.
+- Scale outputs are concatenated, reduced to `reduce_dim` tokens, and mapped to the horizon by `flatten_forecast_head`; `revin` wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SEMPO",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "36b3ea6dda89b300e87ebfccf8c05390679ce87b902f3d6c5355c69b15e5aa1d",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "654e0ce46ec23e5cb257c6a1f5bc463aeb60024a0e260d0dbf189757b4cda310",
   "paper": {
     "title": "SEMPO: Lightweight Foundation Models for Time Series Forecasting",
     "venue": "NeurIPS 2025",

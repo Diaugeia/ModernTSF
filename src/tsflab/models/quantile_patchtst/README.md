@@ -8,15 +8,18 @@ year: 2023
 code: "https://github.com/yuqinie98/PatchTST"
 revision: "204c21efe0b39603ad6e2ca640ef5896646ab1a9"
 license: "Apache-2.0"
+tagline: "PatchTST point backbone plus a monotone quantile head emitting non-crossing quantiles; pinball loss."
+tags: ["transformer", "probabilistic", "quantile", "patching", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=component:patchtst", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head+component:quantile_head", "loss=loss:quantile"]
 ---
 # QuantilePatchTST
 
-QuantilePatchTST is a **probabilistic** TSFLab forecaster: it wraps the
-patch-based Transformer backbone PatchTST with the shared monotone `QuantileHead`
-(`src/tsflab/models/_components/quantile_head/README.md`) to emit a non-crossing quantile grid
-`(B, pred_len, C, Q)`. Quantiles are built from a median anchor via cumulative
-`softplus` offsets, so they cannot cross. Trained with the pinball (`quantile`)
-loss and scored with CRPS / WQL / coverage.
+## Key ideas
+
+- `PatchTSTBackbone` (patch tokens, channel-independent Transformer encoder, flatten head, RevIN) produces the point forecast.
+- `QuantileHead` turns each point into `Q` quantiles from a median anchor with cumulative softplus offsets, so quantiles cannot cross.
+- `output_type = "quantile"` returns `(B, pred_len, C, Q)`; pair it with the pinball (`quantile`) loss.
+- The head and pinball protocol are TSFLab additions, not part of the PatchTST paper.
 
 <!-- model-card:canonical:start -->
 ## Input and output

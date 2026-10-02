@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1002/9781118625590"
 paper_title: "Applied Regression Analysis"
 venue: "Wiley"
 year: 1998
+tagline: "Raises each lag value to powers 1..degree and applies one shared linear map to the horizon."
+tags: ["linear", "polynomial", "regression", "channel-independent", "baseline", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:polynomial-lag-features", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse"]
 ---
 # PolynomialRegressionTS
 
-PolynomialRegressionTS expands each channel's lag window with integer powers from one through the configured degree, then applies a shared linear map to the forecast horizon.
+## Key ideas
+
+- `polynomial_features` concatenates element-wise powers of the lag window (default degree 2) along the time axis.
+- One `nn.Linear(seq_len * degree, pred_len)` is shared by every channel; there is no normalization or nonlinearity beyond the powers.
+- A zero `aux_loss` is exposed so it trains with the standard loop.
 
 <!-- model-card:canonical:start -->
 ## Input and output

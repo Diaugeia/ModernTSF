@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1080/00401706.1970.10488634"
 paper_title: "Ridge Regression: Biased Estimation for Nonorthogonal Problems"
 venue: "Technometrics"
 year: 1970
+tagline: "One shared linear lag-to-horizon map per channel with an explicit L2 weight penalty returned as aux_loss."
+tags: ["linear", "statistical", "regularization", "channel-independent", "baseline", "lightweight"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:lag-window-linear-map", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse+local:l2-weight-penalty-aux-loss"]
 ---
 # RidgeRegressionTS
 
-RidgeRegressionTS applies a shared channel-wise lag projection to the forecast horizon and exposes the ridge L2 weight penalty through `aux_loss` for the standard trainer.
+## Key ideas
+
+- A single `nn.Linear(seq_len, pred_len)` is applied over time and shared by all channels, with no normalization.
+- `forward` sets `aux_loss = l2_penalty * ||W||^2` (default 1e-4), which the standard trainer adds to the task loss, making the fit a gradient-trained ridge regression.
+- Intended as a regularized linear baseline.
 
 <!-- model-card:canonical:start -->
 ## Input and output

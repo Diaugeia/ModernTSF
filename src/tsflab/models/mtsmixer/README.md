@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/plumprc/MTS-Mixers"
 revision: "262448f00cf8b7e0ee38ef2ca510cc70ed4b8dc8"
 license: "NOASSERTION"
+tagline: "MLP-Mixer with factorized temporal subsequence mixing and bottlenecked channel mixing, under RevIN."
+tags: ["mlp", "mixer", "channel-mixing", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:factorized-subsequence-mlp-mixer", "channel=local:channel-interaction-bottleneck-mlp", "head=component:channel_wise_linear", "loss=loss:mse"]
 ---
 # MTSMixer
 
-MTSMixer is an MLP-Mixer-based model for multivariate time-series forecasting that replaces Transformer attention with two factorised mixing modules: one captures temporal dependencies and another captures cross-channel dependencies, avoiding the entanglement and redundancy introduced by joint attention. It also explicitly models the input-to-prediction mapping, yielding strong accuracy with significantly lower computational cost than Transformer-based baselines.
+## Key ideas
+
+- `TemporalSubsequenceMixer` splits the time axis into `sampling` interleaved subsequences and gives each its own MLP (`fac_T`).
+- `ChannelInteraction` mixes channels through a narrow `d_ff` bottleneck instead of attention (`fac_C`).
+- `FactorizedMixerBlock` adds temporal and channel residuals in sequence with optional LayerNorm.
+- `channel_wise_linear` maps `seq_len` to `pred_len` after the blocks; `revin` (no affine) normalizes the input.
 
 <!-- model-card:canonical:start -->
 ## Input and output

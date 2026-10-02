@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SDMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "33c52121698a38eead438a0bd83668001e6b5c3b4c3970b8ed8e3739998302ff",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "ba2c48aee0ff34361eb6cd959a1732a340314ef031a478c64d05c0fc71b7dae6",
   "paper": {
     "title": "SDMixer: Sparse Dual-Mixer for Time Series Forecasting",
     "venue": "arXiv preprint",

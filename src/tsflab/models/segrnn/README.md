@@ -8,10 +8,18 @@ year: 2023
 code: "https://github.com/lss-1138/SegRNN"
 revision: "8e869ecfdf1daab3a0ba14d1d620796c1a5d2c4f"
 license: "Apache-2.0"
+tagline: "Segment-wise GRU over fixed-length segments and parallel multi-step decoding from positional segment queries."
+tags: ["rnn", "segmenting", "channel-independent", "normalization", "direct-multistep"]
+composition: ["normalization=component:last_value_center", "decomposition=none", "temporal=local:segment-wise-gru-encoder-decoder", "channel=local:channel-independent-shared-weights", "head=local:segment-linear-decoder", "loss=loss:mse"]
 ---
 # SegRNN
 
-SegRNN is an RNN-based model for long-term multivariate time-series forecasting that replaces the traditional point-wise recurrence with two complementary strategies: Segment-wise Iterations, which process fixed-length segments rather than individual time steps, and Parallel Multi-step Forecasting (PMF), which generates all future steps in a single parallel pass instead of autoregressively. Together these strategies drastically reduce the number of recurrent iterations, cutting runtime and memory by more than 78% compared to standard RNNs while outperforming Transformer-based competitors.
+## Key ideas
+
+- The lookback is cut into `seg_len` segments, each linearly embedded (`segment_projection`) and fed to a GRU as one step, shortening the recurrence.
+- Parallel multi-step forecasting: every future segment is decoded in one pass from relative-position and channel-position embeddings with the encoder's final state as initial state.
+- `segment_decoder` maps each decoder output to `seg_len` values; channels are folded into the batch and share weights.
+- `center_on_last_value` / `restore_last_value` handle level shift.
 
 <!-- model-card:canonical:start -->
 ## Input and output

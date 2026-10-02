@@ -8,10 +8,18 @@ year: 2026
 code: "https://github.com/neumyor/PhaseFormer_TSL"
 revision: "ed1db61c6abfa9326d5ca2a56c6c4ba53ea592ab"
 license: "MIT"
+tagline: "Period-aligned phase tokens mixed through a few learned routers (aggregate, then distribute)."
+tags: ["transformer", "periodicity", "attention-variant", "channel-independent", "lightweight", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:cross-phase-router-attention", "channel=local:channel-independent-shared-weights", "head=local:per-phase-linear-predictor", "loss=loss:mse"]
 ---
 # PhaseFormer
 
-PhaseFormer is an efficient time series forecasting model for standard univariate and multivariate prediction. It introduces a phase perspective for exploiting periodicity: instead of treating individual patches as tokens (which incurs large parameter counts), PhaseFormer groups time steps into compact phase embeddings aligned to the dominant period and uses a lightweight routing mechanism for cross-phase interaction, achieving state-of-the-art performance with approximately 1k parameters across benchmark datasets.
+## Key ideas
+
+- `_tokenize` reshapes the lookback into `period` phase tokens (default 24), each embedding that phase across past cycles.
+- `CrossPhaseRouter` uses a small set of learned router vectors that first attend to all phases (aggregate) and are then attended by them (distribute), avoiding full phase-to-phase attention.
+- `predictor` maps each phase token to the future cycles of that phase; outputs are interleaved back into time order.
+- Channels share weights; `revin` (affine) wraps the model.
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/Secilia-Cxy/SOFTS"
 revision: "f5d35fd7c3e716b6383ce6d3cc42c131e32c3c44"
 license: "MIT"
+tagline: "Inverted series embeddings fused by STAR: a softmax-weighted global core aggregated and redistributed to every series."
+tags: ["mlp", "inverted", "channel-mixing", "normalization", "lightweight"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:inverted-series-embedding", "channel=local:star-aggregate-redistribute", "head=local:linear-token-to-horizon", "loss=loss:mse"]
 ---
 # SOFTS
 
-SOFTS (Series-cOre Fused Time Series forecaster) is an MLP-based model for multivariate time-series forecasting in the standard time-series setting. Its key innovation is the STar Aggregate-Redistribute (STAR) module, which uses a centralized strategy to model inter-channel dependencies: all series are aggregated into a single global core representation, which is then fused back with each individual series, achieving linear-complexity channel interaction without relying on distributed attention mechanisms.
+## Key ideas
+
+- `history_embedding` embeds each series' whole lookback into one token (inverted view), so blocks operate across series.
+- `SeriesCoreFusion` (STAR) scores per-series core candidates, softmax-aggregates them into one global core, and concatenates it back onto every series through an MLP, giving a centralized channel interaction that is cheaper than pairwise attention.
+- `SOFTSBlock` adds pre-norm residuals around STAR and a feed-forward layer; `forecast_head` maps each token to `pred_len`.
+- Inputs are standardized per window (`use_norm`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

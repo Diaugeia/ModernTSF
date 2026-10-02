@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "PWS",
   "status": "passed",
-  "verified_at": "2026-10-02T16:17:44.836160Z",
-  "subject_sha256": "1114c412935267ec9ce44a7ad099457d29a7583ad8b40aa0da7e10118e07fcb5",
+  "verified_at": "2026-10-02T18:17:24.233150Z",
+  "subject_sha256": "10822d437730869917e34e67e509870911a16934f1681312a8e8199f68e3f0ab",
   "paper": {
     "title": "Patch Weighted Sum (TSFLab baseline)",
     "venue": "TSFLab",

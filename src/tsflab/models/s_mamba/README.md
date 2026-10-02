@@ -8,10 +8,18 @@ year: 2024
 code: "https://github.com/wzhwzhwzh0921/S-D-Mamba"
 revision: "e7e8bf04066135afa43d85b0a87afa97cda16e3f"
 license: "NOASSERTION"
+tagline: "Inverted tokenization (one token per variate) with bidirectional Mamba scans across variates and a temporal FFN."
+tags: ["ssm", "mamba", "inverted", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:temporal-ffn-per-variate-token", "channel=component:mamba", "head=local:linear-token-to-horizon", "loss=loss:mse"]
 ---
 # S_Mamba
 
-S_Mamba (Simple-Mamba) is a time series forecasting model that applies selective state space modeling in an iTransformer-style inverted embedding scheme. It tokenizes each variate's time points via a linear layer, uses a bidirectional Mamba layer to extract inter-variate correlations across the channel dimension, and applies a feed-forward network to learn temporal dependencies, finally mapping to forecasts through a linear layer without requiring custom CUDA operators for selective scanning.
+## Key ideas
+
+- `InvertedTokenization` embeds each variate's whole lookback as one token, as in iTransformer.
+- `SMambaLayer` runs forward and time-flipped `MambaBlock` scans (`mamba` component) over the variate-token sequence to model inter-variate correlation.
+- A feed-forward network (`temporal_ffn`) then models each variate's temporal features.
+- `output_projection` maps each token to `pred_len`; inputs are standardized per window (`use_norm`).
 
 <!-- model-card:canonical:start -->
 ## Input and output

@@ -8,16 +8,18 @@ year: 2023
 code: "https://github.com/cure-lab/LTSF-Linear"
 revision: "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6"
 license: "Apache-2.0"
+tagline: "DLinear point backbone plus a monotone quantile head emitting non-crossing quantiles; pinball loss."
+tags: ["linear", "probabilistic", "quantile", "decomposition", "channel-independent", "lightweight"]
+composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=component:dlinear", "channel=local:channel-independent-shared-weights", "head=component:quantile_head", "loss=loss:quantile"]
 ---
 # QuantileDLinear
 
-QuantileDLinear is a **probabilistic** TSFLab forecaster: it wraps the point
-DLinear backbone with the shared monotone `QuantileHead`
-(`src/tsflab/models/_components/quantile_head/README.md`) to emit a non-crossing grid of quantiles
-`(B, pred_len, C, Q)` instead of a single point. The head builds quantiles from a
-median anchor by adding/subtracting cumulative `softplus` offsets, so the
-predicted quantiles cannot cross by construction. It is trained with the pinball
-(`quantile`) loss and scored with CRPS / WQL / coverage.
+## Key ideas
+
+- `DLinearBackbone` produces a point forecast per channel using moving-average decomposition (`series_decomposition`) and two linear maps.
+- `QuantileHead` expands each point into `Q` quantiles from a median anchor with cumulative softplus offsets, so quantiles cannot cross.
+- `output_type = "quantile"` returns `(B, pred_len, C, Q)`; pair it with the pinball (`quantile`) loss.
+- The head and pinball protocol are TSFLab additions, not part of the DLinear paper.
 
 <!-- model-card:canonical:start -->
 ## Input and output

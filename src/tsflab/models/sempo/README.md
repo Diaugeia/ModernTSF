@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/mala-lab/SEMPO"
 revision: "59233d113f8e47fc32402ef8f371298a4d71fb21"
 license: "Apache-2.0"
+tagline: "Energy-aware spectral masking, then a patch Transformer whose attention gets routed mixture-of-prompts key/value tokens."
+tags: ["transformer", "foundation", "frequency", "mixture-of-experts", "prompt", "patching", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=local:energy-aware-spectral-decomposition", "temporal=local:prompt-routed-patch-attention", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # SEMPO
 
-SEMPO is a lightweight time-series foundation model accepted at NeurIPS 2025. It combines an energy-aware spectral decomposition module that captures both high- and low-energy frequency signals with a Mixture-of-Prompts enabled Transformer that routes tokens to small dataset-specific prompt-based experts, enabling strong zero-shot and few-shot generalization across diverse datasets while requiring far less pre-training data and a smaller model size than existing foundation models.
+## Key ideas
+
+- `energy_aware_decomposition` splits the rFFT into high- and low-energy bins with a learnable threshold and sigmoid masks and reconstructs the series (deterministic masks, not the paper's stochastic pre-training masks).
+- `router` softly mixes `prompt_experts` per patch token; `prompt_kv` turns the mix into extra key/value tokens prepended to the attention context.
+- A single Transformer layer (`attention`, `feed_forward`) over patch tokens and a flatten `head` give the forecast; `revin` wraps the model.
+- No pre-trained weights or two-stage training are included, so the foundation-model claim applies to the architecture, not this checkpoint.
 
 <!-- model-card:canonical:start -->
 ## Input and output

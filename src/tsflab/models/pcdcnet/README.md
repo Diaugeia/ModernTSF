@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/PoorOtterBob/CauAir"
 revision: "73dae00ca6ad14abb15174a0a0286d500e868b94"
 license: "NOASSERTION"
+tagline: "Step-wise air-quality surrogate: local MLP, graph-Laplacian transport, and GRU accumulation updating each hour."
+tags: ["gnn", "rnn", "spatiotemporal", "covariates", "physics-informed", "autoregressive"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:gru-accumulation-with-local-dynamics", "channel=local:laplacian-spatial-transport", "head=local:iterative-increment-readout", "loss=loss:mse"]
 ---
 # PCDCNet
 
-PCDCNet is a covariate-prediction model for air quality forecasting in a node-structured spatiotemporal setting, where each node is a monitoring station. It integrates numerical modeling principles (emissions, meteorological influences, and physical-chemical domain constraints) with deep learning components — specifically graph-based spatial transport, recurrent temporal accumulation, and local interaction representation enhancement — to forecast 72-hour PM2.5 and O3 concentrations at the station level.
+## Key ideas
+
+- `LocalInteractionDynamics` (RMSNorm and a SiLU MLP) models local sources and sinks at each station.
+- `SpatialTransportDynamics` propagates the hidden state with a symmetric-normalized graph Laplacian from `adj_mx`; only its zero-mean (conservative) flux enters the forecast update.
+- A `nn.GRUCell` accumulates state over the history, then `forward` rolls out `pred_len` steps, adding an increment to the previous value each step.
+- Known-future time covariates (from `x_mark_dec`) feed every step; `domain_informed_constraint` exposes a transport penalty that the trainer does not call.
 
 <!-- model-card:canonical:start -->
 ## Input and output

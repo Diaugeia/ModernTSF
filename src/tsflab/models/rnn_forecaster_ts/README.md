@@ -5,10 +5,17 @@ paper: "https://doi.org/10.1207/s15516709cog1402_1"
 paper_title: "Finding Structure in Time"
 venue: "Cognitive Science"
 year: 1990
+tagline: "Elman tanh RNN over the normalized window, with the final hidden state projected to the full multistep forecast."
+tags: ["rnn", "normalization", "baseline", "direct-multistep", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:elman-rnn-encoder", "channel=local:channel-mixing-recurrent-input", "head=local:final-state-linear-head", "loss=loss:mse"]
 ---
 # RNNForecasterTS
 
-RNNForecasterTS is a clean-room Elman RNN baseline that encodes a fixed history and directly projects the final hidden state to a multistep forecast.
+## Key ideas
+
+- `nn.RNN` (tanh) consumes all channels at each step, so channels are mixed in the hidden state.
+- `head` maps the last layer's final state straight to `pred_len * enc_in` values (direct multistep, no decoding recursion).
+- `revin` normalizes inputs and de-normalizes outputs; `aux_loss` is zero.
 
 <!-- model-card:canonical:start -->
 ## Input and output

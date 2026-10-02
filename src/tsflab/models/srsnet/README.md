@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/decisionintelligence/SRSNet"
 revision: "6ee35d498f48eefecf84530b362b137de38e6592"
 license: "MIT"
+tagline: "Learnable patch scoring and gating, then differentiable soft-rank reassembly of patches before a linear head."
+tags: ["mlp", "patching", "selective-representation", "channel-independent", "normalization"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:selective-representation-space", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # SRSNet
 
-SRSNet is a patch-based time series forecasting model that introduces the Selective Representation Space (SRS) module, which uses learnable Selective Patching and Dynamic Reassembly techniques to adaptively select and reorder patches from the input context window, paired with an MLP prediction head, to achieve state-of-the-art forecasting performance.
+## Key ideas
+
+- `SelectivePatching` embeds each patch and scores it with a small MLP, gating patch embeddings with a sigmoid of the mean-centered score (`alpha`).
+- `DynamicReassembly` converts scores into a soft rank and a soft permutation (`assignment`) that reorders patches by score in a differentiable way.
+- `SelectiveRepresentationSpace` adds optional positions and LayerNorm; there is no attention.
+- `flatten_forecast_head` maps the flattened patch representation to the horizon, inside `revin`.
 
 <!-- model-card:canonical:start -->
 ## Input and output

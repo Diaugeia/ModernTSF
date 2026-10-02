@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/jackyue1994/OLinear"
 revision: "f168e01a3e0e316ad98330b5e77afed1f77b0af5"
 license: "NOASSERTION"
+tagline: "Linear forecaster in an orthogonal basis with a normalized (softplus) channel-mixing matrix and an MLP sequence stage."
+tags: ["linear", "mlp", "channel-mixing", "orthogonal-basis", "normalization", "lightweight"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:orthogonal-basis-linear-encoder", "channel=local:normlin-channel-mixing", "head=local:linear-decoder", "loss=loss:mse"]
 ---
 # OLinear
 
-OLinear is a linear-based multivariate time series forecasting model that operates in an orthogonally transformed domain rather than directly in the time domain. It introduces OrthoTrans, a data-adaptive transformation built on an orthogonal matrix that diagonalizes the series' temporal Pearson correlation matrix via eigenvalue decomposition, yielding a decorrelated feature space for linear encoding. Complementing this, OLinear uses NormLin, a customized linear layer with a normalized weight matrix to capture multivariate dependencies, which empirically outperforms multi-head self-attention while requiring roughly half the FLOPs.
+## Key ideas
+
+- Inputs and outputs are projected through `input_basis` and `output_basis`, which are identity until `set_orthogonal_bases` installs data-adaptive orthogonal matrices (OrthoTrans).
+- `NormLin` mixes channels with a softplus-normalized, row-stochastic matrix.
+- A residual `sequence_mlp` refines each channel embedding before `decoder` maps the flattened sequence to the horizon.
+- `revin` (affine) normalizes the input when `use_revin` is set.
 
 <!-- model-card:canonical:start -->
 ## Input and output

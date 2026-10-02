@@ -8,10 +8,18 @@ year: 2025
 code: "https://github.com/thuml/Time-Series-Library"
 revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
+tagline: "Four patch scales fused into one token stream; temporal then channel Transformer layers; semi-autoregressive head."
+tags: ["transformer", "patching", "multi-scale", "channel-mixing"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:multi-scale-patch-transformer-encoder", "channel=local:channel-wise-transformer-layer", "head=local:semi-autoregressive-head", "loss=loss:mse"]
 ---
 # MultiPatchFormer
 
-MultiPatchFormer is a Transformer-based time series forecasting model that integrates multi-scale patch-wise temporal modeling with channel-wise representation learning. The input time series is divided into patches at multiple resolutions to capture temporal correlations across different time granularities; a subsequent channel-wise encoder models inter-series relationships; and a multi-step linear decoder generates the final multi-horizon predictions, reducing overfitting and noise effects. It targets both univariate and multivariate long-term forecasting settings.
+## Key ideas
+
+- `PatchScale` embeds patches of lengths 8, 16, 24, 32 (strides 8, 8, 7, 6); outputs are interpolated to a common token count and concatenated.
+- Stacked `nn.TransformerEncoderLayer`s model temporal dependence per channel; the token mean then goes through one more encoder layer across channels.
+- `SemiAutoregressiveHead` emits the horizon in groups, each linear layer also seeing the groups emitted before it.
+- Series are standardized with per-window mean and standard deviation.
 
 <!-- model-card:canonical:start -->
 ## Input and output

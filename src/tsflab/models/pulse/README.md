@@ -8,10 +8,19 @@ year: 2026
 code: "https://github.com/Gemost/PULSE"
 revision: "b26449764b72bfc6aa0d5b961d702f0b59da3848"
 license: "NOASSERTION"
+tagline: "Phase-codebook anchors split from residuals, residual-only normalization, and a two-stage cross-attention phase router."
+tags: ["mlp", "periodicity", "decomposition", "normalization", "attention-variant", "non-stationary"]
+composition: ["normalization=local:phase-anchored-residual-normalization", "decomposition=local:phase-codebook-anchor-disentangle", "temporal=local:mlp-backbone-latent-future", "channel=local:channel-mixing-phase-router", "head=local:residual-denormalized-anchor-sum", "loss=loss:mse+local:frequency-mae-utility"]
 ---
 # PULSE
 
-PULSE is a physics-informed generative framework for non-stationary time-series forecasting. The local implementation independently realizes its phase-anchor decomposition, dual-stream evolution, and coordinate-consistent reconstruction.
+## Key ideas
+
+- `phase_codebook` is a learned `[phase_period, channels]` table; `disentangle` subtracts the phase anchor and normalizes only the residual, then adds the anchor back.
+- A small MLP `backbone` maps the normalized window to a latent future over time.
+- `PhaseRouter` evolves the future anchor in two cross-attention stages (history queries future, then future queries the result) at `phase_resolution` and interpolates to the horizon.
+- The forecast is the de-normalized residual plus the future anchor, so statistics are restored in the residual coordinate only.
+- `statistic_aware_mixup` and `frequency_mae` are provided as training utilities but are not called by `forward` or the default trainer.
 
 <!-- model-card:canonical:start -->
 ## Input and output
