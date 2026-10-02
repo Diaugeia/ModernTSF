@@ -263,7 +263,7 @@ def _model_config(name: str, params: list[tuple[str, str, str | None]], graph: b
 
 def _smoke(name: str, module: str, task_mode: str) -> str:
     graph = task_mode != "time_series"
-    dataset = "../datasets/synthetic_st.toml" if graph else "../datasets/smoke.toml"
+    dataset = "../fixtures/synthetic_st.toml" if graph else "../fixtures/smoke.toml"
     return f'''extends = ["../base.toml", "{dataset}", "../models/{name}.toml"]
 
 [experiment]

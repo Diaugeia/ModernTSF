@@ -1,8 +1,0 @@
-[dataset]
-name = "cauair_ts"
-path = "./dataset/cauair_ccaq"
-
-[dataset.params]
-input_dim = 8
-npz_name = "his.npz"
-scale = true

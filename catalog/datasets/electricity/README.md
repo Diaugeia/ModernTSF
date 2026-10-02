@@ -91,7 +91,7 @@ experiment task unless explicitly overridden below.
     0.1,
     0.2
   ],
-  "target": "OT"
+  "target": "321"
 }
 ```
 

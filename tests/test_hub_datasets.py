@@ -34,8 +34,8 @@ def test_selection_covers_file_directory_and_ultratraffic_presets() -> None:
     assert not ba.matches("ultratraffic/PEMS_BA/cl/2023_added.parquet")
     assert not ba.matches("ultratraffic/PEMS_LA/static/2023.parquet")
     assert hd.selection("ultratraffic_sb_cl").matches("ultratraffic/PEMS_SB/cl/2023_added.parquet")
-    with pytest.raises(ValueError):
-        hd.selection("synthetic_st")
+    with pytest.raises(FileNotFoundError):
+        hd.selection("synthetic_st")  # a test fixture, not a catalog dataset
 
 
 def test_fetch_preset_downloads_only_pinned_files_and_verifies(tmp_path, monkeypatch) -> None:

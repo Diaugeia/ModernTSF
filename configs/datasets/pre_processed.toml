@@ -1,6 +1,0 @@
-[dataset]
-name = "pre_processed"
-path = "./dataset/my_dataset_npy"
-
-[dataset.params]
-# No params needed — create the .npz splits with `uv run tsf dataset prepare`.

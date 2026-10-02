@@ -1,5 +1,5 @@
 # Smoke run for GlocalIB on the tiny built-in smoke dataset (CPU, 1 epoch).
-extends = ["../base.toml", "../datasets/smoke.toml", "../models/GlocalIB.toml"]
+extends = ["../base.toml", "../fixtures/smoke.toml", "../models/GlocalIB.toml"]
 
 [experiment]
 description = "Smoke: GlocalIB"

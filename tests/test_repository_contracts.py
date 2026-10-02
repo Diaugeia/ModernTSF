@@ -57,6 +57,7 @@ from tsflab.tsf_core.paths import is_packaged_root, repository_root, require_che
 
 
 # Every model package on disk; registry, cards, evidence, and audits must agree with it.
+EXPECTED_DATASETS = len(list((Path(__file__).resolve().parents[1] / "configs" / "datasets").rglob("*.toml")))
 EXPECTED_MODELS = len([p for p in (Path(__file__).resolve().parents[1] / "src" / "tsflab" / "models").glob("*/spec.py") if not p.parent.name.startswith("_")])
 
 class RepositoryContractTests(unittest.TestCase):
@@ -198,7 +199,7 @@ class RepositoryContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(cli_main(["dataset", "list", "--json"]), 0)
         datasets = json.loads(output.getvalue())
-        self.assertEqual(len(datasets), 89)
+        self.assertEqual(len(datasets), EXPECTED_DATASETS)
         self.assertTrue(all(record["card"].endswith("/README.md") for record in datasets))
 
         output = io.StringIO()
@@ -404,14 +405,14 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(audit_resource_cards(root), [])
         self.assertTrue((root / "src/tsflab/models/_foundation/README.md").is_file())
         self.assertEqual(len(COMPONENT_CATALOG.names()), 48)
-        self.assertEqual(len(dataset_records(root)), 89)
+        self.assertEqual(len(dataset_records(root)), EXPECTED_DATASETS)
         self.assertEqual(
             len(list((root / "src/tsflab/models/_components").glob("*/README.md"))),
             48,
         )
         self.assertEqual(
             len(list((root / "catalog" / "datasets").glob("**/README.md"))),
-            89 + 1,  # one card per preset plus the GIFT-Eval family card
+            EXPECTED_DATASETS + 1,  # one card per preset plus the GIFT-Eval family card
         )
 
     def test_agent_assets_are_canonical(self) -> None:

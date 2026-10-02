@@ -1,5 +1,5 @@
 # Smoke run for LatentTSF on the tiny built-in smoke dataset (CPU, 1 epoch).
-extends = ["../base.toml", "../datasets/smoke.toml", "../models/LatentTSF.toml"]
+extends = ["../base.toml", "../fixtures/smoke.toml", "../models/LatentTSF.toml"]
 
 [experiment]
 description = "Smoke: LatentTSF"

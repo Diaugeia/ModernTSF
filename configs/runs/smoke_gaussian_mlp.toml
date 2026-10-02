@@ -1,5 +1,5 @@
 # Smoke run for GaussianMLP on the tiny built-in smoke dataset (CPU, 1 epoch).
-extends = ["../base.toml", "../datasets/smoke.toml", "../models/GaussianMLP.toml"]
+extends = ["../base.toml", "../fixtures/smoke.toml", "../models/GaussianMLP.toml"]
 
 [experiment]
 description = "Smoke: GaussianMLP"

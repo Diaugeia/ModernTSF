@@ -54,8 +54,17 @@ class Dataset_Custom(ForecastingDataset):
         num_samples = len(df_raw)
         border1, border2 = self._get_borders(flag, split_ratio, num_samples)
 
-        if features in {"M", "MS"}:
+        if target not in df_raw.columns[1:]:
+            raise ValueError(
+                f"target column {target!r} not found in {self.file_path}; "
+                f"available: {list(df_raw.columns[1:6])}... (set dataset.params.target)"
+            )
+        if features == "M":
             df_data = cast(pd.DataFrame, df_raw.iloc[:, 1:].copy())
+        elif features == "MS":
+            # The trainer reads the target from the last channel, so place it there.
+            covariates = [column for column in df_raw.columns[1:] if column != target]
+            df_data = cast(pd.DataFrame, df_raw.loc[:, [*covariates, target]].copy())
         else:
             df_data = cast(pd.DataFrame, df_raw.loc[:, [target]].copy())
 

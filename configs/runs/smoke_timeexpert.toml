@@ -1,4 +1,4 @@
-extends = ["../base.toml", "../datasets/smoke.toml", "../models/TimeExpert.toml"]
+extends = ["../base.toml", "../fixtures/smoke.toml", "../models/TimeExpert.toml"]
 
 [experiment]
 description = "Smoke: TimeExpert"

@@ -42,7 +42,7 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
 | 🧩 **Code & interface** | 199 methods as peers in one flat catalog, composed from 48 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison |
-| 🗃️ **Data** | 89 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
+| 🗃️ **Data** | 84 static presets across `time_series`, `spatiotemporal`, and `covariate` settings (incl. PeMS traffic for four Caltrans districts, 2003–2023), plus rolling real-time tracks (stocks, traffic, air quality) |
 | ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
