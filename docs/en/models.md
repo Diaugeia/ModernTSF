@@ -1,6 +1,6 @@
 # Models and methods
 
-TSFLab exposes 199 model and method entries through one flat public catalog. There are no user-facing architecture families. Presets configure runs and do not create additional entries.
+TSFLab exposes 199 model and method entries through one flat public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets configure runs and do not create additional entries.
 
 Every entry is maintained as a local implementation; verification status is derived from executable evidence.
 

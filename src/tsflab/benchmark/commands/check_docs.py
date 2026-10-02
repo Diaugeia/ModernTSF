@@ -43,7 +43,7 @@ def render_models_doc() -> str:
     intro = (
         "# Models and methods\n\n"
         f"TSFLab exposes {len(records)} model and method entries through one flat "
-        "public catalog. There are no user-facing architecture families. Presets "
+        "public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets "
         "configure runs and do not create additional entries.\n\n"
         "Every entry is maintained as a local implementation; verification status "
         "is derived from executable evidence.\n\n"
