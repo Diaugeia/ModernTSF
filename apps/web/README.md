@@ -104,7 +104,7 @@ push main
        ├ python3 pipeline/build_leaderboard.py   validate → aggregate submissions/ → data/leaderboard.json
        ├ bun run build                           Next static export → out/
        └ deploy out/ to the Hugging Face Space (static) → Diaugeia/TSFLab
-         (legacy Space Diaugeia/TSEval serves a redirect to it)
+         (formerly TSEval: the legacy Space Diaugeia/TSEval and tseval.diaugeia.ai redirect to it)
 ```
 
 - `pipeline/validate.py` — TSF-Core contract schema + TSFLab-binding check.

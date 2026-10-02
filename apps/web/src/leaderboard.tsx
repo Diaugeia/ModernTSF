@@ -181,7 +181,7 @@ export function Leaderboard({ data, copy, locale = "en" }: { data: LeaderboardDa
       )}
 
       {category === "realtime" && copy.rolling && (
-        <RollingRounds data={data.realtime ?? {}} copy={copy.rolling} />
+        <RollingRounds data={data.realtime ?? {}} tracks={data.realtime_tracks} copy={copy.rolling} domainLabels={copy.tracks} />
       )}
     </>
   );
