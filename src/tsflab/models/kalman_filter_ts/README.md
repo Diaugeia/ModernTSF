@@ -3,7 +3,7 @@ name: "KalmanFilterTS"
 summary: "KalmanFilterTS is a differentiable fixed-gain alpha-beta filter for a constant-velocity state, with bounded learnable gains per channel."
 paper: "https://doi.org/10.1115/1.3662552"
 paper_title: "A New Approach to Linear Filtering and Prediction Problems"
-venue: "Journal of Basic Engineering"
+venue: "Journal of Basic Engineering 1960"
 year: 1960
 tagline: "Differentiable alpha-beta level/velocity filter with learned per-channel gains and linear extrapolation."
 tags: ["statistical", "state-space-filter", "channel-independent", "baseline", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1115/1.3662552); title: A New Approach to Linear Filtering and Prediction Problems; venue/year: Journal of Basic Engineering / 1960
+- [paper](https://doi.org/10.1115/1.3662552); title: A New Approach to Linear Filtering and Prediction Problems; venue/year: Journal of Basic Engineering 1960 / 1960
 - codebase: not available
 
 ## Local implementation

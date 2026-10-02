@@ -3,7 +3,7 @@ name: "AutoRegressiveTS"
 summary: "AutoRegressiveTS is a classical autoregressive lag model for univariate and multivariate time-series forecasting. It directly maps the historical input window to the future prediction window using a learned linear projection over lagged observations, and is wrapped as a PyTorch `nn.Module` so that it integrates with the standard TSFLab training loop and can run on CUDA/MPS devices."
 paper: "https://search.worldcat.org/title/1422106714"
 paper_title: "Time Series Analysis: Forecasting and Control"
-venue: "Holden-Day"
+venue: "Holden-Day 1970"
 year: 1970
 tagline: "One shared linear map from the whole lag window to all horizons, applied to every channel independently."
 tags: ["statistical", "linear", "baseline", "channel-independent", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://search.worldcat.org/title/1422106714); title: Time Series Analysis: Forecasting and Control; venue/year: Holden-Day / 1970
+- [paper](https://search.worldcat.org/title/1422106714); title: Time Series Analysis: Forecasting and Control; venue/year: Holden-Day 1970 / 1970
 - codebase: not available
 
 ## Local implementation

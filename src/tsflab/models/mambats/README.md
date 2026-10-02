@@ -3,13 +3,13 @@ name: "MambaTS"
 summary: "MambaTS lays out every variable's patch tokens one variable after another (Variable-Aware Scan along Time) and runs a causal-convolution-free selective SSM with dropout on the selective parameters over the whole token sequence. During training the variable order is randomly permuted and each sample's loss is credited to the variable transitions it used; at inference the cheapest scan path of those costs, solved as an asymmetric travelling-salesman problem by simulated annealing, fixes the order. A flatten-linear head shared across variables produces the forecast."
 paper: "https://arxiv.org/abs/2405.16440"
 paper_title: "MambaTS: Improved Selective State Space Models for Long-term Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2024
+venue: "Pattern Recognition 2026"
+year: 2026
 code: "https://github.com/XiudingCai/MambaTS-pytorch"
 revision: "3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d"
 license: "MIT"
 tagline: "Variable-major patch-token scan by a conv-free Mamba with a learned variable order from permutation training and ATSP."
-tags: ["ssm", "mamba", "patching", "channel-mixing", "normalization", "variable-ordering", "time-series"]
+tags: ["ssm", "mamba", "patching", "channel-mixing", "normalization", "variable-ordering"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=component:mamba", "channel=local:variable-aware-scan-order", "head=component:flatten_forecast_head", "loss=loss:mse+local:scan-cost-update"]
 ---
 # MambaTS
@@ -30,7 +30,7 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2405.16440); title: MambaTS: Improved Selective State Space Models for Long-term Time Series Forecasting; venue/year: arXiv preprint / 2024
+- [paper](https://arxiv.org/abs/2405.16440); title: MambaTS: Improved Selective State Space Models for Long-term Time Series Forecasting; venue/year: Pattern Recognition 2026 / 2026
 - [codebase](https://github.com/XiudingCai/MambaTS-pytorch); revision: `3b6797d9bf5178a490e1bb3c3e9f4d223f2af51d`; license: `MIT`
 
 ## Local implementation
@@ -69,7 +69,7 @@ The contract fixture uses `seq_len=96` and `pred_len=12`. Default
 model parameters are: `enc_in=7`, `d_model=128`, `e_layers=4`, `d_state=16`, `d_conv=4`, `expand=2`, `dropout=0.2`, `patch_len=48`, `stride=48`, `use_causal_conv=False`, `vpt_mode=1`, `atsp_solver='SA'`, `atsp_steps=20000`, `atsp_seed=0`
 <!-- model-card:canonical:end -->
 
-## Verification
+## Source and verification
 
 Independent implementation; no official code was copied (official repository MIT, pinned revision above; checked `models/MambaTS.py`, `layers/mamba_ssm/mixer2_seq_simple.py`, `layers/mamba_ssm/mamba_simple.py`, `exp/exp_long_term_forecasting.py`, `run.py`, and the paper's Sec. 5 and Eqs. 3-7). Inputs are `[B, seq_len, enc_in]`, marks and decoder inputs are ignored, and the output is `[B, pred_len, enc_in]` (the runner slices the target for `MS`). The SSM mixer, instance normalisation and head are shared components; the VAST cost bookkeeping and ATSP decoder are model-local, and the runner `training_objective` returns the configured criterion while crediting per-sample criterion values to the shuffled transitions.
 
@@ -83,3 +83,16 @@ Independent implementation; no official code was copied (official repository MIT
 - **Initialisation.** Reference Mamba step-size initialisation and the `1/sqrt(layers)` residual-projection scaling are reproduced; patch embedding and head keep PyTorch defaults, as officially.
 - **Runner.** Optimiser, schedule, early stopping and mixed precision are runner configuration; the official seed 3047 is not modelled. `training_objective` is unsupported under `DataParallel`.
 - **Evidence.** Structure and reference-recursion tests are in `tests/test_mambats.py`; unified verification evidence has not been produced yet and is left stale for CI.
+
+## Citation
+
+```bibtex
+@article{cai2026mambats,
+  title   = {MambaTS: Improved Selective State Space Models for Long-term Time Series Forecasting},
+  author  = {Xiuding Cai and Xueyao Wang and Yaoyao Zhu and Yu Yao},
+  journal = {Pattern Recognition},
+  year    = {2026},
+  note    = {arXiv:2405.16440},
+  url     = {https://arxiv.org/abs/2405.16440}
+}
+```

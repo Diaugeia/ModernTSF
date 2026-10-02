@@ -7,7 +7,7 @@ venue: "arXiv preprint"
 year: 2025
 tagline: "Bidirectional selective-SSM scan over the variate axis, with scalar state grid-mixed across time patches and variates."
 tags: ["ssm", "patching", "channel-mixing", "normalization"]
-composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:patch-embedding-folded-into-variate-token", "channel=component:hyper_state_scan+local:bidirectional-variate-axis-scan", "head=local:final-norm-linear-projector", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:patch-embedding-folded-into-variate-token", "channel=component:hyper_state_scan+local:bidirectional-variate-axis-scan", "head=local:final-norm-linear-projector", "loss=loss:mse"]
 ---
 # TimePro
 

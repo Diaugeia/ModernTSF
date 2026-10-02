@@ -3,14 +3,14 @@ name: "TimeExpert"
 summary: "TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context."
 paper: "https://arxiv.org/abs/2509.23145"
 paper_title: "TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/xwmaxwma/TimeExpert"
 revision: "f53b5220f22767a91040aaa04679c2eb9b2eb9c5"
-license: "unspecified (no LICENSE file at the pinned revision)"
+license: "NOASSERTION"
 tagline: "Channel-independent patch Transformer whose attention is replaced by top-k temporal mixture of experts over patches."
 tags: ["transformer", "mixture-of-experts", "patching", "channel-independent", "attention-variant", "normalization"]
-composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=component:embed+component:topk_expert_attention", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=component:embed+component:topk_expert_attention", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
 ---
 # TimeExpert
 
@@ -28,8 +28,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2509.23145); title: TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts; venue/year: arXiv / 2025
-- [codebase](https://github.com/xwmaxwma/TimeExpert); revision: `f53b5220f22767a91040aaa04679c2eb9b2eb9c5`; license: `unspecified (no LICENSE file at the pinned revision)`
+- [paper](https://arxiv.org/abs/2509.23145); title: TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts; venue/year: arXiv preprint / 2025
+- [codebase](https://github.com/xwmaxwma/TimeExpert); revision: `f53b5220f22767a91040aaa04679c2eb9b2eb9c5`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -41,6 +41,8 @@ under Shared components), and the default preset is
 [`configs/models/TimeExpert.toml`](../../../../configs/models/TimeExpert.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Clean-room implementation: confirmed. The TMOE routing/gathering/attention
 data flow was re-derived from the pinned official file's class boundaries and
@@ -79,6 +81,8 @@ model parameters are: `enc_in=7`, `d_model=128`, `n_heads=8`, `e_layers=2`, `pat
 <!-- model-card:canonical:end -->
 
 ## Source and verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Clean-room implementation: confirmed. The TMOE routing/gathering/attention
 data flow was re-derived from the pinned official file's class boundaries and

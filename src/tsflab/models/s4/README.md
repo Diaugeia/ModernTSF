@@ -10,7 +10,7 @@ revision: "e757cef57d89e448c413de7325ed5601aceaac13"
 license: "Apache-2.0"
 tagline: "Stacked diagonal S4D layers using FFT long-convolution kernels from a ZOH-discretized complex state matrix."
 tags: ["ssm", "frequency", "long-range", "channel-mixing", "normalization"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:diagonal-s4d-fft-convolution-blocks", "channel=local:channel-mixing-input-projection", "head=local:horizon-projection-over-time", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:diagonal-s4d-fft-convolution-blocks", "channel=local:channel-mixing-linear-embedding", "head=local:horizon-projection-over-time", "loss=loss:mse"]
 ---
 # S4
 

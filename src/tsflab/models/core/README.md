@@ -3,11 +3,11 @@ name: "CoRe"
 summary: "CoRe is a clean-room test-time-adaptation module that mixes variates in the correction space rather than the prediction space. A COSA-style base adapter yields per-variate corrections, a shared-anchor rank-r bottleneck refines them, and a tanh gate driven by input-window spectral entropy and band-energy ratios scales the refinement: Y = Y_base + Delta + g * delta."
 paper: "https://arxiv.org/abs/2609.34638"
 paper_title: "Correction-space Cross-variate Interaction for Test-time Adaptation in Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2026
 code: "https://github.com/yyddou/CoReTTA"
 revision: "7e3861f24e3aaece9fffc048fd585b3d283835d8"
-license: "unspecified (no LICENSE file at the pinned revision)"
+license: "NOASSERTION"
 tagline: "Test-time adapter mixing variates in correction space via a shared-anchor bottleneck gated by spectral entropy."
 tags: ["linear", "test-time-adaptation", "channel-mixing", "frequency", "adapter", "lightweight"]
 composition: ["normalization=none", "decomposition=none", "temporal=component:channel_wise_linear+local:frozen-last-value-base-forecaster", "channel=local:shared-anchor-correction-refinement+component:spectral_descriptor", "head=local:spectral-gated-correction-residual", "loss=loss:mse"]
@@ -29,8 +29,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2609.34638); title: Correction-space Cross-variate Interaction for Test-time Adaptation in Time Series Forecasting; venue/year: arXiv / 2026
-- [codebase](https://github.com/yyddou/CoReTTA); revision: `7e3861f24e3aaece9fffc048fd585b3d283835d8`; license: `unspecified (no LICENSE file at the pinned revision)`
+- [paper](https://arxiv.org/abs/2609.34638); title: Correction-space Cross-variate Interaction for Test-time Adaptation in Time Series Forecasting; venue/year: arXiv preprint / 2026
+- [codebase](https://github.com/yyddou/CoReTTA); revision: `7e3861f24e3aaece9fffc048fd585b3d283835d8`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -43,6 +43,8 @@ under Shared components), and the default preset is
 
 ## Differences
 
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
+
 No external source file is copied or imported; the official repository has no
 license, so this is an independent rewrite from the paper.
 
@@ -53,7 +55,7 @@ license, so this is an independent rewrite from the paper.
 - Defaults follow the paper and official code: gate initialized to zero (adapted forecast equals the base at initialization), SCR Xavier gain 0.01 with zero biases, spectral gate weights zero and bias -1, `r = C`. For high-dimensional datasets the paper uses `r = 16`; set `scr_rank`.
 - Because the gates start at zero, only the gate parameters and SCR/gate biases receive non-zero gradients on the first step.
 
-Evidence is in `../../../verification/evidence/CoRe.json`; equation tests are in `tests/test_core_tta.py`.
+Evidence is in `../../../../verification/evidence/CoRe.json`; equation tests are in `tests/test_core_tta.py`.
 
 ## Shared components
 
@@ -84,6 +86,8 @@ Sections 3.2-3.6 and Appendix B.1-B.3 of the paper were read, and `tta/core.py` 
 
 ## Source and verification
 
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
+
 No external source file is copied or imported; the official repository has no
 license, so this is an independent rewrite from the paper.
 
@@ -94,7 +98,7 @@ license, so this is an independent rewrite from the paper.
 - Defaults follow the paper and official code: gate initialized to zero (adapted forecast equals the base at initialization), SCR Xavier gain 0.01 with zero biases, spectral gate weights zero and bias -1, `r = C`. For high-dimensional datasets the paper uses `r = 16`; set `scr_rank`.
 - Because the gates start at zero, only the gate parameters and SCR/gate biases receive non-zero gradients on the first step.
 
-Evidence is in `../../../verification/evidence/CoRe.json`; equation tests are in `tests/test_core_tta.py`.
+Evidence is in `../../../../verification/evidence/CoRe.json`; equation tests are in `tests/test_core_tta.py`.
 
 
 ## Citation

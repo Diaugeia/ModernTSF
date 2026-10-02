@@ -9,8 +9,8 @@ code: "https://github.com/Secilia-Cxy/SOFTS"
 revision: "f5d35fd7c3e716b6383ce6d3cc42c131e32c3c44"
 license: "MIT"
 tagline: "Inverted series embeddings fused by STAR: a softmax-weighted global core aggregated and redistributed to every series."
-tags: ["mlp", "inverted", "channel-mixing", "normalization", "lightweight"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:inverted-series-embedding", "channel=local:star-aggregate-redistribute", "head=local:linear-token-to-horizon", "loss=loss:mse"]
+tags: ["mlp", "inverted-tokens", "channel-mixing", "normalization", "lightweight"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:inverted-series-embedding", "channel=local:star-aggregate-redistribute", "head=local:linear-variate-token-projection", "loss=loss:mse"]
 ---
 # SOFTS
 

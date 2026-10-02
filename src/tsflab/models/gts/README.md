@@ -10,7 +10,7 @@ revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
 license: "Apache-2.0"
 tagline: "Jointly learns a discrete node graph via Gumbel-Softmax edge sampling and a bidirectional diffusion graph-GRU seq2seq."
 tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "covariates", "probabilistic-graph"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder-projection", "loss=loss:mse+local:graph-prior-bce"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder", "loss=loss:mse+local:graph-prior-bce"]
 ---
 # GTS
 

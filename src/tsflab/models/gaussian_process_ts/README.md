@@ -3,7 +3,7 @@ name: "GaussianProcessTS"
 summary: "GaussianProcessTS is a sparse RBF-kernel posterior-mean approximation using learned inducing inputs and horizon targets for channel-wise lag forecasting."
 paper: "https://gaussianprocess.org/gpml/chapters/"
 paper_title: "Gaussian Processes for Machine Learning"
-venue: "MIT Press"
+venue: "MIT Press 2006"
 year: 2006
 tagline: "Sparse RBF-kernel posterior-mean approximation with learned inducing inputs and horizon targets, shared across channels."
 tags: ["statistical", "kernel-method", "gaussian-process", "baseline", "channel-independent"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://gaussianprocess.org/gpml/chapters/); title: Gaussian Processes for Machine Learning; venue/year: MIT Press / 2006
+- [paper](https://gaussianprocess.org/gpml/chapters/); title: Gaussian Processes for Machine Learning; venue/year: MIT Press 2006 / 2006
 - codebase: not available
 
 ## Local implementation

@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Pinned source inspection: `src/layers.py`, `src/tsflab/models/dlinear.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/layers.py`, `src/models/dlinear.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 Local implementation: confirmed.
 
@@ -76,7 +76,7 @@ Accurate forecasting of multivariate time series data remains a formidable chall
 
 ## Source and verification
 
-Pinned source inspection: `src/layers.py`, `src/tsflab/models/dlinear.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/layers.py`, `src/models/dlinear.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 Local implementation: confirmed.
 

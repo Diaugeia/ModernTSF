@@ -9,7 +9,7 @@ code: "https://github.com/decisionintelligence/Aurora"
 revision: "a247760abbc9d17a861bc365c032368d317815f2"
 license: "NOASSERTION"
 tagline: "Patch Transformer guided by distilled text/image tokens, decoding via prototype retrieval and flow integration."
-tags: ["transformer", "patching", "multimodal", "frequency", "retrieval", "flow-matching", "channel-independent"]
+tags: ["transformer", "patching", "multimodal", "frequency", "retrieval", "flow-matching", "channel-independent", "normalization"]
 composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-transformer-encoder+local:modality-guided-attention", "channel=local:channel-independent-shared-weights", "head=local:prototype-retrieval-flow-decoder", "loss=loss:mse"]
 ---
 # Aurora
@@ -52,7 +52,7 @@ attention, future-condition decoding, prototype retrieval, and velocity flow.
 It does not bundle BERT, ViT, the pretraining corpus, pretrained weights, raw
 text/image tokenizers, stochastic sampling, or zero-shot claims. Optional dense
 modality embeddings replace raw encoders; the registered point output follows a
-deterministic mean flow. Evidence is in `../../../verification/evidence/Aurora.json`.
+deterministic mean flow. Evidence is in `../../../../verification/evidence/Aurora.json`.
 
 ## Shared components
 
@@ -84,7 +84,7 @@ attention, future-condition decoding, prototype retrieval, and velocity flow.
 It does not bundle BERT, ViT, the pretraining corpus, pretrained weights, raw
 text/image tokenizers, stochastic sampling, or zero-shot claims. Optional dense
 modality embeddings replace raw encoders; the registered point output follows a
-deterministic mean flow. Evidence is in `../../../verification/evidence/Aurora.json`.
+deterministic mean flow. Evidence is in `../../../../verification/evidence/Aurora.json`.
 
 ## In TSFLab
 Default config: `configs/models/Aurora.toml`; model specification: `spec.py`; local implementation: `model.py`.

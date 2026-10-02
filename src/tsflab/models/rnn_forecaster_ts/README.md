@@ -3,7 +3,7 @@ name: "RNNForecasterTS"
 summary: "RNNForecasterTS is a clean-room Elman RNN baseline that encodes a fixed history and directly projects the final hidden state to a multistep forecast."
 paper: "https://doi.org/10.1207/s15516709cog1402_1"
 paper_title: "Finding Structure in Time"
-venue: "Cognitive Science"
+venue: "Cognitive Science 1990"
 year: 1990
 tagline: "Elman tanh RNN over the normalized window, with the final hidden state projected to the full multistep forecast."
 tags: ["rnn", "normalization", "baseline", "direct-multistep", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1207/s15516709cog1402_1); title: Finding Structure in Time; venue/year: Cognitive Science / 1990
+- [paper](https://doi.org/10.1207/s15516709cog1402_1); title: Finding Structure in Time; venue/year: Cognitive Science 1990 / 1990
 - codebase: not available
 
 ## Local implementation
@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Clean-room implementation: confirmed. The local code was independently designed from Elman's published recurrence and the repository tensor contract; no external implementation source was copied. Elman (1990) does not define the direct multi-horizon head, RevIN, or this joint multivariate forecasting setup, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/RNNForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from Elman's published recurrence and the repository tensor contract; no external implementation source was copied. Elman (1990) does not define the direct multi-horizon head, RevIN, or this joint multivariate forecasting setup, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/RNNForecasterTS.json`.
 
 ## Shared components
 
@@ -62,7 +62,7 @@ A vanilla (Elman) Recurrent Neural Network (RNN) consists of a recurrent layer i
 
 ## Source and verification
 
-Clean-room implementation: confirmed. The local code was independently designed from Elman's published recurrence and the repository tensor contract; no external implementation source was copied. Elman (1990) does not define the direct multi-horizon head, RevIN, or this joint multivariate forecasting setup, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/RNNForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from Elman's published recurrence and the repository tensor contract; no external implementation source was copied. Elman (1990) does not define the direct multi-horizon head, RevIN, or this joint multivariate forecasting setup, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/RNNForecasterTS.json`.
 
 ## In TSFLab
 Default config: `configs/models/RNNForecasterTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.

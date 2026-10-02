@@ -9,7 +9,7 @@ code: "https://github.com/leonardokong486/interPDN"
 revision: "7918983539d3d135a395dcccb3d66be29d2b02d2"
 license: "Apache-2.0"
 tagline: "Per-step probability distributions over two interleaved normal-quantile support sets, expected and mixed by confidence."
-tags: ["mlp", "decomposition", "channel-independent", "distributional-head", "normalization"]
+tags: ["mlp", "decomposition", "channel-independent", "distribution-output", "normalization"]
 composition: ["normalization=component:revin", "decomposition=local:ema-trend-seasonal-split", "temporal=local:conv-and-linear-seasonal-trend-decoders", "channel=local:channel-independent-shared-weights", "head=local:support-set-probability-expectation", "loss=loss:mse"]
 ---
 # InterPDN

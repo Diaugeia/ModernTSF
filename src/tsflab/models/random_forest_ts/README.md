@@ -3,7 +3,7 @@ name: "RandomForestTS"
 summary: "RandomForestTS is an independent differentiable forest baseline that averages soft trees with fixed random feature subspaces."
 paper: "https://doi.org/10.1023/A:1010933404324"
 paper_title: "Random Forests"
-venue: "Machine Learning, 2001"
+venue: "Machine Learning 2001"
 year: 2001
 tagline: "Average of differentiable soft decision trees, each splitting on a fixed random subspace of the flattened window."
 tags: ["tree", "ensemble", "differentiable", "normalization", "baseline"]
@@ -26,7 +26,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1023/A:1010933404324); title: Random Forests; venue/year: Machine Learning, 2001 / 2001
+- [paper](https://doi.org/10.1023/A:1010933404324); title: Random Forests; venue/year: Machine Learning 2001 / 2001
 - codebase: not available
 
 ## Local implementation
@@ -40,7 +40,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../verification/evidence/RandomForestTS.json`.
+This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/RandomForestTS.json`.
 
 ## Shared components
 
@@ -67,7 +67,7 @@ Default config: `configs/models/RandomForestTS.toml`; model specification: `spec
 
 ## Verification
 
-This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../verification/evidence/RandomForestTS.json`.
+This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/RandomForestTS.json`.
 
 ## Citation
 

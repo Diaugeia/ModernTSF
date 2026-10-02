@@ -7,7 +7,7 @@ venue: "arXiv preprint"
 year: 2014
 tagline: "GRU encoder over the normalized window with a direct linear decode of its final hidden state to the horizon."
 tags: ["rnn", "baseline", "channel-mixing", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:gru-final-state-encoder", "channel=local:channel-mixing-gru-input", "head=local:linear-direct-multi-horizon-head", "loss=loss:mse"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:gru-final-state-encoder", "channel=local:channel-mixing-recurrent-input", "head=local:linear-direct-multi-horizon-head", "loss=loss:mse"]
 ---
 # GRUForecasterTS
 
@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Clean-room implementation: confirmed. The local code was independently designed from the cited GRU equations and the repository tensor contract; no external implementation source was copied. The paper studies sequence modeling rather than this final-state direct multi-horizon forecast head or optional RevIN, so no paper-result reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/GRUForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from the cited GRU equations and the repository tensor contract; no external implementation source was copied. The paper studies sequence modeling rather than this final-state direct multi-horizon forecast head or optional RevIN, so no paper-result reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/GRUForecasterTS.json`.
 
 ## Shared components
 
@@ -62,7 +62,7 @@ In this paper we compare different types of recurrent units in recurrent neural 
 
 ## Source and verification
 
-Clean-room implementation: confirmed. The local code was independently designed from the cited GRU equations and the repository tensor contract; no external implementation source was copied. The paper studies sequence modeling rather than this final-state direct multi-horizon forecast head or optional RevIN, so no paper-result reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/GRUForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from the cited GRU equations and the repository tensor contract; no external implementation source was copied. The paper studies sequence modeling rather than this final-state direct multi-horizon forecast head or optional RevIN, so no paper-result reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/GRUForecasterTS.json`.
 
 ## In TSFLab
 Default config: `configs/models/GRUForecasterTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.

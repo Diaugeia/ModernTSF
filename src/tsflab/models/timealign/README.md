@@ -10,7 +10,7 @@ revision: "ab2dff5bde250f82e29d8755f87a494921857d71"
 license: "NOASSERTION"
 tagline: "Patch-MLP forecaster trained with a future-reconstruction branch and local/global representation alignment losses."
 tags: ["mlp", "patching", "channel-independent", "normalization", "lightweight"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-mlp-branch", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-decoder", "loss=loss:mse+local:reconstruction-and-alignment-aux"]
+composition: ["normalization=component:revin", "decomposition=none", "temporal=local:patch-mlp-branch", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse+local:reconstruction-and-alignment-aux"]
 ---
 # TimeAlign
 
@@ -76,7 +76,7 @@ the configured observation criterion.
 Key params: `patch_num` (**must divide both `seq_len` and `pred_len`**),
 `d_model`, `d_ff`, `e_layers`, `dropout`, `pos`, `layer_norm`, `loc`/`glo`
 (local/global alignment toggles), `local_margin`/`global_margin`,
-`w_recon`/`w_align`. Verify with `uv run tsf smoke --model TimeAlign`.
+`w_recon`/`w_align`. Verify with `uv run tsf run --smoke --model TimeAlign`.
 
 ## Source and verification
 

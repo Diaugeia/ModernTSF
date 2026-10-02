@@ -3,11 +3,11 @@ name: "RidgeRegressionTS"
 summary: "RidgeRegressionTS applies a shared channel-wise lag projection to the forecast horizon and exposes the ridge L2 weight penalty through `aux_loss` for the standard trainer."
 paper: "https://doi.org/10.1080/00401706.1970.10488634"
 paper_title: "Ridge Regression: Biased Estimation for Nonorthogonal Problems"
-venue: "Technometrics"
+venue: "Technometrics 1970"
 year: 1970
 tagline: "One shared linear lag-to-horizon map per channel with an explicit L2 weight penalty returned as aux_loss."
 tags: ["linear", "statistical", "regularization", "channel-independent", "baseline", "lightweight"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:lag-window-linear-map", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse+local:l2-weight-penalty-aux-loss"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse+local:l2-weight-penalty-aux-loss"]
 ---
 # RidgeRegressionTS
 
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1080/00401706.1970.10488634); title: Ridge Regression: Biased Estimation for Nonorthogonal Problems; venue/year: Technometrics / 1970
+- [paper](https://doi.org/10.1080/00401706.1970.10488634); title: Ridge Regression: Biased Estimation for Nonorthogonal Problems; venue/year: Technometrics 1970 / 1970
 - codebase: not available
 
 ## Local implementation

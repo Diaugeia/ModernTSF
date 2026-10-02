@@ -3,7 +3,7 @@ name: "KNNForecasterTS"
 summary: "KNNForecasterTS is a differentiable nearest-reference forecaster. It compares each input window with learned reference windows and uses soft distance-kernel weights to combine their learned future continuations."
 paper: "https://doi.org/10.1109/TIT.1967.1053964"
 paper_title: "Nearest Neighbor Pattern Classification"
-venue: "IEEE Transactions on Information Theory"
+venue: "IEEE Transactions on Information Theory 1967"
 year: 1967
 tagline: "Soft nearest-reference forecaster: distance-kernel weights over learned reference windows blend learned continuations."
 tags: ["statistical", "retrieval", "nearest-neighbor", "baseline", "channel-mixing"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1109/TIT.1967.1053964); title: Nearest Neighbor Pattern Classification; venue/year: IEEE Transactions on Information Theory / 1967
+- [paper](https://doi.org/10.1109/TIT.1967.1053964); title: Nearest Neighbor Pattern Classification; venue/year: IEEE Transactions on Information Theory 1967 / 1967
 - codebase: not available
 
 ## Local implementation

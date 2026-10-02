@@ -9,7 +9,7 @@ code: "https://github.com/daxin007/ARMD"
 revision: "07a3dc4674f2f5cdf401e1a7f8895939bb2b07e2"
 license: "MIT"
 tagline: "Deterministic diffusion that slides a window from history to future; a linear devolution net, few-step DDIM forecast."
-tags: ["diffusion", "linear", "channel-independent", "lightweight", "loss-framework", "time-series"]
+tags: ["diffusion", "channel-independent", "lightweight", "loss-framework"]
 composition: ["normalization=none", "decomposition=none", "temporal=local:linear-devolution-network", "channel=none", "head=local:ddim-window-sampler", "loss=local:evolution-trend-l1"]
 ---
 # ARMD
@@ -63,7 +63,7 @@ The contract fixture uses `seq_len=96` and `pred_len=96`. Default
 model parameters are: `enc_in=7`, `sampling_steps=1`, `loss_type='l1'`, `beta_schedule='cosine'`, `w_grad=True`
 <!-- model-card:canonical:end -->
 
-## Verification
+## Source and verification
 
 Independent implementation; no official code was copied (official repository MIT, pinned revision above; checked `Models/autoregressive_diffusion/armd.py`, `Models/autoregressive_diffusion/linear.py`, `engine/solver.py`, `main.py`, the configs, and the paper's Eq. 1-10). Inputs are `[B, seq_len, enc_in]` with `seq_len >= pred_len`, marks and decoder inputs are ignored, and the output is the `[B, pred_len, enc_in]` point forecast (the forecast is deterministic, so no distribution output is declared). No shared component matches: the schedules, the devolution network and the sampler are model-local.
 
@@ -74,3 +74,19 @@ Independent implementation; no official code was copied (official repository MIT
 - **Sampling.** Only the deterministic DDIM update of Eq. 9-10 with `sampling_steps` steps is provided. Official code uses it when `sampling_timesteps < timesteps` and otherwise the stochastic ancestral sampler with clamping to `[-1, 1]`, which is not reproduced; the official configs use 1 or 2 steps.
 - **Data and training.** Official data are min-max scaled to `[-1, 1]` over 2T windows with EMA weights (decay 0.995), gradient clipping and a plateau scheduler; here the repository's standard scaling, trainer and optimiser configuration apply and there is no EMA.
 - **Evidence.** Structure and reference-formula tests are in `tests/test_armd.py`; unified verification evidence has not been produced yet and is left stale for CI.
+
+## Citation
+
+```bibtex
+@inproceedings{gao2025armd,
+  title     = {Auto-Regressive Moving Diffusion Models for Time Series Forecasting},
+  author    = {Jiaxin Gao and Qinglong Cao and Yuntian Chen},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {39},
+  number    = {16},
+  pages     = {16727--16735},
+  year      = {2025},
+  doi       = {10.1609/aaai.v39i16.33838},
+  url       = {https://arxiv.org/abs/2412.09328}
+}
+```

@@ -10,7 +10,7 @@ revision: "4e938a1767106324dd753b2a44832bf870a0252e"
 license: "MIT"
 tagline: "Dense residual MLP encoder-decoder on history plus projected calendar covariates, with a global linear skip."
 tags: ["mlp", "covariates", "channel-independent", "normalization", "lightweight"]
-composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:dense-residual-mlp-encoder-decoder", "channel=local:channel-independent-shared-weights", "head=local:temporal-decoder+local:global-linear-residual", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:dense-residual-mlp-encoder-decoder", "channel=local:channel-independent-shared-weights", "head=local:temporal-decoder+local:global-linear-residual", "loss=loss:mse"]
 ---
 # TiDE
 

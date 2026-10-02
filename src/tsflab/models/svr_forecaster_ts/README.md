@@ -3,7 +3,7 @@ name: "SVRForecasterTS"
 summary: "SVRForecasterTS is a differentiable RBF-basis epsilon-regression adaptation with learned support centres and an explicit epsilon-insensitive loss helper."
 paper: "https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html"
 paper_title: "Support Vector Regression Machines"
-venue: "Advances in Neural Information Processing Systems 9"
+venue: "NeurIPS 1996"
 year: 1996
 tagline: "Differentiable epsilon-SVR: RBF kernel against learned support centres, linear readout, weights shared across channels."
 tags: ["statistical", "channel-independent", "lightweight", "baseline"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html); title: Support Vector Regression Machines; venue/year: Advances in Neural Information Processing Systems 9 / 1996
+- [paper](https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html); title: Support Vector Regression Machines; venue/year: NeurIPS 1996 / 1996
 - codebase: not available
 
 ## Local implementation

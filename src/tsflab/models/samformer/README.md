@@ -42,7 +42,12 @@ under Shared components), and the default preset is
 
 ## Differences
 
-No additional implementation differences are recorded in the preserved card notes. This is an explicit documentation gap, not an equivalence claim.
+Paper and official code (pinned revision `71f10ea`, `samformer_pytorch/samformer/`) were checked; the local module is an independent rewrite. The architecture matches the official `SAMFormerArchitecture` (RevIN, single-head channel-wise attention with `Q, K: seq_len -> hid_dim`, `V: seq_len -> seq_len`, scale `1/sqrt(hid_dim)`, residual add, one shared `seq_len -> pred_len` linear forecaster, RevIN denormalization). Recorded differences:
+
+- SAM is not an optimizer wrapper here. The official `SAM` optimizer runs `first_step` (ascent to `w + rho g/||g||`) and `second_step` (restore `w`, then step the base optimizer). TSFLab instead exposes `spec.training_objective`, which evaluates the criterion at the perturbed weights through `torch.func.functional_call` (first-order, perturbation detached), so the run's ordinary optimizer applies the same update. This costs the same two forward and backward passes. Gradient clipping, schedulers, weight decay, mixed precision and the optimizer itself come from the run config, not from the official defaults (Adam, `lr=1e-3`, `weight_decay=1e-5`, `rho=0.5`).
+- `training_objective` is used only in training; the validation and test loss and `forward` are the plain network. `rho` is validated non-negative and `rho=0` reduces to one ordinary pass.
+- `hid_dim` is a configurable parameter (the official trainer hard-codes 16); `use_revin=False` skips normalization as in the official model.
+- The official network returns a flattened `[batch, channels * pred_len]` tensor and its trainer fits on pre-windowed arrays; TSFLab returns `[batch, pred_len, channels]` and uses the framework data pipeline, scaling, and loss (MSE) instead of the official dataset utilities and 100-epoch loop.
 
 ## Shared components
 
@@ -55,6 +60,15 @@ No additional implementation differences are recorded in the preserved card note
 The contract fixture uses `seq_len=96` and `pred_len=12`. Default
 model parameters are: `enc_in=7`, `hid_dim=16`, `rho=0.5`, `use_revin=True`
 <!-- model-card:canonical:end -->
+
+## Source and verification
+
+Paper and official code (pinned revision `71f10ea`, `samformer_pytorch/samformer/`) were checked; the local module is an independent rewrite. The architecture matches the official `SAMFormerArchitecture` (RevIN, single-head channel-wise attention with `Q, K: seq_len -> hid_dim`, `V: seq_len -> seq_len`, scale `1/sqrt(hid_dim)`, residual add, one shared `seq_len -> pred_len` linear forecaster, RevIN denormalization). Recorded differences:
+
+- SAM is not an optimizer wrapper here. The official `SAM` optimizer runs `first_step` (ascent to `w + rho g/||g||`) and `second_step` (restore `w`, then step the base optimizer). TSFLab instead exposes `spec.training_objective`, which evaluates the criterion at the perturbed weights through `torch.func.functional_call` (first-order, perturbation detached), so the run's ordinary optimizer applies the same update. This costs the same two forward and backward passes. Gradient clipping, schedulers, weight decay, mixed precision and the optimizer itself come from the run config, not from the official defaults (Adam, `lr=1e-3`, `weight_decay=1e-5`, `rho=0.5`).
+- `training_objective` is used only in training; the validation and test loss and `forward` are the plain network. `rho` is validated non-negative and `rho=0` reduces to one ordinary pass.
+- `hid_dim` is a configurable parameter (the official trainer hard-codes 16); `use_revin=False` skips normalization as in the official model.
+- The official network returns a flattened `[batch, channels * pred_len]` tensor and its trainer fits on pre-windowed arrays; TSFLab returns `[batch, pred_len, channels]` and uses the framework data pipeline, scaling, and loss (MSE) instead of the official dataset utilities and 100-epoch loop.
 
 ## Citation
 

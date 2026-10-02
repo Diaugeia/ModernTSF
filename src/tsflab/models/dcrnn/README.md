@@ -9,8 +9,8 @@ code: "https://github.com/liyaguang/DCRNN"
 revision: "602afd9d767d3aa1c9b3eac51710d6aeee12c227"
 license: "MIT"
 tagline: "GRU encoder-decoder whose gates use bidirectional random-walk diffusion convolution on the sensor graph."
-tags: ["rnn", "gnn", "spatiotemporal", "covariates", "autoregressive-decoding", "graph-given"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:dcgru-encoder-decoder", "channel=component:graph_utils+local:bidirectional-random-walk-diffusion-conv", "head=local:linear-projection-autoregressive-decoder", "loss=loss:mse"]
+tags: ["rnn", "gnn", "spatiotemporal", "covariates", "autoregressive", "graph-given"]
+composition: ["normalization=none", "decomposition=none", "temporal=local:dcgru-encoder-decoder", "channel=component:graph_utils+local:bidirectional-random-walk-diffusion-conv", "head=local:autoregressive-linear-decoder", "loss=loss:mse"]
 ---
 # DCRNN
 

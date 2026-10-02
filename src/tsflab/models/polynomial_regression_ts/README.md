@@ -3,7 +3,7 @@ name: "PolynomialRegressionTS"
 summary: "PolynomialRegressionTS expands each channel's lag window with integer powers from one through the configured degree, then applies a shared linear map to the forecast horizon."
 paper: "https://doi.org/10.1002/9781118625590"
 paper_title: "Applied Regression Analysis"
-venue: "Wiley"
+venue: "Wiley 1998"
 year: 1998
 tagline: "Raises each lag value to powers 1..degree and applies one shared linear map to the horizon."
 tags: ["linear", "polynomial", "regression", "channel-independent", "baseline", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1002/9781118625590); title: Applied Regression Analysis; venue/year: Wiley / 1998
+- [paper](https://doi.org/10.1002/9781118625590); title: Applied Regression Analysis; venue/year: Wiley 1998 / 1998
 - codebase: not available
 
 ## Local implementation

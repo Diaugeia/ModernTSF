@@ -7,7 +7,7 @@ venue: "AISTATS 2025"
 year: 2025
 code: "https://github.com/sunbus100/FreqMoE-main"
 revision: "b34e93703159a22fdc9f97f0be4fa32b5600a3bf"
-license: "unlicensed (no LICENSE file in repository; inspected only for read-only paper-structure clarification, no source copied)"
+license: "NOASSERTION"
 
 tagline: "Band-wise frequency mixture of experts denoises the window; residual complex frequency-extension blocks forecast."
 tags: ["mlp", "frequency", "mixture-of-experts", "decomposition", "channel-independent"]
@@ -31,7 +31,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 ## Paper and code
 
 - [paper](https://arxiv.org/abs/2501.15125); title: FreqMoE: Enhancing Time Series Forecasting through Frequency Decomposition Mixture of Experts; venue/year: AISTATS 2025 / 2025
-- [codebase](https://github.com/sunbus100/FreqMoE-main); revision: `b34e93703159a22fdc9f97f0be4fa32b5600a3bf`; license: `unlicensed (no LICENSE file in repository; inspected only for read-only paper-structure clarification, no source copied)`
+- [codebase](https://github.com/sunbus100/FreqMoE-main); revision: `b34e93703159a22fdc9f97f0be4fa32b5600a3bf`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -43,6 +43,8 @@ under Shared components), and the default preset is
 [`configs/models/FreqMoE.toml`](../../../../configs/models/FreqMoE.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official file: `models/FreqMoE.py` (`FreqDecompMoE`, `Block`,
 `ComplexReLU`, `ComplexDropout`, `Model`), at revision
@@ -73,6 +75,8 @@ model parameters are: `enc_in=7`, `expert_num=4`, `freq_num_blocks=1`, `dropout_
 <!-- model-card:canonical:end -->
 
 ## Source and verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Inspected official file: `models/FreqMoE.py` (`FreqDecompMoE`, `Block`,
 `ComplexReLU`, `ComplexDropout`, `Model`), at revision

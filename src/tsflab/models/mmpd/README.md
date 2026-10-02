@@ -58,7 +58,7 @@ The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
 probabilities are not part of the common point-forecast output and are not
 claimed here. The local patch backbone is compact and not a reproduction of
 every backbone in the paper. The reference-only source was inspected at the pinned revision or
-copied. Evidence is in `../../../verification/evidence/MMPD.json`.
+copied. Evidence is in `../../../../verification/evidence/MMPD.json`.
 
 ## Shared components
 
@@ -95,7 +95,7 @@ The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
 probabilities are not part of the common point-forecast output and are not
 claimed here. The local patch backbone is compact and not a reproduction of
 every backbone in the paper. The reference-only source was inspected at the pinned revision or
-copied. Evidence is in `../../../verification/evidence/MMPD.json`.
+copied. Evidence is in `../../../../verification/evidence/MMPD.json`.
 
 ## In TSFLab
 Default config: `configs/models/MMPD.toml`; model specification: `spec.py`; local implementation: `model.py`.

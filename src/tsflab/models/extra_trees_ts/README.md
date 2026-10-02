@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../verification/evidence/ExtraTreesTS.json`.
+This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../../verification/evidence/ExtraTreesTS.json`.
 
 ## Shared components
 
@@ -66,7 +66,7 @@ Default config: `configs/models/ExtraTreesTS.toml`; model specification: `spec.p
 
 ## Verification
 
-This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../verification/evidence/ExtraTreesTS.json`.
+This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../../verification/evidence/ExtraTreesTS.json`.
 
 ## Citation
 

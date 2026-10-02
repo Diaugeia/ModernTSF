@@ -2,14 +2,14 @@
 name: "STDMAE"
 summary: "STD-MAE decouples masked pre-training of spatiotemporal traffic data into a temporal masked autoencoder (attention along time within each node) and a spatial one (attention across nodes within each time patch), both trained on a long history. In the forecasting stage the two encoders encode that long history, their last-patch node representations are injected into the skip path of a Graph WaveNet that forecasts from the recent short history. This entry is the forecasting stage; the masked pre-training is a separate stage that the runner does not express."
 paper: "https://arxiv.org/abs/2312.00516"
-paper_title: "Spatio-Temporal-Decoupled Masked Pre-training for Spatiotemporal Forecasting"
+paper_title: "Spatial-Temporal-Decoupled Masked Pre-training for Spatiotemporal Forecasting"
 venue: "IJCAI 2024"
 year: 2024
 code: "https://github.com/Jimmy-7664/STD-MAE"
 revision: "29fba76216f7ff9f2b51d097786cb5c91a8dae8b"
 license: "NOASSERTION"
 tagline: "Temporal and spatial masked-autoencoder encoders over a long history feed a Graph WaveNet's skip path."
-tags: ["gnn", "transformer", "spatiotemporal", "graph-learning", "pretraining", "dilated-convolution", "covariates", "marks"]
+tags: ["hybrid", "spatiotemporal", "graph-learning", "pretraining", "dilated-convolution", "covariates", "marks"]
 composition: ["normalization=none", "decomposition=none", "temporal=component:tst_transformer", "channel=component:diffusion_conv", "head=local:context-injected-skip-head", "loss=loss:masked_mae"]
 ---
 # STDMAE
@@ -30,7 +30,7 @@ declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2312.00516); title: Spatio-Temporal-Decoupled Masked Pre-training for Spatiotemporal Forecasting; venue/year: IJCAI 2024 / 2024
+- [paper](https://arxiv.org/abs/2312.00516); title: Spatial-Temporal-Decoupled Masked Pre-training for Spatiotemporal Forecasting; venue/year: IJCAI 2024 / 2024
 - [codebase](https://github.com/Jimmy-7664/STD-MAE); revision: `29fba76216f7ff9f2b51d097786cb5c91a8dae8b`; license: `NOASSERTION`
 
 ## Local implementation
@@ -67,7 +67,7 @@ The contract fixture uses `seq_len=96` and `pred_len=12`. Default
 model parameters are: `enc_in=8`, `history_len=12`, `patch_size=12`, `embed_dim=96`, `num_heads=4`, `mlp_ratio=4`, `encoder_depth=4`, `encoder_dropout=0.1`, `in_dim=2`, `dropout=0.3`, `residual_channels=32`, `dilation_channels=32`, `skip_channels=256`, `end_channels=512`, `kernel_size=2`, `blocks=4`, `layers=2`, `freeze_encoders=False`
 <!-- model-card:canonical:end -->
 
-## Verification
+## Source and verification
 
 Independent implementation; no official code was copied (the official repository carries no licence, so it is reference-only; pinned revision above; checked `stdmae/stdmae_arch/stdmae.py`, `mask/mask.py`, `mask/patch.py`, `mask/positional_encoding.py`, `mask/transformer_layers.py`, `graphwavenet/model.py`, `stdmae_runner/stdmae_runner.py`, `stdmae_data/forecasting_dataset.py`, and `stdmae/STDMAE_PEMS04.py`). Inputs are `[B, seq_len, nodes]` values plus calendar marks; `seq_len` is the long-history length (a multiple of `patch_size`, 864 for the official PEMS04 setting) and the short history is its last `history_len` steps (12), which is how the official dataset builds both windows. The output is `[B, pred_len, nodes]`.
 
@@ -77,3 +77,15 @@ Independent implementation; no official code was copied (the official repository
 - **Windows.** The official dataset gives early samples an all-zero long history when fewer than `seq_len` earlier steps exist; the runner's windows start where a full window exists. Official time features are BasicTS scaled values; here calendar features come from the repository's marks (time-of-day, day-of-week) and only the first `in_dim = 2` are used.
 - **Training recipe.** The official run uses masked MAE with null value 0, curriculum learning over the horizon (6 epochs), gradient clipping at 3.0, Adam with weight decay and a multi-step schedule; these are runner configuration here (`masked_mae` is the smoke loss, without a validity mask), not model facts.
 - **Evidence.** Structure and reference-formula tests are in `tests/test_stdmae.py`; unified verification evidence has not been produced yet and is left stale for CI.
+
+## Citation
+
+```bibtex
+@inproceedings{gao2024stdmae,
+  title     = {Spatial-Temporal-Decoupled Masked Pre-training for Spatiotemporal Forecasting},
+  author    = {Haotian Gao and Renhe Jiang and Zheng Dong and Jinliang Deng and Yuxin Ma and Xuan Song},
+  booktitle = {Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence (IJCAI)},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2312.00516}
+}
+```

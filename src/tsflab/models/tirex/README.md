@@ -10,7 +10,7 @@ revision: "2226da4c9fa298ff34ad5af05369851674d622e5"
 license: "LicenseRef-NXAI-Community"
 tagline: "Decoder-only xLSTM-style scalar-memory blocks over value/mask patch tokens with missing future tokens, quantile output."
 tags: ["rnn", "probabilistic", "patching", "channel-independent", "normalization"]
-composition: ["normalization=local:instance-z-score-detached", "decomposition=none", "temporal=local:scalar-lstm-memory-blocks", "channel=local:channel-independent-shared-weights", "head=component:quantile_head+local:multi-patch-residual-projection", "loss=loss:quantile"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:scalar-lstm-memory-blocks", "channel=local:channel-independent-shared-weights", "head=component:quantile_head+local:multi-patch-residual-projection", "loss=loss:quantile"]
 ---
 # TiRex
 

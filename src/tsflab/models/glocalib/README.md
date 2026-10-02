@@ -78,7 +78,7 @@ Objective: `L = L_pred(Ŷ, Y) + kl_weight · KL(q(z|x)||N(0,I)) + align_weight �
 The alignment term needs only `x`, so it rides the trainer's `aux_loss`
 convention; eval is a plain single forward. Key params: `d_model`,
 `align_weight`, `mask_ratio`, `align_loss_type`. Verify with
-`uv run tsf smoke --model GlocalIB`.
+`uv run tsf run --smoke --model GlocalIB`.
 
 Official reference reference: https://github.com/Muyiiiii/NeurIPS-25-Glocal-IB
 

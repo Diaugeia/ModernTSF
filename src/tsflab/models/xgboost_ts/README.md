@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-This clean-room baseline borrows only additive trees, shrinkage, feature subsampling, and regularization as high-level ideas. It does not implement XGBoost's second-order objective, sparsity-aware hard split search, quantile sketch, systems optimizations, or external library API. No XGBoost source code was inspected or copied. Evidence is in `../../../verification/evidence/XGBoostTS.json`.
+This clean-room baseline borrows only additive trees, shrinkage, feature subsampling, and regularization as high-level ideas. It does not implement XGBoost's second-order objective, sparsity-aware hard split search, quantile sketch, systems optimizations, or external library API. No XGBoost source code was inspected or copied. Evidence is in `../../../../verification/evidence/XGBoostTS.json`.
 
 ## Shared components
 
@@ -66,7 +66,7 @@ Default config: `configs/models/XGBoostTS.toml`; model specification: `spec.py`;
 
 ## Verification
 
-This clean-room baseline borrows only additive trees, shrinkage, feature subsampling, and regularization as high-level ideas. It does not implement XGBoost's second-order objective, sparsity-aware hard split search, quantile sketch, systems optimizations, or external library API. No XGBoost source code was inspected or copied. Evidence is in `../../../verification/evidence/XGBoostTS.json`.
+This clean-room baseline borrows only additive trees, shrinkage, feature subsampling, and regularization as high-level ideas. It does not implement XGBoost's second-order objective, sparsity-aware hard split search, quantile sketch, systems optimizations, or external library API. No XGBoost source code was inspected or copied. Evidence is in `../../../../verification/evidence/XGBoostTS.json`.
 
 ## Citation
 

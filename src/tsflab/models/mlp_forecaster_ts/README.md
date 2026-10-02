@@ -3,7 +3,7 @@ name: "MLPForecasterTS"
 summary: "MLPForecasterTS is a clean-room channel-wise multilayer perceptron that maps each fixed lag window directly to a multistep forecast."
 paper: "https://doi.org/10.1038/323533a0"
 paper_title: "Learning Representations by Back-Propagating Errors"
-venue: "Nature"
+venue: "Nature 1986"
 year: 1986
 tagline: "Per-channel MLP that maps the lag window straight to the horizon over the time axis, wrapped in RevIN."
 tags: ["mlp", "channel-independent", "normalization", "baseline", "lightweight"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1038/323533a0); title: Learning Representations by Back-Propagating Errors; venue/year: Nature / 1986
+- [paper](https://doi.org/10.1038/323533a0); title: Learning Representations by Back-Propagating Errors; venue/year: Nature 1986 / 1986
 - codebase: not available
 
 ## Local implementation
@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Clean-room implementation: confirmed. The local code was independently designed from published feed-forward/back-propagation concepts and the repository tensor contract; no external implementation source was copied. The citation does not prescribe a time-series architecture; the shared channel-wise lag mapping, GELU, direct horizon head, and optional RevIN are disclosed local choices. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/MLPForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from published feed-forward/back-propagation concepts and the repository tensor contract; no external implementation source was copied. The citation does not prescribe a time-series architecture; the shared channel-wise lag mapping, GELU, direct horizon head, and optional RevIN are disclosed local choices. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/MLPForecasterTS.json`.
 
 ## Shared components
 
@@ -62,7 +62,7 @@ MLPForecasterTS is a foundational feedforward neural network baseline for time s
 
 ## Source and verification
 
-Clean-room implementation: confirmed. The local code was independently designed from published feed-forward/back-propagation concepts and the repository tensor contract; no external implementation source was copied. The citation does not prescribe a time-series architecture; the shared channel-wise lag mapping, GELU, direct horizon head, and optional RevIN are disclosed local choices. Formula and full runtime-contract evidence are recorded in `../../../verification/evidence/MLPForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from published feed-forward/back-propagation concepts and the repository tensor contract; no external implementation source was copied. The citation does not prescribe a time-series architecture; the shared channel-wise lag mapping, GELU, direct horizon head, and optional RevIN are disclosed local choices. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/MLPForecasterTS.json`.
 
 ## In TSFLab
 Default config: `configs/models/MLPForecasterTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.

@@ -9,8 +9,8 @@ code: "https://github.com/wzhwzhwzh0921/S-D-Mamba"
 revision: "e7e8bf04066135afa43d85b0a87afa97cda16e3f"
 license: "NOASSERTION"
 tagline: "Inverted tokenization (one token per variate) with bidirectional Mamba scans across variates and a temporal FFN."
-tags: ["ssm", "mamba", "inverted", "channel-mixing", "normalization"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:temporal-ffn-per-variate-token", "channel=component:mamba", "head=local:linear-token-to-horizon", "loss=loss:mse"]
+tags: ["ssm", "mamba", "inverted-tokens", "channel-mixing", "normalization"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:temporal-ffn-per-variate-token", "channel=component:mamba", "head=local:linear-variate-token-projection", "loss=loss:mse"]
 ---
 # S_Mamba
 

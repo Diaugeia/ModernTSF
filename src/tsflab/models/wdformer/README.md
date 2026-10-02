@@ -3,14 +3,14 @@ name: "WDformer"
 summary: "WDformer embeds each variate as a Haar-wavelet-subband token, attends over variate tokens with a differential-attention encoder (subtracting two softmax attention maps to cancel common-mode noise), and maps back to a forecast by projecting to pseudo-subband coefficients that a fixed inverse wavelet transform reassembles."
 paper: "https://arxiv.org/abs/2509.25231"
 paper_title: "WDformer: A Wavelet-based Differential Transformer Model for Time Series Forecasting"
-venue: "arXiv"
+venue: "arXiv preprint"
 year: 2025
 code: "https://github.com/xiaowangbc/WDformer"
 revision: "c741e4e428f802df41b8b113ad4a4d5241da4805"
-license: "unspecified (no LICENSE file at the pinned revision)"
+license: "NOASSERTION"
 tagline: "Haar subband tokens per variate, differential-attention encoder over variates, inverse Haar of pseudo-subbands."
 tags: ["transformer", "wavelet", "frequency", "attention-variant", "channel-mixing", "normalization"]
-composition: ["normalization=local:instance-mean-std-detached", "decomposition=component:wavelet", "temporal=local:subband-linear-embedding", "channel=component:differential_attention+local:variate-token-encoder", "head=local:pseudo-subband-projection+component:wavelet", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=component:wavelet", "temporal=local:subband-linear-embedding", "channel=component:differential_attention+local:variate-token-encoder", "head=local:pseudo-subband-projection+component:wavelet", "loss=loss:mse"]
 ---
 # WDformer
 
@@ -28,8 +28,8 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://arxiv.org/abs/2509.25231); title: WDformer: A Wavelet-based Differential Transformer Model for Time Series Forecasting; venue/year: arXiv / 2025
-- [codebase](https://github.com/xiaowangbc/WDformer); revision: `c741e4e428f802df41b8b113ad4a4d5241da4805`; license: `unspecified (no LICENSE file at the pinned revision)`
+- [paper](https://arxiv.org/abs/2509.25231); title: WDformer: A Wavelet-based Differential Transformer Model for Time Series Forecasting; venue/year: arXiv preprint / 2025
+- [codebase](https://github.com/xiaowangbc/WDformer); revision: `c741e4e428f802df41b8b113ad4a4d5241da4805`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -41,6 +41,8 @@ under Shared components), and the default preset is
 [`configs/models/WDformer.toml`](../../../../configs/models/WDformer.toml).
 
 ## Differences
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Clean-room implementation: confirmed. The wavelet-subband embedding, the
 inverse-wavelet output head, and the differential-attention encoder loop were
@@ -88,6 +90,8 @@ model parameters are: `enc_in=7`, `d_model=128`, `n_heads=8`, `e_layers=2`, `d_f
 <!-- model-card:canonical:end -->
 
 ## Source and verification
+
+The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
 
 Clean-room implementation: confirmed. The wavelet-subband embedding, the
 inverse-wavelet output head, and the differential-attention encoder loop were

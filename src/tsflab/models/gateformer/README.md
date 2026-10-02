@@ -8,7 +8,7 @@ year: 2025
 
 tagline: "Gate-fused global-window and patch-attention variate embeddings, then cross-variate attention and a second gate."
 tags: ["transformer", "patching", "channel-mixing", "attention-variant", "gating"]
-composition: ["normalization=local:instance-mean-std-normalization", "decomposition=none", "temporal=local:patch-transformer-encoder+component:positional_encoding+component:flatten_forecast_head", "channel=local:cross-variate-attention+component:gated_fusion", "head=local:linear-variate-token-head", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:patch-transformer-encoder+component:positional_encoding+component:flatten_forecast_head", "channel=local:cross-variate-attention+component:gated_fusion", "head=local:linear-variate-token-projection", "loss=loss:mse"]
 ---
 # Gateformer
 

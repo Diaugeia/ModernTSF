@@ -10,7 +10,7 @@ revision: "a1f8f45d2c89e4feb6c8e9399178c95157336f3b"
 license: "NOASSERTION"
 tagline: "Dynamic graph as a convex combination of learnable low-rank matrix bases, with multi-kernel gated temporal convs."
 tags: ["cnn", "gnn", "graph-learning", "multi-scale", "normalization", "channel-mixing"]
-composition: ["normalization=local:instance-mean-std-detached", "decomposition=none", "temporal=local:multi-kernel-gated-depthwise-conv", "channel=local:structured-matrix-basis-dynamic-graph-conv", "head=local:flatten-linear-head", "loss=loss:mse"]
+composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:multi-kernel-gated-depthwise-conv", "channel=local:structured-matrix-basis-dynamic-graph-conv", "head=local:flatten-linear-head", "loss=loss:mse"]
 ---
 # Sumba
 

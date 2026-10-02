@@ -3,7 +3,7 @@ name: "ExpSmoothingTS"
 summary: "ExpSmoothingTS is a differentiable simple-exponential-smoothing baseline. It learns one smoothing coefficient per channel, recursively updates the level, and repeats the final level across the forecast horizon."
 paper: "https://doi.org/10.1016/j.ijforecast.2003.09.015"
 paper_title: "Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages"
-venue: "International Journal of Forecasting"
+venue: "International Journal of Forecasting 2004"
 year: 2004
 tagline: "Simple exponential smoothing with one learned smoothing coefficient per channel; forecast repeats the final level."
 tags: ["statistical", "baseline", "lightweight", "channel-independent", "exponential-smoothing"]
@@ -25,7 +25,7 @@ declared output contract is a `[batch, 96, channels]` point forecast.
 
 ## Paper and code
 
-- [paper](https://doi.org/10.1016/j.ijforecast.2003.09.015); title: Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages; venue/year: International Journal of Forecasting / 2004
+- [paper](https://doi.org/10.1016/j.ijforecast.2003.09.015); title: Forecasting Seasonals and Trends by Exponentially Weighted Moving Averages; venue/year: International Journal of Forecasting 2004 / 2004
 - codebase: not available
 
 ## Local implementation

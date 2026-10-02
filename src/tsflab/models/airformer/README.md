@@ -43,7 +43,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Pinned source inspection: `src/tsflab/models/airformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/models/airformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 - Local implementation: confirmed from the paper; reference-only source code was inspected at the pinned revision; no external source code was copied.
 - Evidence covers causal windows, dartboard aggregation, stochastic/evaluation behavior, graph and mark sensitivity, complete gradients, serialization, CPU, and boundaries.
@@ -74,7 +74,7 @@ Inputs are `x_enc [B, seq_len, N]` and raw or node-structured covariates. Exact 
 
 ## Source and verification
 
-Pinned source inspection: `src/tsflab/models/airformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Pinned source inspection: `src/models/airformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
 
 - Local implementation: confirmed from the paper; reference-only source code was inspected at the pinned revision; no external source code was copied.
 - Evidence covers causal windows, dartboard aggregation, stochastic/evaluation behavior, graph and mark sensitivity, complete gradients, serialization, CPU, and boundaries.

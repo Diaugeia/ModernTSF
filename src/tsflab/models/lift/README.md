@@ -5,11 +5,11 @@ paper: "https://arxiv.org/abs/2401.17548"
 paper_title: "Rethinking Channel Dependence for Multivariate Time Series Forecasting: Learning from Leading Indicators"
 venue: "ICLR 2024"
 year: 2024
-code: "https://github.com/SJTU-Quant/LIFT"
+code: "https://github.com/SJTU-DMTai/LIFT"
 revision: "79cf8f157bb9a616c9733daf1e9c2cfefdc98c94"
 license: "NOASSERTION"
 tagline: "DLinear forecast refined by FFT-estimated, lag-shifted leading variates through state-gated frequency filters."
-tags: ["linear", "plug-in", "channel-dependence", "lead-lag", "frequency", "lightweight"]
+tags: ["linear", "plug-in", "channel-mixing", "lead-lag", "frequency", "lightweight"]
 composition: ["normalization=local:instance-normalization-without-affine", "decomposition=none", "temporal=component:dlinear", "channel=local:lead-lag-shifted-leaders", "head=local:adaptive-frequency-mixer", "loss=loss:mse"]
 ---
 # LIFT
@@ -30,7 +30,7 @@ declared output contract is a `[batch, 12, channels]` point forecast.
 ## Paper and code
 
 - [paper](https://arxiv.org/abs/2401.17548); title: Rethinking Channel Dependence for Multivariate Time Series Forecasting: Learning from Leading Indicators; venue/year: ICLR 2024 / 2024
-- [codebase](https://github.com/SJTU-Quant/LIFT); revision: `79cf8f157bb9a616c9733daf1e9c2cfefdc98c94`; license: `NOASSERTION`
+- [codebase](https://github.com/SJTU-DMTai/LIFT); revision: `79cf8f157bb9a616c9733daf1e9c2cfefdc98c94`; license: `NOASSERTION`
 
 ## Local implementation
 
@@ -43,7 +43,15 @@ under Shared components), and the default preset is
 
 ## Differences
 
-No additional implementation differences are recorded in the preserved card notes. This is an explicit documentation gap, not an equivalence claim.
+Independent implementation from the paper; no official code was copied. The official repository (`SJTU-DMTai/LIFT`, formerly `SJTU-Quant/LIFT`, no license file, hence `NOASSERTION`) was read at the pinned revision (`models/LIFT.py`, `util/lead_estimate.py`, `models/DLinear.py`) as reference only. Inputs are `[B, seq_len, enc_in]`; marks and decoder inputs are ignored; the output is `[B, pred_len, enc_in]`. `seq_len` must be at least 4, `enc_in` must equal the channel count, and `kernel_size` must be odd (it is the DLinear moving-average width).
+
+- **Backbone.** The backbone is fixed to the shared DLinear component (shared weights across channels, `kernel_size` 25 by default) and trained jointly with the refiner. Official LIFT wraps any backbone and recommends a pretrained, frozen backbone (`--pretrain --freeze`); neither a frozen backbone nor other backbones are provided here.
+- **Online lead estimation.** Official code precomputes leaders, leading steps and correlations over the whole dataset (`prefetch/`) and caches frozen-backbone predictions; here they are estimated online from each normalized lookback window with the same rules (circular FFT cross-correlation, local maxima only, lag 0 excluded, top-K by absolute correlation, step offset +1, sign flip for negative correlation, a variate may lead itself). Official code evaluates the correlations in chunks of 32 variates; here the full `[B, C, C, L]` correlation tensor is materialized, which is memory-heavy for hundreds of channels.
+- **Filter weights.** The constant-one logit that competes with the `|corr|` logits in the temperature softmax follows the official code rather than the paper text. The official README notes the method was slightly revised after the paper submission.
+- **State filters.** With `state_num=1` official code uses a state-free linear filter factory; here the state classifier branch always runs (a softmax over one state is constant, so the function is the same with unused parameters).
+- **Initialisation.** The complex mixing map uses uniform real and imaginary parts bounded by `1/sqrt(in_features)`; the official one uses a complex `nn.Linear` initialisation (or a kaiming-initialised `ComplexLinear` under distributed training). The state prior, state bias and filter factory use the official bounds.
+- **Training.** Loss, optimiser, schedule, early stopping and per-dataset hyperparameters are runner configuration, not model facts. The preset `leader_num=4` and `state_num=8` match the official README example.
+- **Evidence.** Structure and reference-formula tests are in `tests/test_lift.py`.
 
 ## Shared components
 
@@ -54,3 +62,27 @@ No additional implementation differences are recorded in the preserved card note
 The contract fixture uses `seq_len=96` and `pred_len=12`. Default
 model parameters are: `enc_in=7`, `leader_num=4`, `state_num=8`, `temperature=1.0`, `kernel_size=25`
 <!-- model-card:canonical:end -->
+
+## Source and verification
+
+Independent implementation from the paper; no official code was copied. The official repository (`SJTU-DMTai/LIFT`, formerly `SJTU-Quant/LIFT`, no license file, hence `NOASSERTION`) was read at the pinned revision (`models/LIFT.py`, `util/lead_estimate.py`, `models/DLinear.py`) as reference only. Inputs are `[B, seq_len, enc_in]`; marks and decoder inputs are ignored; the output is `[B, pred_len, enc_in]`. `seq_len` must be at least 4, `enc_in` must equal the channel count, and `kernel_size` must be odd (it is the DLinear moving-average width).
+
+- **Backbone.** The backbone is fixed to the shared DLinear component (shared weights across channels, `kernel_size` 25 by default) and trained jointly with the refiner. Official LIFT wraps any backbone and recommends a pretrained, frozen backbone (`--pretrain --freeze`); neither a frozen backbone nor other backbones are provided here.
+- **Online lead estimation.** Official code precomputes leaders, leading steps and correlations over the whole dataset (`prefetch/`) and caches frozen-backbone predictions; here they are estimated online from each normalized lookback window with the same rules (circular FFT cross-correlation, local maxima only, lag 0 excluded, top-K by absolute correlation, step offset +1, sign flip for negative correlation, a variate may lead itself). Official code evaluates the correlations in chunks of 32 variates; here the full `[B, C, C, L]` correlation tensor is materialized, which is memory-heavy for hundreds of channels.
+- **Filter weights.** The constant-one logit that competes with the `|corr|` logits in the temperature softmax follows the official code rather than the paper text. The official README notes the method was slightly revised after the paper submission.
+- **State filters.** With `state_num=1` official code uses a state-free linear filter factory; here the state classifier branch always runs (a softmax over one state is constant, so the function is the same with unused parameters).
+- **Initialisation.** The complex mixing map uses uniform real and imaginary parts bounded by `1/sqrt(in_features)`; the official one uses a complex `nn.Linear` initialisation (or a kaiming-initialised `ComplexLinear` under distributed training). The state prior, state bias and filter factory use the official bounds.
+- **Training.** Loss, optimiser, schedule, early stopping and per-dataset hyperparameters are runner configuration, not model facts. The preset `leader_num=4` and `state_num=8` match the official README example.
+- **Evidence.** Structure and reference-formula tests are in `tests/test_lift.py`.
+
+## Citation
+
+```bibtex
+@inproceedings{LIFT,
+  title     = {Rethinking Channel Dependence for Multivariate Time Series Forecasting: Learning from Leading Indicators},
+  author    = {Lifan Zhao and Yanyan Shen},
+  booktitle = {The Twelfth International Conference on Learning Representations},
+  year      = {2024},
+  url       = {https://openreview.net/forum?id=JiTVtCUOpS}
+}
+```

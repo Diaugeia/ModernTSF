@@ -39,7 +39,7 @@ under Shared components), and the default preset is
 
 ## Differences
 
-Clean-room implementation: confirmed. The local code was independently designed from the causal, dilated residual architecture described by Bai et al.; no external implementation source was copied. It omits paper-side weight normalization, uses a final-timestep direct horizon head, and optionally applies RevIN, so no paper-result reference comparison is claimed. Causality and full runtime-contract evidence are recorded in `../../../verification/evidence/TCNForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from the causal, dilated residual architecture described by Bai et al.; no external implementation source was copied. It omits paper-side weight normalization, uses a final-timestep direct horizon head, and optionally applies RevIN, so no paper-result reference comparison is claimed. Causality and full runtime-contract evidence are recorded in `../../../../verification/evidence/TCNForecasterTS.json`.
 
 ## Shared components
 
@@ -62,7 +62,7 @@ For most deep learning practitioners, sequence modeling is synonymous with recur
 
 ## Source and verification
 
-Clean-room implementation: confirmed. The local code was independently designed from the causal, dilated residual architecture described by Bai et al.; no external implementation source was copied. It omits paper-side weight normalization, uses a final-timestep direct horizon head, and optionally applies RevIN, so no paper-result reference comparison is claimed. Causality and full runtime-contract evidence are recorded in `../../../verification/evidence/TCNForecasterTS.json`.
+Clean-room implementation: confirmed. The local code was independently designed from the causal, dilated residual architecture described by Bai et al.; no external implementation source was copied. It omits paper-side weight normalization, uses a final-timestep direct horizon head, and optionally applies RevIN, so no paper-result reference comparison is claimed. Causality and full runtime-contract evidence are recorded in `../../../../verification/evidence/TCNForecasterTS.json`.
 
 ## In TSFLab
 Default config: `configs/models/TCNForecasterTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
