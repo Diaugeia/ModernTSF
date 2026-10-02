@@ -1,6 +1,6 @@
 ---
 name: "TimeCAP"
-summary: "TimeCAP is a time series forecasting model for multivariate sequence prediction. It is the first purely channel-aware pre-training framework for multivariate time series, systematically integrating complementary autoregressive and one-shot generative paradigms via a flexible channel-grouping learning approach and an adaptive meta-routing mechanism that captures both intra-group local patterns and global inter-channel coherence."
+summary: "TimeCAP is a channel-aware forecaster that cuts channels into overlapping groups, embeds patches per group, and mixes information with channel-aware masked attention and learned meta-router tokens. Group outputs are averaged back to channels and a sigmoid-weighted blend of a GRU autoregressive head and a one-shot linear head produces the forecast. The runtime trains end to end on the forecasting loss; there is no separate pre-training stage."
 paper: "https://doi.org/10.1609/aaai.v40i30.39700"
 paper_title: "TimeCAP: A Channel-Aware Pre-Training Framework for Multivariate Time Series Forecasting"
 venue: "AAAI 2026"

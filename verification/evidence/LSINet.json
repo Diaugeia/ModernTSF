@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "LSINet",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "20fba1aa1ec5c1f46d4bb42643a5bed880588db23385576ec3bffb86baf2c8ff",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "9f0bc0622f900f5348560cf6537a2c391d111999c962081f63ed80028912ff97",
   "paper": {
     "title": "A Lightweight Sparse Interaction Network for Time Series Forecasting",
     "venue": "AAAI 2025",

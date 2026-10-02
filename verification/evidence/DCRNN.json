@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "DCRNN",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:31.428230Z",
-  "subject_sha256": "54ffbcd9c5e34f4d7e800394bc952c9df3fb15ad016ddee0db6244e47e7f05b5",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "55c3ea37f8c86e3eadf043f352668926d01bf2f3a7c685c7bedd20d35707d87c",
   "paper": {
     "title": "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting",
     "venue": "ICLR 2018",

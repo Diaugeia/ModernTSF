@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "SEMixer",
   "status": "passed",
-  "verified_at": "2026-10-02T18:17:24.233150Z",
-  "subject_sha256": "14a971d56ce823065e9575f562fee5dfa7d6e2eaaf11bab6722013636e70fc3a",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "237b961922fd3fb636642ac260d6b8710152f64eb46252b3a05511ba1da88dcb",
   "paper": {
     "title": "SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting",
     "venue": "WWW 2026",

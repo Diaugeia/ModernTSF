@@ -1,6 +1,6 @@
 ---
 name: "FiLM"
-summary: "FiLM (Frequency improved Legendre Memory) is a time-series forecasting model for the standard univariate and multivariate long-term forecasting setting. It applies Legendre polynomial projections to compress and approximate historical context, applies a Fourier-domain projection to remove high-frequency noise, and uses a low-rank approximation to reduce computation — yielding a plug-in representation module that can also enhance other deep learning forecasters."
+summary: "FiLM is a standalone forecaster: each channel window is compressed by a Legendre-memory projection, filtered by a low-rank complex Fourier layer on the lowest rFFT modes, and reconstructed on the horizon grid; a learned mixture of multiscale experts combines the outputs inside RevIN. It is a full model here, not a plug-in module for other forecasters."
 paper: "https://arxiv.org/abs/2205.08897"
 paper_title: "FiLM: Frequency improved Legendre Memory Model for Long-term Time Series Forecasting"
 venue: "NeurIPS 2022"

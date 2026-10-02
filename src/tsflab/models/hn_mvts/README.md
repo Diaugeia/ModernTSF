@@ -1,6 +1,6 @@
 ---
 name: "HN_MVTS"
-summary: "HN_MVTS integrates a hypernetwork-based generative prior with any base neural-network forecaster for multivariate time-series forecasting. The hypernetwork takes a learnable embedding matrix of time-series components as input and generates the weights of the base model's final layer, acting as a data-adaptive regulariser that improves generalisation and long-range predictive accuracy — used only during training so it adds no inference overhead. This approach bridges the gap between high-accuracy channel-dependent models and the robustness of channel-independent models."
+summary: "HN_MVTS pairs a shared channel-independent temporal encoder with a hypernetwork that maps a learnable per-channel embedding to that channel's final projection weights and bias (generated_projection). The generated projection is part of the forward pass, so the hypernetwork runs at inference as well as in training; the paper's training-only regulariser framing is not separated in this implementation."
 paper: "https://arxiv.org/abs/2511.08340"
 paper_title: "HN-MVTS: HyperNetwork-based Multivariate Time Series Forecasting"
 venue: "AAAI 2026"

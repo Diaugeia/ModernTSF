@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "D2STGNN",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:31.428230Z",
-  "subject_sha256": "b60ee4d6810db5c19c1005b8fd5a04597642fcb5279af19fc645a37726ae21b0",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "d250ee1db03b3ccd9768a7c80eccb6ed3780382eb67b5a69d7e095c9044f5457",
   "paper": {
     "title": "Decoupled Dynamic Spatial-Temporal Graph Neural Network for Traffic Forecasting",
     "venue": "VLDB 2022",

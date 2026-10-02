@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "FiLM",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "352d06fc61340b934ef4d54158ad14b9e24e64298d9874e667ff5f9c9860a319",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "3032bf46e70b78d1e7da4da6ad7af48b13c4c2e1a4f50ca8c09931ac234b472a",
   "paper": {
     "title": "FiLM: Frequency improved Legendre Memory Model for Long-term Time Series Forecasting",
     "venue": "NeurIPS 2022",

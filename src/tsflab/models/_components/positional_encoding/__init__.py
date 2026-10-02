@@ -40,21 +40,29 @@ def positional_encoding(
     length: int,
     width: int,
 ) -> nn.Parameter:
-    """Create a positional table using the repository's stable public modes."""
+    """Create a positional table using the repository's stable public modes.
+
+    Naming caveat: ``kind="zero"`` is NOT all zeros. It is a width-1 column of
+    small uniform noise in ``[-0.02, 0.02]`` broadcast over features, and
+    ``"zeros"`` is a full ``[length, width]`` table of the same noise. The
+    legacy strings are kept so existing configs and checkpoints keep working;
+    ``"small_uniform"`` is accepted as a clearer alias of ``"zero"`` and
+    ``"small_uniform_2d"`` of ``"zeros"``.
+    """
     if length < 1 or width < 1:
         raise ValueError("length and width must be positive")
     if kind is None:
         table = torch.empty(length, width).uniform_(-0.02, 0.02)
         learnable = False
-    elif kind in {"zero", "normal", "gauss", "uniform"}:
+    elif kind in {"zero", "small_uniform", "normal", "gauss", "uniform"}:
         table = torch.empty(length, 1)
-        if kind == "zero":
+        if kind in {"zero", "small_uniform"}:
             table.uniform_(-0.02, 0.02)
         elif kind in {"normal", "gauss"}:
             table.normal_(mean=0.0, std=0.1)
         else:
             table.uniform_(0.0, 0.1)
-    elif kind == "zeros":
+    elif kind in {"zeros", "small_uniform_2d"}:
         table = torch.empty(length, width).uniform_(-0.02, 0.02)
     elif kind == "sincos":
         table = _sinusoidal(length, width)

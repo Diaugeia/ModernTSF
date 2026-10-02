@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "Gateformer",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "875f6a61c7bd2200efd417acd3c0c77dbad22ea0a1a98605d353909168dc5131",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "e19083333c1062570edd6c19bf3163b2528d58b6ebd7e3f581e67c7a7df2e335",
   "paper": {
     "title": "Gateformer: Advancing Multivariate Time Series Forecasting through Temporal and Variate-Wise Attention with Gated Representations",
     "venue": "arXiv preprint",

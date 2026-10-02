@@ -19,7 +19,7 @@ Pure-numpy helpers that turn a dense adjacency matrix `A` into the matrices that
 spatiotemporal GNN layers consume. With `D` the diagonal of row sums:
 
 - `symmetric_normalized_laplacian`: `L = I - D^{-1/2} A D^{-1/2}`.
-- `scaled_laplacian`: `(2 / lambda_max) * L - I` (Chebyshev rescaling).
+- `lambda_rescaled_laplacian`: `(2 / lambda_max) * L - I` (Chebyshev rescaling).
 - `gcn_norm`: `D~^{-1/2} (A + I) D~^{-1/2}` with degrees of `A + I`.
 - `transition_matrix`: `D^{-1} A` (row-stochastic random walk).
 - `reverse_transition_matrix`: `transition_matrix(A.T)`.
@@ -48,7 +48,7 @@ They return a new dense `[N, N]` `float64` numpy array and are stateless.
 checked. Non-symmetric inputs are allowed and not symmetrized.
 
 - `symmetric_normalized_laplacian(adj)`: degrees from row sums.
-- `scaled_laplacian(adj, lambda_max=2.0)`: `lambda_max` (float, nonzero) is
+- `lambda_rescaled_laplacian(adj, lambda_max=2.0)`: `lambda_max` (float, nonzero) is
   supplied by the caller; the default 2 gives `L - I`. It does not compute
   the eigenvalue and does not symmetrize.
 - `gcn_norm(adj)`: adds self-loops (identity) before degrees, so existing
@@ -71,8 +71,8 @@ checked. Non-symmetric inputs are allowed and not symmetrized.
 
 ## Variants and options
 
-- `scaled_laplacian(adj, lambda_max)` is a different function from
-  `scaled_laplacian` in `graph_spectral`: that one symmetrizes by default,
+- `lambda_rescaled_laplacian(adj, lambda_max)` (formerly `scaled_laplacian`, renamed to
+  avoid clashing with `graph_spectral.scaled_laplacian`) is a different function: that one symmetrizes by default,
   rejects non-finite input, computes `lambda_max` from the spectrum, returns
   float32, and is what `graph_utils` uses for `scalap`. This one only rescales
   with the given `lambda_max`.

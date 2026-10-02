@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "QuantilePatchTST",
   "status": "passed",
-  "verified_at": "2026-10-02T18:17:24.233150Z",
-  "subject_sha256": "f8cd5b4a39e9c611d586d5da202d87d2a861360661c33bfe58d51c45a413fbe4",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "f4b480cdba5c97a18f54b2f115644e4e3675bc4761294e298b8773de81440566",
   "paper": {
     "title": "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers (PatchTST backbone)",
     "venue": "ICLR 2023",

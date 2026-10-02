@@ -53,7 +53,7 @@ def symmetric_normalized_laplacian(adj) -> np.ndarray:
     return np.eye(n) - d_inv_sqrt @ a @ d_inv_sqrt
 
 
-def scaled_laplacian(adj, lambda_max: float = 2.0) -> np.ndarray:
+def lambda_rescaled_laplacian(adj, lambda_max: float = 2.0) -> np.ndarray:
     """Scaled Laplacian ``2L / lambda_max - I`` for Chebyshev polynomials.
 
     ``L`` is the symmetric normalized Laplacian. With the default

@@ -46,9 +46,9 @@ the selected prototype rows but not the selection itself. Stateless, no memory
 update rule: prototypes are trained only by whatever loss the caller builds.
 
 `deviation_score(current, reference) -> Tensor`: last axes must match (`ValueError`),
-leading axes broadcast; returns `[...]`. Quirk: the docstring says "mean absolute
-deviation" but the code sums over the last axis (`.sum(dim=-1)`), so the value
-scales with `D`; the card's formula follows the code.
+leading axes broadcast; returns `[...]`. The value is the sum of
+absolute differences over the last axis (`.sum(dim=-1)`), not a mean, so it
+scales with `D`.
 
 ## Invariants and equivalence evidence
 
@@ -88,7 +88,7 @@ Implementation: [`__init__.py`](__init__.py)
 - `PrototypeRetrieval()`
   Outputs of one :class:`PrototypeMemory` query.
 - `deviation_score(current: torch.Tensor, reference: torch.Tensor)`
-  Mean absolute deviation between two same-shaped representations.
+  Summed absolute deviation between two same-shaped representations.
 
 ```python
 from tsflab.models._components.deviation_memory import PrototypeMemory, PrototypeRetrieval, deviation_score

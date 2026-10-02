@@ -32,7 +32,7 @@ def _normalize_adj(adj, scheme: str):
     schemes = {
         "sym_norm_lap": _an.symmetric_normalized_laplacian,
         "symmetric_normalized_laplacian": _an.symmetric_normalized_laplacian,
-        "scaled_laplacian": _an.scaled_laplacian,
+        "scaled_laplacian": _an.lambda_rescaled_laplacian,
         "gcn": _an.gcn_norm,
         "gcn_norm": _an.gcn_norm,
         "transition": _an.transition_matrix,

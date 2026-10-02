@@ -1,6 +1,6 @@
 ---
 name: "HimNet"
-summary: "HimNet (Heterogeneity-Informed Spatiotemporal Meta-Network) is a spatiotemporal learning model designed for node-structured or graph-structured data. It captures spatiotemporal heterogeneity by learning spatial and temporal embeddings as a clustering process, then derives location- and time-specific parameters from meta-parameter pools using a hierarchical meta-graph GRU encoder-decoder with an adaptively learned graph topology."
+summary: "HimNet is a spatiotemporal forecaster built from meta-graph GRU cells in an encoder and an autoregressive decoder. Node, time-of-day, day-of-week and horizon embeddings are combined into a meta vector that indexes weight banks to produce node- and time-specific graph-convolution filters. The graph used inside the convolution is derived from the learned node embeddings; the supplied adj_mx is deleted and never used."
 paper: "https://doi.org/10.1145/3637528.3671961"
 paper_title: "Heterogeneity-Informed Meta-Parameter Learning for Spatiotemporal Time Series Forecasting"
 venue: "KDD 2024"

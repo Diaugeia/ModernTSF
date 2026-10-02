@@ -1,6 +1,6 @@
 ---
 name: "xPatch"
-summary: "xPatch is a dual-stream time series forecasting model that combines an exponential seasonal-trend decomposition module with two parallel processing streams — an MLP-based linear stream and a CNN-based non-linear stream — both using patch-based channel-independent representations, and further employs a robust arctangent loss function and a sigmoid learning rate schedule to prevent overfitting."
+summary: "xPatch is a dual-stream forecaster that applies an exponential (EMA or Holt double smoothing) seasonal-trend decomposition and feeds the trend to a linear MLP stream and the seasonal part to a patch-based depthwise-CNN stream, both channel-independent, then fuses the two forecasts with an MLP. The paper's arctangent loss and sigmoid learning-rate schedule are not implemented; the default loss is MSE."
 paper: "https://arxiv.org/abs/2412.17323"
 paper_title: "xPatch: Dual-Stream Time Series Forecasting with Exponential Seasonal-Trend Decomposition"
 venue: "AAAI 2025"

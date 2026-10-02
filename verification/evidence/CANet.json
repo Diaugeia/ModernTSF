@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "CANet",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:31.428230Z",
-  "subject_sha256": "3a19e7f344105740473e945c8f7e42f1abdaae90ecb5e11c987d71d9d5e5ce94",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "d61c4cd6caad89c28d5c27e379e3b6d7224de4e582d4754fcfc37b5dac9b6858",
   "paper": {
     "title": "CANet: ChronoAdaptive Network for Enhanced Long-Term Time Series Forecasting under Non-Stationarity",
     "venue": "arXiv preprint",

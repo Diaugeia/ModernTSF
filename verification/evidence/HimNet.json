@@ -2,8 +2,8 @@
   "schema_version": 1,
   "model": "HimNet",
   "status": "passed",
-  "verified_at": "2026-10-02T18:16:58.174354Z",
-  "subject_sha256": "a1ac24e1c1b1fde0cf784ea914ab9e68de4500fc628baca6f71740964f33361f",
+  "verified_at": "2026-10-02T18:27:39.122140Z",
+  "subject_sha256": "d6d9d81e37a80a2a36dd375b8441b1cf22028ff931409e306221524bca04bdfb",
   "paper": {
     "title": "Heterogeneity-Informed Meta-Parameter Learning for Spatiotemporal Time Series Forecasting",
     "venue": "KDD 2024",

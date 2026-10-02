@@ -1,6 +1,6 @@
 ---
 name: "GOTSF"
-summary: "GOTSF is a time series forecasting model built around a goal-oriented training methodology that enables forecasting models to bias their predictions toward application-specified regions of interest at inference time without retraining. The model partitions the prediction space into fine-grained segments during training, which are dynamically reweighted and aggregated at inference time to emphasize whichever target range an application specifies."
+summary: "GOTSF splits the value range into disjoint intervals; a shared channel-independent MLP conditioned on each interval produces a forecast and a membership confidence per interval. The forecast_interval method reweights and averages the interval forecasts to emphasize a chosen target range without retraining, while plain forward uses all intervals. The model also provides goal_oriented_loss, but the default runner trains with MSE on forward and does not call it unless a model-provided training loss hook is used."
 paper: "https://arxiv.org/abs/2504.17493"
 paper_title: "Goal-Oriented Time-Series Forecasting: Foundation Framework Design"
 venue: "AAAI 2026"

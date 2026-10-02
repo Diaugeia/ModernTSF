@@ -25,8 +25,8 @@ tensor (`tokens + table`), broadcasting over batch.
 - `lin1d`/`exp1d`/`lin2d`/`exp2d`: coordinate tables `2 * t^p * f^p - 1` with
   `t` linspace over positions, `f` linspace over features (2-D only), `p = 1`
   (lin) or `0.5` (exp), again standardised. 1-D kinds have width 1.
-- `zeros`: uniform(-0.02, 0.02) of shape `[length, width]`.
-- `zero`/`normal`/`gauss`/`uniform`: width-1 random columns (uniform(-0.02, 0.02),
+- `zeros` (alias `small_uniform_2d`): uniform(-0.02, 0.02) of shape `[length, width]`; not all zeros.
+- `zero` (alias `small_uniform`; not all zeros)/`normal`/`gauss`/`uniform`: width-1 random columns (uniform(-0.02, 0.02),
   normal(0, 0.1), normal(0, 0.1), uniform(0, 0.1)) that broadcast over features.
 - `None`: uniform(-0.02, 0.02) `[length, width]` and forced non-learnable.
 
@@ -45,7 +45,7 @@ patch size).
 
 `positional_encoding(kind: str | None, learnable: bool, length: int, width: int)
 -> nn.Parameter`. The only public symbol. Raises `ValueError` if `length < 1`
-or `width < 1`, or if `kind` is not one of `None`, `zero`, `zeros`, `normal`,
+or `width < 1`, or if `kind` is not one of `None`, `zero`, `small_uniform`, `zeros`, `small_uniform_2d`, `normal`,
 `gauss`, `uniform`, `sincos`, `lin1d`, `exp1d`, `lin2d`, `exp2d`. Returns a
 float32 CPU parameter; the caller registers it on a module (`self.position =
 ...`), so the state-dict key is whatever attribute name the model chooses. Random

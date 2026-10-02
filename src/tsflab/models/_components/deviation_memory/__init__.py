@@ -17,7 +17,7 @@ prototype and away from a distractor:
 
 :func:`deviation_score` then reduces any two same-shaped representations
 (typically a "current" and a "reference/historical" query or nearest-prototype
-pair) to a non-negative scalar per row via mean absolute difference, giving a
+pair) to a non-negative scalar per row via the sum of absolute differences over the last axis, giving a
 generic self-supervised deviation signal: how different the current pattern's
 retrieval is from a reference one. Neither piece is spatiotemporal-specific —
 ``h`` may carry a node axis, a plain batch axis, or any other leading shape —
@@ -106,7 +106,10 @@ class PrototypeMemory(nn.Module):
 
 
 def deviation_score(current: torch.Tensor, reference: torch.Tensor) -> torch.Tensor:
-    """Mean absolute deviation between two same-shaped representations.
+    """Summed absolute deviation between two same-shaped representations.
+
+    Computes ``|current - reference|.sum(-1)``: an L1 distance, not a mean, so
+    the value scales with ``D``.
 
     Args:
         current: Tensor shaped ``(..., D)``.

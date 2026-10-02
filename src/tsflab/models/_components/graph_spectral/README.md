@@ -34,7 +34,7 @@ Current importers are `astgcn`, `stgcn`, `gclstm`, and `dstagnn` (all call
 `chebyshev_polynomials`. The boundary is the numeric support
 construction only. The Chebyshev convolution layer, the choice of order `K`, where
 supports are registered as buffers, and the temporal blocks stay model-local. Note a
-second, simpler `scaled_laplacian(adj, lambda_max=2.0)` exists in `adj_norm`; the two
+second, simpler `lambda_rescaled_laplacian(adj, lambda_max=2.0)` exists in `adj_norm`; the two
 differ (this one computes the true `lambda_max`, symmetrizes, and rejects non-finite input).
 
 ## Interface
