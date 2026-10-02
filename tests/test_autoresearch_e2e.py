@@ -57,7 +57,7 @@ def _records(work: Path) -> list[dict]:
 def test_autoresearch_chain(tmp_path, capsys):
     work = tmp_path / "work"
     # 1. profile the fixture dataset
-    assert main(["dataset", "analyze", "--path", "dataset/smoke/smoke.csv", "--out", str(tmp_path / "profile"), "--json"]) == 0
+    assert main(["data", "analyze", "--path", "dataset/smoke/smoke.csv", "--out", str(tmp_path / "profile"), "--json"]) == 0
     profile = json.loads((tmp_path / "profile" / "profile.json").read_text())
     assert "recommendations" in profile and "slots" in profile["recommendations"]
     capsys.readouterr()
@@ -68,7 +68,7 @@ def test_autoresearch_chain(tmp_path, capsys):
         spec = tmp_path / f"{name}.toml"
         spec.write_text(SPEC.format(name=name, decomposition=decomposition), encoding="utf-8")
         cfg = tmp_path / f"{name}_run.toml"
-        assert main(["component", "compose", str(spec), "--write-config", str(cfg), "--dataset",
+        assert main(["model", "compose", str(spec), "--write-config", str(cfg), "--dataset",
                      "configs/fixtures/smoke.toml", "--enc-in", "6", "--pred-len", "12", "--smoke",
                      "--work-dir", str(work)]) == 0
         configs.append(cfg)
@@ -79,7 +79,7 @@ def test_autoresearch_chain(tmp_path, capsys):
     configs.append(baseline)
 
     # 4. smoke-run all three on CPU
-    assert main(["smoke", "--config", *map(str, configs), "--jobs", "2"]) == 0
+    assert main(["run", "--smoke", "--config", *map(str, configs), "--jobs", "2"]) == 0
 
     # 5. read the records and the board
     records = _records(work)
@@ -95,8 +95,8 @@ def test_autoresearch_chain(tmp_path, capsys):
     winner = min((r for r in local if r["model"].startswith("Composed")), key=lambda r: r["mse"])
     winner_cfg = configs[0] if "none" in winner["model"] else configs[1]
     spec = tmp_path / ("PlainRevLinear.toml" if winner_cfg == configs[0] else "SeasonalRevLinear.toml")
-    assert main(["component", "compose", str(spec), "--register", "WinnerRevLinear", "--dry-run"]) == 0
+    assert main(["model", "compose", str(spec), "--register", "WinnerRevLinear", "--dry-run"]) == 0
     assert not (ROOT / "src/tsflab/models/winnerrevlinear").exists()
     temp_repo = tmp_path / "repo"
-    assert main(["component", "compose", str(spec), "--register", "WinnerRevLinear", "--root", str(temp_repo)]) == 0
+    assert main(["model", "compose", str(spec), "--register", "WinnerRevLinear", "--root", str(temp_repo)]) == 0
     assert (temp_repo / "src/tsflab/models/winnerrevlinear/spec.py").is_file()

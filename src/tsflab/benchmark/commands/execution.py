@@ -18,7 +18,7 @@ from tsflab.benchmark.research_round import load_round
 def smoke_command(rest: list[str]) -> int:
     """Run selected end-to-end smoke configurations concurrently."""
     parser = argparse.ArgumentParser(
-        prog="tsf smoke",
+        prog="tsf run --smoke",
         description="Run smoke config(s) concurrently and report PASS/FAIL.",
     )
     group = parser.add_mutually_exclusive_group()
@@ -87,19 +87,43 @@ def smoke_command(rest: list[str]) -> int:
     return 0 if passed == len(results) else 1
 
 
+def _extract_backend(args: list[str]) -> tuple[list[str], str]:
+    """Remove ``--backend local|queue|slurm`` from ``args`` (default local)."""
+    rest, backend, skip = [], "local", False
+    for index, arg in enumerate(args):
+        if skip:
+            skip = False
+        elif arg == "--backend" and index + 1 < len(args):
+            backend, skip = args[index + 1], True
+        elif arg.startswith("--backend="):
+            backend = arg.split("=", 1)[1]
+        else:
+            rest.append(arg)
+    if backend not in {"local", "queue", "slurm"}:
+        raise SystemExit(f"tsf run: --backend must be local, queue, or slurm, not {backend!r}")
+    return rest, backend
+
+
 def run_command(rest: list[str]) -> int:
-    """Run, inspect, cancel, or resume experiments through one public surface."""
+    """Run, preview, smoke-test, cancel, or resume experiments through one public surface."""
     import json
+    if "--smoke" in rest:
+        return smoke_command([item for item in rest if item != "--smoke"])
+    rest, backend = _extract_backend(rest)
+    if backend in {"queue", "slurm"}:
+        from tsflab.benchmark.commands.operations import operations_command
+
+        return operations_command([backend, *rest])
     from tsflab.benchmark.infra.execution import cancel, execute, preflight, prepare_sweep, status
     from tsflab.benchmark.infra.policy import load_policy
-    parser = argparse.ArgumentParser(prog="tsf run", description="Run experiments. Optional: --policy execution.toml. Manage existing runs with status/cancel/resume <directory>.")
+    parser = argparse.ArgumentParser(prog="tsf run", description="Run experiments. Optional: --policy execution.toml. Manage existing runs with status/cancel/resume <directory>. --smoke (--all | --model NAME | --config PATH...) runs smoke configs; --backend queue|slurm ACTION DIR submits prepared sweeps (see tsf run --backend queue --help).", epilog="Also: tsf run --smoke (--all | --model NAME | --config PATH...); tsf run --backend queue|slurm ACTION DIR.")
     parser.add_argument("configs", nargs="*")
     parser.add_argument("--jobs", type=int, default=None)
     parser.add_argument("--gpus", default=None)
     parser.add_argument("--round", dest="round_id", default=None)
     parser.add_argument("--policy", help="Optional execution policy TOML")
     parser.add_argument("--prepare-only", action="store_true", help="Persist a validated matrix for queue or Slurm submission")
-    parser.add_argument("--dry-run", action="store_true", help="Check the complete matrix without executing")
+    parser.add_argument("--dry-run", action="store_true", help="Preview the resolved matrix (coverage summary) and check it without executing")
     parser.add_argument("--json", action="store_true", help="Machine-readable result")
     args = parser.parse_args(rest)
     try:
@@ -134,6 +158,10 @@ def run_command(rest: list[str]) -> int:
                 loaded.extend(load_config(str(path.resolve())))
             if not loaded:
                 raise ValueError("experiment matrix is empty")
+            if args.dry_run and not args.json:
+                from tsflab.benchmark.commands.inspect_config import summarize
+
+                summarize(loaded)
             result = preflight([item.config for item in loaded], policy)
             if args.round_id:
                 state = load_round(args.round_id)

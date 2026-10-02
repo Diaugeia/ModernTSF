@@ -122,14 +122,14 @@ def main() -> int:
     original = CATALOG.read_text(encoding="utf-8")
     try:
         CATALOG.write_text(_insert_catalog(args.name, module, original), encoding="utf-8")
-        _run("verify", "model", args.name)
+        _run("model", "verify", args.name)
         _run("model", "audit", args.name)
         # Cards and the model index are projections of the catalog, so they can
-        # only be regenerated once the entry exists; doctor checks them after.
+        # only be regenerated once the entry exists; the strict contract check covers them after.
         _run("repo", "cards")
-        _run("repo", "doctor", "--strict", "--models", args.name)
-        _run("component", "audit")
-        _run("repo", "audit")
+        _run("repo", "check", "--contracts", "strict", "--models", args.name)
+        _run("model", "audit", "--components")
+        _run("repo", "check", "--audit")
     except (RuntimeError, ValueError) as exc:
         CATALOG.write_text(original, encoding="utf-8")
         subprocess.run([sys.executable, "-m", "tsflab.benchmark.cli", "repo", "cards"],

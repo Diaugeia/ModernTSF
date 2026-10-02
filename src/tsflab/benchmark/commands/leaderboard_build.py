@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""tsf leaderboard-build — aggregate submissions into a leaderboard.json.
+"""tsf result leaderboard — aggregate submissions into a leaderboard.json.
 
 Validation and aggregation are the shared TSF-Core implementation used by the
 TSFLab Leaderboard site (``tsflab.tsf_core.leaderboard``), so a local
 build ranks exactly as the published board does. No torch, no LLM.
 
-    uv run tsf leaderboard-build --source apps/web/submissions
-    uv run tsf leaderboard-build --source work_dirs/_submissions --out leaderboard.json
+    uv run tsf result leaderboard --source apps/web/submissions
+    uv run tsf result leaderboard --source work_dirs/_submissions --out leaderboard.json
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ CANONICAL_TRACKS = ("time_series", "spatiotemporal", "covariate", "realtime")
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="tsf leaderboard-build", description=__doc__)
+    ap = argparse.ArgumentParser(prog="tsf result leaderboard", description=__doc__)
     ap.add_argument("--source", default="work_dirs/_submissions",
                     help="Directory searched recursively for submission.json files")
     ap.add_argument("--out", default="leaderboard.json", help="Output path")

@@ -1,9 +1,9 @@
-# Profile -> catalog mapping used by `tsf dataset analyze`.
+# Profile -> catalog mapping used by `tsf data analyze`.
 #
 # Each [[rule]] fires when a decision-safe profile metric crosses a threshold
 # (metrics may start only with dataset., split., train., shift.within_train. or
 # shift.train_to_val.; test-split diagnostics are never rule inputs). A fired rule
-# names catalog facts: `components` (tsf component list), `models` (tsf model
+# names catalog facts: `components` (tsf catalog list --kind component), `models` (tsf model
 # list), and `slots` options for the recombination slots below. Options are
 # "component:<name>", "model:<name>" (a donor design to borrow the idea from),
 # or "loss:<name>" (training.loss). tests/test_dataset_profile.py checks that every

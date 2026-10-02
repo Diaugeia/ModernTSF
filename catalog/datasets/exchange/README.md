@@ -51,7 +51,7 @@ Exchange-rate holds the daily exchange rates of eight countries' currencies, col
 | Span | LSTNet: 1990 to 2016; file dates 1990-01-01 to 2010-09-09 (7,588 consecutive days) | source-reported (conflicting; dates nominal) |
 | Missing values | none in the standard file | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf dataset inspect --config configs/datasets/exchange.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/exchange.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 
@@ -99,10 +99,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/exchange.toml`; fetch
-published files with `tsf dataset download exchange` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/exchange.toml`; fetch
+published files with `tsf data download exchange` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

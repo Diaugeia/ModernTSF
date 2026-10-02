@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import sys
 
 from tsflab.benchmark.command_runtime import passthrough
@@ -34,61 +33,8 @@ def regenerate_cards(args: list[str]) -> int:
     return passthrough("check_docs.py", ["--write"])
 
 
-def repository_command(args: list[str]) -> int:
-    """Audit static repository contracts and optionally execute all model contracts."""
-    usage = "usage: tsf repo {check,audit,doctor,cards} [--forward | --backward | --strict]"
-    if not args or args[0] in {"-h", "--help", "help"}:
-        print(usage)
-        print("  check  the single mergeable gate: [--scope full|changed] [--json]")
-        print("  cards  regenerate component/dataset cards and the model documentation index")
-        return 0
-    action, rest = args[0], args[1:]
-    if action not in {"check", "audit", "doctor", "cards"}:
-        print(usage, file=sys.stderr)
-        return 2
-    if action == "check":
-        from tsflab.benchmark.commands.gate import check_command
-
-        return check_command(rest)
-    if action == "cards":
-        return regenerate_cards(rest)
-    if action == "audit" and rest:
-        print("tsf repo audit takes no arguments", file=sys.stderr)
-        return 2
-
-    forward = False
-    backward = False
-    if action == "doctor":
-        parser = argparse.ArgumentParser(prog="tsf repo doctor")
-        parser.add_argument("--forward", action="store_true", help="run every tensor contract")
-        parser.add_argument(
-            "--backward",
-            action="store_true",
-            help="also verify finite gradients (implies --forward)",
-        )
-        parser.add_argument(
-            "--strict",
-            action="store_true",
-            help=(
-                "also verify gradients, batch-size-one execution, and an exact "
-                "state-dict/output round trip"
-            ),
-        )
-        parser.add_argument(
-            "--models",
-            nargs="+",
-            metavar="NAME",
-            help="check only these models (default: the complete catalog)",
-        )
-        parsed = parser.parse_args(rest)
-        forward = parsed.forward or parsed.backward or parsed.strict
-        backward = parsed.backward or parsed.strict
-        strict = parsed.strict
-        selected_models = parsed.models
-    else:
-        selected_models = None
-        strict = False
-
+def run_audit() -> int:
+    """Run the static repository audits in-process; return a nonzero code on failure."""
     from tsflab.tsf_core.agent_assets import main as audit_agent_assets
     from tsflab.benchmark.cards.resources import audit_resource_cards
     from tsflab.tsf_core.paths import repository_root
@@ -113,29 +59,48 @@ def repository_command(args: list[str]) -> int:
         code = check()
         results.append(code)
         print(f"{'PASS' if code == 0 else 'FAIL'} {name}")
-
-    if action == "doctor":
-        from tsflab.benchmark.model_contracts import audit_model_contracts
-        from tsflab.benchmark.registry.models import MODEL_CATALOG
-
-        names = selected_models or MODEL_CATALOG.names()
-        failed = audit_model_contracts(
-            names=names, forward=forward, backward=backward, strict=strict
-        )
-        for failure in failed:
-            print(f"FAIL {failure.stage} {failure.model}: {failure.error}")
-        action_name = (
-            "strict-checked"
-            if strict
-            else "backward-checked"
-            if backward
-            else "forward-checked"
-            if forward
-            else "constructed"
-        )
-        print(
-            f"{action_name.capitalize()} "
-            f"{len(names) - len(failed)}/{len(names)} models"
-        )
-        results.append(1 if failed else 0)
     return 1 if any(results) else 0
+
+
+def run_contracts(level: str, models: list[str] | None) -> int:
+    """Execute model tensor contracts at ``level`` (construct, forward, backward, strict)."""
+    from tsflab.benchmark.model_contracts import audit_model_contracts
+    from tsflab.benchmark.registry.models import MODEL_CATALOG
+
+    strict = level == "strict"
+    backward = level in {"backward", "strict"}
+    forward = backward or level == "forward"
+    names = models or MODEL_CATALOG.names()
+    failed = audit_model_contracts(names=names, forward=forward, backward=backward, strict=strict)
+    for failure in failed:
+        print(f"FAIL {failure.stage} {failure.model}: {failure.error}")
+    label = {"strict": "strict-checked", "backward": "backward-checked",
+             "forward": "forward-checked"}.get(level, "constructed")
+    print(f"{label.capitalize()} {len(names) - len(failed)}/{len(names)} models")
+    return 1 if failed else 0
+
+
+def repository_command(args: list[str]) -> int:
+    """Check repository contracts, regenerate cards, or export the TSF-Core schema."""
+    usage = "usage: tsf repo {check,cards,schema} [args...]"
+    if not args or args[0] in {"-h", "--help", "help"}:
+        print(usage)
+        print("  check   the single mergeable gate: [--scope full|changed] [--only STEP...] [--json]")
+        print("          --audit runs the static audits only; --contracts construct|forward|backward|strict")
+        print("          [--models NAME...] executes model tensor contracts")
+        print("  cards   regenerate component/dataset cards and the model documentation index")
+        print("  schema  export TSF-Core JSON Schema [--check] [--out-dir DIR]")
+        return 0
+    action, rest = args[0], args[1:]
+    if action == "check":
+        from tsflab.benchmark.commands.gate import check_command
+
+        return check_command(rest)
+    if action == "cards":
+        return regenerate_cards(rest)
+    if action == "schema":
+        from tsflab.tsf_core.export import main as schema_main
+
+        return schema_main(rest)
+    print(usage, file=sys.stderr)
+    return 2

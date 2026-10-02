@@ -16,10 +16,10 @@ context AutoResearch reads before it picks models.
 ## Steps
 
 ```bash
-uv run tsf dataset show <name>
-uv run tsf dataset inspect --config configs/datasets/<name>.toml --split train --per-channel
-uv run tsf dataset analyze <name>        # structured profile for model selection
-uv run tsf dataset plot --config configs/datasets/<name>.toml --split train --num-samples 3
+uv run tsf catalog show <name>
+uv run tsf data inspect --config configs/datasets/<name>.toml --split train --per-channel
+uv run tsf data analyze <name>        # structured profile for model selection
+uv run tsf data plot --config configs/datasets/<name>.toml --split train --num-samples 3
 ```
 
 Start from the card's front matter (`domain`, `frequency`, `length`, `channels`,

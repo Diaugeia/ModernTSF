@@ -5,7 +5,7 @@ authorization to modify the repository and an explicit candidate and model budge
 without it, stop at the ranked queue.
 
 1. Build the queue as in the main steps, deduplicated against
-   `uv run tsf model list --json`.
+   `uv run tsf catalog list --kind model --json`.
 2. For each retained candidate, verify the primary paper, forecasting task, required
    inputs, official source, revision, and license (recorded as missing when absent),
    then select at most the authorized number.

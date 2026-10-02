@@ -5,7 +5,7 @@ audit the model without guessing a defining operation.
 
 Sources: the primary paper and supplement; the official repository pinned to a
 revision with its license recorded; the current component catalog
-(`uv run tsf component list`, one L0 line each).
+(`uv run tsf catalog list --kind component`, one L0 line each).
 
 1. Keep paper facts, official-code clarifications, and local design choices in
    separate fields. Do not copy source text or code into the map.
@@ -23,8 +23,8 @@ revision with its license recorded; the current component catalog
    expose and its expected consumers), or `model-local` (why it is paper-specific).
 
    ```bash
-   uv run tsf component search <operation-and-contract-terms>   # L0 lines
-   uv run tsf component show <candidate>                        # L1; --depth 2 only if needed
+   uv run tsf catalog search --kind component <operation-and-contract-terms>   # L0 lines
+   uv run tsf catalog show <candidate>                        # L1; --depth 2 only if needed
    ```
 
    Compare mathematics, axes, normalization, masking, residual order,

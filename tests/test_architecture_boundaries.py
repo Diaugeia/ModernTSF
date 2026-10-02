@@ -62,7 +62,7 @@ expected = len([p for p in (repository_root() / 'src' / 'tsflab' / 'models').glo
 assert len(MODEL_CATALOG.names()) == expected
 output = io.StringIO()
 with redirect_stdout(output):
-    assert main(["model", "list", "--json"]) == 0
+    assert main(["catalog", "list", "--kind", "model", "--json"]) == 0
 assert len(json.loads(output.getvalue())) == expected
 """
         result = subprocess.run(

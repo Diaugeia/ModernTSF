@@ -64,15 +64,10 @@ def _model_audit_record(
     }
 
 
-def model_command(args: list[str]) -> int:
-    """Add, list, describe, or audit named model and method specifications."""
+def _model_impl(args: list[str]) -> int:
+    """Implementation of the model actions (read actions are reached via `tsf catalog`)."""
     if not args or args[0] in {"-h", "--help", "help"}:
-        print(
-            "usage: tsf model {scaffold,add,list,show,search,artifacts,audit} [args...]\n"
-            "       tsf model list [--details | --json]\n"
-            "       tsf model search <terms...> [--capability C] [--limit N] [--json]   (L0 lines)\n"
-            "       tsf model show <name> [--depth {0,1,2,3}] [--json]"
-        )
+        print("usage: tsf catalog {list,show,search} --kind model")
         return 0
     action, rest = args[0], args[1:]
     if action == "scaffold":
@@ -82,7 +77,7 @@ def model_command(args: list[str]) -> int:
 
     if action == "list":
         if any(arg not in {"--details", "--json"} for arg in rest) or len(rest) > 1:
-            print("usage: tsf model list [--details | --json]", file=sys.stderr)
+            print("usage: tsf catalog list --kind model [--details | --json]", file=sys.stderr)
             return 2
         from tsflab.benchmark.cards.metadata import model_records
 
@@ -124,7 +119,7 @@ def model_command(args: list[str]) -> int:
         from tsflab.benchmark.cards.show import existing, parse_show, show_card
         from tsflab.benchmark.registry.models import MODEL_CATALOG
 
-        parsed = parse_show("tsf model show", "public model name", rest)
+        parsed = parse_show("tsf catalog show --kind model", "public model name", rest)
         try:
             spec = MODEL_CATALOG.get(parsed.name)
         except KeyError as exc:
@@ -234,7 +229,7 @@ def model_command(args: list[str]) -> int:
     if action == "search":
         from tsflab.benchmark.cards.search import search_command
 
-        return search_command(ROOT, rest, prog="tsf model search", kind="model")
+        return search_command(ROOT, rest, prog="tsf catalog search --kind model", kind="model")
     if action == "audit":
         import argparse
         from tsflab.benchmark.cards.metadata import model_records
@@ -299,28 +294,18 @@ def model_command(args: list[str]) -> int:
     print(f"unknown model action: {action!r}", file=sys.stderr)
     return 2
 
-def component_command(args: list[str]) -> int:
+def _component_impl(args: list[str]) -> int:
     """List, match, or describe shared components and their consumers."""
     from tsflab.benchmark.catalog.component_audit import components_used_by
     from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
 
     if not args or args[0] in {"-h", "--help", "help"}:
-        print(
-            "usage: tsf component {list,show,search,match,compose,audit} [args...]\n"
-            "       tsf component list [--json]                (L0 lines)\n"
-            "       tsf component compose <spec.toml> [--json] [--write-config PATH --dataset D --enc-in N [--smoke]] [--register NAME [--dry-run]]\n"
-            "       tsf component search <terms...> [--limit N] [--json]   (L0 lines; match is an alias)\n"
-            "       tsf component show <name> [--depth {0,1,2,3}] [--json]"
-        )
+        print("usage: tsf catalog {list,show,search} --kind component")
         return 0
     action, rest = args[0], args[1:]
-    if action == "compose":
-        from tsflab.benchmark.catalog.composition import compose_command
-
-        return compose_command(rest, ROOT)
     if action == "audit":
         if rest:
-            print("tsf component audit takes no arguments", file=sys.stderr)
+            print("component audit takes no arguments", file=sys.stderr)
             return 2
         from tsflab.benchmark.cards.resources import audit_resource_cards
         from tsflab.benchmark.catalog.component_audit import audit_components
@@ -358,7 +343,7 @@ def component_command(args: list[str]) -> int:
         from tsflab.benchmark.cards.show import existing, parse_show, show_card
         from tsflab.benchmark.cards.components import component_card_path
 
-        parsed = parse_show("tsf component show", "component name", rest)
+        parsed = parse_show("tsf catalog show --kind component", "component name", rest)
         try:
             spec = COMPONENT_CATALOG.get(parsed.name)
         except KeyError as exc:
@@ -399,7 +384,7 @@ def component_command(args: list[str]) -> int:
         return show_card(
             ROOT, component_card_path(ROOT, spec.name), parsed, facts=facts, paths=paths, legacy=legacy
         )
-    if action in {"match", "search"}:
+    if action == "search":
         from tsflab.benchmark.cards.search import search_command
 
         def augment(record: dict[str, object]) -> dict[str, object]:
@@ -412,16 +397,16 @@ def component_command(args: list[str]) -> int:
             }
 
         code = search_command(
-            ROOT, rest, prog=f"tsf component {action}", kind="component", augment=augment
+            ROOT, rest, prog="tsf catalog search --kind component", kind="component", augment=augment
         )
         if code == 0 and "--json" not in rest:
             print(
-                "Candidate retrieval only; open one with `tsf component show <name> "
-                "--depth 1` and review shapes and semantics before reuse.",
+                "Candidate retrieval only; open one with `tsf catalog show <name> "
+                "--kind component --depth 1` and review shapes and semantics before reuse.",
                 file=sys.stderr,
             )
         return code
-    print("usage: tsf component {list,show,search,match,compose,audit} [args...]", file=sys.stderr)
+    print("usage: tsf catalog {list,show,search} --kind component", file=sys.stderr)
     return 2
 
 
@@ -453,10 +438,15 @@ def _catalog_overview(as_json: bool) -> int:
         "datasets": {"count": len(records), "domains": dict(domains.most_common())},
         "next": [
             "tsf catalog search <terms> [--kind model|component|dataset]   # L0 lines",
-            "tsf <model|component|dataset> show <name>                      # L1 contract",
-            "tsf <model|component|dataset> show <name> --depth 2|3           # full card | files",
+            "tsf catalog show <name> [--kind K]                             # L1 contract",
+            "tsf catalog show <name> [--kind K] --depth 2|3                 # full card | files",
         ],
     }
+    from tsflab.tsf_core.modules import project_modules
+
+    modules = project_modules()
+    if modules is not None:
+        payload["project_modules"] = modules
     if as_json:
         print(json.dumps(payload, indent=2))
         return 0
@@ -466,23 +456,148 @@ def _catalog_overview(as_json: bool) -> int:
     print(f"            capabilities: {fmt(payload['models']['task_modes'])}")
     print(f"components  {payload['components']['count']:>4}  categories: {fmt(payload['components']['categories'])}")
     print(f"datasets    {len(records):>4}  domains: {fmt(payload['datasets']['domains'])}")
+    if modules is not None:
+        print("\nProject modules: " + ", ".join(modules))
     print("\nNext:\n" + "\n".join(f"  {line}" for line in payload["next"]))
     return 0
 
 
-def catalog_command(args: list[str]) -> int:
-    """Overview of all catalogs, or a ranked L0 search across them."""
-    if not args or args[0] == "overview":
-        return _catalog_overview("--json" in args)
-    if args[0] in {"-h", "--help", "help"} or args[0] != "search":
-        print(
-            "usage: tsf catalog [overview] [--json]\n"
-            "       tsf catalog search <terms...> [--kind model|component|dataset] "
-            "[--limit N] [--json]\n"
-            "Each result is one L0 line: name, kind, summary, tags. Open one with\n"
-            "`tsf <kind> show <name> --depth 1|2|3`."
-        )
-        return 0 if args[0] in {"-h", "--help", "help"} else 2
-    from tsflab.benchmark.cards.search import search_command
+def _extract_kind(args: list[str]) -> tuple[str | None, list[str]]:
+    """Remove ``--kind K`` from ``args``; return the kind and the remaining args."""
+    rest, kind, skip = [], None, False
+    for index, arg in enumerate(args):
+        if skip:
+            skip = False
+        elif arg == "--kind" and index + 1 < len(args):
+            kind, skip = args[index + 1], True
+        elif arg.startswith("--kind="):
+            kind = arg.split("=", 1)[1]
+        else:
+            rest.append(arg)
+    return kind, rest
 
-    return search_command(ROOT, args[1:], prog="tsf catalog search")
+
+def _kinds_of(name: str) -> list[str]:
+    """Return every catalog kind that has a resource called ``name``."""
+    from tsflab.benchmark.cards.resources import dataset_records
+    from tsflab.benchmark.catalog.components import COMPONENT_CATALOG
+    from tsflab.benchmark.registry.models import MODEL_CATALOG
+
+    found = []
+    if name in MODEL_CATALOG.names():
+        found.append("model")
+    if name in COMPONENT_CATALOG.names():
+        found.append("component")
+    if any(record.name == name or record.loader == name for record in dataset_records(ROOT)):
+        found.append("dataset")
+    return found
+
+
+def _dataset_read(action: str, rest: list[str]) -> int:
+    from tsflab.benchmark.commands.data_results import dataset_read
+
+    return dataset_read(action, rest)
+
+
+def _read(kind: str, action: str, rest: list[str]) -> int:
+    if kind == "model":
+        return _model_impl([action, *rest])
+    if kind == "component":
+        return _component_impl([action, *rest])
+    return _dataset_read(action, rest)
+
+
+CATALOG_USAGE = (
+    "usage: tsf catalog [overview] [--json]\n"
+    "       tsf catalog search <terms...> [--kind model|component|dataset] [--capability C] "
+    "[--limit N] [--json]\n"
+    "       tsf catalog list [--kind model|component|dataset] [--json]\n"
+    "       tsf catalog show <name> [--kind model|component|dataset] [--depth {0,1,2,3}] [--json]\n"
+    "Each search result is one L0 line: name, kind, summary, tags. `show` opens L1 by default;\n"
+    "--kind is needed only when a name exists in more than one catalog."
+)
+
+
+def catalog_command(args: list[str]) -> int:
+    """Overview of all catalogs, ranked L0 search, list, or show one resource."""
+    if not args or args[0] == "overview" or args == ["--json"]:
+        return _catalog_overview("--json" in args)
+    if args[0] in {"-h", "--help", "help"}:
+        print(CATALOG_USAGE)
+        return 0
+    action, rest = args[0], args[1:]
+    if action == "search":
+        kind, rest = _extract_kind(rest)
+        if kind in {"model", "component", "dataset"}:
+            return _read(kind, "search", rest)
+        from tsflab.benchmark.cards.search import search_command
+
+        return search_command(ROOT, rest if kind is None else [*rest, "--kind", kind],
+                              prog="tsf catalog search")
+    if action not in {"list", "show"}:
+        print(CATALOG_USAGE, file=sys.stderr)
+        return 2
+    if {"-h", "--help"} & set(rest):
+        print(CATALOG_USAGE)
+        return 0
+    kind, rest = _extract_kind(rest)
+    if kind not in (None, "model", "component", "dataset"):
+        print(f"unknown kind {kind!r}; choose model, component, or dataset", file=sys.stderr)
+        return 2
+    if action == "list":
+        if kind is not None:
+            return _read(kind, "list", rest)
+        for each in ("model", "component", "dataset"):
+            print(f"# {each}")
+            code = _read(each, "list", rest)
+            if code:
+                return code
+        return 0
+    names = [item for item in rest if not item.startswith("-")]
+    if not names:
+        print("usage: tsf catalog show <name> [--kind K] [--depth N] [--json]", file=sys.stderr)
+        return 2
+    if kind is None:
+        kinds = _kinds_of(names[0])
+        if not kinds:
+            print(f"Unknown resource {names[0]!r}; try `tsf catalog search {names[0]}`", file=sys.stderr)
+            return 2
+        if len(kinds) > 1:
+            print(f"{names[0]!r} exists as {', '.join(kinds)}; pass --kind", file=sys.stderr)
+            return 2
+        kind = kinds[0]
+    return _read(kind, "show", rest)
+
+
+def model_command(args: list[str]) -> int:
+    """Scaffold, add, verify, compose, or audit models (reads live under `tsf catalog`)."""
+    usage = (
+        "usage: tsf model {scaffold,add,artifacts,verify,compose,audit} [args...]\n"
+        "       tsf model verify <Name...> | --all | --stale | --index [--jobs N] [--json]\n"
+        "       tsf model compose <spec.toml> [--json] [--write-config PATH --dataset D --enc-in N "
+        "[--smoke]] [--register NAME [--dry-run]]\n"
+        "       tsf model audit [Name...] [--components] [--json | --summary]\n"
+        "Find and read models with `tsf catalog search|show --kind model`."
+    )
+    if not args or args[0] in {"-h", "--help", "help"}:
+        print(usage)
+        return 0
+    action, rest = args[0], args[1:]
+    if action == "verify":
+        from tsflab.benchmark.commands.verification import verification_command
+
+        return verification_command(rest)
+    if action == "compose":
+        from tsflab.benchmark.catalog.composition import compose_command
+
+        return compose_command(rest, ROOT)
+    if action == "audit" and "--components" in rest:
+        rest = [item for item in rest if item != "--components"]
+        if rest:
+            print("model audit --components takes no other arguments", file=sys.stderr)
+            return 2
+        return _component_impl(["audit"])
+    if action in {"scaffold", "add", "artifacts", "audit"}:
+        return _model_impl([action, *rest])
+    print(usage, file=sys.stderr)
+    return 2

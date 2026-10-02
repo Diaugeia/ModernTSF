@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Public Agent CLI for TSFLab.
+"""Public Agent CLI for TSFLab: eleven commands, one per module.
 
 The CLI is intentionally a thin router. Command behavior lives in focused
 modules so the public surface stays stable while model, data, execution, and
@@ -8,41 +8,27 @@ repository concerns evolve independently.
 Usage:
     tsf <command> [args...]
 
-Catalog and resource operations:
-    model            add, list, show, or audit a model specification
-    component        list, match, or show a reusable implementation component
-    dataset          add, prepare, inspect, analyze, or plot a dataset
-    catalog          search models, components, and datasets (ranked L0 lines)
-    result           aggregate, rank, plot, report, or show the board to beat (board)
-    repo             check (mergeable gate), audit, diagnose, or regenerate cards
-    verify           run or inspect unified model verification
-    agent            list, inspect, validate, render, or start bounded Agent tasks
+Read path:
+    catalog          overview, search, list, show <name> for models, components, datasets
 
-Execution:
-    smoke            run smoke configurations concurrently
-    run              run experiment configurations concurrently
-    inspect          preview resolved configuration expansion
-    env              audit dependencies, accelerators, data, and output capacity
-    interface        discover public workflows and execution policy schema
-    queue            optionally queue prepared sweeps with priorities
-    slurm            explicitly submit, inspect, or cancel a cluster sweep
-    storage          inspect capacity and preview managed checkpoint cleanup
-    usage            reserve and settle external token/USD spending
+Modules:
+    data             add, prepare (--from traffic|ultratraffic|gift), inspect, analyze, plot,
+                     download, publish, audit datasets
+    model            scaffold, add, artifacts, verify, compose, audit models
+    run              run experiments; --smoke, --dry-run, --backend local|queue|slurm
+    env              audit the environment; storage and usage subcommands
+    result           aggregate, rank, plot, report, predictions, board, submit, leaderboard, hub
+    realtime         rolling real-time tracks: update, open, forecast, score
+    research         research rounds: start, list, show, note, status, iteration
 
-Project and publishing:
-    init             scaffold a standalone project on the installed package
-    hub              pack, push, list, or pull weights on the Hugging Face Hub
-    realtime         rolling real-time tracks: releases, rounds, forecasts, scores
+Repository and Agents:
+    repo             check (mergeable gate, audit/contract steps), cards, schema
+    agent            task list/show/render/start/validate, interface, modules, sync
+    init             scaffold a standalone project for chosen modules
 
-Records and integration:
-    research         manage lightweight research rounds
-    submit           package a run into a Submission Report
-    schema-export    export TSF-Core JSON Schema
-    leaderboard-build  recompute a leaderboard from submissions
-
-Progressive disclosure: search returns L0 lines; ``model|component|dataset show
-<name> --depth {0,1,2,3}`` opens L0 line, L1 interface/constraints, L2 full card,
-or L3 paths to open.
+Progressive disclosure: ``catalog search`` returns L0 lines; ``catalog show <name>
+--depth {0,1,2,3}`` opens L0 line, L1 interface/constraints, L2 full card, or L3
+paths to open.
 
 Run ``tsf <command> --help`` for command-specific options.
 """
@@ -51,14 +37,44 @@ from __future__ import annotations
 
 import sys
 
-from tsflab.benchmark.command_runtime import passthrough
+def _lazy(module: str, name: str):
+    def call(rest: list[str]) -> int:
+        from importlib import import_module
+
+        return getattr(import_module(module), name)(rest)
+
+    return call
 
 
-def schema_export_command(rest: list[str]) -> int:
-    """Export the lightweight TSF-Core contract models to JSON Schema."""
-    from tsflab.tsf_core.export import main as schema_main
+def _env(rest: list[str]) -> int:
+    if rest and rest[0] in {"storage", "usage"}:
+        from tsflab.benchmark.commands.operations import operations_command
 
-    return schema_main(rest)
+        return operations_command(rest)
+    from tsflab.benchmark.commands.infrastructure import infrastructure_command
+
+    return infrastructure_command(["env", *rest])
+
+
+def _result(rest: list[str]) -> int:
+    from tsflab.benchmark.commands.data_results import result_command
+
+    return result_command(rest)
+
+
+COMMANDS = {
+    "catalog": _lazy("tsflab.benchmark.commands.catalog_resources", "catalog_command"),
+    "data": _lazy("tsflab.benchmark.commands.data_results", "data_command"),
+    "model": _lazy("tsflab.benchmark.commands.catalog_resources", "model_command"),
+    "run": _lazy("tsflab.benchmark.commands.execution", "run_command"),
+    "env": _env,
+    "result": _result,
+    "realtime": _lazy("tsflab.realtime.cli", "main"),
+    "research": _lazy("tsflab.benchmark.commands.research", "research_command"),
+    "repo": _lazy("tsflab.benchmark.commands.repository", "repository_command"),
+    "agent": _lazy("tsflab.benchmark.commands.agent_tasks", "agent_command"),
+    "init": _lazy("tsflab.scaffold", "main"),
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -67,83 +83,15 @@ def main(argv: list[str] | None = None) -> int:
     if argv[:2] == ["--format", "json"]:
         from tsflab.benchmark.commands.envelope import envelope
         return envelope(argv[2:])
-    if argv and argv[0] in {"queue", "usage", "storage", "slurm"}:
-        from tsflab.benchmark.commands.operations import operations_command
-        return operations_command(argv)
-    if argv and argv[0] in {"env", "interface"}:
-        from tsflab.benchmark.commands.infrastructure import infrastructure_command
-        return infrastructure_command(argv)
     if not argv or argv[0] in {"-h", "--help", "help"}:
         print(__doc__)
         return 0
-
-    command, rest = argv[0], argv[1:]
-    if command in {"smoke", "run"}:
-        from tsflab.benchmark.commands.execution import run_command, smoke_command
-
-        return smoke_command(rest) if command == "smoke" else run_command(rest)
-    if command in {"model", "component"}:
-        from tsflab.benchmark.commands.catalog_resources import (
-            component_command,
-            model_command,
-        )
-
-        handlers = {
-            "model": model_command,
-            "component": component_command,
-        }
-        return handlers[command](rest)
-    if command == "catalog":
-        from tsflab.benchmark.commands.catalog_resources import catalog_command
-
-        return catalog_command(rest)
-    if command in {"dataset", "result"}:
-        from tsflab.benchmark.commands.data_results import dataset_command, result_command
-
-        return dataset_command(rest) if command == "dataset" else result_command(rest)
-    if command == "repo":
-        from tsflab.benchmark.commands.repository import repository_command
-
-        return repository_command(rest)
-    if command == "verify":
-        from tsflab.benchmark.commands.verification import verification_command
-
-        return verification_command(rest)
-    if command == "agent":
-        from tsflab.benchmark.commands.agent_tasks import agent_command
-
-        return agent_command(rest)
-    if command == "research":
-        from tsflab.benchmark.commands.research import research_command
-
-        return research_command(rest)
-    if command == "schema-export":
-        return schema_export_command(rest)
-    if command == "init":
-        from tsflab.scaffold import main as init_main
-
-        return init_main(rest)
-    if command == "realtime":
-        from tsflab.realtime.cli import main as realtime_main
-
-        return realtime_main(rest)
-    if command == "hub":
-        from tsflab.benchmark.commands.hub import hub_command
-
-        return hub_command(rest)
-
-    passthrough_commands = {
-        "inspect": "inspect_config.py",
-        "submit": "submit.py",
-        "leaderboard-build": "leaderboard_build.py",
-    }
-    script = passthrough_commands.get(command)
-    if script is not None:
-        return passthrough(script, rest)
-
-    print(f"unknown command: {command!r}\n", file=sys.stderr)
-    print(__doc__, file=sys.stderr)
-    return 2
+    handler = COMMANDS.get(argv[0])
+    if handler is None:
+        print(f"unknown command: {argv[0]!r}\n", file=sys.stderr)
+        print(__doc__, file=sys.stderr)
+        return 2
+    return handler(argv[1:])
 
 
 if __name__ == "__main__":

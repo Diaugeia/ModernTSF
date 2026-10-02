@@ -100,10 +100,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/rt/air_airnow_us.toml`; fetch
-published files with `tsf dataset download rt/air_airnow_us` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/rt/air_airnow_us.toml`; fetch
+published files with `tsf data download rt/air_airnow_us` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

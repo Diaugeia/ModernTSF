@@ -41,7 +41,7 @@ Hierarchical Sales (hierarchical_sales/D) is the GIFT-Eval series collection bui
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
 - GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
 - Underlying data terms: the Mendeley Data records of Mancuso, Piccialli and Sudoso (https://data.mendeley.com/datasets/njdkntcpc9/1, DOI 10.17632/njdkntcpc9.1, also mirrored at UCI dataset 611, and the related https://data.mendeley.com/datasets/s8dgbs3rng/1) are licensed CC BY NC 3.0: "You are free to adapt, copy or redistribute the material, providing you attribute appropriately and do not use the material for commercial purposes." Redistribution is allowed only non-commercially with attribution.
-- Bytes are not bundled; download them with `tsf dataset gift-download`.
+- Bytes are not bundled; download them with `tsf data prepare --from gift`.
 
 ## Structure and statistics
 
@@ -98,10 +98,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/gift_eval/hierarchical_sales_D.toml`; fetch
-published files with `tsf dataset download gift_eval/hierarchical_sales_D` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/hierarchical_sales_D.toml`; fetch
+published files with `tsf data download gift_eval/hierarchical_sales_D` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

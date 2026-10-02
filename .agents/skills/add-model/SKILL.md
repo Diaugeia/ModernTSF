@@ -31,8 +31,8 @@ retrieves.
      --params "enc_in:int,hidden:int=128" [--task-mode spatiotemporal]
    ```
 
-3. Before implementing any block, `uv run tsf component search <terms>` (L0), open a
-   candidate with `tsf component show <name>` (L1), and read `--depth 2|3` only to
+3. Before implementing any block, `uv run tsf catalog search --kind component <terms>` (L0), open a
+   candidate with `tsf catalog show <name>` (L1), and read `--depth 2|3` only to
    settle a doubt. Retrieval is a shortlist: verify shapes, axes, normalization,
    masking, residual order, initialization, state, and outputs before reusing.
 4. Implement locally per [references/implementation.md](references/implementation.md);
@@ -49,7 +49,7 @@ retrieves.
    ```bash
    uv run tsf model add --name MyModel
    uv run tsf repo cards        # if components or dataset cards changed
-   uv run tsf repo audit
+   uv run tsf repo check --audit
    ```
 
 ## Chain

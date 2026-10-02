@@ -11,7 +11,17 @@ import tomllib
 from typing import Any
 
 
-ROOT = repository_root()
+def _assets_root() -> Path:
+    """The `tsf init` project owning the working directory, else the repository/wheel root."""
+    from tsflab.tsf_core.modules import find_project
+
+    found = find_project()
+    if found is not None and (found[0] / ".agents" / "tasks").is_dir():
+        return found[0]
+    return repository_root()
+
+
+ROOT = _assets_root()
 TASKS = ROOT / ".agents" / "tasks"
 SKILLS = ROOT / ".agents" / "skills"
 REQUIRED_FIELDS = {

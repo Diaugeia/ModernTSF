@@ -28,7 +28,7 @@ numbers match.
    replication separate from controlled adaptations, and inspect the matrix:
 
    ```bash
-   uv run tsf inspect --config <paper-run.toml>
+   uv run tsf run <paper-run.toml> --dry-run
    ```
 
 4. When authorized, execute through `run-experiment`; for multi-run work use the

@@ -51,7 +51,7 @@ PEMS-BAY is a spatiotemporal traffic benchmark: 325 sensors recording traffic sp
 | Span | paper: 2017-01-01 to 2017-05-31; step count implies to about 2017-06-30 | source-reported (conflicting) |
 | Quantity | traffic speed | source-reported |
 
-The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf dataset convert-traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
+The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf data prepare --from traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
 
 ## Standard protocol and known pitfalls
 
@@ -96,10 +96,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/pems_bay.toml`; fetch
-published files with `tsf dataset download pems_bay` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/pems_bay.toml`; fetch
+published files with `tsf data download pems_bay` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

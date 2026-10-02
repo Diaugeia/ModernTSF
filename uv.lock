@@ -3485,7 +3485,33 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+all = [
+    { name = "akshare" },
+    { name = "huggingface-hub" },
+    { name = "pyarrow" },
+    { name = "requests" },
+    { name = "safetensors" },
+    { name = "tensorboard" },
+    { name = "wandb" },
+]
+autoresearch = [
+    { name = "huggingface-hub" },
+    { name = "pyarrow" },
+    { name = "safetensors" },
+    { name = "tensorboard" },
+]
+data = [
+    { name = "huggingface-hub" },
+    { name = "pyarrow" },
+]
+experiments = [
+    { name = "tensorboard" },
+]
 hub = [
+    { name = "huggingface-hub" },
+    { name = "safetensors" },
+]
+models = [
     { name = "huggingface-hub" },
     { name = "safetensors" },
 ]
@@ -3513,7 +3539,9 @@ requires-dist = [
     { name = "datasets" },
     { name = "einops" },
     { name = "fvcore" },
+    { name = "huggingface-hub", marker = "extra == 'data'", specifier = ">=0.25" },
     { name = "huggingface-hub", marker = "extra == 'hub'", specifier = ">=0.25" },
+    { name = "huggingface-hub", marker = "extra == 'models'", specifier = ">=0.25" },
     { name = "huggingface-hub", marker = "extra == 'realtime'", specifier = ">=0.25" },
     { name = "ipython" },
     { name = "jupyterlab" },
@@ -3521,23 +3549,29 @@ requires-dist = [
     { name = "numpy" },
     { name = "packaging", specifier = ">=24" },
     { name = "pandas" },
+    { name = "pyarrow", marker = "extra == 'data'" },
     { name = "pyarrow", marker = "extra == 'realtime'" },
     { name = "pydantic" },
     { name = "pywavelets" },
     { name = "reformer-pytorch" },
     { name = "requests", marker = "extra == 'realtime'" },
     { name = "safetensors", marker = "extra == 'hub'", specifier = ">=0.4" },
+    { name = "safetensors", marker = "extra == 'models'", specifier = ">=0.4" },
     { name = "scikit-learn" },
     { name = "scipy" },
+    { name = "tensorboard", marker = "extra == 'experiments'", specifier = ">=2.18" },
     { name = "tensorboard", marker = "extra == 'tensorboard'", specifier = ">=2.18" },
     { name = "torch", specifier = "==2.6.0" },
     { name = "torchaudio", specifier = "==2.6.0" },
     { name = "torchdiffeq" },
     { name = "torchinfo" },
     { name = "torchvision", specifier = "==0.21.0" },
+    { name = "tsflab", extras = ["data", "models", "experiments"], marker = "extra == 'autoresearch'" },
+    { name = "tsflab", extras = ["data", "models", "experiments", "hub", "realtime", "autoresearch"], marker = "extra == 'all'" },
+    { name = "wandb", marker = "extra == 'all'", specifier = ">=0.19" },
     { name = "wandb", marker = "extra == 'wandb'", specifier = ">=0.19" },
 ]
-provides-extras = ["hub", "realtime", "tensorboard", "wandb"]
+provides-extras = ["data", "models", "experiments", "hub", "realtime", "autoresearch", "tensorboard", "wandb", "all"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.3" }]

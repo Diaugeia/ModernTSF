@@ -1,9 +1,7 @@
 """tsf realtime — rolling real-time tracks: data releases, rounds, forecasts, scores.
 
     tsf realtime list
-    tsf realtime bootstrap --track T [--push]
-    tsf realtime update    --track T [--pull] [--push]
-    tsf realtime publish   --track T [--repo OWNER/NAME]
+    tsf realtime update    --track T [--bootstrap | --no-fetch] [--pull] [--push] [--repo OWNER/NAME]
     tsf realtime open      --track T [--now ISO]
     tsf realtime baselines --track T [--round R]
     tsf realtime forecast  --track T --model M [--round R] [--set section.key=value ...]
@@ -54,7 +52,7 @@ def _update(track_id: str, pull: bool, push: bool, repo: str) -> dict | None:
 
         pull_track(store, repo)
     if not store.exists:
-        raise RuntimeError(f"no local store for {track_id!r}; run `tsf realtime bootstrap` first")
+        raise RuntimeError(f"no local store for {track_id!r}; run `tsf realtime update --bootstrap` first")
     last = pd.Timestamp(store.manifest()["last_timestamp"])
     start = last - pd.Timedelta(days=2)  # overlap re-reads late-arriving cells
     end = pd.Timestamp.now(tz=track.tz).tz_localize(None).floor("h")
@@ -104,16 +102,18 @@ def main(argv: list[str] | None = None) -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("list")
-    for name in ("bootstrap", "update", "publish", "open", "baselines", "forecast", "score"):
+    for name in ("update", "open", "baselines", "forecast", "score"):
         p = sub.add_parser(name)
         p.add_argument("--track", required=True)
-        if name == "publish":
-            p.add_argument("--repo", default=default_repo("TSFLab-RealTime"))
-        if name in {"bootstrap", "update"}:
-            p.add_argument("--push", action="store_true")
-            p.add_argument("--repo", default=default_repo("TSFLab-RealTime"))
         if name == "update":
-            p.add_argument("--pull", action="store_true")
+            p.add_argument("--push", action="store_true", help="publish the release to the Hub")
+            p.add_argument("--repo", default=default_repo("TSFLab-RealTime"))
+            p.add_argument("--pull", action="store_true", help="fetch the published store first")
+            mode = p.add_mutually_exclusive_group()
+            mode.add_argument("--bootstrap", action="store_true",
+                              help="create the store from the full history instead of appending")
+            mode.add_argument("--no-fetch", action="store_true",
+                              help="skip the source fetch; with --push, publish the local store as is")
         if name == "open":
             p.add_argument("--now")
         if name in {"baselines", "forecast"}:
@@ -147,27 +147,28 @@ def main(argv: list[str] | None = None) -> int:
                 last = store.manifest()["last_timestamp"] if store.exists else "not bootstrapped"
                 print(f"{track.id:18s} {track.mode:15s} freq={track.freq:3s} H={track.horizon:<4d} last={last}")
             return 0
-        if args.action == "bootstrap":
-            from tsflab.realtime import sources
+        if args.action == "update":
+            if args.bootstrap:
+                from tsflab.realtime import sources
 
-            store = PanelStore(args.track)
-            release = store.append(sources.bootstrap(get_track(args.track)), note="bootstrap")
-            print(f"{args.track}: bootstrapped through {release['last_timestamp']}")
-            if args.push:
+                store = PanelStore(args.track)
+                release = store.append(sources.bootstrap(get_track(args.track)), note="bootstrap")
+                print(f"{args.track}: bootstrapped through {release['last_timestamp']}")
+                if args.push:
+                    from tsflab.realtime.publish import push_release
+
+                    print("hub revision:", push_release(store, args.repo, create=True))
+            elif args.no_fetch:
                 from tsflab.realtime.publish import push_release
 
+                store = PanelStore(args.track)
+                if not store.exists:
+                    raise RuntimeError(f"no local store for {args.track!r}; run `tsf realtime update --bootstrap` first")
+                if not args.push:
+                    raise RuntimeError("--no-fetch only makes sense with --push")
                 print("hub revision:", push_release(store, args.repo, create=True))
-            return 0
-        if args.action == "publish":
-            from tsflab.realtime.publish import push_release
-
-            store = PanelStore(args.track)
-            if not store.exists:
-                raise RuntimeError(f"no local store for {args.track!r}; run `tsf realtime bootstrap` first")
-            print("hub revision:", push_release(store, args.repo, create=True))
-            return 0
-        if args.action == "update":
-            _update(args.track, args.pull, args.push, args.repo)
+            else:
+                _update(args.track, args.pull, args.push, args.repo)
             return 0
         if args.action == "open":
             now = pd.Timestamp(args.now).to_pydatetime() if args.now else None

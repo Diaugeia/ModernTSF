@@ -116,6 +116,7 @@ def test_module_discovery_matches_real_exports_and_schema():
             sys.executable,
             "-m",
             "tsflab.benchmark.cli",
+            "agent",
             "interface",
             "schema",
             "--module",

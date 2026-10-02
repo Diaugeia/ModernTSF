@@ -43,7 +43,7 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
 | 🧩 **Code & interface** | 217 methods as peers in one flat catalog, composed from 53 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison; every card opens with a tagline, tags, and a six-slot composition |
 | 🗃️ **Data** | 99 dataset presets (75 conventional, including the GIFT-Eval family, and 24 spatiotemporal or covariate; 16 of them are frozen releases of the real-time tracks), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
-| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf dataset analyze` profiles a dataset and `tsf component compose` dry-runs a recombination for AutoResearch |
+| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf data analyze` profiles a dataset and `tsf model compose` dry-runs a recombination for AutoResearch |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
 ---
@@ -69,23 +69,26 @@ codex          # or any other coding agent
 
 ```bash
 uv tool install "git+https://github.com/Diaugeia/TSFLab"   # provides `tsf`
-tsf init my-forecasting-project && cd my-forecasting-project
-tsf dataset download etth1          # pinned, checksum-verified from the Hub
-tsf inspect --config configs/runs/example.toml
+tsf init my-forecasting-project --modules data,models,experiments,release,autoresearch
+cd my-forecasting-project        # default: all modules; also writes the agent guide and skills
+tsf data download etth1          # pinned, checksum-verified from the Hub
+tsf run configs/runs/example.toml --dry-run
 tsf run configs/runs/example.toml
 ```
 
 Scaffolded run configs inherit the installed catalog through `tsflab://`
-paths, so upgrading TSFLab upgrades their defaults.
+paths, so upgrading TSFLab upgrades their defaults. Install by module with
+extras: `tsflab[data]`, `[models]`, `[experiments]`, `[hub]`, `[realtime]`,
+`[autoresearch]`, or `[all]`.
 
 **Read the catalog progressively:**
 
 ```bash
 uv run tsf catalog                                      # counts, then the next commands
 uv run tsf catalog search "reversible normalization"    # L0: one line per match
-uv run tsf model show PatchTST                          # L1: facts, composition, key ideas
-uv run tsf component show revin --depth 2               # L2: full card (--depth 3: paths)
-uv run tsf dataset analyze etth1                        # profile a dataset, map it to components
+uv run tsf catalog show PatchTST                          # L1: facts, composition, key ideas
+uv run tsf catalog show revin --depth 2               # L2: full card (--depth 3: paths)
+uv run tsf data analyze etth1                        # profile a dataset, map it to components
 uv run tsf realtime list
 ```
 
@@ -119,7 +122,7 @@ uv run tsf realtime forecast --track traffic_pems_sb --model DLinear   # produce
 uv run tsf realtime replay --track traffic_pems_sb --end 2023-12-25 --weeks 12   # backtest the protocol
 ```
 
-Each track is also a frozen static dataset (`rt_<track>`, `tsf dataset list`). See [docs/en/realtime.md](docs/en/realtime.md).
+Each track is also a frozen static dataset (`rt_<track>`, `tsf catalog list --kind dataset`). See [docs/en/realtime.md](docs/en/realtime.md).
 
 ---
 
@@ -158,7 +161,7 @@ Exact command options stay in `tsf <command> --help`.
 | --- | --- |
 | `src/tsflab/` | The framework: `benchmark` (CLI, runner, registries), `models`, `data`, `realtime`, `hub`, `tsf_core` (contracts) |
 | `configs/`, `catalog/`, `verification/` | Run, model, and dataset presets, real-time track configs, `configs/fixtures/` (smoke and synthetic test inputs, not datasets), dataset cards, verification evidence |
-| `dataset/` | Local dataset bytes fetched with `tsf dataset download` (not packaged) |
+| `dataset/` | Local dataset bytes fetched with `tsf data download` (not packaged) |
 | `apps/web/` | TSFLab Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
 | `experiments/` | Local research workspace; only `*/scripts/` is tracked |
 

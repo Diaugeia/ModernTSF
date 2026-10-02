@@ -12,13 +12,13 @@ Each output ``.npz`` file contains:
 Usage examples
 --------------
 # From a single CSV (auto-split 70/10/20):
-  uv run tsf dataset prepare \\
+  uv run tsf data prepare \\
       --input-csv dataset/ETTh1.csv \\
       --output-dir dataset/ETTh1_npy \\
       --seq-len 96 --label-len 48 --pred-len 96 --features M
 
 # From a folder that already has train/val/test CSVs:
-  uv run tsf dataset prepare \\
+  uv run tsf data prepare \\
       --input-dir dataset/my_dataset \\
       --output-dir dataset/my_dataset_npy \\
       --seq-len 96 --label-len 48 --pred-len 96 --features S --target OT

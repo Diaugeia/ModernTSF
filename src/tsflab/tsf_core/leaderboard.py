@@ -1,6 +1,6 @@
 """Validate submissions and aggregate them into a ranked leaderboard.
 
-This is the single implementation used by ``tsf leaderboard-build`` and by the
+This is the single implementation used by ``tsf result leaderboard`` and by the
 site pipeline (``apps/web/pipeline``). It depends only on pydantic and the
 standard library. Two submission shapes are accepted:
 

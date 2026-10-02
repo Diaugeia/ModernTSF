@@ -2,7 +2,7 @@
 
 Load this reference only for budgets, queueing, tracking, cancellation, or recovery.
 Discover APIs through `tsflab.benchmark.infra.api.describe_modules()` or the optional
-`tsf interface` adapter. The Agent owns decisions; services own atomic state and
+`tsf agent interface` adapter. The Agent owns decisions; services own atomic state and
 execution constraints. CLI examples below do not mandate a subprocess hop.
 
 Keep scientific TOML independent of execution policy. Use `tsf run <config>
@@ -30,7 +30,7 @@ No tracking account, round, daemon, or policy file is required for an ordinary r
 
 Round run counts, parallel slots, wall time, and GPU-hours are executable limits.
 The Agent defines research iterations and claims each stable operation ID once
-when an iteration budget applies; matrix preparation and resume do not count. Reserve external tokens/USD with `tsf usage`
+when an iteration budget applies; matrix preparation and resume do not count. Reserve external tokens/USD with `tsf env usage`
 before dispatch and settle the same operation ID afterward. Unreported external
 reasoning and billing cannot be metered by this repository. Host permissions stay with the
 host. Do not describe task permissions as an OS sandbox or launch another agent.

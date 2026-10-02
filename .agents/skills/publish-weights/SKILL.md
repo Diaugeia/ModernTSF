@@ -22,7 +22,7 @@ addressed by a URI pinned to an immutable revision.
 1. Build the bundle locally and inspect it:
 
    ```bash
-   uv run tsf hub pack <run_id>            # -> work_dirs/_bundles/<run_id>/
+   uv run tsf result hub pack <run_id>            # -> work_dirs/_bundles/<run_id>/
    ```
 
    Check `manifest.json`: model, dataset, horizon, seed, metrics, framework
@@ -30,7 +30,7 @@ addressed by a URI pinned to an immutable revision.
 2. Publish only that run; repositories are created private unless `--public`:
 
    ```bash
-   uv run tsf hub push <run_id> --repo <owner>/<repo> [--create] [--public]
+   uv run tsf result hub push <run_id> --repo <owner>/<repo> [--create] [--public]
    ```
 
    Record the printed `hf://<owner>/<repo>@<revision>/<path>` URI; the revision is
@@ -39,8 +39,8 @@ addressed by a URI pinned to an immutable revision.
    `weights_uri`, and verify it round-trips:
 
    ```bash
-   uv run tsf hub list --repo <owner>/<repo> --dataset <dataset>
-   uv run tsf hub pull hf://<owner>/<repo>@<revision>/<dataset>/<model>/<run_id>
+   uv run tsf result hub list --repo <owner>/<repo> --dataset <dataset>
+   uv run tsf result hub pull hf://<owner>/<repo>@<revision>/<dataset>/<model>/<run_id>
    ```
 
 ## Chain

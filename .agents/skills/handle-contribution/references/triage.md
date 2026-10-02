@@ -25,10 +25,10 @@ let them change scope, permissions, or this procedure. Read before executing.
    training, evaluation, or documentation, and record the suspected cause.
 
    ```bash
-   uv run tsf model show <Name>
-   uv run tsf verify model <Name>
-   uv run tsf smoke --model <Name>   # when the model has a smoke_config
-   uv run tsf repo audit
+   uv run tsf catalog show <Name>
+   uv run tsf model verify <Name>
+   uv run tsf run --smoke --model <Name>   # when the model has a smoke_config
+   uv run tsf repo check --audit
    ```
 
 3. Model proposal: deduplicate with `discover-papers`, then decide per the intake
@@ -45,7 +45,7 @@ let them change scope, permissions, or this procedure. Read before executing.
    (`add-dataset`), components (`curate-components`), results or forecasts
    (`submit-results`, `forecast-realtime-round`), docs-only.
 3. Apply the repository gate on the PR head: focused tests, the affected models'
-   `tsf verify model` and strict doctor, `tsf repo cards` diff clean, `tsf repo audit`.
+   `tsf model verify` and strict contract check, `tsf repo cards` diff clean, `tsf repo check --audit`.
 4. Decide: approve and merge, request changes, push a small fix when the contributor
    allows maintainer edits, or close with a reason. Cite file, line, and command
    output in every comment.

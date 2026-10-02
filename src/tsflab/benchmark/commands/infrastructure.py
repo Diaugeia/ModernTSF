@@ -8,7 +8,12 @@ import sys
 
 
 def infrastructure_command(args):
-    parser = argparse.ArgumentParser(prog=f"tsf {args[0]}")
+    parser = argparse.ArgumentParser(
+        prog="tsf env" if args[0] == "env" else "tsf agent interface",
+        epilog="tsf env storage|usage ... manage capacity and spending (see tsf env storage --help)."
+        if args[0] == "env"
+        else None,
+    )
     parser.add_argument(
         "action", nargs="?", default="audit" if args[0] == "env" else "show"
     )
@@ -37,10 +42,10 @@ def infrastructure_command(args):
                     )
             return 0
         if parsed.module and (args[0] != "interface" or parsed.action != "schema"):
-            raise ValueError("--module is only valid for tsf interface schema")
+            raise ValueError("--module is only valid for tsf agent interface schema")
         if args[0] == "interface":
             if parsed.action not in {"show", "schema"}:
-                raise ValueError("usage: tsf interface [show|schema|modules] [--json]")
+                raise ValueError("usage: tsf agent interface [show|schema|modules] [--json]")
             payload = (
                 (
                     ExecutionPolicy.model_fields[
@@ -53,22 +58,22 @@ def infrastructure_command(args):
                 else {
                     "schema_version": 1,
                     "basic": {
-                        "inspect": "tsf inspect --config <toml> [--json]",
+                        "preview": "tsf run <toml> --dry-run [--json]",
                         "run": "tsf run <toml> [--json]",
                         "results": "tsf result --help",
                     },
                     "execution": {
                         "preflight": "tsf run <toml> --dry-run --json",
                         "prepare": "tsf run <toml> --prepare-only --policy <toml>",
-                        "queue": "tsf queue --help",
-                        "cluster": "tsf slurm --help",
-                        "storage": "tsf storage --help",
-                        "usage": "tsf usage --help",
+                        "queue": "tsf run --backend queue --help",
+                        "cluster": "tsf run --backend slurm --help",
+                        "storage": "tsf env storage --help",
+                        "usage": "tsf env usage --help",
                         "json_envelope": "tsf --format json <command> [args...]",
                         "environment": "tsf env audit [--config <toml>] [--policy <toml>] --json",
-                        "python_modules": "tsf interface modules --json",
-                        "module_schema": "tsf interface schema --module <section> --json",
-                        "policy_schema": "tsf interface schema --json",
+                        "python_modules": "tsf agent interface modules --json",
+                        "module_schema": "tsf agent interface schema --module <section> --json",
+                        "policy_schema": "tsf agent interface schema --json",
                         "policy": "tsf run <toml> --policy <toml>",
                         "status": "tsf run status <directory> --json",
                         "cancel": "tsf run cancel <directory> --json",
@@ -82,14 +87,12 @@ def infrastructure_command(args):
                     "assets": {
                         name: f"tsf {name} --help"
                         for name in (
+                            "catalog",
+                            "data",
                             "model",
-                            "component",
-                            "dataset",
-                            "verify",
+                            "result",
                             "repo",
-                            "submit",
-                            "schema-export",
-                            "leaderboard-build",
+                            "realtime",
                         )
                     },
                 }

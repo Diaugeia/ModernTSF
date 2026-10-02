@@ -19,7 +19,7 @@ bash scripts/detect_hardware.sh
 UV_TORCH_BACKEND=auto uv sync --python 3.12            # add --extra hub --extra realtime as needed
 uv run tsf env audit --json
 uv run tsf --help
-uv run tsf repo audit
+uv run tsf repo check --audit
 ```
 
 Use an explicit backend (`cpu`, `cu121`, ...) only when auto-detection is wrong or

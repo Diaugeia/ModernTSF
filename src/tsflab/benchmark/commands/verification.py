@@ -152,7 +152,7 @@ def _execute(names: list[str], jobs: int) -> dict[str, dict[str, str] | None]:
         current = evidence_state(root, name, record).current
         contract = contracts[name]
         runtime_status = "passed" if contract is None else "failed"
-        runtime_evidence = [f"uv run tsf verify model {name}"]
+        runtime_evidence = [f"uv run tsf model verify {name}"]
         runtime_metrics: dict[str, object] = {"device": "cpu"}
         if contract is not None:
             runtime_metrics.update(contract)
@@ -228,7 +228,7 @@ def _execute(names: list[str], jobs: int) -> dict[str, dict[str, str] | None]:
         status = "passed" if all(
             check["status"] in {"passed", "not-applicable"} for check in checks.values()
         ) else "failed"
-        commands = [f"uv run tsf verify model {name}"]
+        commands = [f"uv run tsf model verify {name}"]
         for result in (paper_result, reference_result):
             if result is not None and str(result["command"]) not in commands:
                 commands.append(str(result["command"]))
@@ -306,44 +306,47 @@ def _emit(records: list[dict[str, object]], as_json: bool) -> int:
     return 0 if all(record["status"] == "passed" for record in records) else 1
 
 
+VERIFY_USAGE = (
+    "usage: tsf model verify <Name...> [--jobs N] [--json]   run the executable contract\n"
+    "       tsf model verify --all [--jobs N] [--json]       every catalog model\n"
+    "       tsf model verify --stale [--json]                list stale evidence\n"
+    "       tsf model verify --index                         rebuild verification/index.json"
+)
+
+
 def verification_command(args: list[str]) -> int:
     """Run or inspect the final route-neutral model verification contract."""
     if not args or args[0] in {"-h", "--help", "help"}:
-        print(
-            "usage: tsf verify {model,stale,all,index} [args...]\n"
-            "       tsf verify model <Name...> [--jobs N] [--json]\n"
-            "       tsf verify stale [--json]\n"
-            "       tsf verify all [--jobs N] [--json]\n"
-            "       tsf verify index"
-        )
+        print(VERIFY_USAGE)
         return 0
-    action, rest = args[0], args[1:]
-    if action == "index":
-        if rest:
-            print("tsf verify index takes no arguments", file=sys.stderr)
+    if "--index" in args:
+        if args != ["--index"]:
+            print("tsf model verify --index takes no other arguments", file=sys.stderr)
             return 2
         from tsflab.benchmark.verification import rebuild_index
 
         try:
-            root = require_checkout("tsf verify index")
+            root = require_checkout("tsf model verify --index")
         except RuntimeError as exc:
             print(str(exc), file=sys.stderr)
             return 2
         index = rebuild_index(root)
         print(f"Indexed verification evidence for {len(index.models)} models")
         return 0
-    if action not in {"model", "stale", "all"}:
-        print("usage: tsf verify {model,stale,all,index} [args...]", file=sys.stderr)
-        return 2
 
-    parser = argparse.ArgumentParser(prog=f"tsf verify {action}")
-    if action == "model":
-        parser.add_argument("names", nargs="+")
+    parser = argparse.ArgumentParser(prog="tsf model verify")
+    parser.add_argument("names", nargs="*")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--all", action="store_true", help="verify every catalog model")
+    mode.add_argument("--stale", action="store_true", help="list models with stale evidence")
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--json", action="store_true")
-    parsed = parser.parse_args(rest)
+    parsed = parser.parse_args(args)
     if parsed.jobs < 1:
         parser.error("--jobs must be positive")
+    if bool(parsed.names) == (parsed.all or parsed.stale):
+        parser.error("name models, or pass exactly one of --all / --stale / --index")
+    action = "stale" if parsed.stale else "all" if parsed.all else "model"
 
     from tsflab.benchmark.cards.metadata import model_records
 
@@ -352,7 +355,7 @@ def verification_command(args: list[str]) -> int:
     try:
         contracts = None
         if action != "stale":
-            require_checkout(f"tsf verify {action}")
+            require_checkout(f"tsf model verify ({action})")
             contracts = _execute(names, parsed.jobs)
         records = _records(names, parsed.jobs, False, contracts)
     except (RuntimeError, ValueError) as exc:

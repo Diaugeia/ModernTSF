@@ -14,4 +14,4 @@ verified facts.
 - Document split conventions, `drop_last`, scaling, zeros or sentinels, and leakage
   risks under "Standard protocol and known pitfalls"; list sibling presets in
   `related`. A literature protocol that differs goes in `literature_protocol`.
-- Verify with `uv run tsf dataset show <name>` and `uv run tsf dataset audit`.
+- Verify with `uv run tsf catalog show <name>` and `uv run tsf data audit`.

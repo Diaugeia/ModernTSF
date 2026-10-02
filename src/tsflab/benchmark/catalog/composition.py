@@ -1,6 +1,6 @@
 """Validate a recombination spec against the component, model, and loss catalogs.
 
-``tsf component compose SPEC.toml`` validates a recombination spec and writes nothing
+``tsf model compose SPEC.toml`` validates a recombination spec and writes nothing
 by default. It checks that every slot option names a real catalog entry, that component
 public symbols import, and that any free-form block stays inside its line budget; it
 also resolves the slots against the executable slot registry
@@ -186,13 +186,13 @@ def _head_output(assignment: dict[str, str]) -> str:
 
 
 def compose_command(args: list[str], root: Path) -> int:
-    """CLI body for ``tsf component compose``."""
+    """CLI body for ``tsf model compose``."""
     import argparse
     import json
     import sys
 
     parser = argparse.ArgumentParser(
-        prog="tsf component compose",
+        prog="tsf model compose",
         description=(
             "Validate a recombination spec. Without flags it writes nothing. "
             "--write-config emits a runnable run config for the Composed model; "

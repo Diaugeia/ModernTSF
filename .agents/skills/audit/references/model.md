@@ -3,7 +3,7 @@
 Check that one catalog entry's claims, code, and evidence agree.
 
 ```bash
-uv run tsf model show <Name>
+uv run tsf catalog show <Name>
 uv run tsf model audit <Name>
 ```
 
@@ -26,9 +26,9 @@ uv run tsf model audit <Name>
    `not-applicable` without it):
 
    ```bash
-   uv run tsf verify model <Name>
-   uv run tsf repo doctor --strict --models <Name>
-   uv run tsf smoke --model <Name>   # only when model show reports a smoke_config
+   uv run tsf model verify <Name>
+   uv run tsf repo check --contracts strict --models <Name>
+   uv run tsf run --smoke --model <Name>   # only when `tsf catalog show` reports a smoke_config
    ```
 
 Report findings per layer (metadata, source facts, implementation, evidence), each

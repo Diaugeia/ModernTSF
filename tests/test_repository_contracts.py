@@ -189,7 +189,7 @@ class RepositoryContractTests(unittest.TestCase):
     def test_cli_routes_lightweight_catalog_descriptions(self) -> None:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["component", "show", "quantile_head", "--json"]), 0)
+            self.assertEqual(cli_main(["catalog", "show", "quantile_head", "--kind", "component", "--json"]), 0)
         payload = json.loads(output.getvalue())
         self.assertEqual(payload["module"], "tsflab.models._components.quantile_head")
         self.assertIn("quantile_dlinear", payload["consumers"])
@@ -197,7 +197,7 @@ class RepositoryContractTests(unittest.TestCase):
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["dataset", "list", "--json"]), 0)
+            self.assertEqual(cli_main(["catalog", "list", "--kind", "dataset", "--json"]), 0)
         datasets = json.loads(output.getvalue())
         self.assertEqual(len(datasets), EXPECTED_DATASETS)
         self.assertTrue(all(record["card"].endswith("/README.md") for record in datasets))
@@ -205,7 +205,7 @@ class RepositoryContractTests(unittest.TestCase):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             self.assertEqual(
-                cli_main(["dataset", "search", "electricity", "15t", "--json"]),
+                cli_main(["catalog", "search", "--kind", "dataset", "electricity", "15t", "--json"]),
                 0,
             )
         dataset_matches = json.loads(output.getvalue())
@@ -214,14 +214,15 @@ class RepositoryContractTests(unittest.TestCase):
         for resource in ("component", "dataset"):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
-                self.assertEqual(cli_main([resource, "audit"]), 0)
+                audit_argv = ["model", "audit", "--components"] if resource == "component" else ["data", "audit"]
+                self.assertEqual(cli_main(audit_argv), 0)
             expected = (f"{len(COMPONENT_CATALOG.names())} components" if resource == "component"
                         else f"{len(dataset_records(Path(__file__).resolve().parents[1]))}/{len(dataset_records(Path(__file__).resolve().parents[1]))}")
             self.assertIn(expected, output.getvalue())
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["model", "list", "--json"]), 0)
+            self.assertEqual(cli_main(["catalog", "list", "--kind", "model", "--json"]), 0)
         records = json.loads(output.getvalue())
         self.assertEqual(len(records), EXPECTED_MODELS)
         self.assertTrue(all(record["summary"] for record in records))
@@ -231,8 +232,10 @@ class RepositoryContractTests(unittest.TestCase):
             self.assertEqual(
                 cli_main(
                     [
-                        "model",
+                        "catalog",
                         "search",
+                        "--kind",
+                        "model",
                         "exogenous",
                         "transformer",
                         "--json",
@@ -247,7 +250,7 @@ class RepositoryContractTests(unittest.TestCase):
 
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(cli_main(["model", "show", "Linear", "--json"]), 0)
+            self.assertEqual(cli_main(["catalog", "show", "Linear", "--kind", "model", "--json"]), 0)
         shown = json.loads(output.getvalue())
         self.assertEqual(shown["verification"]["status"], "passed")
         self.assertEqual(shown["blockers"], [])
@@ -257,8 +260,10 @@ class RepositoryContractTests(unittest.TestCase):
             self.assertEqual(
                 cli_main(
                     [
+                        "catalog",
+                        "search",
+                        "--kind",
                         "component",
-                        "match",
                         "patch",
                         "transformer",
                         "backbone",
@@ -366,19 +371,19 @@ class RepositoryContractTests(unittest.TestCase):
             ("model", "Linear"),
             ("dataset", "etth1"),
         ):
-            l0 = run(resource, "show", name, "--depth", "0").rstrip("\n")
+            l0 = run("catalog", "show", name, "--kind", resource, "--depth", "0").rstrip("\n")
             self.assertEqual(len(l0.splitlines()), 1)
             self.assertEqual(len(l0.split("\t")), 4)
-            l1 = run(resource, "show", name, "--depth", "1")
-            l2 = run(resource, "show", name, "--depth", "2")
+            l1 = run("catalog", "show", name, "--kind", resource, "--depth", "1")
+            l2 = run("catalog", "show", name, "--kind", resource, "--depth", "2")
             self.assertTrue(l1.startswith("---"))
             self.assertLess(len(l1), len(l2))
-            paths = run(resource, "show", name, "--depth", "3")
+            paths = run("catalog", "show", name, "--kind", resource, "--depth", "3")
             self.assertIn("README.md", paths)
-            payload = json.loads(run(resource, "show", name, "--depth", "2", "--json"))
+            payload = json.loads(run("catalog", "show", name, "--kind", resource, "--depth", "2", "--json"))
             self.assertEqual(payload["depth"], 2)
             self.assertIn("text", payload)
-        interface = run("component", "show", "revin", "--depth", "1")
+        interface = run("catalog", "show", "revin", "--kind", "component", "--depth", "1")
         self.assertIn("## Interface", interface)
         self.assertNotIn("## Origin and granularity", interface)
         hits = run("catalog", "search", "reversible", "instance", "normalization", "--limit", "3")

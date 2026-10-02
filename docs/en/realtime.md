@@ -73,7 +73,7 @@ The stock, AirNow, Open-Meteo, and ERCOT tracks need no key. Notes per source:
 - **OpenAQ.** `monitor_only` keeps government reference monitors and drops
   low-cost sensor networks; sensors are spread evenly over the listed countries.
 
-A new track is bootstrapped once by a maintainer (`tsf realtime bootstrap --track T
+A new track is bootstrapped once by a maintainer (`tsf realtime update --bootstrap --track T
 --push`); the weekly workflow then pulls the store from the Hub and appends.
 
 ## Data releases

@@ -52,7 +52,7 @@ NN5 is the daily cash-withdrawal history of 111 ATMs from the NN5 forecasting co
 | Dates | file dates 1996-03-18 to 1998-05-17 are nominal; the competition covers two years of daily data | source-reported |
 | Missing values | none in the TFB file (imputed 'without missing values' version) | source-reported |
 
-The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf dataset inspect --config configs/datasets/nn5.toml` on your copy before relying on them.
+The repository neither ships nor pins this file (`dataset/` is local and the Hub has no published copy), so the numbers below are those of the standard public distribution and a different copy may differ. Run `tsf data inspect --config configs/datasets/nn5.toml` on your copy before relying on them.
 
 ## Standard protocol and known pitfalls
 
@@ -100,10 +100,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/nn5.toml`; fetch
-published files with `tsf dataset download nn5` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/nn5.toml`; fetch
+published files with `tsf data download nn5` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

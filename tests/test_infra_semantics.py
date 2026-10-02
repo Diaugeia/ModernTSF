@@ -158,7 +158,7 @@ def test_cli_envelope_calls_route_directly_and_shares_result_shape(monkeypatch, 
         raise AssertionError("unexpected CLI subprocess")
 
     monkeypatch.setattr(subprocess, "run", no_subprocess)
-    assert main(["--format", "json", "interface", "schema", "--module", "storage"]) == 0
+    assert main(["--format", "json", "agent", "interface", "schema", "--module", "storage"]) == 0
     actual = json.loads(capsys.readouterr().out)
     expected = invoke(lambda: actual["data"]).to_dict()
     assert {key: actual[key] for key in expected} == expected

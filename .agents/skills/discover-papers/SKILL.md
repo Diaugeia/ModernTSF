@@ -13,7 +13,7 @@ scanning or dispatching.
 ## Inputs
 
 - A time window and optional focus (task, architecture, data regime).
-- The deduplication baseline: `uv run tsf model list --json` (paper URLs, titles,
+- The deduplication baseline: `uv run tsf catalog list --kind model --json` (paper URLs, titles,
   public names from the model cards).
 
 ## Steps
@@ -32,7 +32,7 @@ scanning or dispatching.
 ## Chain
 
 - Module: Models.
-- Reads: `tsf model list --json` and model cards at L0 for deduplication.
+- Reads: `tsf catalog list --kind model --json` and model cards at L0 for deduplication.
 - Produces: a ranked, source-linked candidate queue (paper, code, license facts).
 - Hands off to: `add-model` or `integrate-foundation-model` (one approved paper each).
 

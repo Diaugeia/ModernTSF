@@ -7,7 +7,7 @@ acceptance = [
   "For component curation, inventory component cards first, prefer reuse over a new extraction, compare equations, axes, normalization, masking, state, initialization, and outputs, and prove output and gradient equivalence before deleting local code.",
   "Record reuse, extraction, or keep-local decisions; a fully reviewed no-change result is valid.",
   "Never edit generated status or evidence to disguise an incomplete implementation; keep failed checks visible.",
-  "Regenerate only canonical projections, then pass affected tests, model audit, component audit, repository audit, and the unscoped strict doctor and `tsf verify all`.",
+  "Regenerate only canonical projections, then pass affected tests, model audit, component audit, repository audit, and the unscoped strict contract check and `tsf model verify --all`.",
   "Report unresolved paper, license, reference, or runtime failures exactly without weakening or bypassing a gate.",
 ]
 prompt = """

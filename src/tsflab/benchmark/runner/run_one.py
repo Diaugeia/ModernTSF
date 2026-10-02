@@ -301,7 +301,7 @@ def _write_run_outputs(
     summary_row["model_variant"] = canonical_hash(snapshot["model"])
     write_csv_summary(summary_path, summary_row)
 
-    # Self-describing, schema-validated record.json (one per run) for tsf submit
+    # Self-describing, schema-validated record.json (one per run) for tsf result submit
     # / TSFLab Leaderboard ingestion. Invalid artifacts fail closed. Imported lazily to avoid
     # import-order coupling with benchmark.utils package init.
     from tsflab.benchmark.utils.record import write_run_record

@@ -41,7 +41,7 @@ ETT-small (Electricity Transformer Temperature) records two years of data from t
 - Producer: Haoyi Zhou et al. (Beihang University) with Beijing Guowang Fuda Science & Technology Development Co.; repository https://github.com/zhouhaoyi/ETDataset.
 - Cite: Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting (Zhou et al., AAAI 2021), https://arxiv.org/abs/2012.07436. The upstream README asks users to cite Informer.
 - License: Creative Commons Attribution-NoDerivatives 4.0 International (the repository's LICENSE file). Verbatim copies with attribution are allowed; a modified, re-split, or re-packaged copy is a derivative and is not covered, so publish only unmodified files. The Informer code repository is Apache-2.0 (separate from the data).
-- Hub: `tsf dataset download --list` shows whether this preset is published; check the license before running `tsf dataset publish`.
+- Hub: `tsf data download --list` shows whether this preset is published; check the license before running `tsf data publish`.
 
 ## Structure and statistics
 
@@ -109,10 +109,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/etth1.toml`; fetch
-published files with `tsf dataset download etth1` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/etth1.toml`; fetch
+published files with `tsf data download etth1` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

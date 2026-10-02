@@ -11,10 +11,10 @@ Two patterns:
 
 Examples
 --------
-    uv run tsf dataset add --name my_csv --pattern custom \
+    uv run tsf data add --name my_csv --pattern custom \
         --path ./dataset/my_csv/my_csv.csv --target OT
 
-    uv run tsf dataset add --name my_special --pattern single \
+    uv run tsf data add --name my_special --pattern single \
         --path ./dataset/my_special/my_special.csv --target OT
 """
 from __future__ import annotations
@@ -142,7 +142,7 @@ def _insert_name_map(name: str) -> str:
     lines = text.splitlines()
     start = next(i for i, ln in enumerate(lines) if ln.startswith("DATASET_NAME_MAP"))
     close = next(i for i in range(start, len(lines)) if lines[i].rstrip() == "}")
-    entry = f'    # Scaffolded by `tsf dataset add`\n    "{name}": "tsflab.data.datasets.{name}",'
+    entry = f'    # Scaffolded by `tsf data add`\n    "{name}": "tsflab.data.datasets.{name}",'
     lines.insert(close, entry)
     NAME_MAP_FILE.write_text("\n".join(lines) + "\n")
     return "inserted"
@@ -158,7 +158,7 @@ def main() -> None:
     ap.add_argument("--force", action="store_true", help="Overwrite existing files")
     args = ap.parse_args()
     try:
-        require_checkout("tsf dataset add")
+        require_checkout("tsf data add")
     except RuntimeError as exc:
         raise SystemExit(f"error: {exc}") from None
 
@@ -204,7 +204,7 @@ def main() -> None:
     if args.pattern == "single":
         print(f"  1. Implement the loader in src/tsflab/data/datasets/{name}.py (_read_data).")
     print(f"  - Fill every TODO in catalog/datasets/{name}/README.md with verified facts")
-    print("    (source, license, statistics, protocol); `tsf dataset audit` fails until done.")
+    print("    (source, license, statistics, protocol); `tsf data audit` fails until done.")
     print(f"  - Put the data at {data_path}, then reference the config from a")
     print(f"    run config via `extends = [..., \"../datasets/{name}.toml\", ...]`.")
 

@@ -38,8 +38,8 @@ demonstrated need, or bundle weights in TSFLab.
 
 ```bash
 uv run tsf model artifacts <Name>
-uv run tsf verify model <Name>
-uv run tsf repo doctor --strict --models <Name>
+uv run tsf model verify <Name>
+uv run tsf repo check --contracts strict --models <Name>
 ```
 
 ## Chain

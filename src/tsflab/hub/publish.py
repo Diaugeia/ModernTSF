@@ -74,7 +74,7 @@ Files behind the TSFLab dataset presets, laid out exactly as the local
 `configs/hub/datasets.json` of [TSFLab]({_SOURCE}); fetch them with
 
 ```bash
-tsf dataset download <preset>   # or --all
+tsf data download <preset>   # or --all
 ```
 
 Every dataset keeps the license of its original source; see its TSFLab
@@ -94,7 +94,7 @@ revision. Maintained by the `weekly` workflow.""")},
 # TSFLab trained weights
 
 Checksummed safetensors bundles at `<dataset>/<model>/<run_id>/`, published with
-`tsf hub push` and loaded with `tsf hub pull hf://{owner}/TSFLab-Weights@<revision>/...`.
+`tsf result hub push` and loaded with `tsf result hub pull hf://{owner}/TSFLab-Weights@<revision>/...`.
 Source: [TSFLab]({_SOURCE}).""")},
         {"repo_id": f"{owner}/TSFLab", "repo_type": "space", "card": _card(
             {"title": "TSFLab Leaderboard", "emoji": '"📈"', "colorFrom": "gray",

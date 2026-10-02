@@ -4,14 +4,14 @@
 
 Read the shortest card level first and escalate only for survivors:
 
-1. Names and one-line summaries: `uv run tsf model list --json`,
-   `uv run tsf component list`, plus lexical shortlists
-   (`uv run tsf model search <terms>`, `uv run tsf component match <terms> --json`).
+1. Names and one-line summaries: `uv run tsf catalog list --kind model --json`,
+   `uv run tsf catalog list --kind component`, plus lexical shortlists
+   (`uv run tsf catalog search --kind model <terms>`, `uv run tsf catalog search --kind component <terms> --json`).
    Retrieve at the shortest card level the CLI offers. Start from the fired rules'
    `models` and `components`, then widen with these searches.
-2. Structured facts for the shortlist (about 8 models): `uv run tsf model show <Name>`
+2. Structured facts for the shortlist (about 8 models): `uv run tsf catalog show <Name>`
    (parameter schema, components, task modes, output type) and
-   `uv run tsf component show <name>` (contract, public symbols, consumers).
+   `uv run tsf catalog show <name>` (contract, public symbols, consumers).
 3. Full model or component card (`model_card` or `card` path from step 2) only for
    at most 3 finalists; read the method, structure, inputs/outputs, and differences.
 
@@ -32,7 +32,7 @@ Run before any search, on the same split, horizon, lookback, metric, and seeds:
 
 Use presets in `configs/models/<Name>.toml`; a run file extends `configs/base.toml`, one
 `configs/datasets/<preset>.toml`, and one model preset, and overrides only scientific
-variables. Preview the matrix with `uv run tsf inspect --config <run.toml>` and
+variables. Preview the matrix with `uv run tsf run <run.toml>` --dry-run and
 `uv run tsf run <run.toml> --dry-run` before any execution; execute with
 `uv run tsf run <run.toml> --round <round-id>` only when authorized. Prefer one horizon
 and one seed for the panel; the panel costs at most a third of the run budget.

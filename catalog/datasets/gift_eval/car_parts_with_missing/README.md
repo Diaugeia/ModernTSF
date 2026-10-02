@@ -40,7 +40,7 @@ Car Parts (car_parts_with_missing) is the GIFT-Eval series collection built from
 - Original source: Car Parts (Hyndman et al.), via the Monash Time Series Forecasting Repository; https://zenodo.org/records/4656022.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
 - License of the underlying data: `CC-BY-4.0` (explicit license found for the source).
-- Bytes are not bundled; download them with `tsf dataset gift-download`.
+- Bytes are not bundled; download them with `tsf data prepare --from gift`.
 
 ## Structure and statistics
 
@@ -98,10 +98,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/gift_eval/car_parts_with_missing.toml`; fetch
-published files with `tsf dataset download gift_eval/car_parts_with_missing` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/car_parts_with_missing.toml`; fetch
+published files with `tsf data download gift_eval/car_parts_with_missing` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

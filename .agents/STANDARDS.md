@@ -35,7 +35,7 @@ enforces both.
 
 ## Progressive disclosure
 Start at `tsf catalog` (what exists), search L0 lines (`tsf catalog search`: name,
-kind, tagline, tags), open L1 (`tsf <kind> show`: front matter, key ideas or interface,
+kind, tagline, tags), open L1 (`tsf catalog show`: front matter, key ideas or interface,
 constraints), escalate to L2 card or L3 files only when a decision needs it. A model card
 adds `tagline` (<=120 chars), `tags` (with one architecture family), `composition`
 (six slots `normalization|decomposition|temporal|channel|head|loss=component:/local:/loss:/none`,
@@ -58,7 +58,7 @@ comparison when applicable, and runtime profile; `verification/evidence/<Model>.
 records the result; `verification/index.json` is regenerated. Checks cover paper
 structure, equations, construction, forward, backward, finite outputs, active gradients,
 state-dict round trip, CPU, batch/sequence bounds, input contract, and reference
-comparison (official code, else `not-applicable`). Use `tsf verify model|stale|all|index`.
+comparison (official code, else `not-applicable`). Use `tsf model verify <Name...>|--all|--stale|--index`.
 
 ## Data, experiments, and model artifacts
 Dataset bytes live only in `dataset/`, loaders in `src/tsflab/data/`, cards in

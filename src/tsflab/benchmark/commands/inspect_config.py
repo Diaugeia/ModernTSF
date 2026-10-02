@@ -1,12 +1,8 @@
-"""Inspect resolved run configurations and summarize sweep coverage."""
+"""Summarize resolved run-configuration sweep coverage for `tsf run --dry-run`."""
 
 from __future__ import annotations
 
-import argparse
-
 import json
-
-from tsflab.benchmark.config.loader import load_config
 
 
 def _format_values(values):
@@ -31,18 +27,8 @@ def _flatten_params(params: dict, prefix: str = "") -> dict:
     return flat
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Inspect a run config and report sweep coverage."
-    )
-    parser.add_argument("--config", required=True, help="Path to a run TOML file.")
-    parser.add_argument("--json", action="store_true", help="Resolved configurations as JSON")
-    args = parser.parse_args()
-
-    configs = load_config(args.config)
-    if args.json:
-        print(json.dumps({"schema_version": 1, "total_runs": len(configs), "runs": [item.config.model_dump(mode="json") for item in configs]}, indent=2))
-        return
+def summarize(configs) -> None:
+    """Print the resolved sweep coverage of loaded run configurations."""
     print(f"Total runs: {len(configs)}")
 
     datasets = {cfg.config.dataset.name for cfg in configs}
@@ -69,7 +55,3 @@ def main() -> None:
     print("Sweep values:")
     for key in sweep_keys:
         print(f"  {key}: {_format_values(sweep_values[key])}")
-
-
-if __name__ == "__main__":
-    main()

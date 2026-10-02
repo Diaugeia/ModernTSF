@@ -148,7 +148,7 @@ jobs:
           {
             echo
             echo "Classify the issue below as exactly one kind:"
-            echo "- paper: a request to add a forecasting method. Use the catalog (tsf catalog search, tsf model show)"
+            echo "- paper: a request to add a forecasting method. Use the catalog (tsf catalog search, tsf catalog show)"
             echo "  to detect duplicates, read the paper and official code, set include=true only for an"
             echo "  implementable method that fits the catalog, and choose a CamelCase model_name yourself."
             echo "- problem: a defect report. Try to reproduce it with the smallest configuration; set"
@@ -295,8 +295,8 @@ jobs:
         env:
           MODEL_NAME: ${{ matrix.item.model_name }}
         run: |
-          uv run tsf verify model "$MODEL_NAME"
-          uv run tsf repo doctor --strict --models "$MODEL_NAME"
+          uv run tsf model verify "$MODEL_NAME"
+          uv run tsf repo check --contracts strict --models "$MODEL_NAME"
       - name: Mergeable check
         run: uv run tsf repo check --scope changed --base HEAD
       - name: Render the review prompt

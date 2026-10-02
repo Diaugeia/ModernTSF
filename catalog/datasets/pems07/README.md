@@ -40,7 +40,7 @@ PEMS07 is a spatiotemporal traffic benchmark: 883 sensors recording traffic flow
 
 - Producer: Caltrans PeMS District 7 data, processed by Song et al. (STSGCN, https://github.com/Davidham3/STSGCN) and Guo et al. (ASTGCN, https://github.com/Davidham3/ASTGCN, AAAI 2019). Neither repository carries a license (GitHub API reports none for STSGCN; ASTGCN redirects to a repository without one), so the packaged files have no stated license. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
 - Cite Spatial-Temporal Synchronous Graph Convolutional Networks (Song et al., AAAI 2020), https://ojs.aaai.org/index.php/AAAI/article/view/5438, and the ASTGCN paper (https://ojs.aaai.org/index.php/AAAI/article/view/3881).
-- TSFLab does not ship the data (the STSGCN files are distributed through Baidu Pan); convert with `tsf dataset convert-traffic`.
+- TSFLab does not ship the data (the STSGCN files are distributed through Baidu Pan); convert with `tsf data prepare --from traffic`.
 
 ## Structure and statistics
 
@@ -52,7 +52,7 @@ PEMS07 is a spatiotemporal traffic benchmark: 883 sensors recording traffic flow
 | Frequency | 5 minutes (12 per hour) | source-reported |
 | Quantity | traffic flow (the ASTGCN files for PEMS04/08 also carry occupancy and speed; STSGCN and this preset use flow only) | source-reported |
 
-The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf dataset convert-traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
+The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf data prepare --from traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
 
 ## Standard protocol and known pitfalls
 
@@ -97,10 +97,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/pems07.toml`; fetch
-published files with `tsf dataset download pems07` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/pems07.toml`; fetch
+published files with `tsf data download pems07` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

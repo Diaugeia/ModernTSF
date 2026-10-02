@@ -17,7 +17,7 @@ append calendar covariates (time-of-day, day-of-week) with ``--add-time``.
 Examples
 --------
     # From a raw (T, N) speed matrix + an (N, N) adjacency:
-    uv run tsf dataset convert-traffic \
+    uv run tsf data prepare --from traffic \
         --values dataset/metr_la/metr-la.npz --values-key data \
         --adj dataset/metr_la/adj_mx.pkl \
         --output-dir dataset/metr_la --add-time --freq-min 5

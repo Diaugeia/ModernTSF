@@ -25,10 +25,10 @@ strict parameter schema, a preset, and a card. The card and the profile from
    traffic bundle or the UltraTraffic archive) per
    [references/prepare.md](references/prepare.md); never alter the source files.
 3. Scaffold a CSV-backed preset; for traffic bundles read
-   `uv run tsf dataset convert-traffic --help` and pass explicit inputs and splits:
+   `uv run tsf data prepare --from traffic --help` and pass explicit inputs and splits:
 
    ```bash
-   uv run tsf dataset add --name my_data --pattern custom \
+   uv run tsf data add --name my_data --pattern custom \
      --path ./dataset/my_data/my_data.csv --target OT
    ```
 
@@ -43,9 +43,9 @@ strict parameter schema, a preset, and a card. The card and the profile from
    [references/card.md](references/card.md), then exercise the data:
 
    ```bash
-   uv run tsf dataset inspect --config configs/datasets/my_data.toml
+   uv run tsf data inspect --config configs/datasets/my_data.toml
    uv run tsf repo cards
-   uv run tsf dataset audit
+   uv run tsf data audit
    ```
 
 ## Chain
@@ -59,7 +59,7 @@ strict parameter schema, a preset, and a card. The card and the profile from
 
 - Train-only scaling, correct feature/target selection, stable split boundaries,
   and adjacency injection where declared.
-- `uv run tsf dataset audit` passes: required facts curated, no `TODO`, generated
+- `uv run tsf data audit` passes: required facts curated, no `TODO`, generated
   block current. Tests that pin the dataset count are updated.
 
 ## Stop and hand off

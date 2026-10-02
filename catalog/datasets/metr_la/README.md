@@ -40,7 +40,7 @@ METR-LA is a spatiotemporal traffic benchmark: 207 sensors recording traffic spe
 
 - Producer: DCRNN authors (USC and Caltech) packaged Los Angeles County loop-detector data (Jagadish et al., 2014); repository https://github.com/liyaguang/DCRNN (code MIT per GitHub API). Checked: the DCRNN README (data only via Google Drive / Baidu Yun, no data terms) and the repository license. No terms from the original LA County / Caltrans provider were found for this extract (unlike PEMS-BAY, it is not documented as a PeMS download), so `license` and `redistribution` stay `unknown`.
 - Cite: Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018), https://arxiv.org/abs/1707.01926.
-- Obtain `metr-la.h5` and `adj_mx.pkl` from the DCRNN README; TSFLab does not ship them (see `tsf dataset convert-traffic --help`).
+- Obtain `metr-la.h5` and `adj_mx.pkl` from the DCRNN README; TSFLab does not ship them (see `tsf data prepare --from traffic --help`).
 
 ## Structure and statistics
 
@@ -52,7 +52,7 @@ METR-LA is a spatiotemporal traffic benchmark: 207 sensors recording traffic spe
 | Quantity | traffic speed | source-reported |
 | Missing values | zeros mark missing in the original h5; none as NaN in the TFB copy | source-reported |
 
-The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf dataset convert-traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
+The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf data prepare --from traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
 
 ## Standard protocol and known pitfalls
 
@@ -97,10 +97,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/metr_la.toml`; fetch
-published files with `tsf dataset download metr_la` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/metr_la.toml`; fetch
+published files with `tsf data download metr_la` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

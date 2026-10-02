@@ -30,7 +30,7 @@ Use a family member when you need breadth (many domains, frequencies, series cou
 - Paper: https://arxiv.org/abs/2410.10393. Data: https://huggingface.co/datasets/Salesforce/GiftEval. Code: https://github.com/SalesforceAIResearch/gift-eval. Leaderboard: https://huggingface.co/spaces/Salesforce/GIFT-Eval.
 - License of the benchmark packaging: `apache-2.0` (Hugging Face dataset card; the repository LICENSE is Apache License 2.0, Copyright 2024 Salesforce, Inc.).
 - Each underlying dataset keeps its own license. The member cards record it: CC-BY-4.0 for the Monash, M4, KDD Cup 2018, and UCI Electricity series; CC-BY-ND-4.0 for ETT; CDLA-Sharing-1.0 for BizITObs; and `unknown` for the Solar, LOOP Seattle, M-DENSE, SZ-Taxi, Bitbrains, Jena weather, Hierarchical Sales, and Restaurant sources. `redistribution: "unknown"` on a member means no explicit terms were found, not that republishing is allowed.
-- TSFLab does not bundle these bytes. Download with `tsf dataset gift-download`; it links `./dataset/gift_eval` to the download directory.
+- TSFLab does not bundle these bytes. Download with `tsf data prepare --from gift`; it links `./dataset/gift_eval` to the download directory.
 
 ## Structure and statistics
 
@@ -43,7 +43,7 @@ All numbers are source-reported (GIFT-Eval paper, Table 13, and the repository's
 ## Standard protocol and known pitfalls
 
 - Official protocol: the last 10% of each series is test, scored with non-overlapping rolling windows of length equal to the horizon (at most 20 windows); the window before the test region serves as validation. Context length is chosen by the model.
-- The loader in this repository derives the number of test windows from the shortest series of the dataset (`min(max(1, ceil(0.1 * min_len / pred_len)), 20)`, 1 for M4), which can differ from the per-dataset counts in the paper. Inspect `tsf dataset show gift_eval/<id>` and the loader before comparing against leaderboard numbers.
+- The loader in this repository derives the number of test windows from the shortest series of the dataset (`min(max(1, ceil(0.1 * min_len / pred_len)), 20)`, 1 for M4), which can differ from the per-dataset counts in the paper. Inspect `tsf catalog show gift_eval/<id>` and the loader before comparing against leaderboard numbers.
 - The scaler is fitted on the training regions of all series together; z-scored losses weigh series by their original variance unlike the scale-free official metrics (MASE, CRPS on the leaderboard).
 - Leakage: the pretraining corpora of TimesFM, Chronos, and Moirai partly overlap GIFT-Eval test data (source-reported). Zero-shot claims need the GIFT-Eval pretrain split or a verified clean corpus.
 - `*_with_missing` series contain NaNs that the loader passes through; handle them in the model or the task.

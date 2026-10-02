@@ -35,16 +35,16 @@ consumes; Maintenance (audit, contributions) keeps it sound. Skill and task map:
 - Human-facing material lives in `README.md`, `CONTRIBUTING.md`, English `docs/`,
   and resource cards, limited to public APIs. Agent-only procedures live in `.agents/`.
 - Descriptive truth lives in cards; runtime truth in schemas, specs, configs, and
-  tests. Read cards progressively: `tsf catalog`, `tsf catalog search`, `tsf <kind>
-  show <name>`, and `--depth 2|3` only when a decision needs it.
+  tests. Read cards progressively: `tsf catalog`, `tsf catalog search`,
+  `tsf catalog show <name>`, and `--depth 2|3` only when a decision needs it.
 
 ## Work and verification
 Use the matching Skill; read `.agents/STANDARDS.md` sections only for structural,
 provenance, or Skill changes. Set up and verify with:
 ```bash
 UV_TORCH_BACKEND=auto uv sync --python 3.12
-uv run tsf repo audit
+uv run tsf repo check --audit
 ```
-Run narrow checks, affected smoke checks, and `tsf repo doctor --strict --models
+Run narrow checks, affected smoke checks, and `tsf repo check --contracts strict --models
 <Name...>`; run it unscoped before release. Code, contracts, cards, and evidence
 must agree.

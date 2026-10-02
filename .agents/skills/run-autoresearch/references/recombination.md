@@ -21,8 +21,8 @@ options promoted by fired rules.
 
 Option syntax is `component:<name>`, `model:<Name>` (donor design whose idea is borrowed;
 models never import peers), or `loss:<name>`. Components must be real
-(`uv run tsf component list`); check shapes, axes, normalization, masking, and residual
-order with `tsf component show` and the component card before combining.
+(`uv run tsf catalog list --kind component`); check shapes, axes, normalization, masking, and residual
+order with `tsf catalog show` and the component card before combining.
 
 ## Fill and prune from the profile
 
@@ -63,7 +63,7 @@ temporal = ["component:channel_wise_linear"]
 loss = ["loss:mae"]
 ```
 
-`uv run tsf component compose <spec.toml>` writes nothing. It verifies component, model,
+`uv run tsf model compose <spec.toml>` writes nothing. It verifies component, model,
 and loss names, public-symbol imports, one loss, the free-form budget, and prints the
 `tsf model scaffold` command and a provenance sentence. It does not prove shape
 compatibility.
@@ -77,6 +77,6 @@ Only with authorization, after finalists beat the baseline panel with confirmati
    profile facts, the research round id, and material differences; it claims no paper
    or official-code provenance that does not exist (use the research report as the source).
 2. Add a preset in `configs/models/<Name>.toml`, tests, and a verification entry; run
-   `uv run tsf verify model <Name>`, `uv run tsf repo cards`, `uv run tsf repo audit`.
+   `uv run tsf model verify <Name>`, `uv run tsf repo cards`, `uv run tsf repo check --audit`.
 3. Compare the registered model against the whole catalog under the same protocol before
    claiming a result; note it in the round as a `conclusion`.

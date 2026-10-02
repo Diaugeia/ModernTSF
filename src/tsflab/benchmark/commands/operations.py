@@ -1,4 +1,4 @@
-"""Optional operations, discovered through tsf interface."""
+"""Optional operations, discovered through tsf agent interface."""
 
 import argparse
 
@@ -7,7 +7,10 @@ import json
 
 
 def operations_command(args):
-    parser = argparse.ArgumentParser(prog=f"tsf {args[0]}")
+    prog = {"queue": "tsf run --backend queue", "slurm": "tsf run --backend slurm"}.get(
+        args[0], f"tsf env {args[0]}"
+    )
+    parser = argparse.ArgumentParser(prog=prog)
     parser.add_argument("action")
     parser.add_argument("directory")
     parser.add_argument("--policy")

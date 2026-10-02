@@ -113,7 +113,7 @@ def fetch_preset(preset: str, data_root: Path = Path("dataset"), root: Path | No
     files = published_files(preset, manifest, root)
     if not files:
         raise FileNotFoundError(
-            f"preset {preset!r} is not published; see `tsf dataset download --list`"
+            f"preset {preset!r} is not published; see `tsf data download --list`"
         )
     repo = manifest["repo"]
     written = []

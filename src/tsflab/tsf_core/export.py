@@ -82,14 +82,14 @@ def _check(out_dir: Path) -> int:
         print("schema-export --check FAILED — committed schemas are stale:", file=sys.stderr)
         for line in drift:
             print(f"  - {line}", file=sys.stderr)
-        print("Run `tsf schema-export` and commit the result.", file=sys.stderr)
+        print("Run `tsf repo schema` and commit the result.", file=sys.stderr)
         return 1
     print(f"schema-export --check OK ({len(rendered)} files up to date).")
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Export TSF-Core models to JSON Schema.")
+    parser = argparse.ArgumentParser(prog="tsf repo schema", description="Export TSF-Core models to JSON Schema.")
     parser.add_argument(
         "--out-dir", default=str(DEFAULT_SCHEMA_DIR), help="Output directory (default: package schema/)."
     )

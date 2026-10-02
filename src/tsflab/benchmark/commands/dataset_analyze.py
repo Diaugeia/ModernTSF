@@ -1,4 +1,4 @@
-"""Profile a dataset for model selection: ``tsf dataset analyze <preset|--path FILE>``.
+"""Profile a dataset for model selection: ``tsf data analyze <preset|--path FILE>``.
 
 Loads the chronological train/val/test split of a dataset preset (same loaders and
 split rules as training, but unscaled) or of a raw file/store, then writes a
@@ -170,7 +170,7 @@ def analyze(splits: dict[str, np.ndarray], meta: dict[str, Any], max_channels: i
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="tsf dataset analyze",
+        prog="tsf data analyze",
         description="Profile a dataset (train-only statistics, train/val/test shift) and map it to catalog facts.",
     )
     parser.add_argument("preset", nargs="?", help="dataset preset name (configs/datasets/<name>.toml)")

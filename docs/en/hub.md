@@ -11,9 +11,19 @@ instead of a checkout:
 <dir>/
 ├── configs/runs/example.toml   # extends tsflab://configs/...
 ├── dataset/                    # local data (ignored)
-├── pyproject.toml              # depends on the package's hub extra
+├── pyproject.toml              # tsflab[<extras>] and [tool.tsflab] modules
+├── agent guide + skills        # generated from the chosen module chain
 └── README.md
 ```
+
+`--modules data,models,experiments,release,autoresearch` (default: all) selects
+the module chain. The skills and task templates are copied from the installed
+package, so they match its version; run `tsf agent sync [--add MODULE,...]` after
+upgrading TSFLab to refresh them (project notes below the generated block
+of the agent guide are kept). The chosen modules are recorded under `[tool.tsflab]` in
+`pyproject.toml`; `tsf agent modules` lists them and `tsf catalog` shows them in
+its overview. Each module maps to a pip extra (`data`, `models`, `experiments`,
+`hub` + `realtime` for release, `autoresearch`; all five give `tsflab[all]`).
 
 Run configs may extend catalog presets with `tsflab://` paths, which resolve
 against the checkout or the installed package's read-only assets:
@@ -53,7 +63,7 @@ endpoint, so private repositories work; `HF_ENDPOINT` overrides the endpoint.
 
 A fork or personal mirror sets `TSFLAB_HUB_OWNER` to publish under another
 namespace instead of passing `--repo` to every command. Maintainers create them, with their cards, through
-`uv run tsf hub init [--migrate-legacy]`; `--migrate-legacy` renames the former
+`uv run tsf result hub init [--migrate-legacy]`; `--migrate-legacy` renames the former
 TSEval repositories so their old addresses redirect.
 
 ## Benchmark data
@@ -62,17 +72,17 @@ TSEval repositories so their old addresses redirect.
 SHA-256. Presets download into the local `dataset/` root, verified:
 
 ```bash
-uv run tsf dataset download --list          # presets with published files
-uv run tsf dataset download etth1 weather   # or --all
-uv run tsf dataset download --check         # every pinned file still resolves
+uv run tsf data download --list          # presets with published files
+uv run tsf data download etth1 weather   # or --all
+uv run tsf data download --check         # every pinned file still resolves
 ```
 
 UltraTraffic presets fetch only their region, variant, and years. Maintainers
 publish local files, which updates the manifest to commit with the change:
 
 ```bash
-uv run tsf dataset publish etth1 etth2 [--create]
-uv run tsf dataset publish --path ultratraffic      # a whole store, every year
+uv run tsf data publish etth1 etth2 [--create]
+uv run tsf data publish --path ultratraffic      # a whole store, every year
 ```
 
 Each dataset keeps its source license; publish only data whose terms allow
@@ -92,10 +102,10 @@ A finished run is published as one bundle directory at
 | `README.md` | model card rendered from the manifest |
 
 ```bash
-uv run tsf hub pack <run_id>                      # local bundle under work_dirs/_bundles/
-uv run tsf hub push <run_id> --repo <owner>/<repo> [--create] [--public]
-uv run tsf hub list --repo <owner>/<repo> --dataset weather
-uv run tsf hub pull hf://<owner>/<repo>@<revision>/weather/DLinear/<run_id>
+uv run tsf result hub pack <run_id>                      # local bundle under work_dirs/_bundles/
+uv run tsf result hub push <run_id> --repo <owner>/<repo> [--create] [--public]
+uv run tsf result hub list --repo <owner>/<repo> --dataset weather
+uv run tsf result hub pull hf://<owner>/<repo>@<revision>/weather/DLinear/<run_id>
 ```
 
 `push` uploads only the run it is given, creates private repositories unless

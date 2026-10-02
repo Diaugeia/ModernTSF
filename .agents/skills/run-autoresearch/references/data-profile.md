@@ -1,15 +1,15 @@
 # Read the data profile
 
 ```bash
-uv run tsf dataset analyze <preset>                 # configs/datasets/<preset>.toml
-uv run tsf dataset analyze --path <file|store-dir> [--split-ratio 0.7 0.1 0.2] [--freq 10min]
-uv run tsf dataset analyze <preset> --json          # print JSON instead of markdown
+uv run tsf data analyze <preset>                 # configs/datasets/<preset>.toml
+uv run tsf data analyze --path <file|store-dir> [--split-ratio 0.7 0.1 0.2] [--freq 10min]
+uv run tsf data analyze <preset> --json          # print JSON instead of markdown
 ```
 
 Outputs `work_dirs/profiles/<name>/profile.json` and `profile.md` (`--out DIR` to move).
 Profiles read the preset's own chronological split with unscaled values. Presets whose
 loader has no date column need `--freq` for period tags (for example `solar` is `10min`).
-`tsf dataset inspect` is the older per-split TFB characteristics table; use `analyze`
+`tsf data inspect` is the older per-split TFB characteristics table; use `analyze`
 for decisions.
 
 ## Sections and how to use them

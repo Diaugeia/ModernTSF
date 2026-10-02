@@ -43,7 +43,7 @@ task_modes: ["time_series"]
 
 ## Structure and statistics
 
-No source-reported or measured statistics exist for this file: length, channel count, frequency, span, and missing values are all unknown until `tsf dataset inspect --config configs/datasets/beijing_air.toml` runs against a real copy.
+No source-reported or measured statistics exist for this file: length, channel count, frequency, span, and missing values are all unknown until `tsf data inspect --config configs/datasets/beijing_air.toml` runs against a real copy.
 
 ## Standard protocol and known pitfalls
 
@@ -90,10 +90,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/beijing_air.toml`; fetch
-published files with `tsf dataset download beijing_air` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/beijing_air.toml`; fetch
+published files with `tsf data download beijing_air` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

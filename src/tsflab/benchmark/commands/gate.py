@@ -1,11 +1,13 @@
 """tsf repo check — the single definition of "mergeable".
 
-    tsf repo check [--scope full|changed] [--base REF] [--fail-fast] [--json]
+    tsf repo check [--scope full|changed] [--base REF] [--only STEP...] [--fail-fast] [--json]
+    tsf repo check --audit
+    tsf repo check --contracts construct|forward|backward|strict [--models NAME...]
 
 ``full`` runs every check. ``changed`` runs the same checks plus the targeted
 smoke run for the models affected by the diff against ``--base`` (default:
 ``origin/$GITHUB_BASE_REF`` in CI, else the first of origin/dev, dev,
-origin/main, main that exists). The full ``tsf smoke --all`` sweep stays a
+origin/main, main that exists). The full ``tsf run --smoke --all`` sweep stays a
 nightly/manual job. Fast steps run first; every step runs unless
 ``--fail-fast``; the exit code is 0 only when all steps pass.
 """
@@ -89,18 +91,18 @@ def select_steps(scope: str, changed: list[str], root: Path) -> list[Step]:
         Step("agent-assets", [PY, "-m", "tsflab.tsf_core.agent_assets"]),
         Step("agent-tasks", CLI + ["agent", "task", "validate"]),
         Step("model-cards", CLI + ["model", "audit", "--summary"]),
-        Step("verification-stale", CLI + ["verify", "stale"]),
-        Step("dataset-cards", CLI + ["dataset", "audit"]),
-        Step("component-cards", CLI + ["component", "audit"]),
+        Step("verification-stale", CLI + ["model", "verify", "--stale"]),
+        Step("dataset-cards", CLI + ["data", "audit"]),
+        Step("component-cards", CLI + ["model", "audit", "--components"]),
         Step("web-submissions", [PY, "pipeline/validate.py"], cwd="apps/web"),
-        Step("repo-audit", CLI + ["repo", "audit"]),
+        Step("repo-audit", CLI + ["repo", "check", "--audit"]),
     ]
     if scope == "changed":
         configs = affected_smoke_configs(changed, root)
         if configs:
             steps.append(Step(
                 "smoke-affected",
-                CLI + ["smoke", "--config", *configs],
+                CLI + ["run", "--smoke", "--config", *configs],
                 setup=[[PY, "scripts/make_smoke_data.py"]],
             ))
     steps.append(Step("pytest", [PY, "-m", "pytest", "-q", "tests"]))
@@ -156,7 +158,25 @@ def check_command(argv: list[str]) -> int:
     parser.add_argument("--fail-fast", action="store_true")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--list", action="store_true", help="print the steps and exit")
+    parser.add_argument("--only", nargs="+", metavar="STEP", help="run only these steps (see --list)")
+    parser.add_argument("--audit", action="store_true",
+                        help="run the static repository audits in-process (the repo-audit step)")
+    parser.add_argument("--contracts", choices=["construct", "forward", "backward", "strict"],
+                        help="execute model tensor contracts at this depth")
+    parser.add_argument("--models", nargs="+", metavar="NAME",
+                        help="with --contracts: only these models (default: the whole catalog)")
     args = parser.parse_args(argv)
+    if args.audit or args.contracts:
+        from tsflab.benchmark.commands.repository import run_audit, run_contracts
+
+        codes = []
+        if args.audit:
+            codes.append(run_audit())
+        if args.contracts:
+            codes.append(run_contracts(args.contracts, args.models))
+        return 1 if any(codes) else 0
+    if args.models:
+        parser.error("--models requires --contracts")
     root = repository_root()
     try:
         changed = changed_files(root, args.base) if args.scope == "changed" else []
@@ -164,6 +184,12 @@ def check_command(argv: list[str]) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     steps = select_steps(args.scope, changed, root)
+    if args.only:
+        unknown = sorted(set(args.only) - {step.name for step in steps})
+        if unknown:
+            print(f"unknown step(s): {', '.join(unknown)}; see `tsf repo check --list`", file=sys.stderr)
+            return 2
+        steps = [step for step in steps if step.name in args.only]
     if args.list:
         for step in steps:
             print(f"{step.name}: {' '.join(step.argv[1:])}")

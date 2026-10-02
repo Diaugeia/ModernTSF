@@ -1,4 +1,4 @@
-"""Dataset profile (`tsf dataset analyze`) and recombination-spec validation."""
+"""Dataset profile (`tsf data analyze`) and recombination-spec validation."""
 
 from __future__ import annotations
 

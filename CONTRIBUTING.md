@@ -90,8 +90,8 @@ See the [model workflow](docs/en/workflows.md#add-a-model-or-method). In short:
    a `tagline` (at most 120 characters), `tags` (including one architecture family),
    and the six-slot `composition`
    (`normalization|decomposition|temporal|channel|head|loss`). Match the defining
-   operations against existing components with `tsf component search` and
-   `tsf component show`.
+   operations against existing components with `tsf catalog search --kind component` and
+   `tsf catalog show`.
 3. Run `tsf model scaffold` with the paper/source facts and component decisions.
    It creates an unregistered workspace.
 4. Implement locally, complete the card (including `## Key ideas`), and declare
@@ -107,17 +107,17 @@ card, and exactly one TSFLab protocol (split, scaling, lookbacks, horizons) in t
 card's `protocol` field; the protocol used in the literature, when different, goes
 in `literature_protocol`. Dataset files live under `dataset/` and are never
 committed. Smoke and synthetic inputs under `configs/fixtures/` are test fixtures,
-not datasets. Check a new card with `tsf dataset audit` and profile the data with
-`tsf dataset analyze <preset>`.
+not datasets. Check a new card with `tsf data audit` and profile the data with
+`tsf data analyze <preset>`.
 
 ## Verifying
 
 Every model needs unified evidence and strict runtime checks:
 
 ```bash
-uv run tsf verify model <Name>
-uv run tsf repo doctor --strict --models <Name>
-uv run tsf repo audit
+uv run tsf model verify <Name>
+uv run tsf repo check --contracts strict --models <Name>
+uv run tsf repo check --audit
 ```
 
 The final repository gate requires CPU construction, forward, backward, boundaries,
@@ -129,7 +129,7 @@ contract with documentation.
 Human documentation (this file, `README.md`, `docs/en/`, and the resource cards)
 describes public behavior and CLI workflows. Cards and generated tables are
 projections of code: change the model, spec, config, or schema first, then run
-`uv run tsf repo cards`. `uv run tsf repo audit` checks that the documentation
+`uv run tsf repo cards`. `uv run tsf repo check --audit` checks that the documentation
 and cards agree with the code.
 
 ## Releases

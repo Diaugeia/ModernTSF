@@ -41,7 +41,7 @@ Bitbrains fastStorage (bitbrains_fast_storage/H) is the GIFT-Eval series collect
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
 - GIFT-Eval wrapper: the Hugging Face card for `Salesforce/GiftEval` (https://huggingface.co/datasets/Salesforce/GiftEval) declares `license: apache-2.0` for the whole benchmark and lists no per-subset licenses; its Ethical Considerations say the release is "for research purposes only in support of an academic paper". The Apache-2.0 tag does not relicense the underlying data, so the terms below come from each original source.
 - Underlying data terms: the GWA-T-12 page (https://atlarge-research.com/gwa-t-12/, formerly gwa.ewi.tudelft.nl) says: "This trace was graciously provided by Bitbrains IT Services Inc. To use this traces, you must include an acknowledgement to the source of the data in any published material that refers to the data. Please refer to the CCGrid 2015 paper, and please also consider referring to the Grid Workloads Archive in the acknowledgements." No SPDX license is given and redistribution is not explicitly addressed, so it is `conditional` on that acknowledgement.
-- Bytes are not bundled; download them with `tsf dataset gift-download`.
+- Bytes are not bundled; download them with `tsf data prepare --from gift`.
 
 ## Structure and statistics
 
@@ -99,10 +99,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/gift_eval/bitbrains_fast_storage_H.toml`; fetch
-published files with `tsf dataset download gift_eval/bitbrains_fast_storage_H` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/bitbrains_fast_storage_H.toml`; fetch
+published files with `tsf data download gift_eval/bitbrains_fast_storage_H` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

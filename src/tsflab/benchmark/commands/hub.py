@@ -1,10 +1,10 @@
-"""tsf hub — pack, publish, list, and fetch weights on the Hugging Face Hub.
+"""tsf result hub — pack, publish, list, and fetch weights on the Hugging Face Hub.
 
-    tsf hub pack <run_id|record.json> [--out DIR]
-    tsf hub push <run_id|record.json> [--repo OWNER/NAME] [--public] [--create]
-    tsf hub list [--repo OWNER/NAME] [--revision REV] [--dataset D] [--model M]
-    tsf hub pull <hf://...bundle-dir> [--json]
-    tsf hub init [--owner OWNER] [--private] [--migrate-legacy] [--dry-run]
+    tsf result hub pack <run_id|record.json> [--out DIR]
+    tsf result hub push <run_id|record.json> [--repo OWNER/NAME] [--public] [--create]
+    tsf result hub list [--repo OWNER/NAME] [--revision REV] [--dataset D] [--model M]
+    tsf result hub pull <hf://...bundle-dir> [--json]
+    tsf result hub init [--owner OWNER] [--private] [--migrate-legacy] [--dry-run]
 
 Publishing is always explicit: ``push`` uploads only the run it is given, and
 ``init`` creates the published repositories (static data, real-time panels,
@@ -33,7 +33,7 @@ def _pack(run: str, out: Path) -> dict:
 def hub_command(argv: list[str]) -> int:
     from tsflab import hub
 
-    parser = argparse.ArgumentParser(prog="tsf hub", description=__doc__,
+    parser = argparse.ArgumentParser(prog="tsf result hub", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="action", required=True)
     pack = sub.add_parser("pack", help="write a local weights bundle for one run")

@@ -4,4 +4,4 @@ from tsflab.data.schemas.base import DatasetParameters
 
 
 class PreProcessedParameterConfig(DatasetParameters):
-    """No dataset-level params; preprocessing is done by `tsf dataset prepare`."""
+    """No dataset-level params; preprocessing is done by `tsf data prepare`."""

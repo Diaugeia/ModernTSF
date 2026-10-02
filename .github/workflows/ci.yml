@@ -53,7 +53,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -q '^configs/hub/'; then
-            uv run tsf dataset download --check
+            uv run tsf data download --check
           fi
       - name: Validate real-time forecast submissions
         if: github.event_name == 'pull_request'

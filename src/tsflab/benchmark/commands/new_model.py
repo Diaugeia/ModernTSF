@@ -336,7 +336,7 @@ def main() -> None:
     if unknown_components:
         parser.error(
             "unknown component(s): " + ", ".join(unknown_components)
-            + "; run 'tsf component match <terms>' first"
+            + "; run 'tsf catalog search --kind component <terms>' first"
         )
     if args.task_mode != "time_series" and "marks" not in components:
         parser.error("node/covariate scaffold uses the shared 'marks' component")

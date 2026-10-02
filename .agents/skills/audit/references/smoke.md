@@ -4,13 +4,13 @@ Exercise construction, a short training path, evaluation, and the declared outpu
 shape on tiny data. Smoke checks are not verification evidence.
 
 ```bash
-uv run tsf smoke --model DLinear
-uv run tsf smoke --config configs/runs/smoke_dlinear.toml
-uv run tsf smoke --all --jobs 8
+uv run tsf run --smoke --model DLinear
+uv run tsf run --smoke --config configs/runs/smoke_dlinear.toml
+uv run tsf run --smoke --all --jobs 8
 ```
 
-A model is smoke-testable only when `tsf model show <Name>` reports a `smoke_config`;
-for the others, rely on `tsf verify model <Name>` and
-`tsf repo doctor --strict --models <Name>`. Add focused cases for material optional
+A model is smoke-testable only when `tsf catalog show <Name>` reports a `smoke_config`;
+for the others, rely on `tsf model verify <Name>` and
+`tsf repo check --contracts strict --models <Name>`. Add focused cases for material optional
 objectives or output types. Every selected config must report PASS; keep the final
 diagnostic of each failure and route it to `diagnose-experiment`.

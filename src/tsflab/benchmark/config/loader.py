@@ -372,7 +372,7 @@ def load_config(path: str) -> list[LoadedConfig]:
         for expanded in _expand_sweep(base_cfg):
             # "extend" is metadata `_expand_sweep_extends` injects to label
             # which axis file produced this combo (consumed via `raw` below,
-            # e.g. by `tsf inspect`) — not a RootConfig section, so
+            # e.g. by `tsf run --dry-run`) — not a RootConfig section, so
             # it's excluded from validation rather than left for pydantic to
             # silently ignore.
             config = RootConfig.model_validate(

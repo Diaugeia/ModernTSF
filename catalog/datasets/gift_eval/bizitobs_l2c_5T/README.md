@@ -40,7 +40,7 @@ BizITObs L2C (bizitobs_l2c/5T) is the GIFT-Eval series collection built from bus
 - Original source: BizITObs, processed per AutoMixer (Palaskar et al., 2024); https://github.com/BizITObs/BizITObservabilityData.
 - Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
 - License of the underlying data: `CDLA-Sharing-1.0` (explicit license found for the source).
-- Bytes are not bundled; download them with `tsf dataset gift-download`.
+- Bytes are not bundled; download them with `tsf data prepare --from gift`.
 - CDLA-Sharing-1.0 asks that shared data stay under the same terms; check it before republishing derived files.
 
 ## Structure and statistics
@@ -99,10 +99,10 @@ experiment task unless explicitly overridden below.
 
 ## Preparation and use
 
-Inspect availability with `tsf dataset inspect --config configs/datasets/gift_eval/bizitobs_l2c_5T.toml`; fetch
-published files with `tsf dataset download gift_eval/bizitobs_l2c_5T` when the preset is
-listed by `tsf dataset download --list`, otherwise place the data at the local
-path above (see `tsf dataset prepare --help`). Reference this preset from an
+Inspect availability with `tsf data inspect --config configs/datasets/gift_eval/bizitobs_l2c_5T.toml`; fetch
+published files with `tsf data download gift_eval/bizitobs_l2c_5T` when the preset is
+listed by `tsf data download --list`, otherwise place the data at the local
+path above (see `tsf data prepare --help`). Reference this preset from an
 experiment configuration rather than duplicating its loader parameters.
 
 ## Composition constraints

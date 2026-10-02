@@ -23,9 +23,9 @@ agree. Pick the narrowest scope; report failures rather than weakening a gate.
 
    ```bash
    uv run tsf repo cards            # regenerate cards and indexes, then inspect the diff
-   uv run tsf repo audit
-   uv run tsf verify stale
-   uv run tsf repo doctor --strict
+   uv run tsf repo check --audit
+   uv run tsf model verify --stale
+   uv run tsf repo check --contracts strict
    uv run pytest -q
    ```
 
@@ -33,7 +33,7 @@ agree. Pick the narrowest scope; report failures rather than weakening a gate.
    models, shared components, README front matter against runtime specs and presets,
    and public `tsf` instructions. Every model needs local code, a readable card, a
    manifest entry, and current evidence, with no classification fields, undocumented
-   model, persisted blocker, or failed verification. The strict doctor covers forward
+   model, persisted blocker, or failed verification. The strict contract check covers forward
    execution, finite gradients, batch size one, and exact state-dict and output round
    trips.
 4. For several models, audit each independently; the task owns partitioning,

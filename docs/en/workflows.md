@@ -59,14 +59,14 @@ and the model card's Differences says why.
 - `spatiotemporal`: node values with historical node/time covariates.
 - `covariate`: node values plus known future covariates.
 
-Inspect compatibility with `tsf model show <Name>` and `tsf dataset show <preset>`; both accept `--depth {0,1,2,3}` (see Components below).
+Inspect compatibility with `tsf catalog show <Name>` and `tsf catalog show <preset>`; both accept `--depth {0,1,2,3}` (see Components below).
 
 ## Add a model or method
 
 The admission path is deliberately two-phase so a placeholder cannot become a
 catalog entry.
 
-1. Deduplicate the paper against `tsf model list --json` and `tsf catalog search --kind model`.
+1. Deduplicate the paper against `tsf catalog list --kind model --json` and `tsf catalog search --kind model`.
 2. Read the paper and supplement. Locate official code when available, record its
    license, and pin a revision. Use it to clarify omitted implementation details;
    do not copy or import its model source.
@@ -76,8 +76,8 @@ catalog entry.
    component, a justified new shared component, or a model-local block. Start with:
 
    ```bash
-   uv run tsf component search "operation and tensor contract"
-   uv run tsf component show <candidate>
+   uv run tsf catalog search --kind component "operation and tensor contract"
+   uv run tsf catalog show <candidate>
    ```
 
 4. Create an unregistered workspace:
@@ -181,17 +181,17 @@ implementation, a catalog contract, focused tests, and a README card. The card i
 curated (purpose and formula, origin and why it was cut at this boundary, every
 public symbol with parameters and tensor shapes, equivalence evidence, variants,
 when to use and not to use, related components); its API, import line, and
-consumers are generated between the card markers. `tsf component audit` enforces
+consumers are generated between the card markers. `tsf model audit --components` enforces
 both parts.
 Extract only mathematically and operationally equivalent behavior—matching names
 or tensor rank is insufficient. Validate axes, normalization, masking, residual
 order, initialization, state, outputs, gradients, and serialization.
 
 ```bash
-uv run tsf component list
-uv run tsf component search "patch forecast head"
-uv run tsf component show flatten_forecast_head --depth 1
-uv run tsf component audit
+uv run tsf catalog list --kind component
+uv run tsf catalog search --kind component "patch forecast head"
+uv run tsf catalog show flatten_forecast_head --depth 1
+uv run tsf model audit --components
 ```
 
 ### Reading the catalog
@@ -202,9 +202,9 @@ so stop as soon as the decision is made:
 ```bash
 uv run tsf catalog                       # counts per kind, then the next commands
 uv run tsf catalog search "reversible normalization" --kind component   # L0
-uv run tsf model show PatchTST           # L1
-uv run tsf component show revin --depth 2   # L2
-uv run tsf model show PatchTST --depth 3    # L3
+uv run tsf catalog show PatchTST           # L1
+uv run tsf catalog show revin --depth 2   # L2
+uv run tsf catalog show PatchTST --depth 3    # L3
 ```
 
 | Depth | Content |
@@ -263,17 +263,17 @@ Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
 (see [the Hub page](hub.md#benchmark-data)):
 
 ```bash
-uv run tsf dataset download --list
-uv run tsf dataset download etth1
+uv run tsf data download --list
+uv run tsf data download etth1
 ```
 
 Find and read datasets by what they are, not only by name. Search matches the
 card's domain, tags, frequency, and source; `show` returns the card's facts:
 
 ```bash
-uv run tsf dataset search hourly electricity
-uv run tsf dataset show etth1       # preset record plus card facts
-uv run tsf dataset audit            # required facts, no placeholders, generated block current
+uv run tsf catalog search --kind dataset hourly electricity
+uv run tsf catalog show etth1       # preset record plus card facts
+uv run tsf data audit            # required facts, no placeholders, generated block current
 ```
 
 Card front matter (short facts: `summary`, `domain`, `tags`, `source`, `license`,
@@ -288,12 +288,12 @@ rewrites only the marked runtime block and the generated front-matter keys.
 Use an existing CSV preset or create a loader-backed dataset:
 
 ```bash
-uv run tsf dataset add --name my_data --pattern custom \
+uv run tsf data add --name my_data --pattern custom \
   --path ./dataset/my_data/my_data.csv --target OT
-uv run tsf dataset inspect --config configs/datasets/my_data.toml
-uv run tsf dataset analyze my_data      # model-selection profile (JSON + markdown)
-uv run tsf dataset show my_data
-uv run tsf dataset audit
+uv run tsf data inspect --config configs/datasets/my_data.toml
+uv run tsf data analyze my_data      # model-selection profile (JSON + markdown)
+uv run tsf catalog show my_data
+uv run tsf data audit
 ```
 
 `dataset analyze <preset>` (or `--path FILE`) profiles the training split (length,
@@ -315,8 +315,8 @@ The UltraTraffic archive (hourly total flow per Caltrans PeMS station, four
 districts, 2003–2023) is converted once into a local parquet store:
 
 ```bash
-uv run tsf dataset download ultratraffic_ba_st                  # published slice, or
-uv run tsf dataset convert-ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
+uv run tsf data download ultratraffic_ba_st                  # published slice, or
+uv run tsf data prepare --from ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
 ```
 
 `ultratraffic_st` (spatiotemporal, with calendar covariates) and
@@ -356,7 +356,7 @@ task.pred_len = [96, 192]
 Preview the fully resolved matrix before spending compute:
 
 ```bash
-uv run tsf inspect --config configs/runs/<run>.toml
+uv run tsf run configs/runs/<run>.toml --dry-run
 uv run tsf run configs/runs/<run>.toml
 ```
 
@@ -399,7 +399,7 @@ AutoResearch asks which design suits a dataset and tests it, instead of running 
 fixed benchmark. It composes three public pieces and needs no new state beyond an
 optional research round.
 
-1. **Profile the data.** `tsf dataset analyze <preset>` reports the training-split
+1. **Profile the data.** `tsf data analyze <preset>` reports the training-split
    statistics and the recommended lookbacks and catalog options (see Data).
 2. **Fill the slot grid.** A model is described by six slots, `normalization`,
    `decomposition`, `temporal`, `channel`, `head`, and `loss`, plus at most one
@@ -426,7 +426,7 @@ optional research round.
    ```
 
    ```bash
-   uv run tsf component compose spec.toml
+   uv run tsf model compose spec.toml
    ```
 
    Without flags `compose` writes nothing. It checks that components, models, and the
@@ -451,12 +451,12 @@ optional research round.
    parameters (the point model; quantile and Gaussian heads need `--register` below):
 
    ```bash
-   uv run tsf component compose spec.toml --write-config configs/runs/auto_seasonal.toml \
+   uv run tsf model compose spec.toml --write-config configs/runs/auto_seasonal.toml \
      --dataset etth1 --enc-in 7 --pred-len 96 --work-dir work_dirs/round1
    # tiny CPU check on the fixture dataset instead:
-   uv run tsf component compose spec.toml --write-config /tmp/auto.toml \
+   uv run tsf model compose spec.toml --write-config /tmp/auto.toml \
      --dataset configs/fixtures/smoke.toml --enc-in 6 --pred-len 12 --smoke
-   uv run tsf smoke --config /tmp/auto.toml        # or: uv run tsf run configs/runs/auto_seasonal.toml --round <id>
+   uv run tsf run --smoke --config /tmp/auto.toml        # or: uv run tsf run configs/runs/auto_seasonal.toml --round <id>
    ```
 
    `--dataset` is a TOML path or a `configs/datasets/<name>.toml` preset name.
@@ -478,8 +478,8 @@ optional research round.
    it through the normal gates:
 
    ```bash
-   uv run tsf component compose spec.toml --register SeasonalRevLinear --dry-run   # lists the files
-   uv run tsf component compose spec.toml --register SeasonalRevLinear
+   uv run tsf model compose spec.toml --register SeasonalRevLinear --dry-run   # lists the files
+   uv run tsf model compose spec.toml --register SeasonalRevLinear
    uv run tsf model add --name SeasonalRevLinear   # verification, audits, catalog entry; rolls back on failure
    ```
 
@@ -508,13 +508,13 @@ finite outputs, active gradients, state-dict round trip, CPU, batch and sequence
 boundaries, input contract, and reference comparison. The index is generated.
 
 ```bash
-uv run tsf verify model DLinear
-uv run tsf verify stale
-uv run tsf verify all --jobs 8
-uv run tsf verify index
+uv run tsf model verify DLinear
+uv run tsf model verify --stale
+uv run tsf model verify --all --jobs 8
+uv run tsf model verify --index
 uv run tsf model audit --summary
-uv run tsf repo doctor --strict
-uv run tsf repo audit
+uv run tsf repo check --contracts strict
+uv run tsf repo check --audit
 ```
 
 Paper-result reproduction is separate from code verification: reproduce datasets,

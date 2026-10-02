@@ -21,7 +21,7 @@ recompute from.
    uv run tsf research start --task submission --goal <goal> --max-runs <count>
    uv run tsf run configs/runs/<run>.toml --round <round-id>
    uv run tsf research status <round-id> completed --message <conclusion>
-   uv run tsf submit --dataset <dataset> --model <model> --latest
+   uv run tsf result submit --dataset <dataset> --model <model> --latest
    ```
 
 2. Inspect `submission.json`, `trajectory.jsonl`, and `report.md`. Confirm dataset
@@ -30,8 +30,8 @@ recompute from.
    and check it with the same contract the site uses:
 
    ```bash
-   uv run tsf leaderboard-build --source apps/web/submissions --out /tmp/board.json
-   uv run tsf schema-export --check
+   uv run tsf result leaderboard --source apps/web/submissions --out /tmp/board.json
+   uv run tsf repo schema --check
    ```
 
 4. Weights are never part of a submission; publish them separately with

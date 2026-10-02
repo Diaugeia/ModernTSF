@@ -3,7 +3,7 @@
 Start with the same commands as before:
 
 ```bash
-uv run tsf inspect --config configs/runs/smoke_crib.toml
+uv run tsf run configs/runs/smoke_crib.toml --dry-run
 uv run tsf run configs/runs/smoke_crib.toml
 ```
 
@@ -28,7 +28,7 @@ change a driver, or prove that every model will fit in memory. CUDA execution
 requires an available CUDA runtime and schedulable NVIDIA devices; it does not
 silently fall back to CPU. Use a CPU configuration for CPU experiments.
 
-`tsf inspect` resolves scientific configuration without requiring local data.
+`tsf run --dry-run` resolves scientific configuration without requiring local data.
 `tsf run --dry-run` and `tsf env audit --config <toml>` also check execution
 readiness. Normal runs perform the same preflight automatically.
 
@@ -190,13 +190,13 @@ remains visible as an incomplete model/seed cell.
 ## Interface discovery
 
 ```bash
-uv run tsf interface
-uv run tsf interface schema --json
+uv run tsf agent interface
+uv run tsf agent interface schema --json
 ```
 
 `interface` groups basic experiment, execution, research, and asset workflows.
 The schema command exports the strict optional execution-policy contract.
-`inspect`, `run`, `env`, and `interface` support JSON for automation; existing
+`run`, `env`, and `agent interface` support JSON for automation; existing
 catalog/task/verification commands keep their established public interfaces.
 Use per-command `--help` instead of importing internal command modules.
 
@@ -211,8 +211,8 @@ silently deleted to satisfy a quota.
 ## Optional operations
 
 Start with `tsf run experiment.toml`. The following controls are only needed for
-long jobs, shared machines, or automated research. `tsf interface` discovers the
-public commands; `tsf interface schema --json` describes the policy. Existing
+long jobs, shared machines, or automated research. `tsf agent interface` discovers the
+public commands; `tsf agent interface schema --json` describes the policy. Existing
 `--json` outputs remain compatible. To receive one versioned envelope, including
 exit codes and errors from older commands, use
 `tsf --format json <command> [arguments]`.
@@ -247,10 +247,10 @@ Prepare a matrix once, then use the returned sweep directory:
 
 ```bash
 tsf run experiment.toml --policy execution.toml --prepare-only --json
-tsf queue add /path/to/queue --run /path/to/sweep --priority 10
-tsf queue work /path/to/queue --slots 2
-tsf queue status /path/to/queue
-tsf queue cancel /path/to/queue/JOB_ID
+tsf run --backend queue add /path/to/queue --run /path/to/sweep --priority 10
+tsf run --backend queue work /path/to/queue --slots 2
+tsf run --backend queue status /path/to/queue
+tsf run --backend queue cancel /path/to/queue/JOB_ID
 ```
 
 Higher priorities start first; ties use arrival order. Priority does not preempt
@@ -274,9 +274,9 @@ still cause OOM. Default allocation remains exclusive.
 On a shared filesystem with the same Python environment, prepare a sweep and run:
 
 ```bash
-tsf slurm submit /path/to/sweep --partition gpu --gpus 1 --minutes 120
-tsf slurm status /path/to/sweep
-tsf slurm cancel /path/to/sweep
+tsf run --backend slurm submit /path/to/sweep --partition gpu --gpus 1 --minutes 120
+tsf run --backend slurm status /path/to/sweep
+tsf run --backend slurm cancel /path/to/sweep
 ```
 
 Submission is explicit and persists the job receipt. Slurm allocates the job's
@@ -301,9 +301,9 @@ explicit cleanup of obsolete `epoch_*.pth` files. Cleanup preserves best/latest,
 pretraining state, top-k references, and unrelated artifacts:
 
 ```bash
-tsf storage status /path/to/run --policy execution.toml
-tsf storage cleanup /path/to/run --policy execution.toml
-tsf storage cleanup /path/to/run --policy execution.toml --apply
+tsf env storage status /path/to/run --policy execution.toml
+tsf env storage cleanup /path/to/run --policy execution.toml
+tsf env storage cleanup /path/to/run --policy execution.toml --apply
 ```
 
 The first cleanup command only previews. Active runs cannot be cleaned.
@@ -313,10 +313,10 @@ For API/LLM/cloud operations outside the runner, set `[budget] max_tokens` and
 settle its actual usage using the same operation ID:
 
 ```bash
-tsf usage reserve /path/to/ledger --policy execution.toml --operation call-001 --tokens 4000 --cost-usd 0.05
+tsf env usage reserve /path/to/ledger --policy execution.toml --operation call-001 --tokens 4000 --cost-usd 0.05
 # Execute the external call only after reservation succeeds.
-tsf usage settle /path/to/ledger --operation call-001 --tokens 1200 --cost-usd 0.02
-tsf usage status /path/to/ledger
+tsf env usage settle /path/to/ledger --operation call-001 --tokens 1200 --cost-usd 0.02
+tsf env usage status /path/to/ledger
 ```
 
 Retries with the same amounts are idempotent; concurrent admission is locked.
@@ -334,7 +334,7 @@ not private reasoning or the number of prepared artifacts.
 
 ### Capability filtering
 
-`tsf model search --capability pretraining-stage --json` filters canonical model
+`tsf catalog search --kind model --capability pretraining-stage --json` filters canonical model
 metadata. Repeat `--capability` to require every capability and optionally add
 text terms. This does not introduce another model registry or architecture tree.
 
@@ -343,8 +343,8 @@ text terms. This does not introduce another model registry or architecture tree.
 The supported facade is `tsflab.benchmark.infra.api`. It loads only the requested
 implementation; importing it does not initialize a run, query hardware, start a
 worker, or connect to a tracking service. Discover the exported functions and their
-operational requirements with `tsf interface modules --json`. Inspect just one
-configuration section with `tsf interface schema --module storage --json`.
+operational requirements with `tsf agent interface modules --json`. Inspect just one
+configuration section with `tsf agent interface schema --module storage --json`.
 
 | Responsibility | Focused module | Required context |
 | --- | --- | --- |
@@ -424,7 +424,7 @@ and own its cleanup. The structural interfaces are in `tsflab.benchmark.infra.co
 They require no base class or plugin registration. To use the same executor in
 both in-process and detached modes, persist its importable reference with
 `enqueue(..., executor="my_package.jobs:execute")`; the CLI accepts
-`tsf queue add ... --executor my_package.jobs:execute`. Both modes resolve and
+`tsf run --backend queue add ... --executor my_package.jobs:execute`. Both modes resolve and
 validate that callable against the same contract. The module must be installed
 or importable in the worker environment. Closures remain in-process only.
 The default remains the standard experiment adapter.

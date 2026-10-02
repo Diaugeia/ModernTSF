@@ -13,8 +13,8 @@ implementation units, never model categories; read the components section of
 ## Inputs
 
 - An explicit scope: named models, a family of candidates, or a repository pass.
-- The current catalog, read progressively: `uv run tsf component list` or `component
-  search` (L0), `component show <name>` (L1), `--depth 2` (full card), `--depth 3`
+- The current catalog, read progressively: `uv run tsf catalog search --kind component <terms>` (L0),
+  `tsf catalog show <name>` (L1), `--depth 2` (full card), `--depth 3`
   (paths to open).
 
 ## Steps
@@ -40,10 +40,10 @@ implementation units, never model categories; read the components section of
 
    ```bash
    uv run tsf repo cards
-   uv run tsf verify model <Name...>
-   uv run tsf repo doctor --strict --models <Name...>
-   uv run tsf component audit
-   uv run tsf repo audit
+   uv run tsf model verify <Name...>
+   uv run tsf repo check --contracts strict --models <Name...>
+   uv run tsf model audit --components
+   uv run tsf repo check --audit
    ```
 
 ## Chain
@@ -55,7 +55,7 @@ implementation units, never model categories; read the components section of
 
 ## Success
 
-- Each new component has a curated card that passes `tsf component audit`, unit tests, and declared consumers.
+- Each new component has a curated card that passes `tsf model audit --components`, unit tests, and declared consumers.
 - Every migrated consumer passes the equivalence test (keys, outputs, gradients).
 - No peer-model imports; tests that pin the component count are updated.
 
