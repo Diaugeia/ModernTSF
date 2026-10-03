@@ -3,8 +3,8 @@
 ## Provenance and license
 
 - Source: the AKShare Python library (https://github.com/akfamily/akshare, MIT-licensed code) fetching daily prices from third-party vendors (Eastmoney, Sina Finance, and others); AKShare states its data are for academic research. The per-endpoint vendor was not traced.
-- Data license: not stated; MIT covers AKShare's code, not the market data, so `license` and `redistribution` are `unknown`.
-- Releases are mirrored to the Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`stock_hs300/`); check vendor terms before publishing one.
+- Data license: the Eastmoney and Sina terms forbid redistribution (MIT covers AKShare's code, not the market data), so `redistribution` is `link-only`; only the CSI 300 constituent list is open.
+- The weekly workflow mirrors releases to the **private** Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`stock_hs300/`) for team use only. Vendor terms forbid public re-hosting, so that repository must stay private; outside the team, build the store locally (README, Protocol and pitfalls).
 
 ## Structure and statistics
 

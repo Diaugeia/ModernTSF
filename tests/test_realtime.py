@@ -22,14 +22,11 @@ from tsflab.realtime import rounds as R
 from tsflab.realtime.baselines import run_baselines
 from tsflab.realtime.sources import (
     airnow,
-    eia930,
     ercot,
-    openaq,
     openmeteo,
     sp500,
     us_prices,
 )
-from tsflab.realtime.sources.openaq import parse_hours
 from tsflab.realtime.sources.pems import parse_station_5min
 from tsflab.realtime.store import PanelStore
 from tsflab.realtime.tracks import TrackSpec, get_track, list_tracks
@@ -52,7 +49,7 @@ def _panel(start: str, hours: int, channels: int = 3) -> pd.DataFrame:
 
 def test_shipped_track_configs_load() -> None:
     ids = {track.id for track in list_tracks()}
-    assert {"stock_hs300", "stock_nasdaq100", "traffic_pems_sb", "air_openaq_cn"} <= ids
+    assert {"stock_hs300", "stock_nasdaq100", "traffic_pems_sb", "air_airnow_us"} <= ids
     assert get_track("stock_nasdaq100").source["kind"] == "nasdaq100"
     assert get_track("traffic_pems_sb").tz == "America/Los_Angeles"
 
@@ -132,14 +129,6 @@ def test_pems_station_5min_parser_aggregates_hourly_flow() -> None:
     hourly = parse_station_5min(payload)
     assert hourly.loc[pd.Timestamp("2026-01-05 07:00"), "801230"] == 120
     assert hourly.loc[pd.Timestamp("2026-01-05 07:00"), "801232"] == 240
-
-
-def test_openaq_hours_parser() -> None:
-    rows = [{"value": 12.5, "period": {"datetimeFrom": {"utc": "2026-01-05T07:00:00Z"}}},
-            {"value": None, "period": {"datetimeFrom": {"utc": "2026-01-05T08:00:00Z"}}}]
-    series = parse_hours(rows)
-    assert list(series.values) == [12.5]
-    assert series.index[0] == pd.Timestamp("2026-01-05 07:00")
 
 
 def test_validate_cli_uses_trusted_arrival_time(tmp_path: Path, monkeypatch) -> None:
@@ -229,16 +218,14 @@ def test_nasdaq_historical_fallback_parses_quoted_closes(monkeypatch) -> None:
 # ---------------------------------------------------------------------------
 
 
-NEW_TRACKS = ["weather_openmeteo_temp", "solar_openmeteo_ghi", "air_airnow_us", "air_openaq_us",
-              "air_openaq_eu", "grid_ercot", "grid_eia_us", "solar_eia_us", "stock_sp500"]
+NEW_TRACKS = ["weather_openmeteo_temp", "solar_openmeteo_ghi", "air_airnow_us", "grid_ercot", "stock_sp500"]
 
 
 def test_new_track_configs_load_and_resolve_to_sources() -> None:
     ids = {t.id for t in list_tracks()}
     assert set(NEW_TRACKS) <= ids
     kinds = {"weather_openmeteo_temp": "openmeteo", "solar_openmeteo_ghi": "openmeteo", "air_airnow_us": "airnow",
-             "air_openaq_us": "openaq", "air_openaq_eu": "openaq", "grid_ercot": "ercot",
-             "grid_eia_us": "eia930", "solar_eia_us": "eia930", "stock_sp500": "sp500"}
+             "grid_ercot": "ercot", "stock_sp500": "sp500"}
     for track_id, kind in kinds.items():
         track = get_track(track_id)
         assert track.source["kind"] == kind and track.bootstrap["kind"] == "source"
@@ -402,27 +389,6 @@ def test_ercot_fetch_prefers_archive_and_fills_from_daily_reports(monkeypatch) -
     assert panel.index.is_unique and len(panel) == len(index)
 
 
-def test_eia_rows_pivot_to_hourly_balancing_authorities() -> None:
-    rows = [{"period": "2026-10-02T15", "respondent": "ERCO", "value": "58148"},
-            {"period": "2026-10-02T14", "respondent": "ERCO", "value": "56638"},
-            {"period": "2026-10-02T15", "respondent": "PJM", "value": "90000"},
-            {"period": "2026-10-02T14", "respondent": "PJM", "value": None}]
-    frame = eia930.parse_rows(rows)
-    assert frame.loc["2026-10-02 15:00", "ERCO"] == 58148.0
-    assert frame.shape == (2, 2) and pd.isna(frame.loc["2026-10-02 14:00", "PJM"])
-
-
-def test_eia_fetch_paginates_drops_aggregates_and_needs_a_key(monkeypatch) -> None:
-    track = get_track("grid_eia_us")
-    with pytest.raises(RuntimeError, match="EIA_API_KEY"):
-        eia930.fetch(track, pd.Timestamp("2026-10-01"), pd.Timestamp("2026-10-02"), None)
-    pages = [[{"period": "2026-10-02T1%d" % h, "respondent": r, "value": "1"} for h in range(2) for r in ("ERCO", "US48")]]
-    monkeypatch.setattr(eia930, "_get", lambda path, params: {"data": pages[0]})
-    monkeypatch.setattr(eia930, "PAGE", 100)
-    panel = eia930.fetch(track, pd.Timestamp("2026-10-02 10:00"), pd.Timestamp("2026-10-02 11:00"), None)
-    assert list(panel.columns) == ["ERCO"]  # US48 is an interconnection aggregate
-
-
 def test_nasdaq_history_is_sorted_oldest_first_and_empty_raises() -> None:
     data = {"tradesTable": {"rows": [{"date": "10/01/2026", "close": "$330.32"},
                                       {"date": "09/30/2026", "close": "$1,333.02"}]}}
@@ -475,22 +441,6 @@ def test_sp500_constituent_parsers() -> None:
     assert sp500.parse_constituents_csv(csv) == ["BF-B", "BRK-B", "MMM"]
     wiki = "|| {{NyseSymbol|MMM}}\n|| [[3M]]\n|| {{NasdaqSymbol|AAPL}}\n|| {{NyseSymbol|BRK.B}}\n"
     assert sp500.parse_constituents_wikitext(wiki) == ["AAPL", "BRK-B", "MMM"]
-
-
-def test_openaq_selection_spreads_countries_and_filters_reference_monitors(monkeypatch) -> None:
-    def fake(path, params):
-        if path == "/countries":
-            return {"results": [{"code": "DE", "id": 1}, {"code": "FR", "id": 2}]}
-        sensor = lambda i, name="pm25": {"id": i, "parameter": {"name": name}}  # noqa: E731
-        results = {1: [{"isMonitor": True, "sensors": [sensor(11), sensor(12, "no2")]},
-                       {"isMonitor": False, "sensors": [sensor(13)]},
-                       {"isMonitor": True, "sensors": [sensor(14)]}],
-                   2: [{"isMonitor": True, "sensors": [sensor(21)]}]}[params["countries_id"]]
-        return {"results": results if params["page"] == 1 else []}
-
-    monkeypatch.setattr(openaq, "_get", fake)
-    assert openaq.select_sensors(["DE", "FR"], "pm25", 2, monitor_only=True) == ["11", "21"]
-    assert openaq.select_sensors("DE", "pm25", 10, monitor_only=False) == ["11", "13", "14"]
 
 
 # ---------------------------------------------------------------------------

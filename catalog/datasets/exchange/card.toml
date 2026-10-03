@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "exchange"
-domain = "Finance / exchange rates"
+domain = "finance"
+topic = "exchange rates"
+benchmarks = ["ltsf", "tfb"]
 tags = ["exchange-rate", "currency", "finance", "forex", "daily", "ltsf", "benchmark", "multivariate", "lstnet", "non-stationary", "random-walk"]
 related = ["ili", "etth1"]
+characteristics = ["high-forecastability", "non-stationary", "train-val-level-shift", "regime-changes", "level-dependent-variance"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Lai et al. (LSTNet) collection of daily exchange rates"
 url = "https://github.com/laiguokun/multivariate-time-series-data"
 citation = "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018)"
 citation_url = "https://arxiv.org/abs/1703.07015"
-license = "unknown"
-redistribution = "unknown"
+license = "No license stated (LSTNet repository; the origin of the rates is not stated)"
+license_url = "https://github.com/laiguokun/multivariate-time-series-data"
+redistribution = "link-only"
 
 [shape]
 frequency = "daily (1d)"

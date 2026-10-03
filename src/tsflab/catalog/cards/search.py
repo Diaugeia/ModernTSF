@@ -86,7 +86,9 @@ def _card_resources(root: Path, kind: str) -> list[tuple[dict[str, object], dict
             )
         else:
             extra = " ".join(
-                (source.alias, source.loader, source.dataset_id or source.path, source.track)
+                (source.alias, source.loader, source.dataset_id or source.path, source.track,
+                 str(card.front.get("domain", "")), str(card.front.get("topic", "")),
+                 *card.front.get("benchmarks", ()))
             )
         surfaces = {
             "name": f"{name} {getattr(source, 'alias', '')}".casefold(),

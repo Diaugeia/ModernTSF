@@ -1,18 +1,24 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "rt/grid_ercot"
-domain = "Energy / electricity load"
+domain = "energy"
+topic = "electricity load"
+benchmarks = ["realtime"]
 tags = ["electricity", "load", "ercot", "texas", "weather-zones", "hourly", "real-time", "spatiotemporal"]
-related = ["rt/grid_eia_us", "electricity"]
+related = ["electricity"]
 realtime_track = "grid_ercot"
+characteristics = ["multi-periodic", "train-val-level-shift", "regime-changes", "level-dependent-variance", "high-cross-correlation", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "ERCOT hourly load by weather zone: Native_Load archives, then MIS report NP6-345-CD"
 url = "https://www.ercot.com/gridinfo/load/load_hist"
 citation = "n/a (no dataset paper; TSFLab real-time track)"
 citation_url = "n/a"
-license = "unknown"
-redistribution = "unknown"
+license = "ERCOT website terms of use"
+license_url = "https://www.ercot.com/help/terms"
+redistribution = "conditional"
+conditions = "Re-host the data unmodified and credit ERCOT as the source."
 
 [shape]
 frequency = "hourly (1h)"

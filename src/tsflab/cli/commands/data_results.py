@@ -34,11 +34,23 @@ def dataset_read(action: str, rest: list[str]) -> int:
         if rest not in ([], ["--json"]):
             print("usage: tsf catalog list --kind dataset [--json]", file=sys.stderr)
             return 2
+        from tsflab.catalog.cards.schema import DOMAINS
+
+        facts = dataset_facts(ROOT)
         payload = [_dataset_record_payload(record) for record in records]
+        for record in payload:
+            record["domain"] = str(facts.get(record["name"], {}).get("domain", ""))
+            record["benchmarks"] = list(facts.get(record["name"], {}).get("benchmarks", []))
         if rest == ["--json"]:
             _print(payload)
-        else:
-            for record in payload:
+        else:  # grouped by domain, in the schema's domain order
+            order = {domain: index for index, domain in enumerate(DOMAINS)}
+            current = None
+            for record in sorted(payload, key=lambda r: (order.get(r["domain"], len(order)), r["name"])):
+                if record["domain"] != current:
+                    current = record["domain"]
+                    count = sum(r["domain"] == current for r in payload)
+                    print(f"# {current or 'unknown'} ({count})")
                 modes = ",".join(record["task_modes"])
                 print(f"{record['name']}\t{record['loader']}\t{modes}\t{record['alias']}")
         return 0

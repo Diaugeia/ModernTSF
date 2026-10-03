@@ -1,17 +1,23 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "wike2000"
-domain = "Web/CloudOps / web traffic"
+domain = "cloud-web"
+topic = "web traffic"
+benchmarks = ["tfb"]
 tags = ["wikipedia", "page-views", "web-traffic", "gluonts", "gp-copula", "daily", "tfb", "multivariate", "high-dimensional", "short-series", "counts"]
 related = ["covid19", "nn5", "traffic"]
+characteristics = ["weak-seasonality", "low-forecastability", "regime-changes", "heteroscedastic", "level-dependent-variance", "heavy-tails", "weak-cross-correlation", "many-channels", "short-train"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "GluonTS dataset repository, wiki2000_nips (GP-Copula datasets of Salinas et al., 2019), Wikipedia page-view counts; TFB packaging by Qiu et al., who cite Gasthaus et al. (AISTATS 2019)"
 url = "https://github.com/awslabs/gluonts/blob/dev/src/gluonts/dataset/repository/_gp_copula_2019.py"
 citation = "High-dimensional multivariate forecasting with low-rank Gaussian Copula Processes (Salinas et al., NeurIPS 2019); TFB cites Probabilistic Forecasting with Spline Quantile Function RNNs (Gasthaus et al., AISTATS 2019)"
 citation_url = "https://arxiv.org/abs/1910.03002"
-license = "unknown (the GluonTS copy states no data license; Wikimedia analytics page-view dumps are CC0, but the provenance of this 2,000-page subset is undocumented)"
-redistribution = "unknown"
+license = "CC0-1.0 (Wikimedia pageviews)"
+license_url = "https://dumps.wikimedia.org/other/pageviews/readme.html"
+redistribution = "conditional"
+conditions = "Re-host only a copy rebuilt from the Wikimedia pageview dumps; the current file comes from the GluonTS/Kaggle copy, whose own terms are not stated."
 
 [shape]
 frequency = "daily (1d)"

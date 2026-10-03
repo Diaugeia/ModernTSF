@@ -18,14 +18,12 @@ import json
 from pathlib import Path
 import tomllib
 
+from tsflab.catalog.cards.schema import BENCHMARKS, DOMAINS, REDISTRIBUTION  # noqa: F401  (public names)
+
 
 #: Keys every preset card must carry; ``OPTIONAL_KEYS`` may be omitted.
 #: ``protocol`` is the TSFLab protocol; ``literature_protocol`` is context only.
 OPTIONAL_KEYS = ("realtime_track", "literature_protocol", "characteristics", "characteristics_basis")
-REDISTRIBUTION = ("allowed", "conditional", "restricted", "unknown")
-#: Top-level domains; a card's ``domain`` is ``"<Top>"`` or ``"<Top> / <detail>"``.
-DOMAINS = ("Energy", "Transport", "Environment", "Weather", "Finance", "Healthcare",
-           "Nature", "Sales", "Web/CloudOps", "General")
 STATS_BASIS = ("measured", "source-reported", "mixed")
 CHANNEL_KINDS = ("channels", "nodes", "series", "stations")
 TODO = "TODO"
@@ -235,9 +233,11 @@ def read_dataset_facts(path: Path) -> dict[str, object]:  # noqa: F811 - replace
     source, shape, protocol = f.get("source", {}), f.get("shape", {}), f.get("protocol", {})
     return {
         "name": f["name"], "kind": f["kind"], "summary": card.description, "domain": f.get("domain", ""),
+        "topic": f.get("topic", ""), "benchmarks": list(f.get("benchmarks", [])),
         "tags": list(f.get("tags", [])), "characteristics": list(f.get("characteristics", [])),
         "source": source.get("name", ""), "source_url": source.get("url", ""),
-        "license": source.get("license", ""), "redistribution": source.get("redistribution", ""),
+        "license": source.get("license", ""), "license_url": source.get("license_url", ""),
+        "redistribution": source.get("redistribution", ""), "conditions": source.get("conditions", ""),
         "frequency": shape.get("frequency", ""), "time_span": shape.get("time_span", ""),
         "length": shape.get("length", ""), "channels": shape.get("channels", ""),
         "channel_kind": shape.get("channel_kind", ""), "target": shape.get("target", ""),
@@ -271,8 +271,8 @@ def write_characteristics(root: Path, config: str, fired: list[str], basis: str)
     measured = [term for term in fired if term in data_terms()]
     facts["characteristics"] = measured + [term for term in task if term not in measured]
     facts["characteristics_basis"] = basis
-    ordered = {k: facts[k] for k in ("schema", "kind", "name", "domain", "tags", "characteristics",
-                                     "characteristics_basis") if k in facts}
+    ordered = {k: facts[k] for k in ("schema", "kind", "name", "domain", "topic", "benchmarks", "tags",
+                                     "characteristics", "characteristics_basis") if k in facts}
     ordered.update({k: v for k, v in facts.items() if k not in ordered})
     path.write_text(dumps(ordered), encoding="utf-8")
     return path

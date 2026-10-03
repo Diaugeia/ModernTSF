@@ -77,16 +77,18 @@ uv run tsf data download etth1 weather   # or --all
 uv run tsf data download --check         # every pinned file still resolves
 ```
 
-UltraTraffic presets fetch only their region, variant, and years. Maintainers
-publish local files, which updates the manifest to commit with the change:
+Maintainers publish local files, which updates the manifest to commit with the
+change:
 
 ```bash
 uv run tsf data publish etth1 etth2 [--create]
 uv run tsf data publish --path ultratraffic      # a whole store, every year
 ```
 
-Each dataset keeps its source license; publish only data whose terms allow
-redistribution.
+Each dataset keeps its source license. Publish only presets whose card says
+`redistribution = "allowed"`, or `"conditional"` when the card's `conditions` are
+met. Never publish `link-only` presets (users fetch them from the source) or
+`upstream` GIFT-Eval files (`tsf data prepare --from gift` fetches them).
 
 ## Weights bundles
 

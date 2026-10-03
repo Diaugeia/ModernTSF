@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "electricity"
-domain = "Energy / electricity consumption"
+domain = "energy"
+topic = "electricity consumption"
+benchmarks = ["ltsf", "tfb"]
 tags = ["electricity", "ecl", "load", "consumption", "energy", "ltsf", "benchmark", "multivariate", "hourly", "uci", "lstnet", "high-dimensional"]
 related = ["traffic", "weather", "solar", "gift_eval/electricity_H"]
+characteristics = ["strong-seasonality", "high-forecastability", "level-dependent-variance", "high-cross-correlation", "low-dimensional-channels", "many-channels"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Artur Trindade (UCI ElectricityLoadDiagrams20112014); hourly 321-client preprocessing by Lai et al. (LSTNet)"
 url = "https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014"
 citation = "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018)"
 citation_url = "https://arxiv.org/abs/1703.07015"
-license = "CC-BY-4.0 (UCI raw data; the preprocessed LSTNet copy states no license)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (UCI Machine Learning Repository, dataset 321)"
+license_url = "https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014"
+redistribution = "allowed"
 
 [shape]
 frequency = "hourly (1h)"

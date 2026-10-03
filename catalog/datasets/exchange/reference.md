@@ -2,7 +2,7 @@
 
 ## Provenance and license
 
-- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data. Checked: the GitHub API reports no license, and the README only says "the collection of the daily exchange rates of eight foreign countries ... ranging from 1990 to 2016" without naming the rate provider or terms. With no original provider to read terms from, `license` and `redistribution` stay `unknown`.
+- Packaging: Lai et al. 2018 (LSTNet), https://github.com/laiguokun/multivariate-time-series-data. Checked: the GitHub API reports no license, and the README only says "the collection of the daily exchange rates of eight foreign countries ... ranging from 1990 to 2016" without naming the rate provider or terms. With no original provider and no license, `redistribution` is `link-only`: TSFLab never re-hosts the file.
 - Cite: Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018), https://arxiv.org/abs/1703.07015.
 
 ## Structure and statistics

@@ -2,7 +2,7 @@
 
 ## Provenance and license
 
-- Source: EPA AirNow `HourlyData` files (https://www.airnow.gov). `docs/en/realtime.md` records them as US government public data that are preliminary and not for regulatory use; AQS holds the validated values months later.
+- Source: EPA AirNow `HourlyData` files (https://www.airnow.gov). The AirNow data use guidelines (https://docs.airnowapi.org/docs/DataUseGuidelines.pdf) require attribution and a notice that the data are preliminary and unvalidated, so `redistribution` is `conditional`; AQS holds the validated values months later.
 - Releases are mirrored to the Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`air_airnow_us/`).
 
 ## Structure and statistics
@@ -16,6 +16,6 @@ No local copy of `dataset/realtime/air_airnow_us` exists in a development checko
 
 ## Related datasets
 
-- [`rt/air_openaq_us`](../air_openaq_us/README.md): US, OpenAQ source
-- [`rt/air_openaq_cn`](../air_openaq_cn/README.md): China, OpenAQ source
-- [`rt/air_openaq_eu`](../air_openaq_eu/README.md): Europe, OpenAQ source
+- [`aqshunyi`](../../aqshunyi/README.md): hourly Beijing air quality at one station (UCI)
+- [`aqwan`](../../aqwan/README.md): hourly Beijing air quality at another station (UCI)
+- [`rt/weather_openmeteo_temp`](../weather_openmeteo_temp/README.md): hourly temperature as a real-time preset

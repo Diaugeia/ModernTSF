@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "nn5"
-domain = "Finance / retail banking"
+domain = "finance"
+topic = "retail banking"
+benchmarks = ["tfb"]
 tags = ["nn5", "atm", "cash-withdrawal", "banking", "daily", "competition", "monash", "tfb", "multivariate", "weekly-seasonality", "short-series"]
 related = ["ili", "fred_md", "gift_eval/restaurant"]
+characteristics = ["strong-seasonality", "low-forecastability", "regime-changes", "high-cross-correlation", "low-dimensional-channels", "short-train"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "NN5 neural-network forecasting competition (Crone et al.); Monash archive (Godahewa et al.) and TFB packaging"
 url = "https://zenodo.org/records/3889740"
 citation = "Monash Time Series Forecasting Archive (Godahewa et al., NeurIPS 2021 Datasets and Benchmarks)"
 citation_url = "https://arxiv.org/abs/2105.06643"
-license = "CC-BY-4.0 (Monash/Zenodo copy; original NN5 competition terms unknown)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (Monash/Zenodo copy)"
+license_url = "https://zenodo.org/records/3889740"
+redistribution = "allowed"
 
 [shape]
 frequency = "daily (1d)"

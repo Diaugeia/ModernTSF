@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "ili"
-domain = "Healthcare / epidemiology"
+domain = "healthcare"
+topic = "epidemiology"
+benchmarks = ["ltsf", "tfb"]
 tags = ["ili", "influenza", "illness", "flu", "cdc", "fluview", "epidemiology", "weekly", "ltsf", "benchmark", "multivariate", "short-series"]
 related = ["exchange", "fred_md", "nn5"]
+characteristics = ["multi-periodic", "within-train-drift", "level-dependent-variance", "high-cross-correlation", "short-train"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "US Centers for Disease Control and Prevention (FluView ILINet); packaged by Wu et al. (Autoformer)"
 url = "https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html"
 citation = "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting (Wu et al., NeurIPS 2021)"
 citation_url = "https://arxiv.org/abs/2106.13008"
-license = "US federal public domain; attribution to CDC and a no-endorsement disclaimer required (CDC Use of Agency Materials; raw source only, the Autoformer package states no data license)"
-redistribution = "conditional"
+license = "US Government work, public domain (CDC FluView)"
+license_url = "https://www.cdc.gov/other/agencymaterials.html"
+redistribution = "allowed"
 
 [shape]
 frequency = "weekly (1w)"

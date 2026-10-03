@@ -174,20 +174,11 @@ def _write_bytes(path: Path, data: bytes) -> None:
     path.write_bytes(data)
 
 
-def test_selection_covers_file_directory_and_ultratraffic_presets() -> None:
+def test_selection_covers_file_and_directory_presets() -> None:
     assert hd.selection("etth1").matches("ETT-small/ETTh1.csv")
     assert not hd.selection("etth1").matches("ETT-small/ETTh2.csv")
     pems = hd.selection("pems08")
     assert pems.matches("pems08/his.npz") and not pems.matches("pems08x/his.npz")
-    ba = hd.selection("ultratraffic_ba_st")
-    assert ba.matches("ultratraffic/manifest.json")
-    assert ba.matches("ultratraffic/PEMS_BA/static/2023.parquet")
-    assert ba.matches("ultratraffic/PEMS_BA/static/2023.json")
-    assert ba.matches("ultratraffic/PEMS_BA/static_sensor_changes_log.txt")
-    assert not ba.matches("ultratraffic/PEMS_BA/static/2022.parquet")
-    assert not ba.matches("ultratraffic/PEMS_BA/cl/2023_added.parquet")
-    assert not ba.matches("ultratraffic/PEMS_LA/static/2023.parquet")
-    assert hd.selection("ultratraffic_sb_cl").matches("ultratraffic/PEMS_SB/cl/2023_added.parquet")
     with pytest.raises(FileNotFoundError):
         hd.selection("synthetic_st")  # a test fixture, not a catalog dataset
 
@@ -220,13 +211,11 @@ def test_fetch_preset_downloads_only_pinned_files_and_verifies(tmp_path, monkeyp
 
 def test_local_files_respects_selection(tmp_path) -> None:
     data = tmp_path / "dataset"
-    for name in ("ultratraffic/manifest.json", "ultratraffic/PEMS_BA/static/2023.parquet",
-                 "ultratraffic/PEMS_BA/static/2019.parquet", "ultratraffic/PEMS_LA/static/2023.parquet"):
+    for name in ("pems08/his.npz", "pems08/adj.npz", "pems08x/his.npz", "ultratraffic/PEMS_BA/static/2023.parquet"):
         _write_bytes(data / name, b"x")
-    assert hd.local_files("ultratraffic_ba_st", data) == [
-        "ultratraffic/PEMS_BA/static/2023.parquet", "ultratraffic/manifest.json"]
+    assert hd.local_files("pems08", data) == ["pems08/adj.npz", "pems08/his.npz"]
     whole = hd.Selection(preset="ultratraffic", base="ultratraffic")
-    assert len(hd.local_files("ultratraffic", data, chosen=whole)) == 4
+    assert hd.local_files("ultratraffic", data, chosen=whole) == ["ultratraffic/PEMS_BA/static/2023.parquet"]
 
 
 def test_packaged_manifest_is_well_formed() -> None:
@@ -234,3 +223,26 @@ def test_packaged_manifest_is_well_formed() -> None:
     assert manifest["repo"] == hd.DEFAULT_STATIC_REPO
     for name, entry in manifest["files"].items():
         assert not name.startswith("/") and set(entry) == {"revision", "sha256", "size"}
+
+
+def test_publish_refuses_presets_we_may_not_rehost(tmp_path) -> None:
+    from tsflab.release.hub import datasets as hub_datasets
+
+    root = Path(__file__).resolve().parents[1]
+    assert hub_datasets.redistribution("etth1", root) == "conditional"
+    assert hub_datasets.redistribution("exchange", root) == "link-only"
+    assert hub_datasets.redistribution("gift_eval/m4_daily", root) == "upstream"
+    with pytest.raises(PermissionError, match="exchange=link-only"):
+        hub_datasets.publish_presets(["etth1", "exchange"], tmp_path, root=root)
+
+
+def test_hf_token_falls_back_to_the_login_file(tmp_path, monkeypatch) -> None:
+    from tsflab.release.hub.fetch import hf_token
+
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    monkeypatch.setenv("HF_HOME", str(tmp_path))
+    assert hf_token() is None
+    (tmp_path / "token").write_text("hf_abc\n", encoding="utf-8")
+    assert hf_token() == "hf_abc"
+    monkeypatch.setenv("HF_TOKEN", "hf_env")
+    assert hf_token() == "hf_env"

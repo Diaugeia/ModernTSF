@@ -33,8 +33,9 @@ audit in `tsf repo check --audit`. Each card directory holds:
   `normalization|decomposition|temporal|channel|head|loss` = `component:/local:/loss:/none`,
   naming only imported components), `[data_params]`, `[[issues]]` or `issues_checked`,
   `[admission]`. Component: `role`, `slot`, `fits`, `category`, `tags`, `input`, `output`,
-  `origin`, `origin_models`. Dataset: `domain`, `tags`, `characteristics` +
-  `characteristics_basis`, `related`, `[source]`, `[shape]`, `[protocol]`.
+  `origin`, `origin_models`. Dataset: `domain`, `topic`, `benchmarks`, `tags`, `characteristics` +
+  `characteristics_basis`, `related`, `[source]` (`redistribution`, `conditions`, `license_url`),
+  `[shape]`, `[protocol]`; enums `DOMAINS`, `BENCHMARKS`, `REDISTRIBUTION` in `cards/schema.py`.
 - `README.md`: Skill-shaped. Front matter `name` + `description` (what it is; when to use
   and not) is L0. The body is L1 (<= 60 lines) with fixed sections: model Idea, When to
   use, Configure, Differences; component What it does, When to use, Interface; dataset

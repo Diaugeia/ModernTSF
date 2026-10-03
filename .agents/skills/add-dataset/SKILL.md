@@ -1,6 +1,6 @@
 ---
 name: add-dataset
-description: "Register a new dataset in TSFLab, from a standard CSV, a custom loader, a traffic bundle, or the UltraTraffic PeMS store, including fetching or converting its files into loader-ready data. Use for dataset integration, data preparation, and preset configuration; not for profiling an existing dataset."
+description: "Register a new dataset in TSFLab, from a standard CSV, a custom loader, or a traffic bundle, including fetching or converting its files into loader-ready data. Use for dataset integration, data preparation, and preset configuration; not for profiling an existing dataset."
 ---
 
 # Add a dataset
@@ -15,7 +15,7 @@ strict parameter schema, a preset, and a card. The card and the profile from
   intended task modes, split policy, and any adjacency.
 - Which pattern fits, smallest first: `custom` (standard CSV), `single` (a distinct
   loader), the traffic converter (values plus adjacency), or an existing store
-  loader such as `ultratraffic_st` / `ultratraffic_ts`.
+  loader such as `realtime_panel_st` / `realtime_panel_ts`.
 
 ## Steps
 
@@ -23,7 +23,7 @@ strict parameter schema, a preset, and a card. The card and the profile from
    preset in `configs/datasets/`, and the card in `catalog/datasets/`. Loader, preset,
    and card changes need a TSFLab checkout; in a standalone project, only plan them.
 2. Get the data loader-ready (download a published preset, window a CSV, convert a
-   traffic bundle or the UltraTraffic archive) per
+   traffic bundle, or build the UltraTraffic history store of the traffic tracks) per
    [references/prepare.md](references/prepare.md); never alter the source files.
 3. Scaffold a CSV-backed preset; for traffic bundles read
    `uv run tsf data prepare --from traffic --help` and pass explicit inputs and splits:
@@ -33,14 +33,10 @@ strict parameter schema, a preset, and a card. The card and the profile from
      --path ./dataset/my_data/my_data.csv --target OT
    ```
 
-4. For a PeMS district from UltraTraffic, reuse the store loaders: set
-   `name = "ultratraffic_st"` (or `_ts`), `path = "./dataset/ultratraffic"`, and
-   `[dataset.params]` with `region`, `years`, `variant` (`static`, `cl_common`,
-   `cl_added`), and `stations` (`last` or `intersection`).
-5. Keep `[dataset]` to `name`, optional display/track fields, `path`, optional `id`,
+4. Keep `[dataset]` to `name`, optional display/track fields, `path`, optional `id`,
    and `[dataset.params]`. Loader options live in a strict registered schema that
    rejects misspellings.
-6. Write the card `catalog/datasets/<name>/` (`card.toml` facts and a `README.md`
+5. Write the card `catalog/datasets/<name>/` (`card.toml` facts and a `README.md`
    with Overview, Protocol and pitfalls) from measured or cited facts per
    [references/card.md](references/card.md), record the measured characteristics,
    then exercise the data:

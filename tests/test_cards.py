@@ -60,7 +60,8 @@ COMPONENT = {
     "input": "[batch, time, channels]", "output": "[batch, horizon, channels]", "origin": "fixture",
 }
 DATASET = {
-    "name": "toy_data", "domain": "Energy", "tags": ["toy", "hourly", "fixture"],
+    "name": "toy_data", "domain": "energy", "topic": "toy load", "benchmarks": ["ltsf"],
+    "tags": ["toy", "hourly", "fixture"],
     "source": {"name": "Toy", "url": "https://example.com", "citation": "Toy (2026)",
                "citation_url": "https://example.com/cite", "license": "CC-BY-4.0", "redistribution": "allowed"},
     "shape": {"frequency": "1h", "length": 100, "channels": 3, "channel_kind": "channels", "stats_basis": "measured"},
@@ -149,6 +150,18 @@ def test_component_and_dataset_schemas() -> None:
     assert dataset(characteristics=["strong-seasonality"], characteristics_basis="tsf data analyze").characteristics
     with pytest.raises(ValidationError):
         dataset(source={**DATASET["source"], "redistribution": "maybe"})
+    for retired in ("unknown", "restricted"):
+        with pytest.raises(ValidationError):
+            dataset(source={**DATASET["source"], "redistribution": retired})
+    with pytest.raises(ValidationError, match="conditions"):
+        dataset(source={**DATASET["source"], "redistribution": "conditional"})
+    assert dataset(source={**DATASET["source"], "redistribution": "conditional",
+                           "conditions": "verbatim copies only"}).source.conditions
+    for bad in ({"domain": "Energy / power"}, {"domain": "weather"}, {"domain": "mixed"},
+                {"benchmarks": ["m4"]}, {"benchmarks": ["ltsf", "ltsf"]}):
+        with pytest.raises(ValidationError):
+            dataset(**bad)
+    assert dataset(kind="dataset-family", domain="mixed").domain == "mixed"
     with pytest.raises(ValidationError):
         dataset(schema="tsflab.card/0")
 

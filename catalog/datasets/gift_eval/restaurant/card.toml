@@ -1,7 +1,9 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "gift_eval/restaurant"
-domain = "Sales"
+domain = "sales"
+topic = "restaurant visitors"
+benchmarks = ["gift-eval"]
 tags = ["gift-eval", "benchmark", "zero-shot", "foundation-model", "univariate", "sales", "daily", "restaurant", "visitors", "kaggle"]
 
 [source]
@@ -10,7 +12,7 @@ url = "https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting"
 citation = "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url = "https://arxiv.org/abs/2410.10393"
 license = "unknown"
-redistribution = "unknown"
+redistribution = "upstream"
 
 [shape]
 frequency = "daily (1d)"

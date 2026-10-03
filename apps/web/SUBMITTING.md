@@ -86,7 +86,7 @@ corresponding `submission.json` files and they'll replace the curated rows.
 
 ## Real-time rounds
 
-Real-time tracks (`stock_hs300`, `traffic_pems_sb`, `air_openaq_cn`, and the others listed in
+Real-time tracks (`stock_hs300`, `traffic_pems_sb`, `air_airnow_us`, and the other 8 listed in
 `docs/en/realtime.md`) are
 evaluated in weekly **rounds**. Each Monday the `weekly` workflow
 releases new data, scores rounds whose target window is now observed, and opens

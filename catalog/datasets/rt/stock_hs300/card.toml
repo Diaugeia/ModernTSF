@@ -1,18 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "rt/stock_hs300"
-domain = "Finance / equities"
+domain = "finance"
+topic = "equities"
+benchmarks = ["realtime"]
 tags = ["stock", "csi-300", "hs300", "china", "equities", "log-return", "daily", "real-time", "multivariate", "business-days"]
 related = ["exchange", "rt/stock_nasdaq100"]
 realtime_track = "stock_hs300"
+characteristics = ["weak-seasonality", "low-forecastability", "many-channels", "short-train"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Daily forward-adjusted closes fetched with AKShare (third-party Chinese market-data sites), converted to log returns"
 url = "https://github.com/akfamily/akshare"
 citation = "n/a (no dataset paper; TSFLab real-time track)"
 citation_url = "n/a"
-license = "unknown"
-redistribution = "unknown"
+license = "Eastmoney/Sina vendor terms forbid redistribution; the CSI 300 constituent list is open"
+redistribution = "link-only"
 
 [shape]
 frequency = "business-daily (1b)"

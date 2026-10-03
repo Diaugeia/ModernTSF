@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "wind"
-domain = "Energy / wind power"
+domain = "energy"
+topic = "wind power"
+benchmarks = ["tfb"]
 tags = ["wind", "wind-power", "renewable", "energy", "nwp", "weather-forecast", "15-minute", "tfb", "multivariate", "paddlespatial", "d3vae"]
 related = ["solar", "weather", "etth1"]
+characteristics = ["weak-seasonality", "train-val-level-shift", "regime-changes", "weak-cross-correlation"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "PaddleSpatial WindPower dataset collected for D3VAE (Li et al., NeurIPS 2022); wind farm not named; TFB packaging by Qiu et al."
 url = "https://github.com/PaddlePaddle/PaddleSpatial/tree/main/paddlespatial/datasets/WindPower"
 citation = "Generative Time Series Forecasting with Diffusion, Denoise, and Disentanglement (Li et al., NeurIPS 2022)"
 citation_url = "https://arxiv.org/abs/2301.03028"
-license = "Apache-2.0 (license of the PaddleSpatial repository that publishes the file; the wind-farm data owner is not named)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (SDWPF dataset)"
+license_url = "https://figshare.com/articles/dataset/SDWPF_dataset/24798654"
+redistribution = "allowed"
 
 [shape]
 frequency = "15 minutes (15min)"

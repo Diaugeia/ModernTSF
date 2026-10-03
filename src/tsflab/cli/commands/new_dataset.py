@@ -197,9 +197,11 @@ def main() -> None:
         files = card_files("dataset", {
             "name": name,
             "domain": todo,
+            "benchmarks": [],
             "tags": [todo, "dataset", name],
+            # link-only until the source terms are verified: never re-host unchecked data.
             "source": {"name": todo, "url": todo, "citation": todo, "citation_url": todo,
-                       "license": "unknown", "redistribution": "unknown"},
+                       "license": todo, "redistribution": "link-only"},
             "shape": {"frequency": todo, "target": args.target or todo, "stats_basis": "measured"},
             "protocol": {"protocol": todo},
         }, f"{todo}: what the data is. Use for ...; not for ...", {
