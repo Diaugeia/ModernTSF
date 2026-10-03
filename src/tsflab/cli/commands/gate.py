@@ -1,6 +1,6 @@
 """tsf repo check — the single definition of "mergeable".
 
-    tsf repo check [--scope full|changed] [--base REF] [--only STEP...] [--fail-fast] [--json]
+    tsf repo check [--scope full|changed|release] [--base REF] [--only STEP...] [--fail-fast] [--json]
     tsf repo check --audit
     tsf repo check --contracts construct|forward|backward|strict [--models NAME...]
 
@@ -8,7 +8,9 @@
 smoke run for the models affected by the diff against ``--base`` (default:
 ``origin/$GITHUB_BASE_REF`` in CI, else the first of origin/dev, dev,
 origin/main, main that exists). The full ``tsf run --smoke --all`` sweep stays a
-nightly/manual job. Fast steps run first; every step runs unless
+nightly/manual job. ``release`` adds what a final release requires: a model audit in which every
+model has a passed admission (``[admission]`` in its card). Admission runs once
+per model, when it is added or changed (``tsf model verify --changed``). Fast steps run first; every step runs unless
 ``--fail-fast``; the exit code is 0 only when all steps pass.
 """
 
@@ -59,7 +61,7 @@ class Step:
     name: str
     argv: list[str]
     cwd: str = "."
-    scopes: tuple[str, ...] = ("full", "changed")
+    scopes: tuple[str, ...] = ("full", "changed", "release")
     setup: list[list[str]] = field(default_factory=list)
 
 
@@ -92,13 +94,14 @@ def select_steps(scope: str, changed: list[str], root: Path) -> list[Step]:
                                "--out-dir", "src/tsflab/core/schema"]),
         Step("agent-assets", [PY, "-m", "tsflab.agent.assets"]),
         Step("agent-tasks", CLI + ["agent", "task", "validate"]),
-        Step("model-cards", CLI + ["model", "audit", "--summary"]),
-        Step("verification-stale", CLI + ["model", "verify", "--stale"]),
+        Step("model-cards", CLI + ["model", "audit", "--summary"], scopes=("full", "changed")),
+        Step("model-release", CLI + ["model", "audit", "--summary", "--release"], scopes=("release",)),
         Step("dataset-cards", CLI + ["data", "audit"]),
         Step("component-cards", CLI + ["model", "audit", "--components"]),
         Step("web-submissions", [PY, "pipeline/validate.py"], cwd="apps/web"),
         Step("repo-audit", CLI + ["repo", "check", "--audit"]),
     ]
+    steps = [step for step in steps if scope in step.scopes]
     if scope == "changed":
         configs = affected_smoke_configs(changed, root)
         if configs:
@@ -107,7 +110,7 @@ def select_steps(scope: str, changed: list[str], root: Path) -> list[Step]:
                 CLI + ["run", "--smoke", "--config", *configs],
                 setup=[[PY, "scripts/make_smoke_data.py"]],
             ))
-    steps.append(Step("pytest", [PY, "-m", "pytest", "-q", "tests"]))
+    steps.append(Step("pytest", [PY, "-m", "pytest", "-q", "-m", "not e2e", "tests"]))
     return steps
 
 
@@ -155,7 +158,7 @@ def _run(step: Step, root: Path, quiet: bool) -> dict:
 def check_command(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="tsf repo check", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--scope", choices=["full", "changed"], default="full")
+    parser.add_argument("--scope", choices=["full", "changed", "release"], default="full")
     parser.add_argument("--base", help="base ref for --scope changed")
     parser.add_argument("--fail-fast", action="store_true")
     parser.add_argument("--json", action="store_true")

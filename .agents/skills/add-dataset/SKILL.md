@@ -40,11 +40,13 @@ strict parameter schema, a preset, and a card. The card and the profile from
 5. Keep `[dataset]` to `name`, optional display/track fields, `path`, optional `id`,
    and `[dataset.params]`. Loader options live in a strict registered schema that
    rejects misspellings.
-6. Create the card skeleton, write it from measured or cited facts per
-   [references/card.md](references/card.md), then exercise the data:
+6. Write the card `catalog/datasets/<name>/` (`card.toml` facts and a `README.md`
+   with Overview, Protocol and pitfalls) from measured or cited facts per
+   [references/card.md](references/card.md), record the measured characteristics,
+   then exercise the data:
 
    ```bash
-   uv run tsf repo cards              # creates catalog/datasets/my_data/README.md with TODOs
+   uv run tsf data analyze my_data --write-card   # data characteristics into card.toml
    uv run tsf data inspect --config configs/datasets/my_data.toml
    uv run tsf data audit
    ```
@@ -53,15 +55,15 @@ strict parameter schema, a preset, and a card. The card and the profile from
 
 - Module: Data.
 - Reads: preset `configs/datasets/<name>.toml` and the card at L1/L2 for conventions of sibling presets.
-- Produces: preset, card `catalog/datasets/<name>/README.md` (protocol, pitfalls, license), loader-ready bytes in `dataset/`.
-- Hands off to: `inspect-dataset` (profile), `run-experiment` (preset), `run-autoresearch` (dataset card).
+- Produces: preset, card `catalog/datasets/<name>/` (characteristics, source and license, shape, protocol, pitfalls), loader-ready bytes in `dataset/`.
+- Hands off to: `inspect-dataset` (profile), `run-experiment` (preset), `run-autoresearch` (`tsf catalog match <name>`).
 
 ## Success
 
 - Train-only scaling, correct feature/target selection, stable split boundaries,
   and adjacency injection where declared.
-- `uv run tsf data audit` passes: required facts curated, no `TODO`, generated
-  block current. Tests that pin the dataset count are updated.
+- `uv run tsf data audit` and `uv run tsf repo check --audit` pass: card facts
+  curated, no `TODO`, `characteristics` recorded with their basis.
 
 ## Stop and hand off
 

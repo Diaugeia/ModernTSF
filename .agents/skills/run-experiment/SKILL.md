@@ -51,7 +51,7 @@ results come back as `work_dirs/` records and round events.
 ## Chain
 
 - Module: Experiments.
-- Reads: dataset card (L1) and profile, model card (L1) and preset, `tsf result board` for baselines.
+- Reads: dataset card (L1) and profile, model card (L1: Configure, `data_params`) and preset, `tsf result board` for baselines.
 - Produces: resolved configs; per run `work_dirs/<dataset>/<model>/records/<run_id>.json` plus `performance.csv`; optional round events in `work_dirs/_research/<id>/`.
 - Hands off to: `analyze-results` (board), `submit-results` (records), `diagnose-experiment`, `run-autoresearch`.
 

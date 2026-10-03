@@ -1,19 +1,11 @@
 ---
 name: "weight_set_router"
-kind: "component"
-module: "tsflab.models._components.weight_set_router"
-summary: "Low-rank weight sharing: softmax-with-temperature routing matrix over M weight sets and the per-channel linear mix of those sets."
-category: "routing"
-input: "WeightSetRouter: temperature float; mix_weight_sets: weights [num_sets, *shape], routing [num_sets, channels]"
-output: "WeightSetRouter: [num_sets, channels] convex columns; mix_weight_sets: [channels, *shape]"
-origin: "Low-rank weight sharing of DiPE-Linear (Zhao et al., arXiv 2411.17257, 2024), inspired by mixture-of-experts and dynamic convolution"
-origin_models: ["dipelinear"]
-tags: ["low-rank", "routing", "softmax", "temperature", "weight-sharing", "channel-wise", "stateless", "mixture-of-weights", "convex-combination"]
+description: "Low-rank weight sharing (DiPE-Linear): temperature-softmax routing over M weight sets and the per-channel convex mix of those sets. Use for many channels that should share a few parameter sets instead of fully shared or per-channel weights; not for input-dependent or top-k routing."
 ---
 
 # weight_set_router
 
-## Purpose
+## What it does
 
 `WeightSetRouter(num_sets, channels)` owns a learnable matrix `R` of shape
 `[num_sets, channels]` (standard normal initialization) and returns
@@ -24,12 +16,12 @@ channel receives a convex combination of `num_sets` weight sets.
 smaller than `channels` this interpolates between a fully shared and a fully
 per-channel parameterisation.
 
-## Origin and granularity
+## When to use
 
-Extracted from the DiPE-Linear implementation, where the same routing mixes the
-frequency attention, temporal attention and the frequential mapping. The
-temperature schedule (annealing) is deliberately not part of the component; the
-caller decides `tau`.
+Use when many channels should neither share one set of weights nor each get
+their own: a small number of parameter sets is mixed per channel with a learned,
+input-independent assignment. Do not use for input-dependent expert selection or
+sparse top-k routing (see `topk_expert_router`), or when the channel count varies.
 
 ## Interface
 
@@ -46,59 +38,3 @@ differentiable in both arguments. Routing need not be softmax-normalized; any
 Both symbols are module-level (`__all__` lists them). `logits` is float32 on the
 module's device; the module is stateless apart from this parameter. Input-independent:
 the routing does not depend on any data tensor.
-
-## Invariants and equivalence evidence
-
-- `tests/test_dipelinear.py` (`WeightSetRouterTests`) checks column sums of one,
-  the high-temperature uniform limit, that low temperature sharpens, `ValueError` at
-  temperature 0, equality of `mix_weight_sets` with the explicit weighted sum and
-  nonzero gradients; reference values in
-  `tests/fixtures/components/weight_set_router.pt`.
-- `tests/test_dipelinear.py` (`test_matches_official_reference_values`) loads the
-  official DiPE-Linear forecasts with the router logits copied in, so the routed
-  `softmax(R / tau)` mix is checked end to end through `dipelinear`. The component
-  tests do not cover invalid sizes or a non-2-D routing.
-
-## Variants and options
-
-None. A hard assignment is the `tau -> 0` limit; a uniform average the `tau -> inf`
-limit. Input-dependent routers belong in `topk_expert_router`.
-
-## When to use and when not to use
-
-Use to share a small number of parameter sets across many channels with a
-learned, input-independent assignment. Do not use for input-dependent expert
-selection or sparse top-k routing (see `topk_expert_router`), or when the
-channel count varies.
-
-## Related components
-
-`fft_extrapolation_conv` (consumes the routing as `mixing`), `topk_expert_router`
-(input-dependent, sparse expert gating; this router is a static learned matrix),
-`sparse_connection_router` (learned binary connections over positions, not a convex
-mix of weight sets), `channel_wise_linear` (its `individual=False` and `True` modes are
-the fully shared and fully per-channel ends of the range that this router interpolates
-between).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `WeightSetRouter(num_sets: int, channels: int)`
-  Learn a ``(num_sets, channels)`` routing matrix normalized over the sets.
-- `mix_weight_sets(weights: torch.Tensor, routing: torch.Tensor)`
-  Combine ``(num_sets, *shape)`` weights into ``(channels, *shape)``.
-
-```python
-from tsflab.models._components.weight_set_router import WeightSetRouter, mix_weight_sets
-```
-
-## Retrieval terms
-
-`low-rank`, `routing`, `softmax`, `temperature`, `weight-sharing`
-
-## Current model consumers (1)
-
-`dipelinear`
-<!-- component-card:generated:end -->

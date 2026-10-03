@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import os
-import warnings
+import re
 from typing import Tuple
 
 import datasets as hf_datasets
@@ -44,17 +44,39 @@ _M4_PRED_LENGTH_MAP = {
 _TEST_SPLIT = 0.1
 _MAX_WINDOW = 20
 
-# Pandas freq aliases that need mapping to legacy single-char codes
+# Current pandas aliases mapped back to the legacy short codes used by the
+# GIFT-EVAL protocol maps above (and stored in the Arrow files).
 _FREQ_ALIAS = {
     "Y": "A",
     "YE": "A",
+    "YS": "A",
     "QE": "Q",
+    "QS": "Q",
     "ME": "M",
+    "MS": "M",
     "h": "H",
     "min": "T",
     "s": "S",
+    "ms": "L",
     "us": "U",
+    "ns": "N",
 }
+
+# Legacy fixed-width aliases stored in the GIFT-EVAL Arrow files -> pandas 3.
+_LEGACY_FIXED = {"H": "h", "T": "min", "S": "s", "L": "ms", "U": "us", "N": "ns"}
+
+# Legacy and current period aliases -> (family, explicit anchor side or None).
+_PERIOD_FAMILY = {
+    "M": ("M", None), "ME": ("M", "E"), "MS": ("M", "S"),
+    "Q": ("Q", None), "QE": ("Q", "E"), "QS": ("Q", "S"),
+    "A": ("Y", None), "Y": ("Y", None), "YE": ("Y", "E"),
+    "AS": ("Y", "S"), "YS": ("Y", "S"),
+}
+
+_MONTHS = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+           "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+
+_FREQ_RE = re.compile(r"^(\d*)([A-Za-z]+)(?:-([A-Za-z]+))?$")
 
 
 # ---------------------------------------------------------------------------
@@ -62,27 +84,74 @@ _FREQ_ALIAS = {
 # ---------------------------------------------------------------------------
 
 
-def _norm_freq(freq_str: str) -> str:
-    """Normalise a pandas frequency string to the legacy single-char code.
+def _split_freq(freq_str: str) -> tuple[str, str, str | None]:
+    match = _FREQ_RE.match(str(freq_str).strip())
+    if match is None:
+        raise ValueError(f"Unrecognised frequency: {freq_str!r}")
+    mult, base, anchor = match.groups()
+    return mult, base, anchor.upper() if anchor else None
 
-    Handles anchored offsets (``"W-FRI"``, ``"Q-DEC"``, ``"A-DEC"``),
-    multiplied minute offsets (``"5T"``, ``"15min"``), and deprecated
-    pandas aliases.
+
+def _norm_freq(freq_str: str) -> str:
+    """Normalise a frequency string to the legacy GIFT-EVAL short code.
+
+    Accepts legacy (``"5T"``, ``"Q-DEC"``, ``"A-DEC"``) and current
+    (``"15min"``, ``"QE-DEC"``, ``"YE-DEC"``) spellings and returns the code used
+    by the protocol maps (``"T"``, ``"Q"``, ``"A"``, ``"W"`` ...).
     """
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", FutureWarning)
-        offset = pd.tseries.frequencies.to_offset(freq_str)
-    base = offset.name  # e.g. "W-FRI", "15min", "h"
-    # Strip multiplier digits and anchoring suffix (e.g. "W-FRI" → "W")
-    base_clean = base.lstrip("0123456789").split("-")[0]
-    return _FREQ_ALIAS.get(base_clean, base_clean)
+    _, base, _ = _split_freq(freq_str)
+    return _FREQ_ALIAS.get(base, base)
+
+
+def _pandas_freq(freq_str: str, start: pd.Timestamp | None = None) -> str:
+    """Translate a stored (possibly legacy) frequency to a pandas 3 alias.
+
+    ``"H"`` -> ``"h"``, ``"5T"`` -> ``"5min"``, ``"10S"`` -> ``"10s"``,
+    ``"Q-DEC"`` -> ``"QE-DEC"``, ``"A-DEC"`` -> ``"YE-DEC"``; ``"W-FRI"`` and
+    ``"D"`` are unchanged. Legacy monthly/quarterly/yearly codes become the
+    period-start alias (``MS``, ``QS-JAN``, ``YS-JAN``) when ``start`` lies on such
+    a boundary, so the index begins exactly at the stored start; otherwise the
+    period-end alias, which is what the legacy code meant.
+    """
+    mult, base, anchor = _split_freq(freq_str)
+    if base in _LEGACY_FIXED:
+        return f"{mult}{_LEGACY_FIXED[base]}" + (f"-{anchor}" if anchor else "")
+    if base not in _PERIOD_FAMILY:
+        return f"{mult}{base}" + (f"-{anchor}" if anchor else "")
+
+    family, side = _PERIOD_FAMILY[base]
+    if family == "M":
+        if side is None:
+            side = "S" if start is not None and _is_period_start(start, 1, 1) else "E"
+        return f"{mult}M{side}"
+
+    step = 3 if family == "Q" else 12
+    if side == "S":
+        return f"{mult}{family}S-{anchor or 'JAN'}"
+    end_month = anchor or "DEC"
+    if side is None and start is not None:
+        first_month = (_MONTHS.index(end_month) + 1) % 12 + 1  # 1-based
+        if _is_period_start(start, first_month, step):
+            return f"{mult}{family}S-{_MONTHS[first_month - 1]}"
+    return f"{mult}{family}E-{end_month}"
+
+
+def _is_period_start(start: pd.Timestamp, first_month: int, step: int) -> bool:
+    """True when ``start`` is midnight on the first day of a period."""
+    if start != start.normalize() or start.day != 1:
+        return False
+    return (start.month - first_month) % step == 0
 
 
 def _build_stamp(start: pd.Timestamp, freq: str, length: int) -> np.ndarray:
-    """Generate (length, 6) float32 time-feature array."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", FutureWarning)
-        dates = pd.date_range(start=start, periods=length, freq=freq)
+    """Generate (length, 6) float32 time-feature array.
+
+    ``freq`` may be a legacy alias as stored in the GIFT-EVAL files; it is
+    translated with :func:`_pandas_freq` before building the index.
+    """
+    dates = pd.date_range(
+        start=start, periods=length, freq=_pandas_freq(freq, start)
+    )
     return np.column_stack(
         [
             dates.year,
@@ -199,6 +268,7 @@ class Dataset_GiftEval(Dataset):
         self._series_data: list[np.ndarray] = []
         self._series_stamp: list[np.ndarray] = []
         self._cum_windows: list[int] = []  # cumulative window counts
+        self._split_regions: list[np.ndarray] = []  # every series, windowed or not
         window_len = self.seq_len + self.pred_len
         total = 0
 
@@ -216,6 +286,7 @@ class Dataset_GiftEval(Dataset):
                 data = scaler.transform(data).astype(np.float32)
             else:
                 data = data.astype(np.float32)
+            self._split_regions.append(data)
 
             n_windows = len(data) - window_len + 1
             if n_windows <= 0:
@@ -239,6 +310,7 @@ class Dataset_GiftEval(Dataset):
     ) -> None:
         """Materialise rolling GIFT-EVAL test windows."""
         all_x, all_y, all_xm, all_ym = [], [], [], []
+        self._split_regions = []
 
         for series, start in zip(series_list, starts):
             length = len(series)
@@ -246,6 +318,7 @@ class Dataset_GiftEval(Dataset):
 
             data = scaler.transform(series).astype(np.float32) if scaler else series.astype(np.float32)
             stamp = _build_stamp(start, self._freq, length)
+            self._split_regions.append(data[val_end:])
 
             for w in range(self._windows):
                 forecast_start = val_end + w * self.pred_len
@@ -289,7 +362,12 @@ class Dataset_GiftEval(Dataset):
         starts: list[pd.Timestamp] = []
         for row in hf_ds:
             target = row["target"]
-            start = pd.Timestamp(row["start"])
+            start = row["start"]
+            if isinstance(start, (np.ndarray, list, tuple)):
+                # Some files (e.g. restaurant) store the start as a 0-d or
+                # one-element datetime array instead of a scalar.
+                start = np.ravel(np.asarray(start, dtype=object))[0]
+            start = pd.Timestamp(start)
             arr = np.asarray(target, dtype=np.float32)
             if arr.ndim == 2:
                 # Multivariate: (dim, length) → (length, dim)
@@ -365,6 +443,26 @@ class Dataset_GiftEval(Dataset):
             stamp[offset:x_end],
             stamp[y_start:y_end],
         )
+
+    def series_array(self) -> np.ndarray:
+        """Return this split's observed values as one ``(T, C)`` array.
+
+        Analysis accessor (``tsf data inspect``), independent of the window
+        count: series too short for ``seq_len + pred_len`` are still included.
+        Each GIFT-EVAL series contributes its own channel(s). Series of unequal
+        length are right-aligned (most recent rows) to a common length ``L``
+        chosen to cover the most values (``L`` x number of series at least ``L``
+        long); shorter series are left out.
+        """
+        regions = [r for r in self._split_regions if len(r)]
+        if not regions:
+            return np.zeros((0, 1), dtype=np.float32)
+        lengths = sorted((len(r) for r in regions), reverse=True)
+        # With lengths sorted descending, (i + 1) series are at least lengths[i] long.
+        best = max(range(len(lengths)), key=lambda i: lengths[i] * (i + 1))
+        common = lengths[best]
+        kept = [r[len(r) - common:] for r in regions if len(r) >= common]
+        return np.concatenate(kept, axis=1)
 
     def inverse_transform(self, data: np.ndarray) -> np.ndarray:
         if self.scaler is None:

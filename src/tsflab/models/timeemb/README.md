@@ -1,95 +1,33 @@
 ---
 name: "TimeEmb"
-summary: "TimeEmb is a lightweight time-series forecasting model that disentangles static (time-invariant) and dynamic (time-varying) components of a series. A global timestamp-aware embedding bank captures recurring stable patterns, while a frequency-domain filtering mechanism handles short-term fluctuations — the two streams are combined to produce multi-step forecasts. The model can also serve as a plug-in module to enhance existing forecasters with minimal overhead."
-paper: "https://arxiv.org/abs/2510.00461"
-paper_title: "TimeEmb: A Lightweight Static-Dynamic Disentanglement Framework for Time Series Forecasting"
-venue: "NeurIPS 2025"
-year: 2025
-code: "https://github.com/showmeon/TimeEmb"
-revision: "9adf3fba801b34642e7191b45e08aff224b26e67"
-license: "NOASSERTION"
-tagline: "Learned per-hour/day complex spectrum bank is subtracted as static part; a gated filter handles the rest, then an MLP."
-tags: ["mlp", "frequency", "decomposition", "covariates", "channel-independent", "lightweight", "normalization"]
-composition: ["normalization=component:revin", "decomposition=local:calendar-embedding-static-spectrum-split", "temporal=local:dynamic-spectrum-filter", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-head", "loss=loss:mse"]
+description: "Static-dynamic disentanglement: a learned per-hour (and optionally per-weekday) complex spectrum bank is the static part, an input-conditioned full-spectrum filter handles the dynamic rest, then an MLP. Use for calendar-driven series under distribution shift; not for data without timestamps or cross-channel structure."
 ---
+
 # TimeEmb
 
-## Key ideas
+## Idea
 
-- `GlobalCalendarEmbedding` stores a learnable complex rFFT spectrum per channel for each hour-of-day (and optionally day-of-week) slot, looked up from the timestamp marks.
-- The static spectrum is subtracted from the input spectrum; `DynamicSpectrumFilter` rescales the residual with a response gated by a conditioner on mean spectral energy, then the static part is added back.
+- `GlobalCalendarEmbedding` stores a learnable complex rFFT spectrum per channel for each hour-of-day (and optionally day-of-week) slot, looked up from the first forecast step's timestamp mark.
+- The static spectrum is subtracted from the input spectrum; `DynamicSpectrumFilter` rescales the residual by `1 + gate * response`, with the gate conditioned on mean spectral energy; the static part is then added back.
 - Inverse FFT gives a filtered lookback that a two-layer MLP maps to the horizon, inside `revin`.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Non-stationary series with strong daily (and weekly) rhythms: the time-invariant calendar component is learned globally and separated from short-term fluctuations.
+- Lightweight settings: the model is an FFT, an embedding lookup, a small gate and a two-layer MLP.
+- Channel-independent MLP head with per-channel calendar spectra; not for data without timestamps (falls back to one zero slot) or where cross-channel interactions dominate.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2510.00461); title: TimeEmb: A Lightweight Static-Dynamic Disentanglement Framework for Time Series Forecasting; venue/year: NeurIPS 2025 / 2025
-- [codebase](https://github.com/showmeon/TimeEmb); revision: `9adf3fba801b34642e7191b45e08aff224b26e67`; license: `NOASSERTION`
+- `enc_in`: number of channels (each slot stores one spectrum per channel).
+- `hour_length`: number of hour-of-day slots; the index is the hour mark modulo `hour_length` (24 = hourly slots; sub-hourly data shares the hour's slot).
+- `day_length`: number of day-of-week slots (7); used only with `use_day_index = true`.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/TimeEmb.toml`](../../../../configs/models/TimeEmb.toml).
+Other hyperparameters: preset defaults in `configs/models/TimeEmb.toml`; tune generically.
 
 ## Differences
 
-- Author source: https://github.com/showmeon/TimeEmb at `9adf3fba801b34642e7191b45e08aff224b26e67`; the repository declares no code license.
-Clean-room implementation: confirmed. The implementation was derived independently from the paper's global static spectrum embedding and input-conditioned full-spectrum dynamic filter; source from the unlicensed reference repository was not copied or reused. Calendar marks are optional and fall back to a deterministic zero slot.
-- Differences: first forecast-step hour and calendar-day indices come from TSFLab decoder marks, and disabled embedding tables are not registered as dead trainable parameters. Plug-in integrations, published training, and reported results are not reproduced here.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=512`, `use_revin=True`, `use_hour_index=True`, `use_day_index=False`, `scale=0.02`, `hour_length=24`, `day_length=7`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: TimeEmb: A Lightweight Static-Dynamic Disentanglement Framework for Time Series Forecasting
-- **Venue**: NeurIPS 2025
-- **Published**: 2025 (arXiv: 2025-10)
-- **arXiv**: https://arxiv.org/abs/2510.00461
-
-## Abstract
-Temporal non-stationarity, the phenomenon that time series distributions change over time, poses fundamental challenges to reliable time series forecasting. Intuitively, the complex time series can be decomposed into two factors, i.e. time-invariant and time-varying components, which indicate static and dynamic patterns, respectively. Nonetheless, existing methods often conflate the time-varying and time-invariant components, and jointly learn the combined long-term patterns and short-term fluctuations, leading to suboptimal performance facing distribution shifts. To address this issue, we initiatively propose a lightweight static-dynamic decomposition framework, TimeEmb, for time series forecasting. TimeEmb innovatively separates time series into two complementary components: (1) time-invariant component, captured by a novel global embedding module that learns persistent representations across time series, and (2) time-varying component, processed by an efficient frequency-domain filtering mechanism inspired by full-spectrum analysis in signal processing. Experiments on real-world datasets demonstrate that TimeEmb outperforms state-of-the-art baselines and requires fewer computational resources. We conduct comprehensive quantitative and qualitative analyses to verify the efficacy of static-dynamic disentanglement. This lightweight framework can also improve existing time-series forecasting methods with simple integration.
-
-## In TSFLab
-Default config: `configs/models/TimeEmb.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Source and verification
-
-- Author source: https://github.com/showmeon/TimeEmb at `9adf3fba801b34642e7191b45e08aff224b26e67`; the repository declares no code license.
-Clean-room implementation: confirmed. The implementation was derived independently from the paper's global static spectrum embedding and input-conditioned full-spectrum dynamic filter; source from the unlicensed reference repository was not copied or reused. Calendar marks are optional and fall back to a deterministic zero slot.
-- Differences: first forecast-step hour and calendar-day indices come from TSFLab decoder marks, and disabled embedding tables are not registered as dead trainable parameters. Plug-in integrations, published training, and reported results are not reproduced here.
-
-## Citation
-
-```bibtex
-@misc{xia2025timeemb,
-  author        = {Mingyuan Xia and
-                  Chunxu Zhang and
-                  Zijian Zhang and
-                  Hao Miao and
-                  Qidong Liu and
-                  Yuanshao Zhu and
-                  Bo Yang},
-  title         = {TimeEmb: A Lightweight Static-Dynamic Disentanglement Framework for Time Series Forecasting},
-  year          = {2025},
-  eprint        = {2510.00461},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2510.00461}
-}
-```
+- Clean-room implementation from the paper's global static spectrum embedding and input-conditioned full-spectrum dynamic filter; the author repository (`showmeon/TimeEmb` at `9adf3fba801b34642e7191b45e08aff224b26e67`) declares no license and was not copied.
+- The hour and day indices of the first forecast step come from TSFLab decoder marks (encoder marks' last step if absent); calendar marks are optional and fall back to a deterministic zero slot.
+- Disabled embedding tables are not registered as dead trainable parameters.
+- Plug-in integrations with other forecasters, published training settings, and reported results are not reproduced.

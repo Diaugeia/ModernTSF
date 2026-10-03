@@ -1,0 +1,31 @@
+schema = "tsflab.card/1"
+kind = "dataset"
+name = "wike2000"
+domain = "Web/CloudOps / web traffic"
+tags = ["wikipedia", "page-views", "web-traffic", "gluonts", "gp-copula", "daily", "tfb", "multivariate", "high-dimensional", "short-series", "counts"]
+related = ["covid19", "nn5", "traffic"]
+
+[source]
+name = "GluonTS dataset repository, wiki2000_nips (GP-Copula datasets of Salinas et al., 2019), Wikipedia page-view counts; TFB packaging by Qiu et al., who cite Gasthaus et al. (AISTATS 2019)"
+url = "https://github.com/awslabs/gluonts/blob/dev/src/gluonts/dataset/repository/_gp_copula_2019.py"
+citation = "High-dimensional multivariate forecasting with low-rank Gaussian Copula Processes (Salinas et al., NeurIPS 2019); TFB cites Probabilistic Forecasting with Spline Quantile Function RNNs (Gasthaus et al., AISTATS 2019)"
+citation_url = "https://arxiv.org/abs/1910.03002"
+license = "unknown (the GluonTS copy states no data license; Wikimedia analytics page-view dumps are CC0, but the provenance of this 2,000-page subset is undocumented)"
+redistribution = "unknown"
+
+[shape]
+frequency = "daily (1d)"
+time_span = "2012-01-01 to 2014-03-02"
+length = 792
+channels = 2000
+channel_kind = "series"
+target = "OT (last series; TFB's long-format file names it 1999, renamed OT when pivoted to wide)"
+missing_values = "no NaN; on 2014-01-05 every series is exactly 0 (the only zeros in the file), an apparent collection outage"
+stats_basis = "measured"
+
+[protocol]
+protocol = "TSFLab: chronological 7:1:2 split, scaling fitted on the training split only; lookback 36/104, horizons 24/36/48/60"
+literature = "TFB multivariate: lookback 36 or 104, horizons 24/36/48/60, chronological 7:1:2 (TFB `train_ratio_in_tv` default 0.875 with `tv_ratio` 0.8); GluonTS/GP-Copula evaluates 30-day horizons on 5 rolling windows beyond day 792"
+split = "7:1:2"
+seq_lens = [36, 104]
+pred_lens = [24, 36, 48, 60]

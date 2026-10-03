@@ -1,103 +1,32 @@
 ---
 name: "CycleNet"
-summary: "CycleNet is a long-term time-series forecasting model that explicitly models periodic patterns in the input sequence via a Residual Cycle Forecasting (RCF) technique. It separates learnable recurrent cycle components from the residual signal and predicts on the residuals, achieving state-of-the-art accuracy in electricity, weather, and energy domains with over 90% fewer parameters than competing approaches."
-paper: "https://arxiv.org/abs/2409.18479"
-paper_title: "CycleNet: Enhancing Time Series Forecasting through Modeling Periodic Patterns"
-venue: "NeurIPS 2024"
-year: 2024
-code: "https://github.com/ACAT-SCUT/CycleNet"
-revision: "d807e51fc2dcd143885ee639d97965a7ab0926f4"
-license: "Apache-2.0"
-tagline: "Subtracts a learnable recurrent cycle by timestamp phase, forecasts the residual linearly, adds the cycle back."
-tags: ["linear", "decomposition", "periodicity", "normalization", "channel-independent", "lightweight"]
-composition: ["normalization=component:revin", "decomposition=local:learnable-recurrent-cycle-removal", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=local:cycle-restoration", "loss=loss:mse"]
+description: "Residual Cycle Forecasting: subtracts a learnable recurrent cycle aligned by timestamp phase, forecasts the residual with a linear map or small MLP, then adds the cycle back. Use for long-horizon forecasting of strongly periodic series with timestamps; not for aperiodic data or periods the calendar marks cannot index."
 ---
+
 # CycleNet
 
-## Key ideas
+## Idea
 
-- `cycle_pattern` is a learnable `[cycle, channels]` parameter (zero-initialized) selected by the timestamp phase (hour, weekday, or hour-of-week for cycles 24, 7, 168).
-- The aligned cycle is removed from the normalized history and the future cycle is added back after forecasting (Residual Cycle Forecasting).
+- `cycle_pattern` is a learnable `[cycle, channels]` parameter (zero-initialized) selected by timestamp phase (hour, weekday, or hour-of-week for cycles 24, 7, 168).
+- The aligned cycle is removed from the normalized history and the future cycle is added back after forecasting.
 - The residual is forecast by one shared `channel_wise_linear` map, or a small MLP when `model_type='mlp'`.
 - Non-affine `revin` is optional; missing timestamps fall back to phase zero.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Series with a stable, known period (daily or weekly cycles in electricity, weather, energy), especially at long horizons.
+- Needs calendar marks to align the cycle; without them every window starts at phase zero and the cycle is misaligned.
+- Very small parameter count; channels are forecast independently; point output only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2409.18479); title: CycleNet: Enhancing Time Series Forecasting through Modeling Periodic Patterns; venue/year: NeurIPS 2024 / 2024
-- [codebase](https://github.com/ACAT-SCUT/CycleNet); revision: `d807e51fc2dcd143885ee639d97965a7ab0926f4`; license: `Apache-2.0`
+- `enc_in`: the dataset's channel count.
+- `cycle`: the dominant period in steps. Phase is read from the hour mark (weekday for 7, weekday*24+hour for 168), so 24 and 168 assume hourly data and 7 assumes daily data.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/CycleNet.toml`](../../../../configs/models/CycleNet.toml).
+Other hyperparameters: preset defaults in `configs/models/CycleNet.toml`; tune generically.
 
 ## Differences
 
-**Paper-driven local implementation.** A zero-initialized learnable recurrent cycle is aligned from timestamp phase, removed from the normalized history, and restored after a shared Linear/MLP residual forecast. Optional normalization reuses non-affine RevIN. Missing timestamps use a deterministic zero phase; cycles 7 and 168 use weekday-aware indices. The external repository is reference-only and no source file was copied or adapted.
-
-## Shared components
-
-- [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `cycle=24`, `model_type='linear'`, `d_model=512`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: CycleNet: Enhancing Time Series Forecasting through Modeling Periodic Patterns
-- **Venue**: NeurIPS 2024 (Spotlight)
-- **Published**: 2024 (arXiv: 2024-09)
-- **arXiv**: https://arxiv.org/abs/2409.18479
-
-## Abstract
-The stable periodic patterns present in time series data serve as the foundation for conducting long-horizon forecasts. In this paper, we pioneer the exploration of explicitly modeling this periodicity to enhance the performance of models in long-term time series forecasting (LTSF) tasks. Specifically, we introduce the Residual Cycle Forecasting (RCF) technique, which utilizes learnable recurrent cycles to model the inherent periodic patterns within sequences, and then performs predictions on the residual components of the modeled cycles. Combining RCF with a Linear layer or a shallow MLP forms the simple yet powerful method proposed in this paper, called CycleNet. CycleNet achieves state-of-the-art prediction accuracy in multiple domains including electricity, weather, and energy, while offering significant efficiency advantages by reducing over 90% of the required parameter quantity. Furthermore, as a novel plug-and-play technique, the RCF can also significantly improve the prediction accuracy of existing models, including PatchTST and iTransformer. The source code is available at: https://github.com/ACAT-SCUT/CycleNet.
-
-## In TSFLab
-Default config: `configs/models/CycleNet.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-**Paper-driven local implementation.** A zero-initialized learnable recurrent cycle is aligned from timestamp phase, removed from the normalized history, and restored after a shared Linear/MLP residual forecast. Optional normalization reuses non-affine RevIN. Missing timestamps use a deterministic zero phase; cycles 7 and 168 use weekday-aware indices. The external repository is reference-only and no source file was copied or adapted.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/nips/Lin0HWMZ24,
-  author       = {Shengsheng Lin and
-                  Weiwei Lin and
-                  Xinyi Hu and
-                  Wentai Wu and
-                  Ruichao Mo and
-                  Haocheng Zhong},
-  editor       = {Amir Globersons and
-                  Lester Mackey and
-                  Danielle Belgrave and
-                  Angela Fan and
-                  Ulrich Paquet and
-                  Jakub M. Tomczak and
-                  Cheng Zhang},
-  title        = {CycleNet: Enhancing Time Series Forecasting through Modeling Periodic
-                  Patterns},
-  booktitle    = {Advances in Neural Information Processing Systems 37: Annual Conference
-                  on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver,
-                  BC, Canada, December 10 - 15, 2024},
-  year         = {2024},
-  url          = {http://papers.nips.cc/paper\_files/paper/2024/hash/bfe7998398779dde03cad7a73b1f81b6-Abstract-Conference.html},
-  timestamp    = {Tue, 26 May 2026 17:12:08 +0200},
-  biburl       = {https://dblp.org/rec/conf/nips/Lin0HWMZ24.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Paper-driven local implementation; the Apache-2.0 repository is reference only and no source was copied.
+- The cycle is aligned from timestamp marks (weekday-aware indices for cycles 7 and 168); missing timestamps use a deterministic zero phase.
+- Optional normalization reuses non-affine RevIN.

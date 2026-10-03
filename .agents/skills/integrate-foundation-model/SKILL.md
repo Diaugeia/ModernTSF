@@ -28,34 +28,36 @@ demonstrated need, or bundle weights in TSFLab.
 4. Add one ordinary `src/tsflab/models/<slug>/` entry whose factory receives
    verified local artifacts, declares `inference-only`, and exposes the canonical
    four-input interface. Do not add a provider registry or a foundation category.
-5. Document official behavior, checkpoint facts, cache preparation,
-   preprocessing, channel treatment, limitations, and every adapter transformation
-   in the card. Compose upper-layer methods only through experiment configuration.
-6. Verify offline failure, official reference outputs, tensor axes, quantiles,
-   finite values, CPU behavior where supported, batch/sequence bounds, and state
-   loading; training/gradient checks are `not-applicable` because the runtime is
-   inference-only, not because they were skipped.
+5. Write the card as in `add-model` step 5: `card.toml` with `[paper]`, `[code]`
+   (official package repository, revision, license), `fidelity`, `fits` (e.g.
+   `low-data`, `probabilistic-output`), composition, and `[data_params]` (context
+   length, patch or frequency rules); README Configure covers checkpoint facts and
+   cache preparation, Differences every adapter transformation, preprocessing, and
+   channel treatment. Compose upper-layer methods only through experiment configuration.
+6. Check offline failure, official reference outputs, tensor axes, quantiles,
+   finite values, CPU behavior where supported, and batch/sequence bounds; the
+   admission contract skips training because the runtime is inference-only.
 
 ```bash
 uv run tsf model artifacts <Name>
-uv run tsf model verify <Name>        # offline, CPU, small tensors: no training
-uv run tsf repo check --contracts strict --models <Name>
+uv run tsf model add --name <Name> --verify   # offline, CPU, small tensors: writes [admission]
 ```
 
 ## Chain
 
 - Module: Models.
 - Reads: official package facts, component cards (L0) for shared interfaces.
-- Produces: an inference-only card, spec, pinned artifacts, preset, evidence (same layout as `add-model`).
+- Produces: an inference-only card (with `[admission]`), spec, pinned artifacts, preset (same layout as `add-model`).
 - Hands off to: `run-experiment` (zero-shot runs), `run-autoresearch`, `audit`.
 
 ## Success
 
-- One flat entry with pinned artifacts, offline construction, and evidence that
-  matches the official reference outputs.
+- One flat entry with pinned artifacts, offline construction, outputs that match
+  the official reference, and `[admission]` status `passed`.
 
 ## Stop and hand off
 
 - Stop if the license, official loader, checkpoint identity, or input/output
   semantics cannot be established; an adapter alone is not a catalog model.
-- Admit the entry with `tsf model add --name <Name>` exactly as `add-model` step 7 does (unified verification, audits, rollback).
+- Admit the entry with `tsf model add --name <Name> --verify` exactly as `add-model`
+  step 7 does (static audits, admission contract, rollback on failure).

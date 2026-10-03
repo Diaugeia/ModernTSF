@@ -1,96 +1,34 @@
 ---
 name: "STGCN"
-summary: "STGCN (Spatio-Temporal Graph Convolutional Network) is a deep learning framework for node-level spatiotemporal forecasting, originally developed for traffic speed prediction. It combines graph convolution layers that capture spatial dependencies between nodes on a road network with temporal convolution layers that model short- and long-range time patterns, using fully convolutional structures to achieve fast training and compact parameterisation compared to recurrent alternatives."
-paper: "https://arxiv.org/abs/1709.04875"
-paper_title: "Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting"
-venue: "IJCAI 2018"
-year: 2018
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "Stacked gated temporal convolutions around Chebyshev graph convolutions in sandwich blocks; fully convolutional."
-tags: ["gnn", "cnn", "spatiotemporal", "covariates"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:gated-causal-temporal-conv", "channel=component:graph_spectral+local:chebyshev-graph-convolution", "head=local:flatten-mlp-head", "loss=loss:mse"]
+description: "Fully convolutional spatio-temporal graph network: gated temporal convolutions sandwich Chebyshev graph convolutions over a fixed adjacency. Use for traffic and sensor-network node forecasting with a known road graph and fast training; not for data without a meaningful graph or probabilistic output."
 ---
+
 # STGCN
 
-## Key ideas
+## Idea
 
+- Traffic flow is highly nonlinear with spatial and temporal dependencies; STGCN formulates forecasting on a graph with purely convolutional structures, for faster training with fewer parameters than recurrent models.
 - Each `SpatioTemporalBlock` sandwiches a Chebyshev graph convolution (`ChebyshevGraphConvolution`, supports from `graph_spectral.chebyshev_supports`) between two GLU-gated causal convolutions (`TemporalGate`).
 - Two blocks with LayerNorm and dropout, then a flatten MLP maps the whole history to the horizon per node.
 - Consumes value plus time-of-day/day-of-week features via `to_spatiotemporal` and a fixed adjacency.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Road or sensor networks with a known, fixed adjacency (spectral graph convolution over that graph).
+- Short input windows and fast training budgets (no recurrence, no attention).
+- The graph is static; changing inter-node relations are not modelled. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/1709.04875); title: Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting; venue/year: IJCAI 2018 / 2018
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/STGCN.toml`](../../../../configs/models/STGCN.toml).
+- `enc_in` follows the node count; `num_nodes` and `adj_mx` come from the dataset graph.
+- `input_dim` follows the loader's input features (value plus calendar covariates).
+- Other hyperparameters: preset defaults in `configs/models/STGCN.toml`; tune generically (only the GLU / Chebyshev path is supported).
 
 ## Differences
 
-TSFLab rewrites STGCN locally after reviewing the paper and pinned official codebase. Each block follows temporal GLU, fixed Chebyshev graph convolution, and temporal GLU order using the injected adjacency and shared spectral support builder. Canonical evidence is stored in [`verification/evidence/STGCN.json`](../../../../verification/evidence/STGCN.json).
+Local rewrite after reviewing the paper and the pinned BasicTS implementation (`GestaltCogTeam/BasicTS@c218c07`, Apache-2.0).
 
-## Shared components
+- Each block follows temporal GLU, fixed Chebyshev graph convolution, temporal GLU, using the injected adjacency and the shared `graph_spectral` support builder.
+- Only `act_func = "glu"` with `graph_conv_type = "cheb_graph_conv"` is implemented (the paper path).
 
-- [`graph_spectral`](../_components/graph_spectral/README.md)
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `Kt=3`, `Ks=3`, `hidden_dim=32`, `bottleneck_dim=8`, `out_hidden_dim=32`, `act_func='glu'`, `graph_conv_type='cheb_graph_conv'`, `bias=True`, `droprate=0.1`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting
-- **Venue**: IJCAI 2018
-- **Published**: 2018 (arXiv: 2017-09)
-- **arXiv**: https://arxiv.org/abs/1709.04875
-
-## Abstract
-Timely accurate traffic forecast is crucial for urban traffic control and guidance. Due to the high nonlinearity and complexity of traffic flow, traditional methods cannot satisfy the requirements of mid-and-long term prediction tasks and often neglect spatial and temporal dependencies. In this paper, we propose a novel deep learning framework, Spatio-Temporal Graph Convolutional Networks (STGCN), to tackle the time series prediction problem in traffic domain. Instead of applying regular convolutional and recurrent units, we formulate the problem on graphs and build the model with complete convolutional structures, which enable much faster training speed with fewer parameters. Experiments show that our model STGCN effectively captures comprehensive spatio-temporal correlations through modeling multi-scale traffic networks and consistently outperforms state-of-the-art baselines on various real-world traffic datasets.
-
-## In TSFLab
-Default config: `configs/models/STGCN.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-TSFLab rewrites STGCN locally after reviewing the paper and pinned official codebase. Each block follows temporal GLU, fixed Chebyshev graph convolution, and temporal GLU order using the injected adjacency and shared spectral support builder. Canonical evidence is stored in [`verification/evidence/STGCN.json`](../../../../verification/evidence/STGCN.json).
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/ijcai/YuYZ18,
-  author       = {Bing Yu and
-                  Haoteng Yin and
-                  Zhanxing Zhu},
-  editor       = {J{\'{e}}r{\^{o}}me Lang},
-  title        = {Spatio-Temporal Graph Convolutional Networks: {A} Deep Learning Framework
-                  for Traffic Forecasting},
-  booktitle    = {Proceedings of the Twenty-Seventh International Joint Conference on
-                  Artificial Intelligence, {IJCAI} 2018, July 13-19, 2018, Stockholm,
-                  Sweden},
-  pages        = {3634--3640},
-  publisher    = {ijcai.org},
-  year         = {2018},
-  url          = {https://doi.org/10.24963/ijcai.2018/505},
-  doi          = {10.24963/IJCAI.2018/505},
-  timestamp    = {Sun, 04 Aug 2024 19:36:39 +0200},
-  biburl       = {https://dblp.org/rec/conf/ijcai/YuYZ18.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Yu, Yin, Zhu, "Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting", IJCAI 2018, arXiv:1709.04875.

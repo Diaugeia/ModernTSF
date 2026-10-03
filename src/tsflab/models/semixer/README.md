@@ -1,168 +1,38 @@
 ---
 name: "SEMixer"
-summary: "SEMixer is a fully MLP-based multiscale forecaster that replaces learned attention with a Random Attention Mechanism (RAM): a randomly sampled patch-interaction mask trained with Bernoulli dropconnect and collapsed to a closed-form dropout-ensemble average at inference. A Multiscale Progressive Mixing Chain (MPMC) patchifies the normalized history at several scales and mixes them pairwise, finest-to-coarsest, so each scale's semantics are aligned with its neighbor before entering the next stage."
-paper: "https://arxiv.org/abs/2602.16220"
-paper_title: "SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting"
-venue: "WWW 2026"
-year: 2026
-code: "https://github.com/Meteor-Stars/SEMixer"
-revision: "973c619ee4c380791bd70e6f71f6202ec274ce8e"
-license: "NOASSERTION"
-tagline: "Multiscale patch MLP-Mixer chain with Random Attention: Bernoulli patch-link masks, closed-form dropout average at eval."
-tags: ["mlp", "mixer", "multi-scale", "patching", "random-attention", "channel-independent", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:multiscale-progressive-mixing-chain+component:positional_encoding", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
+description: "Lightweight channel-independent multiscale patch MLP-Mixer chain with a Random Attention Mechanism (Bernoulli patch-link masks, averaged at evaluation). Use for long-horizon forecasting with multiscale patterns and noise under a small budget; not for cross-channel dependencies or probabilistic output."
 ---
+
 # SEMixer
 
-## Key ideas
+## Idea
 
-- `ScaleEmbedding` patchifies the normalized history at each scale (`scale_factors`, default 1x2x4x8) with patch length and stride multiplied by the scale, and adds a learnable position table (`positional_encoding`).
-- `TemporalMixingBlock._random_attention` replaces learned attention with a Bernoulli patch-to-patch mask in training and a closed-form `(1 - connection_probability)` average at evaluation; inter-patch and intra-patch MLPs follow.
-- The progressive chain mixes the finest scale, then repeatedly concatenates the previous mixed tokens with the next scale's raw tokens and keeps the new-scale suffix.
+- Multiscale patterns matter for long-term forecasting, but noise and semantic gaps between non-adjacent scales make them hard to integrate; SEMixer mixes scales progressively and only pairwise.
+- `ScaleEmbedding` patchifies the normalized history at each scale (`scale_factors`, default 1x2x4x8) with patch length and stride multiplied by the scale, plus a learnable position table (`positional_encoding`).
+- `TemporalMixingBlock._random_attention` (RAM) replaces learned attention with a Bernoulli patch-to-patch mask in training and its closed-form `(1 - connection_probability)` average at evaluation; inter- and intra-patch MLPs follow.
+- The progressive chain (MPMC) mixes the finest scale, then repeatedly concatenates the previous mixed tokens with the next scale's raw tokens and keeps the new-scale suffix.
 - Scale outputs are concatenated, reduced to `reduce_dim` tokens, and mapped to the horizon by `flatten_forecast_head`; `revin` wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 336, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long-horizon forecasting with patterns at several temporal scales; pairwise mixing of adjacent scales limits memory and resists noise.
+- Small model budgets (MLP-Mixer backbone, no learned attention).
+- Channels share weights independently: suits weakly correlated channels, not data whose signal lies in channel interactions. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2602.16220); title: SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting; venue/year: WWW 2026 / 2026
-- [codebase](https://github.com/Meteor-Stars/SEMixer); revision: `973c619ee4c380791bd70e6f71f6202ec274ce8e`; license: `NOASSERTION`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/SEMixer.toml`](../../../../configs/models/SEMixer.toml).
+- `enc_in` and `c_out` follow the dataset channel count; both must equal it.
+- `patch_len`, `stride`, `scale_factors` follow `seq_len`: each scale `s` uses patch `patch_len * s` and stride `stride * s`, and the largest scale must still leave patches (`(seq_len - patch_len*s) // (stride*s) + 2 >= 1`); scales are strictly increasing integers starting at 1.
+- Other hyperparameters: preset defaults in `configs/models/SEMixer.toml`; tune generically.
 
 ## Differences
 
-**Clean-room implementation: confirmed.** The linked repository carries no
-LICENSE file (recorded as `NOASSERTION`) and is `reference-only`; its source
-was inspected at the pinned revision only to resolve paper omissions and was
-not copied or reused. Structural and runtime evidence is generated by
-`uv run tsf model verify SEMixer`. Differences from the official repository:
+Clean-room rewrite; the official repository (no license, `NOASSERTION`) was read only to resolve paper omissions.
 
-- The official code hardcodes exactly four scales via dict keys `{1, 2, 4, 8}`
-  and per-scale attributes (`W_pos_1`..`W_pos_4`, `T_Mixing_Scale_1`..`_4`).
-  The local implementation generalizes MPMC to an arbitrary strictly increasing
-  `scale_factors` schedule starting at 1 (default `"1x2x4x8"`, matching the
-  paper's Sec. 4.1.3 defaults) using `nn.ModuleList` chains, which is
-  mathematically identical for the default four-scale schedule.
-- The official `Flatten_Head` supports `individual` per-channel and
-  `var_decomp` variable-group heads selected by CLI flags never exercised in
-  the paper's reported configuration; the local implementation always uses the
-  shared (non-individual) head, which is the officially reported setting.
-- The official code exposes optional non-RAM attention backbones
-  (`ProbAttention`, `LogSparseAttention`, `PerformerLayer`, `ReformerLayer`,
-  `AutoCorrelation`, `FourierBlock`, plain multi-head self-attention) selected
-  by unused CLI flags. Only the paper's Random Attention Mechanism path
-  (`Random_Attention_Mechanism=True`, the reported configuration) is
-  implemented; the alternative backbones are omitted as out-of-scope ablations.
-- Official RAM sampling and the embedding/reduce dropout are hardcoded module
-  constants (`connection_probability=0.85`, dropout `0.1`); the local
-  implementation exposes both as `spec.py` parameters defaulting to the same
-  values so they remain adjustable without code changes.
-- The reduced representation's trailing two axes are `[patch, d_model]` before
-  the flatten head, versus the official `[d_model, patch]` order (both permute
-  paths cancel to the same patch-embedding step; see `model.py` docstring).
-  Since the head is a plain flatten-then-linear, this reordering does not
-  change the represented function class.
-- Reference recipes (data pipeline, optimizer schedule, checkpoint reference
-  comparison, and metric reference comparison against the paper's reported
-  numbers) are out of scope for this catalog entry.
-- No new shared component was extracted for this model. The Random Attention
-  Mechanism and the finest-then-pairwise Multiscale Progressive Mixing Chain
-  are this paper's defining novelty with no other current catalog consumer, so
-  they remain model-local per `curate-components` (extraction requires at
-  least two real consumers); the per-scale linear patch embedding is likewise
-  kept local because it differs from the cataloged `embed.PatchEmbedding` in
-  its bias term and its use of a learnable (not fixed sinusoidal) position
-  table.
+- Generalizes the official hard-coded four scales `{1, 2, 4, 8}` to any strictly increasing `scale_factors` schedule; identical for the default.
+- Only the shared (non-individual) flatten head and only the RAM attention path (the reported configuration) are implemented; official alternative backbones (ProbAttention, AutoCorrelation, etc.) are omitted.
+- `connection_probability` (0.85) and dropout (0.1), hard-coded upstream, are parameters with the same defaults.
+- Reduced representation is `[patch, d_model]` before the flatten head instead of `[d_model, patch]`; the function class is unchanged.
+- No data pipeline, optimizer schedule, checkpoint, or published-metric comparison.
 
-## Shared components
-
-- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
-- [`positional_encoding`](../_components/positional_encoding/README.md)
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=336` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `c_out=7`, `d_model=128`, `patch_len=16`, `stride=8`, `scale_factors='1x2x4x8'`, `reduce_dim=64`, `eib_num=1`, `eib_num_1scale=1`, `connection_probability=0.85`, `dropout=0.1`, `mixing_dropout=0.1`, `head_dropout=0.0`, `affine=False`, `subtract_last=False`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting
-- **Venue**: ACM Web Conference 2026 (WWW 2026)
-- **Published**: 2026
-- **arXiv**: https://arxiv.org/abs/2602.16220
-
-## Abstract
-Modeling multiscale patterns is crucial for long-term time series forecasting, but redundancy and noise in time series, together with semantic gaps between non-adjacent scales, make efficient alignment and integration of multiscale temporal dependencies challenging. We propose SEMixer, an end-to-end lightweight multiscale model. SEMixer introduces the Random Attention Mechanism (RAM), which learns diverse patch interactions through random sampling during training and aggregates them via a dropout-ensemble approximation at inference, enhancing patch-level semantics and enabling MLP-Mixer to better model multiscale dependencies. SEMixer further introduces the Multiscale Progressive Mixing Chain (MPMC), which stacks RAM and the MLP-Mixer backbone as the time-series scale level increases and restricts mixing to pairwise concatenation of adjacent scales, addressing semantic gaps across scales, reducing memory usage, and resisting noise. SEMixer is validated on 10 public datasets and a real-world wireless-network dataset from the 2025 CCF AIOps Challenge, where it placed third.
-
-## In TSFLab
-Default config: `configs/models/SEMixer.toml`; model specification: `spec.py`;
-clean-room implementation: `model.py`.
-
-## Verification
-
-**Clean-room implementation: confirmed.** The linked repository carries no
-LICENSE file (recorded as `NOASSERTION`) and is `reference-only`; its source
-was inspected at the pinned revision only to resolve paper omissions and was
-not copied or reused. Structural and runtime evidence is generated by
-`uv run tsf model verify SEMixer`. Differences from the official repository:
-
-- The official code hardcodes exactly four scales via dict keys `{1, 2, 4, 8}`
-  and per-scale attributes (`W_pos_1`..`W_pos_4`, `T_Mixing_Scale_1`..`_4`).
-  The local implementation generalizes MPMC to an arbitrary strictly increasing
-  `scale_factors` schedule starting at 1 (default `"1x2x4x8"`, matching the
-  paper's Sec. 4.1.3 defaults) using `nn.ModuleList` chains, which is
-  mathematically identical for the default four-scale schedule.
-- The official `Flatten_Head` supports `individual` per-channel and
-  `var_decomp` variable-group heads selected by CLI flags never exercised in
-  the paper's reported configuration; the local implementation always uses the
-  shared (non-individual) head, which is the officially reported setting.
-- The official code exposes optional non-RAM attention backbones
-  (`ProbAttention`, `LogSparseAttention`, `PerformerLayer`, `ReformerLayer`,
-  `AutoCorrelation`, `FourierBlock`, plain multi-head self-attention) selected
-  by unused CLI flags. Only the paper's Random Attention Mechanism path
-  (`Random_Attention_Mechanism=True`, the reported configuration) is
-  implemented; the alternative backbones are omitted as out-of-scope ablations.
-- Official RAM sampling and the embedding/reduce dropout are hardcoded module
-  constants (`connection_probability=0.85`, dropout `0.1`); the local
-  implementation exposes both as `spec.py` parameters defaulting to the same
-  values so they remain adjustable without code changes.
-- The reduced representation's trailing two axes are `[patch, d_model]` before
-  the flatten head, versus the official `[d_model, patch]` order (both permute
-  paths cancel to the same patch-embedding step; see `model.py` docstring).
-  Since the head is a plain flatten-then-linear, this reordering does not
-  change the represented function class.
-- Reference recipes (data pipeline, optimizer schedule, checkpoint reference
-  comparison, and metric reference comparison against the paper's reported
-  numbers) are out of scope for this catalog entry.
-- No new shared component was extracted for this model. The Random Attention
-  Mechanism and the finest-then-pairwise Multiscale Progressive Mixing Chain
-  are this paper's defining novelty with no other current catalog consumer, so
-  they remain model-local per `curate-components` (extraction requires at
-  least two real consumers); the per-scale linear patch embedding is likewise
-  kept local because it differs from the cataloged `embed.PatchEmbedding` in
-  its bias term and its use of a learnable (not fixed sinusoidal) position
-  table.
-
-## Citation
-
-```bibtex
-@article{zhang2026semixer,
-  title={SEMixer: Semantics Enhanced MLP-Mixer for Multiscale Mixing and Long-term Time Series Forecasting},
-  author={Zhang, Xu and Wang, Qitong and Wang, Peng and Wang, Wei},
-  journal={arXiv preprint arXiv:2602.16220},
-  year={2026}
-}
-```
+Full detail in `reference.md`.

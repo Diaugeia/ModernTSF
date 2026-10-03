@@ -11,8 +11,6 @@ from pathlib import Path
 from tsflab.core.paths import repository_root
 
 from tsflab.catalog.cards.metadata import declared_model_fields
-from tsflab.catalog.cards.descriptions import read_model_card_description
-from tsflab.catalog.cards.models import audit_model_card_body
 from tsflab.catalog.registry.models import MODEL_CATALOG
 from tsflab.catalog.component_audit import components_used_by
 
@@ -146,6 +144,7 @@ def check() -> list[str]:
             package / "__init__.py",
             package / "model.py",
             package / "README.md",
+            package / "card.toml",
         ):
             if not required.is_file():
                 problems.append(f"{name!r} is missing {required.relative_to(ROOT)}")
@@ -171,23 +170,6 @@ def check() -> list[str]:
             config_name = tomllib.loads(config_file.read_text(encoding="utf-8"))["model"]["name"]
             if config_name != name:
                 problems.append(f"{config_file.relative_to(ROOT)} declares model.name={config_name!r}, expected {name!r}")
-        card_file = ROOT / str(model_card)
-        if card_file.is_file():
-            from tsflab.catalog.cards.metadata import read_model_card
-
-            try:
-                metadata = read_model_card(card_file)
-                if metadata["name"] != name:
-                    problems.append(
-                        f"{card_file.relative_to(ROOT)} name={metadata['name']!r}, expected {name!r}"
-                    )
-            except ValueError as exc:
-                problems.append(str(exc))
-            try:
-                read_model_card_description(card_file)
-            except ValueError as exc:
-                problems.append(str(exc))
-            problems.extend(audit_model_card_body(card_file))
         for path, line, module in _cross_model_imports(package):
             problems.append(
                 f"{path.relative_to(ROOT)}:{line} imports peer model module {module!r}; "

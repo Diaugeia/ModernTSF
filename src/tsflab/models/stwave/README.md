@@ -1,124 +1,35 @@
 ---
 name: "STWave"
-summary: "STWave is a spatiotemporal forecasting model for traffic flow prediction that disentangles non-stationary traffic sequences into long-term (low-frequency) trend components and short-term (high-frequency) event components using discrete wavelet transform. A dual-channel encoder processes each frequency band separately with an efficient spectral graph attention mechanism that incorporates wavelet-based graph positional encoding and a query sampling strategy to reduce the quadratic complexity of full graph attention while preserving spatial expressiveness."
-paper: "https://arxiv.org/abs/2112.02740"
-paper_title: "When Spatio-Temporal Meet Wavelets: Disentangled Traffic Forecasting via Efficient Spectral Graph Attention Networks"
-venue: "ICDE 2023"
-year: 2023
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "Haar wavelet low/high split, each band through temporal and sampled spectral graph attention, calendar-gated fusion."
-tags: ["transformer", "gnn", "wavelet", "frequency", "spatiotemporal", "decomposition", "covariates"]
-composition: ["normalization=none", "decomposition=local:haar-wavelet-low-high-split", "temporal=local:temporal-attention-gated-conv", "channel=local:spectral-graph-attention-query-sampling", "head=local:band-linear-heads-gated-fusion-readout", "loss=loss:mse"]
+description: "Traffic graph model that splits each series into Haar low (trend) and high (event) bands, encodes each with temporal attention and sampled spectral graph attention, and fuses them with a calendar gate. Use for node-level traffic forecasting with a road graph and mixed long/short-term patterns; not for non-graph data."
 ---
+
 # STWave
 
-## Key ideas
+## Idea
 
-- `wavelet_disentangle` splits the series into low-frequency trend and high-frequency event components with a differentiable two-band Haar transform, instead of the haar_dwt1d component.
-- Separate low and high `DualEncoder` stacks each apply a `TemporalModule` (attention plus gated causal conv) then `SpectralGraphAttention` with Laplacian-eigenvector position encoding.
-- Graph attention is masked to adjacency plus top-energy sampled queries to cut the quadratic cost.
-- `AdaptiveFusion` gates low and high forecasts with a future-calendar embedding before a linear readout.
+- `wavelet_disentangle` splits each node's lookback into a low-frequency trend and a high-frequency event component with a single-level, same-length Haar reconstruction.
+- Separate low and high `DualEncoder` stacks each apply a `TemporalModule` (attention plus gated causal conv) and `SpectralGraphAttention` with Laplacian-eigenvector position encoding.
+- Graph attention is masked to adjacency plus a few top-energy sampled queries that attend globally, cutting the quadratic cost.
+- `AdaptiveFusion` gates the low and high forecasts with a calendar embedding projected to the horizon, then a linear readout.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Traffic flow with both slow daily trends and short events (e.g. storms, incidents) that benefit from separate low/high-frequency encoders.
+- A road adjacency is expected: it masks graph attention and defines the spectral positions; without one a ring graph is used.
+- Larger node sets where full graph attention is too costly (query sampling keeps about `log_samples * log2(N)` global queries).
+- Calendar marks (time-of-day, day-of-week) drive the fusion gate; not for non-graph multivariate data or probabilistic output.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2112.02740); title: When Spatio-Temporal Meet Wavelets: Disentangled Traffic Forecasting via Efficient Spectral Graph Attention Networks; venue/year: ICDE 2023 / 2023
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
+- `enc_in` / `num_nodes`: number of nodes (`num_nodes` injected from the dataset, else `enc_in`); input must be `[B, seq_len, N]`.
+- `adj_mx`: dataset adjacency `[N, N]`, injected by the runner; symmetrized for the Laplacian, nonzeros define the attention mask; ring graph when absent.
+- `hidden_size`: also the number of Laplacian eigenvectors used as positions; only the first `min(hidden_size, N)` are filled.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/STWave.toml`](../../../../configs/models/STWave.toml).
+Other hyperparameters: preset defaults in `configs/models/STWave.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. The reference-only source code was not copied.
-
-The implementation is independently derived from the paper and contains no
-BasicTS source. It retains temporal wavelet disentanglement, dual encoders,
-spectral graph positions, query sampling, and adaptive low/high fusion. It uses
-a Haar basis and omits the paper's auxiliary low-frequency loss and published
-dataset preprocessing.
-
-`wavelet_disentangle` stays model-local: no cataloged DWT component exists
-yet, `wpmixer`'s generic multi-level orthogonal filter bank is owned by a
-different in-flight extraction batch, and STWave's fixed single-level
-same-length Haar reconstruction (redundant upsample-to-original-length, not a
-half-length subband split) is not provably reducible to that generic
-contract without risking a conflicting or premature abstraction.
-
-## Shared components
-
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `hidden_size=6`, `layers=1`, `log_samples=1`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: When Spatio-Temporal Meet Wavelets: Disentangled Traffic Forecasting via Efficient Spectral Graph Attention Networks
-- **Venue**: ICDE 2023
-- **Published**: 2023 (arXiv: 2021-12)
-- **arXiv**: https://arxiv.org/abs/2112.02740
-
-## Abstract
-Traffic forecasting is crucial for public safety and resource optimization, yet is very challenging due to three aspects: i) current existing works mostly exploit intricate temporal patterns (e.g., the short-term thunderstorm and long-term daily trends) within a single method, which fail to accurately capture spatio-temporal dependencies under different schemas; ii) the under-exploration of the graph positional encoding limit the extraction of spatial information in the commonly used full graph attention network; iii) the quadratic complexity of the full graph attention introduces heavy computational needs. To achieve the effective traffic flow forecasting, we propose an efficient spectral graph attention network with disentangled traffic sequences. Specifically, the discrete wavelet transform is leveraged to obtain the low- and high-frequency components of traffic sequences, and a dual-channel encoder is elaborately designed to accurately capture the spatio-temporal dependencies under long- and short-term schemas of the low- and high-frequency components. Moreover, a novel wavelet-based graph positional encoding and a query sampling strategy are introduced in our spectral graph attention to effectively guide message passing and efficiently calculate the attention. Extensive experiments on four real-world datasets show the superiority of our model, i.e., the higher traffic forecasting precision with lower computational cost.
-
-## In TSFLab
-Default config: `configs/models/STWave.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Verification
-
-Clean-room implementation: confirmed. The reference-only source code was not copied.
-
-The implementation is independently derived from the paper and contains no
-BasicTS source. It retains temporal wavelet disentanglement, dual encoders,
-spectral graph positions, query sampling, and adaptive low/high fusion. It uses
-a Haar basis and omits the paper's auxiliary low-frequency loss and published
-dataset preprocessing.
-
-`wavelet_disentangle` stays model-local: no cataloged DWT component exists
-yet, `wpmixer`'s generic multi-level orthogonal filter bank is owned by a
-different in-flight extraction batch, and STWave's fixed single-level
-same-length Haar reconstruction (redundant upsample-to-original-length, not a
-half-length subband split) is not provably reducible to that generic
-contract without risking a conflicting or premature abstraction.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/icde/FangQL0XZ023,
-  author       = {Yuchen Fang and
-                  Yanjun Qin and
-                  Haiyong Luo and
-                  Fang Zhao and
-                  Bingbing Xu and
-                  Liang Zeng and
-                  Chenxing Wang},
-  title        = {When Spatio-Temporal Meet Wavelets: Disentangled Traffic Forecasting
-                  via Efficient Spectral Graph Attention Networks},
-  booktitle    = {39th {IEEE} International Conference on Data Engineering, {ICDE} 2023,
-                  Anaheim, CA, USA, April 3-7, 2023},
-  pages        = {517--529},
-  publisher    = {{IEEE}},
-  year         = {2023},
-  url          = {https://doi.org/10.1109/ICDE55515.2023.00046},
-  doi          = {10.1109/ICDE55515.2023.00046},
-  timestamp    = {Sun, 02 Nov 2025 21:27:15 +0100},
-  biburl       = {https://dblp.org/rec/conf/icde/FangQL0XZ023.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Clean-room implementation from the paper; no BasicTS source copied.
+- Keeps wavelet disentanglement, dual encoders, spectral graph positions, query sampling and adaptive low/high fusion.
+- Uses a fixed Haar basis, and omits the paper's auxiliary low-frequency loss and published dataset preprocessing.
+- The fusion's calendar term is a linear projection of the lookback calendar embedding, not future marks.

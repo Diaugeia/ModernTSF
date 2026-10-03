@@ -1,100 +1,30 @@
 ---
 name: "NLinear"
-summary: "NLinear is a normalized one-layer linear forecasting model from the LTSF-Linear family that subtracts the last observed value from the input sequence before applying a linear projection, then adds the subtracted value back to the output — a simple distribution-shift mitigation technique that improves accuracy over the plain Linear baseline on datasets with distribution drift."
-paper: "https://arxiv.org/abs/2205.13504"
-paper_title: "Are Transformers Effective for Time Series Forecasting?"
-venue: "AAAI 2023"
-year: 2023
-code: "https://github.com/cure-lab/LTSF-Linear"
-revision: "0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6"
-license: "Apache-2.0"
-tagline: "Subtracts the last observed value, applies one linear map over time, and adds the value back."
-tags: ["linear", "normalization", "channel-independent", "ltsf-linear", "baseline", "lightweight"]
-composition: ["normalization=component:last_value_center", "decomposition=none", "temporal=component:channel_wise_linear", "channel=local:channel-independent-shared-weights", "head=component:channel_wise_linear", "loss=loss:mse"]
+description: "LTSF-Linear baseline that subtracts the last observed value, applies one linear map from lookback to horizon, and adds the value back. Use as a cheap baseline for long-horizon forecasting with level shifts between train and test; not for nonlinear dynamics, cross-channel interaction, or probabilistic output."
 ---
+
 # NLinear
 
-## Key ideas
+## Idea
 
 - `center_on_last_value` removes the last observation and `restore_last_value` adds it back, which counters distribution shift.
 - `channel_wise_linear` is a single `seq_len` to `pred_len` linear map, shared across channels unless `individual=True`.
 - No decomposition or nonlinearity; it is the minimal LTSF-Linear variant with level normalization.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Series whose level drifts or shifts between training and test windows; last-value centering lets the linear map work on the relative shape.
+- A fast, low-capacity baseline for long-horizon forecasting, or when training data or compute are limited.
+- Not when the dynamics are strongly nonlinear, when cross-channel interaction or exogenous/calendar inputs matter (channels are independent, marks are ignored), or when quantiles are needed (point output only).
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2205.13504); title: Are Transformers Effective for Time Series Forecasting?; venue/year: AAAI 2023 / 2023
-- [codebase](https://github.com/cure-lab/LTSF-Linear); revision: `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`; license: `Apache-2.0`
+- `enc_in`: number of input channels; must equal the dataset's channel count (it sizes the per-channel maps when `individual=True` and is checked against the input).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/NLinear.toml`](../../../../configs/models/NLinear.toml).
+Other hyperparameters: preset defaults in `configs/models/NLinear.toml`; tune generically.
 
 ## Differences
 
-**Paper-driven local implementation.** The last observation is detached and subtracted from every history step, a temporal affine map forecasts the centered sequence, and the level is restored to every horizon step. The optional per-channel map is a local extension. The external repository is reference-only and no source file was copied or adapted.
-
-## Shared components
-
-- [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
-- [`last_value_center`](../_components/last_value_center/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `individual=False`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Are Transformers Effective for Time Series Forecasting?
-- **Venue**: AAAI 2023
-- **Published**: 2023 (arXiv: 2022-05)
-- **arXiv**: https://arxiv.org/abs/2205.13504
-
-## Abstract
-Recently, there has been a surge of Transformer-based solutions for the long-term time series forecasting (LTSF) task. Despite the growing performance over the past few years, we question the validity of this line of research in this work. Specifically, Transformers is arguably the most successful solution to extract the semantic correlations among the elements in a long sequence. However, in time series modeling, we are to extract the temporal relations in an ordered set of continuous points. While employing positional encoding and using tokens to embed sub-series in Transformers facilitate preserving some ordering information, the nature of the permutation-invariant self-attention mechanism inevitably results in temporal information loss. To validate our claim, we introduce a set of embarrassingly simple one-layer linear models named LTSF-Linear for comparison. Experimental results on nine real-life datasets show that LTSF-Linear surprisingly outperforms existing sophisticated Transformer-based LTSF models in all cases, and often by a large margin. Moreover, we conduct comprehensive empirical studies to explore the impacts of various design elements of LTSF models on their temporal relation extraction capability. We hope this surprising finding opens up new research directions for the LTSF task. We also advocate revisiting the validity of Transformer-based solutions for other time series analysis tasks (e.g., anomaly detection) in the future.
-
-## In TSFLab
-Default config: `configs/models/NLinear.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-**Paper-driven local implementation.** The last observation is detached and subtracted from every history step, a temporal affine map forecasts the centered sequence, and the level is restored to every horizon step. The optional per-channel map is a local extension. The external repository is reference-only and no source file was copied or adapted.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/aaai/ZengCZ023,
-  author       = {Ailing Zeng and
-                  Muxi Chen and
-                  Lei Zhang and
-                  Qiang Xu},
-  editor       = {Brian Williams and
-                  Yiling Chen and
-                  Jennifer Neville},
-  title        = {Are Transformers Effective for Time Series Forecasting?},
-  booktitle    = {Thirty-Seventh {AAAI} Conference on Artificial Intelligence, {AAAI}
-                  2023, Thirty-Fifth Conference on Innovative Applications of Artificial
-                  Intelligence, {IAAI} 2023, Thirteenth Symposium on Educational Advances
-                  in Artificial Intelligence, {EAAI} 2023, Washington, DC, USA, February
-                  7-14, 2023},
-  pages        = {11121--11128},
-  publisher    = {{AAAI} Press},
-  year         = {2023},
-  url          = {https://doi.org/10.1609/aaai.v37i9.26317},
-  doi          = {10.1609/AAAI.V37I9.26317},
-  timestamp    = {Wed, 18 Mar 2026 17:07:12 +0100},
-  biburl       = {https://dblp.org/rec/conf/aaai/ZengCZ023.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Paper-driven local implementation; the LTSF-Linear repository is reference-only and no source file was copied or adapted.
+- The last observation is detached and subtracted from every history step; the level is restored to every horizon step.
+- The optional per-channel map (`individual=True`) is a local extension.

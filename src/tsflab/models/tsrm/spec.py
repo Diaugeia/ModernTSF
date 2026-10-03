@@ -1,0 +1,51 @@
+"""Runtime specification for TSRM."""
+
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from tsflab.catalog.registry.models import ModelSpec
+from tsflab.models.tsrm.model import Model
+
+
+class ModelParameterConfig(BaseModel):
+    """Parameters supplied through ``model.params``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enc_in: int = Field(ge=1)
+    d_model: int = Field(default=64, ge=1)
+    n_heads: int = Field(default=16, ge=1)
+    e_layers: int = Field(default=7, ge=1)
+    # Representation-layer convolutions as [kernel, dilation, groups]; groups -1 = depthwise.
+    conv_layers: list[tuple[int, int, int]] = Field(
+        default_factory=lambda: [(3, 1, -1), (5, 2, -1), (10, 3, -1)], min_length=1
+    )
+    attention: Literal["softmax", "entmax15"] = "entmax15"
+    dropout: float = Field(default=0.25, ge=0.0, lt=1.0)
+    inter_feature: bool = False
+
+
+_FIELDS = tuple(ModelParameterConfig.model_fields)
+
+
+def build_model(cfg, params):
+    values = {name: params[name] for name in _FIELDS if name in params}
+    if "conv_layers" in values:
+        values["conv_layers"] = tuple(tuple(layer) for layer in values["conv_layers"])
+    return Model(seq_len=cfg.task.seq_len, pred_len=cfg.task.pred_len, **values)
+
+
+SPEC = ModelSpec(
+    name="TSRM",
+    module="tsflab.models.tsrm",
+    model_class=Model,
+    factory=build_model,
+    params_schema=ModelParameterConfig,
+    config_path="configs/models/TSRM.toml",
+    model_card="src/tsflab/models/tsrm/README.md",
+    smoke_config="configs/runs/smoke_tsrm.toml",
+    capabilities=frozenset({"time-series"}),
+    components=("flatten_forecast_head", "revin"),
+    contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
+)

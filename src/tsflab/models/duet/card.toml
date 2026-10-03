@@ -1,0 +1,38 @@
+schema = "tsflab.card/1"
+kind = "model"
+name = "DUET"
+tags = ["hybrid", "mixture-of-experts", "channel-mixing", "decomposition", "attention-variant", "normalization"]
+fits = ["non-stationary", "high-cross-correlation"]
+fidelity = "reference-checked"
+issues_checked = "the card maps the distributional router, trend/seasonal experts, top-k mixture, Mahalanobis attention bias, and channel encoder to the paper with the MIT official code as reference and records no paper or official-code problem."
+
+[paper]
+title = "DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting"
+url = "https://arxiv.org/abs/2412.10859"
+venue = "KDD 2025"
+year = 2025
+
+[code]
+url = "https://github.com/decisionintelligence/DUET"
+revision = "dcc6e6780a9138731b64b9b5398a94a1d97033f0"
+license = "MIT"
+reference_sources = []
+
+[composition]
+normalization = "component:revin"
+decomposition = "local:moving-average-trend-seasonal-experts"
+temporal = "component:topk_expert_router+local:distributional-temporal-experts"
+channel = "local:mahalanobis-biased-channel-attention"
+head = "local:linear-horizon-head"
+loss = "loss:mse"
+
+[data_params]
+enc_in = { from = "channels", rule = "equals the number of channels" }
+
+[admission]
+status = "passed"
+date = "2026-10-03"
+commit = "ec1ae839"
+device = "cpu"
+reference = "official"
+note = "tsf model verify --all on UH_Public; pre-squash commit of the 1.0 consolidation"

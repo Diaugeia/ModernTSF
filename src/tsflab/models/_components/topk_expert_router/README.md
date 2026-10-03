@@ -1,19 +1,11 @@
 ---
 name: "topk_expert_router"
-kind: "component"
-module: "tsflab.models._components.topk_expert_router"
-summary: "Two-layer GELU gating MLP with optional trainable noise returning softmax expert weights, and top-k sparsification with a dense-weight floor and renormalization."
-category: "routing"
-input: "GatingMLP: [*, in_features]; topk_dense_mix: dense weights [*, experts] (distribution on the last axis), k, floor"
-output: "GatingMLP: [*, experts] softmax weights; topk_dense_mix: same shape, rows sum to 1"
-origin: "gate of DUET (KDD 2025, arXiv 2412.10859) plus the shared top-k concentration step of DUET and Dynamic TMoE (ICML 2026, arXiv 2605.20678); noisy gating follows the sparsely-gated MoE idea"
-origin_models: ["duet", "dynamic_tmoe"]
-tags: ["expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k", "noisy-gating", "input-conditioned"]
+description: "Two-layer GELU gating MLP with optional trainable noise giving softmax expert weights, plus top-k sparsification with a dense-weight floor (DUET, Dynamic TMoE). Use for mixture-of-experts forecasters that route inputs to a few experts; not for compute-skipping or exactly sparse routing."
 ---
 
 # topk_expert_router
 
-## Purpose
+## What it does
 
 `GatingMLP(in_features, experts, hidden, noisy)` computes
 `logits = Linear(GELU(Linear(x)))`; in training mode and when `noisy`, it adds
@@ -23,17 +15,14 @@ tags: ["expert", "gate", "gating", "mixture", "moe", "routing", "sparse", "top-k
 `(sparse + floor*w) / sum(sparse + floor*w)`. The floor keeps non-selected experts
 gradient-alive.
 
-## Origin and granularity
+## When to use
 
-Extracted in commit `cd1b398d` ("topk_expert_router for DUET and DynamicTMoE"),
-which says both routers were reproduced bit-for-bit. `GatingMLP` is DUET's
-`DistributionalRouter` gate; `topk_dense_mix` is the same arithmetic DUET applied
-after its router and DynamicTMoE applied in `routing_weights` (it passes a
-configurable `routing_floor`; DUET passes 1e-3). Model-local: the gate input
-features (DUET: per-channel mean and std), DynamicTMoE's drift, MMD and memory
-logits (it uses only `topk_dense_mix`), expert networks, and MAGE's gate, DUET's
-even-kernel moving average and STWave's Haar step, which the commit kept local
-with documented reasons.
+Use in mixture-of-experts forecasters where inputs (for example windows
+summarized by their mean and standard deviation, as in `duet`) should be routed
+mostly to `k` experts while a small dense gradient path keeps the others
+trained. Do not use if non-selected experts must be skipped to save compute, if
+an exactly sparse weight vector is required with `floor > 0`, or when the gate
+needs a different architecture (fixed at two layers with GELU).
 
 ## Interface
 
@@ -52,71 +41,3 @@ and `floor >= 0`, else `ValueError` (a `floor` of 0 gives exact
 hard top-k renormalization). Differentiable through the kept values and the floor
 term; the selection is not. Ties follow `torch.topk`. Stateless, same
 dtype/device as input.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_attention.py` (`test_gating_mlp`,
-  `test_topk_dense_mix`): `GatingMLP` state-dict keys (with and without noise),
-  zero-initialized `noise_scale`, softmax rows sum to 1 and are non-negative, eval
-  output equals `softmax(network(x))`, training noise is seed-reproducible and
-  differs from eval, finite gradients; `topk_dense_mix` rows sum to 1, `floor = 0`
-  keeps exactly `k` non-zero renormalized entries, `floor > 0` makes all entries
-  positive, dtype is preserved, gradients are finite, `k > experts` raises
-  `RuntimeError`; `tests/test_component_validation.py` checks the `ValueError` for
-  `k` outside `[1, experts]` and negative `floor`. Seeded outputs are pinned by
-  `tests/fixtures/components/topk_expert_router_gate.pt` and
-  `tests/fixtures/components/topk_expert_router_mix.pt`.
-- `tests/fixtures/duet_pre_refactor.pt` and
-  `tests/fixtures/dynamic_tmoe_pre_refactor.pt`, driven by
-  `tests/test_component_extraction_moe.py`, compare state-dict keys, shapes and
-  values, forward outputs and input gradients of both consumers before and after
-  extraction.
-- The same file proves `topk_dense_mix` equals both original inline formulas term
-  for term, rows sum to one, the noisy gate in eval mode equals a plain softmax, and
-  state-dict attribute names are preserved.
-
-## Variants and options
-
-`noisy=False` removes `noise_scale` and the noise. `k` and `floor` set sparsity
-and gradient leakage. Not covered: load-balancing or auxiliary losses, capacity
-limits, token dispatch or exact sparse expert execution (DUET and DynamicTMoE run
-every expert densely and mix with the weights), learned `k`.
-
-## When to use and when not to use
-
-Use for expert mixing weights that concentrate on `k` experts but keep a small
-dense gradient path. Do not use if non-selected experts must be skipped to save
-compute, if an exactly sparse weight vector (zeros) is required with `floor > 0`,
-or when the gate needs a different architecture (it is fixed at two layers with GELU).
-
-## Related components
-
-`weight_set_router` (input-independent, softmax-with-temperature routing over
-weight sets; this component is input-conditioned), `sparse_connection_router`
-(learned top-k binary connection matrix over positions, not mixture weights),
-`topk_expert_attention` (its own `LocalExpertRouter` keeps the top-k keys per
-query and softmaxes the kept logits, without a floor), `freq_band_moe` (dense
-softmax gates over spectral bands), `soft_tree` (differentiable tree routing).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `GatingMLP(in_features: int, experts: int, hidden: int, noisy: bool=True)`
-  Two-layer gate: ``Linear -> GELU -> Linear`` with optional trainable noise.
-- `topk_dense_mix(weights: torch.Tensor, k: int, floor: float)`
-  Zero non-top-k experts, blend back a ``floor`` of the dense weights, renormalize.
-
-```python
-from tsflab.models._components.topk_expert_router import GatingMLP, topk_dense_mix
-```
-
-## Retrieval terms
-
-`expert`, `gate`, `gating`, `mixture`, `moe`, `routing`, `sparse`, `top-k`
-
-## Current model consumers (2)
-
-`duet`, `dynamic_tmoe`
-<!-- component-card:generated:end -->

@@ -1,97 +1,35 @@
 ---
 name: "STID"
-summary: "STID (Spatial-Temporal IDentity) is an MLP-based spatiotemporal forecasting model designed for node-structured or graph-structured data. It attaches learnable spatial identity embeddings (one per node) and temporal identity embeddings (time-of-day and day-of-week) to the input, then encodes all features with simple multi-layer perceptrons to predict future node values, achieving strong performance with minimal complexity."
-paper: "https://arxiv.org/abs/2208.05233"
-paper_title: "Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting"
-venue: "CIKM 2022"
-year: 2022
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "MLP over per-node history plus learnable node, time-of-day and day-of-week identity embeddings; no graph."
-tags: ["mlp", "spatiotemporal", "covariates", "lightweight", "channel-independent"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:history-linear-projection", "channel=local:node-identity-embedding", "head=local:linear-horizon-head", "loss=loss:mse"]
+description: "Simple MLP over each node's history plus learnable node, time-of-day, and day-of-week identity embeddings, without a graph. Use for traffic-style node forecasting with strong calendar cycles under a small compute budget; not for exploiting a known graph or for probabilistic output."
 ---
+
 # STID
 
-## Key ideas
+## Idea
 
+- Spatio-temporal GNNs grow complex for small gains; the key bottleneck is that samples are indistinguishable in space and time, which identity embeddings fix with a plain MLP.
 - Flattens each node's lookback (values plus calendar features) into one vector with a linear layer.
-- Concatenates a learnable node embedding and time-of-day and day-of-week embeddings taken from the latest step, then fuses them with a linear projection.
+- Concatenates a learnable node embedding and time-of-day and day-of-week embeddings from the latest step, then fuses them with a linear projection.
 - Encodes with residual pointwise MLP blocks (`ResidualPointwiseBlock`) and a linear head to the horizon; `adj_mx` is unused.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Sensor networks (traffic, similar node data) where nodes behave differently and daily and weekly cycles dominate.
+- Strong efficiency baseline: no graph convolution, no attention, no recurrence.
+- Nodes interact only through shared weights; no explicit cross-node propagation. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2208.05233); title: Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting; venue/year: CIKM 2022 / 2022
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/STID.toml`](../../../../configs/models/STID.toml).
+- `enc_in` follows the node count; it must equal it exactly (node embedding table).
+- `num_time_in_day` follows the sampling frequency: steps per day (24 for hourly, 288 for 5-minute data).
+- `input_dim` follows the loader's input features (value plus time-of-day and day-of-week).
+- Other hyperparameters: preset defaults in `configs/models/STID.toml`; tune generically.
 
 ## Differences
 
-TSFLab rewrites STID locally after reviewing the paper and pinned official codebase. Flattened node histories are combined with node, time-of-day, and day-of-week identities, processed by pointwise residual blocks, and projected directly to the forecast horizon. Canonical evidence is stored in [`verification/evidence/STID.json`](../../../../verification/evidence/STID.json).
+Local rewrite after reviewing the paper and the pinned BasicTS implementation (`GestaltCogTeam/BasicTS@c218c07`, Apache-2.0).
 
-## Shared components
+- Flattened node histories are combined with node, time-of-day, and day-of-week identities, processed by pointwise residual blocks, and projected directly to the horizon, as in the reference.
+- `adj_mx` is accepted and ignored.
 
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `embed_dim=32`, `num_layers=1`, `num_time_in_day=24`, `num_day_in_week=7`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting
-- **Venue**: CIKM 2022
-- **Published**: 2022 (arXiv: 2022-08)
-- **arXiv**: https://arxiv.org/abs/2208.05233
-
-## Abstract
-Multivariate Time Series (MTS) forecasting plays a vital role in a wide range of applications. Recently, Spatial-Temporal Graph Neural Networks (STGNNs) have become increasingly popular MTS forecasting methods due to their state-of-the-art performance. However, recent works are becoming more sophisticated with limited performance improvements. This phenomenon motivates us to explore the critical factors of MTS forecasting and design a model that is as powerful as STGNNs, but more concise and efficient. In this paper, we identify the indistinguishability of samples in both spatial and temporal dimensions as a key bottleneck, and propose a simple yet effective baseline for MTS forecasting by attaching Spatial and Temporal IDentity information (STID), which achieves the best performance and efficiency simultaneously based on simple Multi-Layer Perceptrons (MLPs). These results suggest that we can design efficient and effective models as long as they solve the indistinguishability of samples, without being limited to STGNNs.
-
-## In TSFLab
-Default config: `configs/models/STID.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-TSFLab rewrites STID locally after reviewing the paper and pinned official codebase. Flattened node histories are combined with node, time-of-day, and day-of-week identities, processed by pointwise residual blocks, and projected directly to the forecast horizon. Canonical evidence is stored in [`verification/evidence/STID.json`](../../../../verification/evidence/STID.json).
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/cikm/ShaoZ00X22,
-  author       = {Zezhi Shao and
-                  Zhao Zhang and
-                  Fei Wang and
-                  Wei Wei and
-                  Yongjun Xu},
-  editor       = {Mohammad Al Hasan and
-                  Li Xiong},
-  title        = {Spatial-Temporal Identity: {A} Simple yet Effective Baseline for Multivariate
-                  Time Series Forecasting},
-  booktitle    = {Proceedings of the 31st {ACM} International Conference on Information
-                  {\&} Knowledge Management, Atlanta, GA, USA, October 17-21, 2022},
-  pages        = {4454--4458},
-  publisher    = {{ACM}},
-  year         = {2022},
-  url          = {https://doi.org/10.1145/3511808.3557702},
-  doi          = {10.1145/3511808.3557702},
-  timestamp    = {Sun, 02 Nov 2025 21:27:39 +0100},
-  biburl       = {https://dblp.org/rec/conf/cikm/ShaoZ00X22.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Shao, Zhang, Wang, Wei, Xu, "Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting", CIKM 2022, doi:10.1145/3511808.3557702 (arXiv:2208.05233).

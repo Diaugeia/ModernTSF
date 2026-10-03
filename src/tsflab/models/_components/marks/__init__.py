@@ -133,6 +133,58 @@ def adapt_tslib_marks(
     )
 
 
+def encoder_timef_marks(
+    marks: torch.Tensor | None,
+    *,
+    seq_len: int,
+    freq: str,
+    enabled: bool = True,
+) -> torch.Tensor | None:
+    """Encoder-window marks in the pinned TSLib hourly ``timeF`` layout.
+
+    Shared guard of the inverted-token forecasters that append calendar tokens to
+    their variate tokens: disabled or missing marks give ``None``; otherwise the
+    marks must be ``[batch, seq_len, mark_columns]`` and are passed through
+    :func:`adapt_tslib_marks` with ``embed_type="timeF"``.
+    """
+    if not enabled or marks is None:
+        return None
+    if marks.ndim != 3 or marks.shape[1] != seq_len:
+        raise ValueError("x_mark_enc must be [batch, seq_len, mark_columns]")
+    return adapt_tslib_marks(marks, embed_type="timeF", freq=freq)
+
+
+def days_from_civil(year: torch.Tensor, month: torch.Tensor, day: torch.Tensor) -> torch.Tensor:
+    """Proleptic Gregorian date -> days since 1970-01-01 (integer arithmetic).
+
+    Howard Hinnant's ``days_from_civil`` on int64 tensors; months are 1-12 and
+    any broadcastable shapes are accepted.
+    """
+    year = year - (month <= 2).long()
+    era = torch.div(year, 400, rounding_mode="floor")
+    year_of_era = year - era * 400
+    shifted_month = torch.where(month > 2, month - 3, month + 9)
+    day_of_year = torch.div(153 * shifted_month + 2, 5, rounding_mode="floor") + day - 1
+    day_of_era = (
+        year_of_era * 365
+        + torch.div(year_of_era, 4, rounding_mode="floor")
+        - torch.div(year_of_era, 100, rounding_mode="floor")
+        + day_of_year
+    )
+    return era * 146097 + day_of_era - 719468
+
+
+def elapsed_minutes(marks: torch.Tensor) -> torch.Tensor:
+    """Absolute minutes since 1970-01-01 00:00 of raw ``[..., 6]`` marks (int64).
+
+    Columns are ``[year, month, day, weekday, hour, minute]``; values are rounded
+    in float64 before the integer conversion. The width is not validated.
+    """
+    values = marks.double().round().long()
+    days = days_from_civil(values[..., 0], values[..., 1], values[..., 2])
+    return days * 1440 + values[..., 4] * 60 + values[..., 5]
+
+
 def normalized_time_features(marks: torch.Tensor) -> torch.Tensor:
     """Convert raw integer marks to normalized calendar features.
 

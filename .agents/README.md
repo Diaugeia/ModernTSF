@@ -18,7 +18,7 @@ Skills:
 
 Entry commands: `tsf data inspect`, `tsf data analyze`, `tsf data prepare`, `tsf data add`.
 
-Context produced: dataset cards and presets; train-only profile `work_dirs/profiles/<name>/profile.{json,md}`.
+Context produced: dataset cards (characteristics, protocol) and presets; train-only profile `work_dirs/profiles/<name>/profile.{json,md}`.
 
 ## Models
 
@@ -26,16 +26,16 @@ Find papers, implement or adapt models, curate reusable components (chain).
 
 Skills:
 - [`discover-papers`](skills/discover-papers/SKILL.md): Discover, deduplicate, rank, and optionally expand the catalog with new time-series forecasting papers.
-- [`add-model`](skills/add-model/SKILL.md): Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, model card, spec, preset, verification manifest, and tests.
+- [`add-model`](skills/add-model/SKILL.md): Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, card, spec, preset, and admission.
 - [`integrate-foundation-model`](skills/integrate-foundation-model/SKILL.md): Integrate a released pretrained time-series foundation model through its official package and a pinned local checkpoint.
 - [`curate-components`](skills/curate-components/SKILL.md): Identify repeated or reusable operators across existing TSFLab models, prove semantic and runtime-contract equivalence, and extract them as cataloged components without changing behavior.
 
 Tasks:
-- [`intake`](tasks/intake.toml): Models module: watch for forecasting papers, or turn one approved paper or a bounded search into verified catalog models; read-only unless implementation is authorized.
+- [`intake`](tasks/intake.toml): Models module: watch for forecasting papers, or turn one approved paper or a bounded search into admitted catalog models; read-only unless implementation is authorized.
 
 Entry commands: `tsf model scaffold`, `tsf model add`, `tsf model verify`, `tsf model compose`.
 
-Context produced: model cards (tagline, tags, six-slot composition), component interfaces, verification evidence.
+Context produced: model cards (description, fits, fidelity, six-slot composition, data_params), component interfaces, admission records.
 
 ## Experiments
 
@@ -78,22 +78,22 @@ Skills:
 Tasks:
 - [`autoresearch`](tasks/autoresearch.toml): AutoResearch module: reading the other modules' context (dataset profile, model cards, component interfaces, result board, round ledger), profile the data, hypothesize, run a baseline panel, recombine catalog pieces, and conclude under explicit budgets and leakage guards.
 
-Entry commands: `tsf research start`, `tsf research iteration`, `tsf agent task start autoresearch`.
+Entry commands: `tsf catalog match`, `tsf research start`, `tsf research iteration`, `tsf agent task start autoresearch`.
 
 Context produced: round ledger `work_dirs/_research/<id>/` (hypotheses, runs, conclusions) and winning composition specs.
 
 ## Maintenance
 
-Keep catalog, cards, evidence, and Agent assets consistent; triage issues and pull requests (beside the chain; opt-in, needs a TSFLab checkout).
+Keep catalog, cards, admission records, and Agent assets consistent; triage issues and pull requests (beside the chain; opt-in, needs a TSFLab checkout).
 
 Skills:
-- [`audit`](skills/audit/SKILL.md): Audit TSFLab at the scope you need: one model against its paper, official code, and evidence; fast smoke checks for some or all models; or the whole repository (Agent assets, catalog drift, cards, documentation, strict runtime contracts) before a release or after structural changes.
+- [`audit`](skills/audit/SKILL.md): Audit TSFLab at the scope you need: one model against its paper, official code, and admission record; fast smoke checks for some or all models; or the whole repository (Agent assets, catalog drift, cards, documentation, strict runtime contracts) before a release or after structural changes.
 - [`handle-contribution`](skills/handle-contribution/SKILL.md): Triage an externally filed TSFLab issue (bug, regression, model or dataset request) or review a contributor pull request: reproduce, decide, fix or review, run the repository gate, then merge or comment.
 
 Tasks:
-- [`maintenance`](tasks/maintenance.toml): Maintenance module: curate shared components, close a bounded verification backlog, or run the complete repository release gate.
+- [`maintenance`](tasks/maintenance.toml): Maintenance module: curate shared components, close a bounded admission backlog, or run the complete repository release gate.
 - [`contribution`](tasks/contribution.toml): Maintenance module: triage one issue or contributor pull request, reproduce, decide, fix or review, run the repository gate, and prepare the merge or comment.
 
 Entry commands: `tsf repo check`, `tsf repo cards`, `tsf model audit`, `tsf agent task validate`.
 
-Context produced: gate results and regenerated cards and indexes.
+Context produced: gate results, card audits, and regenerated indexes.

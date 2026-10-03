@@ -45,7 +45,7 @@ class Model(Pipeline):
         if assignment["head"] != "flatten_forecast_head":
             raise ValueError(
                 "Composed is a point model; quantile and Gaussian heads need a dedicated catalog "
-                "entry (tsf component compose --register NAME) that declares the output capability"
+                "entry (tsf model compose --register NAME) that declares the output capability"
             )
         super().__init__(assignment, c_in, seq_len, pred_len, **options)
         self.features = features

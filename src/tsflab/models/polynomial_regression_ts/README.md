@@ -1,90 +1,33 @@
 ---
 name: "PolynomialRegressionTS"
-summary: "PolynomialRegressionTS expands each channel's lag window with integer powers from one through the configured degree, then applies a shared linear map to the forecast horizon."
-paper: "https://doi.org/10.1002/9781118625590"
-paper_title: "Applied Regression Analysis"
-venue: "Wiley 1998"
-year: 1998
-tagline: "Raises each lag value to powers 1..degree and applies one shared linear map to the horizon."
-tags: ["linear", "polynomial", "regression", "channel-independent", "baseline", "lightweight"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:polynomial-lag-features", "channel=local:channel-independent-shared-weights", "head=local:linear-horizon-projection", "loss=loss:mse"]
+description: "Classical baseline: integer powers of the lag window feed one linear map to the horizon, shared by all channels. Use as a cheap nonlinear reference next to linear baselines, especially on short training sets; not as a competitive model for complex or cross-channel dynamics."
 ---
+
 # PolynomialRegressionTS
 
-## Key ideas
+## Idea
 
 - `polynomial_features` concatenates element-wise powers of the lag window (default degree 2) along the time axis.
 - One `nn.Linear(seq_len * degree, pred_len)` is shared by every channel; there is no normalization or nonlinearity beyond the powers.
-- A zero `aux_loss` is exposed so it trains with the standard loop.
+- Trained end-to-end with gradient descent in the standard loop (a zero `aux_loss` is exposed).
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A sanity-check baseline: it shows how much simple nonlinear lag features add over a purely linear map, at negligible compute.
+- Small capacity suits short training windows.
+- Not for cross-channel dynamics (channels share weights and never interact) or complex seasonal structure; without normalization, high powers of unscaled data can be unstable, so keep data standardized.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1002/9781118625590); title: Applied Regression Analysis; venue/year: Wiley 1998 / 1998
-- codebase: not available
+- `enc_in` follows the channel count: must equal the number of input channels.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/PolynomialRegressionTS.toml`](../../../../configs/models/PolynomialRegressionTS.toml).
+Other hyperparameters: preset defaults in `configs/models/PolynomialRegressionTS.toml`; tune generically.
 
 ## Differences
 
-This is an independent implementation from the cited polynomial-regression
-description; no external source implementation was inspected or copied. It uses
-integer powers of each lag independently, without cross-lag or cross-channel
-interaction monomials, and learns a direct multi-horizon map with gradient
-descent.
+Independent implementation from the classical polynomial-regression description; no external implementation was inspected or copied.
 
-## Shared components
+- Integer powers of each lag only, without cross-lag or cross-channel interaction monomials.
+- A direct multi-horizon map learned by gradient descent rather than a closed-form least-squares fit.
 
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `degree=2`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: N/A (classical baseline)
-- **Venue**: N/A (classical baseline)
-- **Published**: N/A
-- **arXiv**: N/A
-
-## Abstract
-Polynomial regression is a classical statistical technique that enriches the feature space of a linear model by including nonlinear transformations of the input variables. In the time-series forecasting context, the historical window values are expanded with squared and square-root lag features before a linear predictor maps them to the output horizon. This polynomial feature augmentation allows the model to capture simple nonlinear trends without the overhead of a deep neural network. The TSFLab implementation trains this model end-to-end as a `torch.nn.Module`, enabling execution on GPU/MPS via the standard training loop and making it a useful nonlinear classical baseline alongside purely linear methods.
-
-## In TSFLab
-Default config: `configs/models/PolynomialRegressionTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-This is an independent implementation from the cited polynomial-regression
-description; no external source implementation was inspected or copied. It uses
-integer powers of each lag independently, without cross-lag or cross-channel
-interaction monomials, and learns a direct multi-horizon map with gradient
-descent.
-
-## Citation
-
-```bibtex
-@book{draper1998applied,
-  author    = {Norman R. Draper and Harry Smith},
-  title     = {Applied Regression Analysis},
-  edition   = {3rd},
-  publisher = {Wiley},
-  address   = {New York},
-  year      = {1998},
-  doi       = {10.1002/9781118625590}
-}
-```
+Cite: Norman R. Draper and Harry Smith, Applied Regression Analysis, 3rd ed., Wiley, New York, 1998, doi:10.1002/9781118625590.

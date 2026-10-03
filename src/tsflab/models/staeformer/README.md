@@ -1,91 +1,35 @@
 ---
 name: "STAEformer"
-summary: "STAEformer is a spatiotemporal Transformer for node-structured graph data such as traffic networks. It introduces a novel spatio-temporal adaptive embedding that jointly encodes intrinsic spatial relations between nodes and chronological temporal patterns, enabling a standard (vanilla) Transformer encoder—without complex graph convolutions—to achieve state-of-the-art performance on traffic forecasting benchmarks."
-paper: "https://arxiv.org/abs/2308.10425"
-paper_title: "STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting"
-venue: "CIKM 2023"
-year: 2023
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "Vanilla Transformer on spatiotemporal adaptive embeddings, alternating temporal and spatial attention; no graph conv."
-tags: ["transformer", "spatiotemporal", "attention-variant", "covariates", "channel-mixing"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:temporal-axis-attention-blocks", "channel=local:spatial-axis-attention-blocks", "head=local:mixed-flatten-linear-projection", "loss=loss:mse"]
+description: "Vanilla Transformer over spatio-temporal adaptive embeddings, alternating attention along time and along nodes, no graph convolution. Use for traffic-style node forecasting with strong daily and weekly calendar patterns; not for non-spatial multivariate data or long lookbacks."
 ---
+
 # STAEformer
 
-## Key ideas
+## Idea
 
+- Complicated spatio-temporal architectures show diminishing gains; a learnable spatio-temporal adaptive embedding lets a vanilla Transformer capture intrinsic spatio-temporal relations and chronology.
 - Concatenates value, time-of-day, day-of-week, optional node and a learnable `adaptive_embedding` of shape (seq_len, nodes) into one token per node and step.
-- Alternates pre-norm self-attention along time and along nodes (`AxisAttentionBlock`), so spatial relations come from attention plus the adaptive embedding, not an adjacency matrix (`adj_mx` is ignored).
+- Alternates pre-norm self-attention along time and along nodes (`AxisAttentionBlock`); spatial relations come from attention plus the adaptive embedding, not an adjacency matrix (`adj_mx` is ignored).
 - Flattens the time axis and maps it to the horizon with one linear layer (`use_mixed_proj`), or a two-step projection when disabled.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Sensor networks (traffic speed or flow) with short input windows and strong time-of-day and day-of-week patterns.
+- No predefined graph needed; spatial structure is learned through node attention and the adaptive embedding.
+- Attention runs over all nodes at each step and all steps per node, so cost grows quickly with node count and window length. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2308.10425); title: STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting; venue/year: CIKM 2023 / 2023
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/STAEformer.toml`](../../../../configs/models/STAEformer.toml).
+- `enc_in` follows the node count; it must equal it exactly (the adaptive embedding is `(seq_len, nodes)`).
+- `steps_per_day` follows the sampling frequency (288 for 5-minute data, 24 for hourly); it sizes the time-of-day embedding.
+- `input_dim` follows the loader's input features (value plus time-of-day and day-of-week).
+- Other hyperparameters: preset defaults in `configs/models/STAEformer.toml`; tune generically (embedding width divisible by `num_heads`).
 
 ## Differences
 
-TSFLab rewrites STAEformer locally after reviewing the paper and pinned official codebase. Value, calendar, optional spatial, and adaptive spatiotemporal embeddings feed alternating temporal-axis and spatial-axis self-attention blocks before direct horizon projection. Canonical evidence is stored in [`verification/evidence/STAEformer.json`](../../../../verification/evidence/STAEformer.json).
+Local rewrite after reviewing the paper and the pinned BasicTS implementation (`GestaltCogTeam/BasicTS@c218c07`, Apache-2.0).
 
-## Shared components
+- Value, calendar, optional spatial, and adaptive embeddings feed alternating temporal-axis and spatial-axis self-attention blocks, then a direct horizon projection, as in the reference.
+- `adj_mx` is accepted and ignored.
 
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `steps_per_day=24`, `input_embedding_dim=8`, `tod_embedding_dim=4`, `dow_embedding_dim=4`, `spatial_embedding_dim=0`, `adaptive_embedding_dim=8`, `feed_forward_dim=16`, `num_heads=2`, `num_layers=1`, `dropout=0.1`, `use_mixed_proj=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting
-- **Venue**: CIKM 2023
-- **Published**: 2023 (arXiv: 2023-08)
-- **arXiv**: https://arxiv.org/abs/2308.10425
-
-## Abstract
-With the rapid development of the Intelligent Transportation System (ITS), accurate traffic forecasting has emerged as a critical challenge. The key bottleneck lies in capturing the intricate spatio-temporal traffic patterns. In recent years, numerous neural networks with complicated architectures have been proposed to address this issue. However, the advancements in network architectures have encountered diminishing performance gains. In this study, we present a novel component called spatio-temporal adaptive embedding that can yield outstanding results with vanilla transformers. Our proposed Spatio-Temporal Adaptive Embedding transformer (STAEformer) achieves state-of-the-art performance on five real-world traffic forecasting datasets. Further experiments demonstrate that spatio-temporal adaptive embedding plays a crucial role in traffic forecasting by effectively capturing intrinsic spatio-temporal relations and chronological information in traffic time series.
-
-## In TSFLab
-Default config: `configs/models/STAEformer.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-TSFLab rewrites STAEformer locally after reviewing the paper and pinned official codebase. Value, calendar, optional spatial, and adaptive spatiotemporal embeddings feed alternating temporal-axis and spatial-axis self-attention blocks before direct horizon projection. Canonical evidence is stored in [`verification/evidence/STAEformer.json`](../../../../verification/evidence/STAEformer.json).
-
-## Citation
-
-```bibtex
-@misc{liu2023staeformer,
-  author        = {Hangchen Liu and
-                  Zheng Dong and
-                  Renhe Jiang and
-                  Jiewen Deng and
-                  Jinliang Deng and
-                  Quanjun Chen and
-                  Xuan Song},
-  title         = {STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting},
-  year          = {2023},
-  eprint        = {2308.10425},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2308.10425}
-}
-```
+Citation: Liu, Dong, Jiang, Deng, Deng, Chen, Song, "STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting", CIKM 2023, arXiv:2308.10425.

@@ -294,7 +294,8 @@ def _write_run_outputs(
     # while making rolling runs self-describing.
     if eval_strategy != "fixed":
         summary_row["eval_strategy"] = eval_strategy
-    from tsflab.experiments.infra.storage import canonical_hash, dataset_fingerprint
+    from tsflab.experiments.infra.fingerprints import dataset_fingerprint
+    from tsflab.experiments.infra.storage import canonical_hash
     snapshot = config.model_dump(mode="json")
     from tsflab.experiments.infra.comparison import protocol_fingerprint
     summary_row["protocol_sha256"] = protocol_fingerprint(snapshot, dataset_fingerprint(config))

@@ -1,81 +1,31 @@
 ---
 name: "SVRForecasterTS"
-summary: "SVRForecasterTS is a differentiable RBF-basis epsilon-regression adaptation with learned support centres and an explicit epsilon-insensitive loss helper."
-paper: "https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html"
-paper_title: "Support Vector Regression Machines"
-venue: "NeurIPS 1996"
-year: 1996
-tagline: "Differentiable epsilon-SVR: RBF kernel against learned support centres, linear readout, weights shared across channels."
-tags: ["statistical", "channel-independent", "lightweight", "baseline"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:rbf-kernel-support-centres", "channel=local:channel-independent-shared-weights", "head=local:kernel-feature-linear-readout", "loss=loss:mse"]
+description: "Differentiable epsilon-SVR baseline: RBF features of each channel's lookback against learned support centres, linear readout shared across channels. Use as a lightweight nonlinear per-channel baseline on small or short datasets; not for cross-channel structure, trending data, or probabilistic output."
 ---
+
 # SVRForecasterTS
 
-## Key ideas
+## Idea
 
 - Treats each channel's lookback as a query and computes Gaussian RBF features against `num_support` learned support centres (`kernel_gamma`).
-- A linear map plus bias over those kernel features gives the horizon; all channels share the same centres and coefficients.
-- `forward` stores an L2 penalty on the coefficients in `aux_loss`, and `epsilon_insensitive_loss` provides the SVR epsilon-insensitive objective as a helper; the registered training loss is unchanged.
+- A linear map plus bias over the kernel features gives the horizon; all channels share the same centres and coefficients.
+- `forward` stores an L2 penalty on the coefficients in `aux_loss`; `epsilon_insensitive_loss` provides the SVR objective as a helper, while the registered training loss stays MSE.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A classical kernel-regression reference point on small datasets or short training windows, where a few hundred parameters suffice.
+- Channels that behave alike: one shared kernel expansion serves every channel, with no cross-channel interaction.
+- Not for data with strong trends or level shifts (no normalization; RBF features saturate far from the centres), or for probabilistic output.
 
-## Paper and code
+## Configure
 
-- [paper](https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html); title: Support Vector Regression Machines; venue/year: NeurIPS 1996 / 1996
-- codebase: not available
+- `enc_in`: number of channels; input must be `[B, seq_len, enc_in]`.
+- `kernel_gamma`: the squared distance sums over all `seq_len` steps, so a suitable value shrinks as `seq_len` (and the data scale) grows.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/SVRForecasterTS.toml`](../../../../configs/models/SVRForecasterTS.toml).
+Other hyperparameters: preset defaults in `configs/models/SVRForecasterTS.toml`; tune generically.
 
 ## Differences
 
-This is a clean-room differentiable adaptation, not a classical convex SVR solver: support centres and coefficients are optimized directly, there is no dual constrained optimization, and the standard repository trainer only uses epsilon loss when explicitly configured to call the helper. There is no residual linear head. No third-party implementation was inspected or copied.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `num_support=16`, `kernel_gamma=0.1`, `epsilon=0.1`, `l2_penalty=0.0001`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Support Vector Regression Machines
-- **Venue**: Advances in Neural Information Processing Systems 9
-- **Published**: 1996
-- **Link**: https://papers.nips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html
-
-## Abstract
-Support Vector Regression uses an epsilon-insensitive objective and a kernel expansion. The local adaptation retains those two ideas but directly learns RBF centres and coefficients by gradient descent instead of solving the constrained dual problem.
-
-## In TSFLab
-Default config: `configs/models/SVRForecasterTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-This is a clean-room differentiable adaptation, not a classical convex SVR solver: support centres and coefficients are optimized directly, there is no dual constrained optimization, and the standard repository trainer only uses epsilon loss when explicitly configured to call the helper. There is no residual linear head. No third-party implementation was inspected or copied.
-
-## Citation
-
-```bibtex
-@inproceedings{drucker1996support,
-  author    = {Harris Drucker and Christopher J. C. Burges and Linda Kaufman and Alexander J. Smola and Vladimir Vapnik},
-  title     = {Support Vector Regression Machines},
-  booktitle = {Advances in Neural Information Processing Systems 9 (NIPS 1996)},
-  pages     = {155--161},
-  year      = {1996},
-  url       = {https://proceedings.neurips.cc/paper/1996/hash/d38901788c533e8286cb6400b40b386d-Abstract.html}
-}
-```
+- A clean-room differentiable adaptation, not a convex SVR solver: support centres and coefficients are optimized directly by gradient descent, with no dual constrained optimization.
+- The standard trainer uses the epsilon-insensitive loss only when explicitly configured to call the helper.
+- No residual linear head; no third-party implementation was inspected or copied.

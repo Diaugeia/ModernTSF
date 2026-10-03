@@ -1,13 +1,13 @@
 name = "maintenance"
 title = "Catalog maintenance"
-summary = "Maintenance module: curate shared components, close a bounded verification backlog, or run the complete repository release gate."
+summary = "Maintenance module: curate shared components, close a bounded admission backlog, or run the complete repository release gate."
 skills = ["audit", "curate-components", "add-model"]
 acceptance = [
-  "Select only currently failed or stale models for a backlog and state the failing checks per model; give concurrent work non-overlapping model ownership and serialize shared-file edits.",
+  "Select only models whose card [admission] is failed or pending for a backlog and state the failing contract stage per model; give concurrent work non-overlapping model ownership and serialize shared-file edits.",
   "For component curation, inventory component cards first, prefer reuse over a new extraction, compare equations, axes, normalization, masking, state, initialization, and outputs, and prove output and gradient equivalence before deleting local code.",
   "Record reuse, extraction, or keep-local decisions; a fully reviewed no-change result is valid.",
-  "Never edit generated status or evidence to disguise an incomplete implementation; keep failed checks visible.",
-  "Regenerate only canonical projections, then pass affected tests, model audit, component audit, repository audit, and the unscoped strict contract check and `tsf model verify --all`.",
+  "Never hand-edit [admission], fidelity, or card claims to disguise an incomplete implementation; only `tsf model verify` writes admission records; keep failed checks visible.",
+  "Regenerate only derived projections (`tsf repo cards`), re-admit every changed model with `tsf model verify --changed`, then pass infrastructure tests, model audit, component audit, repository audit, and for a release gate `tsf repo check --scope release` (every admission passed).",
   "Report unresolved paper, license, reference, or runtime failures exactly without weakening or bypassing a gate.",
 ]
 prompt = """
@@ -28,7 +28,7 @@ required = false
 default = "the current dev worktree"
 
 [inputs.mode]
-description = "One of: release-gate (full audit), backlog (verification debt), curation (component extraction)."
+description = "One of: release-gate (full audit), backlog (failed or pending admissions), curation (component extraction)."
 required = false
 default = "release-gate"
 
@@ -47,11 +47,11 @@ budget_key = "max_models"
 [inputs.priority]
 description = "Selection rule for the bounded batch."
 required = false
-default = "stale evidence, then failed required checks, oldest evidence first"
+default = "failed admissions, then pending admissions, oldest admission date first"
 
 [permissions]
 network = "read-primary-sources-and-pinned-official-code"
-repository = "write-selected-models-components-tests-evidence-and-generated-projections"
+repository = "write-selected-models-components-cards-and-generated-projections"
 external_actions = "none"
 
 [budget]

@@ -104,6 +104,20 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("adaptive", "adjacency", "embedding", "graph", "node", "softmax"),
         ),
         ComponentSpec(
+            "graph_conv_gru",
+            "tsflab.models._components.graph_conv_gru",
+            "Graph-convolutional GRU gating: r,u = sigmoid(G_g([x,h])), c = tanh(G_c([x, r*h])), h' = u*h + (1-u)*c around caller-supplied graph filters.",
+            ("GraphConvGRUCell", "graph_gru_step"),
+            ("gru", "graph", "graph-convolution", "recurrent", "cell", "spatiotemporal"),
+        ),
+        ComponentSpec(
+            "node_adaptive_graph_conv",
+            "tsflab.models._components.node_adaptive_graph_conv",
+            "Node-adaptive Chebyshev graph convolution: per-node weights and bias generated from node embeddings through shared banks, over the softmax(relu(E E^T)) graph.",
+            ("NodeAdaptiveGraphConv",),
+            ("adaptive", "chebyshev", "graph", "graph-convolution", "meta-parameter", "node-adaptive", "weight-bank"),
+        ),
+        ComponentSpec(
             "channel_alignment",
             "tsflab.models._components.channel_alignment",
             "Slice or zero-pad the trailing feature axis to a requested width.",
@@ -167,6 +181,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting"),
         ),
         ComponentSpec(
+            "inception_block",
+            "tsflab.models._components.inception_block",
+            "Mean of same-padded odd square Conv2d kernels (1, 3, ..., 2k-1) with optional Kaiming fan-out initialization.",
+            ("InceptionBlock2d",),
+            ("conv2d", "convolution", "inception", "multi-scale", "period-2d", "timesnet"),
+        ),
+        ComponentSpec(
             "spectral_descriptor",
             "tsflab.models._components.spectral_descriptor",
             "Per-window spectral entropy and low/mid/high band-energy ratios of the channel-averaged power spectrum.",
@@ -194,6 +215,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("DiffusionConv2d",),
             ("diffusion", "graph", "graph-wavenet", "support", "spatiotemporal"),
         ),
+        ComponentSpec(
+            "empirical_quantiles",
+            "tsflab.models._components.empirical_quantiles",
+            "Linear-interpolated empirical quantiles of forecast samples along a sample axis, appended as a trailing level axis.",
+            ("empirical_quantiles",),
+            ("interpolation", "probabilistic", "quantile", "samples", "sorting"),
+        ),
         ComponentSpec("embed", "tsflab.models._components.embed", "Value, position, calendar, patch, and inverted embeddings.", keywords=("calendar", "embedding", "patch", "position", "token")),
         ComponentSpec(
             "gated_dilated_conv",
@@ -201,6 +229,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             "Causal dilated padding plus the WaveNet gated activation unit.",
             ("causal_pad", "gated_dilated_conv"),
             ("causal", "dilated", "gate", "gated-activation", "wavenet"),
+        ),
+        ComponentSpec(
+            "decomposition_encdec",
+            "tsflab.models._components.decomposition_encdec",
+            "Autoformer-style progressive-decomposition encoder/decoder layers with injected self/cross mixers and bias-free trend accumulation.",
+            ("DecompositionEncoderLayer", "DecompositionDecoderLayer", "decomposition_feed_forward"),
+            ("autoformer", "decoder", "decomposition", "encoder", "fedformer", "progressive", "seasonal", "trend"),
         ),
         ComponentSpec(
             "dominant_periods",
@@ -265,6 +300,13 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("periodic_alibi_bias",),
             ("alibi", "bias", "periodic", "relative-position", "attention"),
         ),
+        ComponentSpec(
+            "frwkv_linear_attention",
+            "tsflab.models._components.frwkv_linear_attention",
+            "FRWKV RWKV-7-style delta-rule linear attention over tokens and the residual Linear-encoder-Linear frequency branch built on it.",
+            ("FRWKVLinearAttention", "FRWKVSpectralBranch", "frwkv_state_scan"),
+            ("rwkv", "linear-attention", "delta-rule", "state-recursion", "frequency-branch", "attention"),
+        ),
         ComponentSpec("graph_utils", "tsflab.models._components.graph_utils", "Graph supports, Laplacians, and Chebyshev bases.", ("normalize_adj_mx", "adj_to_supports", "cheb_poly"), keywords=("adjacency", "chebyshev", "graph", "laplacian", "support")),
         ComponentSpec(
             "graph_spectral",
@@ -280,7 +322,7 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("center_on_last_value", "restore_last_value"),
             ("centering", "detach", "last-value", "level", "residual"),
         ),
-        ComponentSpec("marks", "tsflab.models._components.marks", "Canonical temporal-mark and spatiotemporal input adapters.", ("TIME_FEATURES", "TSLIB_TIME_FEATURE_DIMS", "tslib_time_feature_dimension", "adapt_tslib_marks", "normalized_time_features", "to_spatiotemporal", "to_calendar_spatiotemporal", "future_time_features", "coerce_time_length"), keywords=("calendar", "covariate", "spatiotemporal", "timestamp")),
+        ComponentSpec("marks", "tsflab.models._components.marks", "Canonical temporal-mark and spatiotemporal input adapters.", ("TIME_FEATURES", "TSLIB_TIME_FEATURE_DIMS", "tslib_time_feature_dimension", "adapt_tslib_marks", "encoder_timef_marks", "days_from_civil", "elapsed_minutes", "normalized_time_features", "to_spatiotemporal", "to_calendar_spatiotemporal", "future_time_features", "coerce_time_length"), keywords=("calendar", "covariate", "spatiotemporal", "timestamp", "civil-date", "epoch-minutes")),
         ComponentSpec(
             "mamba",
             "tsflab.models._components.mamba",
@@ -386,6 +428,20 @@ COMPONENT_CATALOG = ComponentCatalog(
             ("dwt", "haar", "multi-resolution", "subband", "undecimated", "wavelet"),
         ),
         ComponentSpec(
+            "orthogonal_dwt",
+            "tsflab.models._components.orthogonal_dwt",
+            "Multi-level orthogonal DWT and inverse in the PyWavelets convention with zero or half-sample symmetric boundary extension.",
+            ("OrthogonalDWT", "filter_bank", "coefficient_length", "coefficient_lengths", "DEC_LO", "BOUNDARY_MODES"),
+            ("boundary", "coiflet", "daubechies", "dwt", "symlet", "symmetric", "wavelet", "zero-padding"),
+        ),
+        ComponentSpec(
+            "bspline_basis",
+            "tsflab.models._components.bspline_basis",
+            "B-spline basis values by the Cox-de Boor recursion on shared or per-feature knots, the basis of B-spline KAN layers.",
+            ("bspline_basis",),
+            ("b-spline", "basis", "cox-de-boor", "kan", "kolmogorov-arnold", "knots", "spline"),
+        ),
+        ComponentSpec(
             "topk_expert_attention",
             "tsflab.models._components.topk_expert_attention",
             "Differentiable top-k local expert self-attention with an optional shared global expert.",
@@ -398,6 +454,20 @@ COMPONENT_CATALOG = ComponentCatalog(
             "Differential self-attention: the RMS-renormalized difference of two softmax attention maps.",
             ("DifferentialAttention",),
             ("attention", "differential", "noise-cancelling", "rmsnorm"),
+        ),
+        ComponentSpec(
+            "gpt2_backbone",
+            "tsflab.models._components.gpt2_backbone",
+            "Decoder-only GPT-2 trunk over input embeddings (learned positions, causal pre-norm blocks, final LayerNorm) with an offline loader for released safetensors weights.",
+            ("GPT2Config", "GPT2Backbone", "GPT2Block", "GPT2Attention", "GPT2MLP", "LoRAAdapter", "load_gpt2_weights", "read_safetensors"),
+            ("gpt2", "llm", "pretrained", "language-model", "causal", "decoder-only", "backbone", "transformer", "lora"),
+        ),
+        ComponentSpec(
+            "segment_mlp",
+            "tsflab.models._components.segment_mlp",
+            "Segment-to-token or token-to-segment map: one Linear, or n >= 2 Linear layers with activation and dropout between them.",
+            ("SegmentMLP", "ACTIVATIONS"),
+            ("segment", "token", "mlp", "projection", "embedding", "llm", "linear"),
         ),
     )
 )

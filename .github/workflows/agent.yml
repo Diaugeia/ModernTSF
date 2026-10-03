@@ -12,7 +12,7 @@ name: agent
 #   ci completed on a PR  pr-review  read-only agent reviews the diff + gate result
 #                         pr-merge   deterministic: guards, then squash-merge or comment
 #
-# implement = agent change -> protected paths restored -> model checks ->
+# implement = agent change -> protected paths restored -> `tsf model add --verify` ->
 # `tsf repo check --scope changed` -> read-only agent review -> PR -> merge.
 #
 # Contributor PRs are gated by ci.yml (`pull_request`, no secrets, read-only
@@ -48,9 +48,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  UV_TORCH_BACKEND: cpu
+  UV_NO_SYNC: "1"  # cpu profile: installed with uv pip --torch-backend cpu
   # Paths an agent change or a contributor PR may never alter automatically.
-  PROTECTED: ".github .agents AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts src/tsflab/cli/commands/gate.py tests/test_repo_check.py"
+  PROTECTED: ".github .agents AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts src/tsflab/cli/commands/gate.py tests/test_cli.py"
 
 jobs:
   watch:
@@ -64,8 +64,10 @@ jobs:
           ref: ${{ vars.INTAKE_BASE || 'dev' }}
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
-      - name: Install TSFLab (CPU)
-        run: uv sync --python 3.12 --frozen
+      - name: Install TSFLab (CPU profile)
+        run: |
+          uv venv --python 3.12
+          uv pip install --torch-backend cpu -e ".[models,data,experiments]" pytest
       - name: Render the intake task (read-only scan)
         env:
           SINCE: ${{ inputs.since || '7 days before today' }}
@@ -129,8 +131,10 @@ jobs:
           ref: ${{ vars.INTAKE_BASE || 'dev' }}
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
-      - name: Install TSFLab (CPU)
-        run: uv sync --python 3.12 --frozen
+      - name: Install TSFLab (CPU profile)
+        run: |
+          uv venv --python 3.12
+          uv pip install --torch-backend cpu -e ".[models,data,experiments]" pytest
       - name: Render the triage prompt
         env:
           NUMBER: ${{ github.event.issue.number }}
@@ -241,8 +245,10 @@ jobs:
           ref: ${{ vars.INTAKE_BASE || 'dev' }}
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
-      - name: Install TSFLab (CPU)
-        run: uv sync --python 3.12 --frozen
+      - name: Install TSFLab (CPU profile)
+        run: |
+          uv venv --python 3.12
+          uv pip install --torch-backend cpu -e ".[models,data,experiments]" pytest
       - name: Render the task
         env:
           KIND: ${{ matrix.item.kind }}
@@ -288,9 +294,14 @@ jobs:
         if: matrix.item.kind == 'paper'
         env:
           MODEL_NAME: ${{ matrix.item.model_name }}
+        # Admit the model with its executed contract (records [admission] in card.toml);
+        # if the agent already admitted it, re-run the admission check instead.
         run: |
-          uv run tsf model verify "$MODEL_NAME"
-          uv run tsf repo check --contracts strict --models "$MODEL_NAME"
+          if uv run python -c "import sys; from tsflab.catalog.registry.models import MODEL_CATALOG as C; sys.exit(sys.argv[1] not in C.names())" "$MODEL_NAME"; then
+            uv run tsf model verify "$MODEL_NAME"
+          else
+            uv run tsf model add --name "$MODEL_NAME" --verify
+          fi
       - name: Mergeable check
         run: uv run tsf repo check --scope changed --base HEAD
       - name: Render the review prompt
@@ -312,8 +323,9 @@ jobs:
               echo "the fix addresses the reported defect minimally and adds or updates a regression test."
             else
               echo "This adds model $MODEL_NAME from paper $PAPER_URL. Also check the model card against the"
-              echo "code and paper: facts (paper, venue, code revision, license), summary and Key ideas match"
-              echo "the code, and the Differences section records every material deviation."
+              echo "code and paper: card.toml facts (paper, venue, code revision, license, fidelity,"
+              echo "composition, data_params, issues) are true, [admission] status is passed, the README"
+              echo "description and Idea section match the code, and Differences records every material deviation."
             fi
             echo "Finish with ONLY a JSON object matching the output schema."
           } > .codex-review.md
@@ -344,7 +356,6 @@ jobs:
             src/**
             configs/**
             tests/**
-            verification/**
             docs/**
             catalog/**
             apps/web/**
@@ -437,9 +448,11 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
         if: steps.find.outputs.number
-      - name: Install TSFLab (CPU) from the base branch
+      - name: Install TSFLab (CPU profile) from the base branch
         if: steps.find.outputs.number
-        run: uv sync --python 3.12 --frozen
+        run: |
+          uv venv --python 3.12
+          uv pip install --torch-backend cpu -e ".[models,data,experiments]" pytest
       - name: Fetch the diff as data and render the review prompt
         if: steps.find.outputs.number
         env:
@@ -524,7 +537,7 @@ jobs:
           number, sha = os.environ["NUMBER"], os.environ["SHA"]
           view = json.loads(gh("pr", "view", number, "--json", "headRefOid,files,state").stdout)
           prefixes = (".github/ .agents/ AGENTS.md CLAUDE.md pyproject.toml uv.lock scripts/ "
-                      "src/tsflab/cli/commands/gate.py tests/test_repo_check.py").split()
+                      "src/tsflab/cli/commands/gate.py tests/test_cli.py").split()
           touched = [f["path"] for f in view["files"] if f["path"].startswith(tuple(prefixes))]
           findings = "\n".join(f"- {x}" for x in json.loads(os.environ["FINDINGS"]))
           approve = os.environ["APPROVE"] == "true"

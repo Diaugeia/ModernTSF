@@ -3,17 +3,17 @@ from __future__ import annotations
 import numpy as np
 import torch
 from torch import nn
+from tsflab.models._components.graph_conv_gru import graph_gru_step
 from tsflab.models._components.marks import coerce_time_length, future_time_features, to_spatiotemporal
 
 class GraphGRUCell(nn.Module):
     def __init__(self,input_width:int,hidden:int)->None:
         super().__init__(); self.hidden=hidden; self.gates=nn.Linear(2*(input_width+hidden),2*hidden); self.candidate=nn.Linear(2*(input_width+hidden),hidden)
-    def _graph_features(self,x,h,graph):
-        joined=torch.cat((x,h),-1); return torch.cat((joined,torch.einsum("nm,bmd->bnd",graph,joined)),-1)
+    def _graph_features(self,joined,graph):
+        return torch.cat((joined,torch.einsum("nm,bmd->bnd",graph,joined)),-1)
     def forward(self,x,h,graph):
-        reset,update=torch.sigmoid(self.gates(self._graph_features(x,h,graph))).chunk(2,-1)
-        candidate=torch.tanh(self.candidate(self._graph_features(x,reset*h,graph)))
-        return update*h+(1-update)*candidate
+        # Shared graph-GRU gating; each map is a Linear over [z, A z] of the joined input z.
+        return graph_gru_step(x,h,lambda joined:self.gates(self._graph_features(joined,graph)),lambda joined:self.candidate(self._graph_features(joined,graph)))
 
 class Model(nn.Module):
     def __init__(self,seq_len:int,pred_len:int,enc_in:int,adj_mx:np.ndarray|None=None,cov_dim:int=2,hid_dim:int=64)->None:

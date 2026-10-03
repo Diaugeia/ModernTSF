@@ -1,19 +1,11 @@
 ---
 name: "sharpness_aware"
-kind: "component"
-module: "tsflab.models._components.sharpness_aware"
-summary: "First-order sharpness-aware minimization (SAM/ASAM) as a loss evaluated at adversarially perturbed weights, usable with any optimizer through ModelSpec.training_objective."
-category: "objective"
-input: "model nn.Module; loss_fn(run) -> (aux or None, scalar loss); rho float >= 0; adaptive bool; eps float"
-output: "(aux detached or None, scalar loss that differentiates to the SAM gradient)"
-origin: "SAM, Foret et al., ICLR 2021 (Sharpness-Aware Minimization for Efficiently Improving Generalization); adaptive form from ASAM, Kwon et al., ICML 2021"
-origin_models: ["samformer"]
-tags: ["sam", "sharpness", "training-objective", "adversarial-weights", "functional-call", "optimizer-agnostic", "asam", "loss-wrapper", "stateless"]
+description: "First-order sharpness-aware minimization (SAM/ASAM) as a loss at adversarially perturbed weights, usable with any optimizer via ModelSpec.training_objective. Use for papers that train with SAM (two passes per batch); not for DataParallel, parameter-mutating forwards, or unguarded float16."
 ---
 
 # sharpness_aware
 
-## Purpose
+## What it does
 
 SAM updates `w` with `grad L(w + e(w))`, where
 `e(w) = rho * g / (||g||_2 + eps)` and `g = grad L(w)` over all trainable
@@ -26,14 +18,15 @@ base optimizer, weight decay included) realizes SAM without a wrapper optimizer.
 With `adaptive=True` the ASAM form is used: the norm is `|| |w| * g ||_2` and
 `e = rho * w^2 * g / (|| |w| * g ||_2 + eps)` (element-wise).
 
-## Origin and granularity
+## When to use
 
-Cut at the arithmetic only: the caller supplies `loss_fn`, which decides how a
-batch becomes a loss, so the same component serves any model through the runner's
-`ModelSpec.training_objective` hook. SAMformer is the only consumer today (its
-`sharpness_aware_objective` method passes `rho`). The component was added with
-SAMformer (commit `1a87e79b`). Choosing `rho`, reading the batch, and which
-criterion is minimized stay in the model.
+Use for a model whose paper trains with SAM (as `samformer` does) and whose
+runner already calls a custom objective. Do not use with `torch.nn.DataParallel`
+(the runner raises for custom objectives there), with modules that mutate
+parameters in `forward`, or when two independent dropout masks per step are
+unacceptable. Under mixed precision the ascent gradient comes from the unscaled
+loss and can underflow in float16. It costs two forward and two backward passes
+per batch.
 
 ## Interface
 
@@ -61,61 +54,3 @@ public symbol.
   `functional_call`, so a module that updates buffers in `forward` (for example
   BatchNorm running statistics) updates them in both the ascent and the descent pass, and stochastic layers such as dropout
   draw independent masks in the two passes.
-
-## Invariants and equivalence evidence
-
-- `tests/test_sharpness_aware.py` checks that `rho = 0` equals the plain loss,
-  that the loss and parameter gradients equal a manual two-step SAM (ascent,
-  gradient at `w + e`, restore) for both `adaptive=False` and `adaptive=True`, that
-  parameters are unchanged and `aux` carries no grad, that the non-adaptive
-  perturbation has norm `rho`, that the perturbed loss is not smaller than the
-  clean loss for a small `rho`, and the two `ValueError` cases.
-- no fixture: the comparison reference is the manual two-step procedure written
-  in the test, not the official SAM/ASAM optimizer; any difference from that
-  optimizer is expected to be floating-point order only (not measured).
-- `tests/test_samformer.py` (`test_training_objective_is_sam_over_configured_criterion`,
-  `test_spec_declares_objective_and_components`) exercises the integration through
-  `samformer`'s registered objective.
-
-## Variants and options
-
-`adaptive` only. Not provided: second-order terms, per-group `rho`, or
-gradient-norm clipping.
-
-## When to use and when not to use
-
-Use for a paper that trains with SAM and whose runner already calls a custom
-objective. Do not use with `torch.nn.DataParallel` (the runner raises for custom
-objectives there), with modules that mutate parameters in `forward`, or when two
-independent dropout masks per step are unacceptable. Under mixed precision the
-runner scales only the returned loss; the ascent gradient comes from the
-unscaled loss, so it can underflow in float16. It costs two forward passes and
-two backward passes per batch.
-
-## Related components
-
-None overlaps in responsibility: no other component wraps a training loss. The
-other custom-objective models (`dipelinear`'s SFALoss, `distdf`, `mmpd`) keep their
-objectives model-local. The remaining `samformer` components, `revin` and
-`channel_wise_linear`, are architecture blocks and unrelated to this wrapper.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `sharpness_aware_loss(model: nn.Module, loss_fn: Callable[[Callable[..., torch.Tensor]], tuple[torch.Tensor | None, torch.Tensor]], rho: float, adaptive: bool=False, eps: float=1e-12)`
-  Return ``(clean_aux, loss at w + e(w))`` for one SAM training step.
-
-```python
-from tsflab.models._components.sharpness_aware import sharpness_aware_loss
-```
-
-## Retrieval terms
-
-`adversarial-weights`, `optimizer-agnostic`, `sam`, `sharpness`, `training-objective`, `functional-call`
-
-## Current model consumers (1)
-
-`samformer`
-<!-- component-card:generated:end -->

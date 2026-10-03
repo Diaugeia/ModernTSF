@@ -1,156 +1,38 @@
 ---
 name: "SDMixer"
-summary: "SDMixer is a dual-stream sparse Mixer forecaster for multivariate time series forecasting. It splits each input sequence via top-k FFT magnitude masking into an energy-dominant seasonal component and a residual trend, models the trend with a channel-sparse temporal Mixer and the season with a frequency-domain enhancement branch, then fuses the two with a trend-conditioned sparse cross-attention gate."
-paper: "https://arxiv.org/abs/2602.23581"
-paper_title: "SDMixer: Sparse Dual-Mixer for Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2026
-code: "https://github.com/SDMixer/SDMixer"
-revision: "c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a"
-license: "NOASSERTION"
-tagline: "Top-k FFT season/trend split: channel-sparse temporal Mixer for trend, spectral enhancement for season, sparse fusion."
-tags: ["mlp", "mixer", "frequency", "decomposition", "sparse-attention", "channel-mixing", "normalization"]
-composition: ["normalization=component:revin", "decomposition=local:top-k-fft-seasonal-trend-split", "temporal=local:sparse-temporal-mixer+local:frequency-enhancement-branch+local:sparse-cross-attention-fusion", "channel=local:channel-sparse-variable-mixing", "head=local:linear-over-time-head", "loss=loss:mse"]
+description: "Dual-stream sparse mixer: FFT top-k season/trend split, a channel-sparse time mixer on the trend, spectral enhancement of the season, and sparse cross-attention fusion under RevIN. Use for noisy multivariate data with periodic components and weak or sparse cross-channel links; not for probabilistic output."
 ---
+
 # SDMixer
 
-## Key ideas
+## Idea
 
-- `SpectralDecomposition` keeps the top-k amplitude frequency bins per series as the season and treats the residual as the trend.
+- Multivariate data often has multi-scale structure, weak correlations, and noise; SDMixer extracts trends in the time domain and local dynamics in the frequency domain, and uses sparsity to filter uninformative cross-variable information.
+- `SpectralDecomposition` keeps the top-k amplitude frequency bins per series as the season; the residual is the trend.
 - `SparseTemporalFlow` mixes variables with a linear layer, keeps only the largest-magnitude channels per step (`channel_sparse_ratio`), then mixes over time with an MLP.
-- `FrequencyFlow` enhances the season by applying a learned linear layer to the real part of its spectrum.
-- `SparseCrossMixer` lets trend queries attend to the frequency branch with top-k sparsified weights and adds a sigmoid-gated residual; `revin` wraps the model.
+- `FrequencyFlow` enhances the season with a learned linear layer on the real part of its spectrum.
+- `SparseCrossMixer`: trend queries attend to the frequency branch with top-k sparsified weights, plus a sigmoid-gated residual; a linear head maps time to the horizon and `revin` wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 12, channels]` point forecast.
+- Series with a few dominant frequencies (top-k spectral season) plus a slower trend.
+- Multivariate data where only some channels matter for each other: channel mixing is sparsified per time step instead of dense.
+- Calendar marks are ignored; point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2602.23581); title: SDMixer: Sparse Dual-Mixer for Time Series Forecasting; venue/year: arXiv preprint / 2026
-- [codebase](https://github.com/SDMixer/SDMixer); revision: `c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a`; license: `NOASSERTION`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/SDMixer.toml`](../../../../configs/models/SDMixer.toml).
+- `enc_in` and `c_out` follow the dataset channel count; both must equal it (`enc_in == c_out` is enforced).
+- `spectral_top_k` follows `seq_len`: at most `seq_len // 2 + 1` (the rFFT bin count); it is the number of dominant frequencies kept as season.
+- Other hyperparameters: preset defaults in `configs/models/SDMixer.toml`; tune generically.
 
 ## Differences
 
-**Clean-room implementation: confirmed.** No source was copied from the official repository (`https://github.com/SDMixer/SDMixer`, revision `c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a`); the repository ships no LICENSE file (`NOASSERTION`) and is treated as reference-only, consistent with existing catalog entries such as Dualformer. Its single model file (`models/SDMixer.py`, alongside `layers/RevIN.py`) was read only to resolve structural ambiguities the paper leaves open. Structural and runtime evidence is generated by `uv run tsf model verify SDMixer`. Disclosed material differences from the pinned official code, and from the paper where the official code is silent or clearly incomplete:
+Clean-room rewrite; official `SDMixer/SDMixer@c330c01` (no license, `NOASSERTION`) read only to resolve ambiguities. Recorded in `card.toml` issues:
 
-- **Forecast horizon (completeness fix).** The pinned `forward` never reaches `pred_len`: `ForecastHead`/`linear3` are defined but unused, and the function returns a `[batch, seq_len, enc_in]` tensor, not a `[batch, pred_len, enc_in]` forecast. This implementation adds the linear forecast head over the sequence-length axis implied by the paper's Eq. 6 (`Y_hat in R^{B x L' x C}`), so the model actually forecasts to `pred_len`.
-- **Spectral decomposition (Eq. 3-5).** The pinned `DFT_series_decomp.forward` sets `freq[0] = 0` (zeroing the entire first batch row, not the DC frequency bin) and applies a single global `topk`/threshold across the whole tensor rather than a per-(batch, channel) selection. This implementation instead follows the paper literally: an independent top-k magnitude mask over the frequency axis for every (batch, channel) pair, then `irfft` to reconstruct the seasonal component and `trend = x - season`.
-- **Sparse temporal gate axis (Eq. 8).** The pinned `SparseTopK` sparsifies along the sequence axis. The paper explicitly states the gate keeps the "top-k channels ... at each time step", i.e. sparsification along the channel axis at every time step. This implementation follows the paper.
-- **Sparse cross-mixer (Eq. 12-13).** The pinned cross-fusion block calls `nn.MultiheadAttention` directly with no explicit sparsification of the attention map, and its commented-out trend/season MLP branches (`linear1`/`linear2`/`weight`) are dead code that is never applied to the returned output. This implementation instead follows the paper's explicit equations: a manual scaled dot-product attention with query from the trend branch and key/value from the frequency branch, top-k sparsification of the softmax attention map, and a sigmoid-gated residual fusion onto the trend branch; the dead official branches are not reproduced.
-- **Undocumented widths.** The paper does not specify the hidden width or exact mixing axis of `MLP_T` (Eq. 10) or the projection width of `Q/K/V` (Eq. 12). This implementation uses a two-layer GELU MLP mixing over the time axis with a configurable `d_ff` hidden width, and keeps `Q/K/V` at the channel width `enc_in` (consistent with the paper's `sqrt(C)` attention scale, which implies the key dimension equals `C`). These are disclosed clean-room design choices, not paper-specified values.
-- **No renormalization after sparsification.** The paper's `alpha = TopK(Softmax(...))` is implemented literally: the top-k mask is applied after the softmax with no renormalization, so `alpha` rows do not sum to one.
-- Marks and decoder arguments (`x_mark_enc`, `x_dec`, `x_mark_dec`) are accepted per the shared four-input forward contract but are unused: SDMixer is a channel-preserving, calendar-feature-free point forecaster in both the paper and the official code.
-- No probabilistic output, pretrained artifacts, or checkpoint/metric reference comparison against an official training recipe is performed; verification covers structure and the runtime contract only.
+- Adds the linear forecast head implied by Eq. 6; the official `forward` never reaches `pred_len`.
+- Spectral split follows Eqs. 3-5 per (batch, channel), fixing the official batch-row zeroing and global top-k.
+- Sparse gate keeps top-k channels per time step (paper), not along time (code).
+- Cross-mixer is the paper's top-k sparsified attention with gated residual, not the official dense `nn.MultiheadAttention`; `alpha` is not renormalized after top-k.
+- Unspecified widths: two-layer GELU time MLP with `d_ff`, `Q/K/V` at width `enc_in`.
 
-### Component decisions
-Only `revin` is reused, with proven contract equivalence (per-instance
-mean/variance standardization with affine scale/bias, restored around the
-head output). No other cataloged component matched SDMixer's defining
-operations closely enough to reuse safely:
-- `dominant_periods` returns detected periods and per-sample amplitude
-  weights for a TimesNet-style multi-period backbone; SDMixer's Eq. 3-5
-  instead masks the complex spectrum by top-k magnitude and inverts it to
-  reconstruct a seasonal *signal*, not a period length — kept model-local
-  (`SpectralDecomposition`).
-- `series_decomposition` is a moving-average trend/residual split; SDMixer's
-  decomposition is FFT-magnitude-based, a different operation — kept
-  model-local.
-- `frequency_band_sampler` (Dualformer) selects a depth-indexed, contiguous
-  frequency band per encoder layer across multiple stacked layers; SDMixer
-  has a single frequency branch with a full-spectrum linear "Enhance"
-  projection on the real part — kept model-local (`FrequencyFlow`).
-- `harmonic_energy_gate` (Dualformer) computes a per-channel harmonic-to-total
-  spectral energy ratio; SDMixer's fusion gate is a single learned scalar
-  passed through a sigmoid, not a computed spectral-energy ratio — kept
-  model-local (`gamma` inside `SparseCrossMixer`).
-- `sparse_connection_router` (LSINet) is a shared, input-independent
-  Bernoulli/Gumbel-softmax router over discrete positions; SDMixer's sparse
-  gates (Eq. 8 and Eq. 12) are input-dependent magnitude/attention top-k
-  masks recomputed from the data on every forward call — kept model-local
-  (`_topk_mask`, used by both `SparseTemporalFlow` and `SparseCrossMixer`).
-
-No new shared component was extracted: the decomposition and flow blocks are
-tied to SDMixer's specific equations and currently have exactly one consumer
-(SDMixer itself), below the curate-components threshold of at least two
-genuine consumers with proven semantic equivalence.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=12`. Default
-model parameters are: `enc_in=7`, `c_out=7`, `spectral_top_k=5`, `channel_sparse_ratio=0.25`, `attn_sparse_ratio=0.5`, `d_ff=128`, `dropout=0.1`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: SDMixer: Sparse Dual-Mixer for Time Series Forecasting
-- **Venue**: arXiv preprint
-- **Published**: 2026 (arXiv: 2026-02); peer-reviewed and accepted by the DSFA
-  track of PAKDD 2026, later withdrawn from the formal proceedings by the
-  author for lack of institutional funding
-- **arXiv**: https://arxiv.org/abs/2602.23581
-
-## Abstract
-Multivariate time series forecasting is widely applied in fields such as transportation, energy, and finance. However, the data commonly suffers from issues of multi-scale characteristics, weak correlations, and noise interference, which limit the predictive performance of existing models. This paper proposes a dual-stream sparse Mixer prediction framework that extracts global trends and local dynamic features from sequences in both the frequency and time domains, respectively. It employs a sparsity mechanism to filter out invalid information, thereby enhancing the accuracy of cross-variable dependency modeling. Experimental results demonstrate that this method achieves leading performance on multiple real-world scenario datasets, validating its effectiveness and generality.
-
-## In TSFLab
-Default config: `configs/models/SDMixer.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
-
-## Source and verification
-
-**Clean-room implementation: confirmed.** No source was copied from the official repository (`https://github.com/SDMixer/SDMixer`, revision `c330c01fa01cdcb3dbf2cde6b0a73a2bbd80a08a`); the repository ships no LICENSE file (`NOASSERTION`) and is treated as reference-only, consistent with existing catalog entries such as Dualformer. Its single model file (`models/SDMixer.py`, alongside `layers/RevIN.py`) was read only to resolve structural ambiguities the paper leaves open. Structural and runtime evidence is generated by `uv run tsf model verify SDMixer`. Disclosed material differences from the pinned official code, and from the paper where the official code is silent or clearly incomplete:
-
-- **Forecast horizon (completeness fix).** The pinned `forward` never reaches `pred_len`: `ForecastHead`/`linear3` are defined but unused, and the function returns a `[batch, seq_len, enc_in]` tensor, not a `[batch, pred_len, enc_in]` forecast. This implementation adds the linear forecast head over the sequence-length axis implied by the paper's Eq. 6 (`Y_hat in R^{B x L' x C}`), so the model actually forecasts to `pred_len`.
-- **Spectral decomposition (Eq. 3-5).** The pinned `DFT_series_decomp.forward` sets `freq[0] = 0` (zeroing the entire first batch row, not the DC frequency bin) and applies a single global `topk`/threshold across the whole tensor rather than a per-(batch, channel) selection. This implementation instead follows the paper literally: an independent top-k magnitude mask over the frequency axis for every (batch, channel) pair, then `irfft` to reconstruct the seasonal component and `trend = x - season`.
-- **Sparse temporal gate axis (Eq. 8).** The pinned `SparseTopK` sparsifies along the sequence axis. The paper explicitly states the gate keeps the "top-k channels ... at each time step", i.e. sparsification along the channel axis at every time step. This implementation follows the paper.
-- **Sparse cross-mixer (Eq. 12-13).** The pinned cross-fusion block calls `nn.MultiheadAttention` directly with no explicit sparsification of the attention map, and its commented-out trend/season MLP branches (`linear1`/`linear2`/`weight`) are dead code that is never applied to the returned output. This implementation instead follows the paper's explicit equations: a manual scaled dot-product attention with query from the trend branch and key/value from the frequency branch, top-k sparsification of the softmax attention map, and a sigmoid-gated residual fusion onto the trend branch; the dead official branches are not reproduced.
-- **Undocumented widths.** The paper does not specify the hidden width or exact mixing axis of `MLP_T` (Eq. 10) or the projection width of `Q/K/V` (Eq. 12). This implementation uses a two-layer GELU MLP mixing over the time axis with a configurable `d_ff` hidden width, and keeps `Q/K/V` at the channel width `enc_in` (consistent with the paper's `sqrt(C)` attention scale, which implies the key dimension equals `C`). These are disclosed clean-room design choices, not paper-specified values.
-- **No renormalization after sparsification.** The paper's `alpha = TopK(Softmax(...))` is implemented literally: the top-k mask is applied after the softmax with no renormalization, so `alpha` rows do not sum to one.
-- Marks and decoder arguments (`x_mark_enc`, `x_dec`, `x_mark_dec`) are accepted per the shared four-input forward contract but are unused: SDMixer is a channel-preserving, calendar-feature-free point forecaster in both the paper and the official code.
-- No probabilistic output, pretrained artifacts, or checkpoint/metric reference comparison against an official training recipe is performed; verification covers structure and the runtime contract only.
-
-### Component decisions
-Only `revin` is reused, with proven contract equivalence (per-instance
-mean/variance standardization with affine scale/bias, restored around the
-head output). No other cataloged component matched SDMixer's defining
-operations closely enough to reuse safely:
-- `dominant_periods` returns detected periods and per-sample amplitude
-  weights for a TimesNet-style multi-period backbone; SDMixer's Eq. 3-5
-  instead masks the complex spectrum by top-k magnitude and inverts it to
-  reconstruct a seasonal *signal*, not a period length — kept model-local
-  (`SpectralDecomposition`).
-- `series_decomposition` is a moving-average trend/residual split; SDMixer's
-  decomposition is FFT-magnitude-based, a different operation — kept
-  model-local.
-- `frequency_band_sampler` (Dualformer) selects a depth-indexed, contiguous
-  frequency band per encoder layer across multiple stacked layers; SDMixer
-  has a single frequency branch with a full-spectrum linear "Enhance"
-  projection on the real part — kept model-local (`FrequencyFlow`).
-- `harmonic_energy_gate` (Dualformer) computes a per-channel harmonic-to-total
-  spectral energy ratio; SDMixer's fusion gate is a single learned scalar
-  passed through a sigmoid, not a computed spectral-energy ratio — kept
-  model-local (`gamma` inside `SparseCrossMixer`).
-- `sparse_connection_router` (LSINet) is a shared, input-independent
-  Bernoulli/Gumbel-softmax router over discrete positions; SDMixer's sparse
-  gates (Eq. 8 and Eq. 12) are input-dependent magnitude/attention top-k
-  masks recomputed from the data on every forward call — kept model-local
-  (`_topk_mask`, used by both `SparseTemporalFlow` and `SparseCrossMixer`).
-
-No new shared component was extracted: the decomposition and flow blocks are
-tied to SDMixer's specific equations and currently have exactly one consumer
-(SDMixer itself), below the curate-components threshold of at least two
-genuine consumers with proven semantic equivalence.
+Full detail and component decisions in `reference.md`.

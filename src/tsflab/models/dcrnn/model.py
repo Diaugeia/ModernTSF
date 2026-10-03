@@ -7,6 +7,7 @@ import torch
 from torch import nn
 
 from tsflab.models._components.channel_alignment import fit_channels
+from tsflab.models._components.graph_conv_gru import GraphConvGRUCell
 from tsflab.models._components.graph_utils import adj_to_supports
 from tsflab.models._components.marks import to_spatiotemporal
 
@@ -42,19 +43,18 @@ class DiffusionConvolution(nn.Module):
         return self.projection(torch.cat(terms, dim=-1))
 
 
-class DCGRUCell(nn.Module):
-    """GRU gates whose affine maps are replaced by diffusion convolution."""
+class DCGRUCell(GraphConvGRUCell):
+    """GRU gates whose affine maps are replaced by diffusion convolution.
+
+    The supports are buffers of the two filters, so ``forward(x, hidden)`` takes
+    no graph argument.
+    """
 
     def __init__(self, input_dim: int, hidden_dim: int, order: int, supports: torch.Tensor) -> None:
-        super().__init__()
+        gates = DiffusionConvolution(input_dim + hidden_dim, 2 * hidden_dim, order, supports)
+        candidate = DiffusionConvolution(input_dim + hidden_dim, hidden_dim, order, supports)
+        super().__init__(gates, candidate)
         self.hidden_dim = hidden_dim
-        self.gates = DiffusionConvolution(input_dim + hidden_dim, 2 * hidden_dim, order, supports)
-        self.candidate = DiffusionConvolution(input_dim + hidden_dim, hidden_dim, order, supports)
-
-    def forward(self, x: torch.Tensor, hidden: torch.Tensor) -> torch.Tensor:
-        reset, update = torch.sigmoid(self.gates(torch.cat((x, hidden), dim=-1))).chunk(2, dim=-1)
-        candidate = torch.tanh(self.candidate(torch.cat((x, reset * hidden), dim=-1)))
-        return update * hidden + (1.0 - update) * candidate
 
 
 class RecurrentStack(nn.Module):

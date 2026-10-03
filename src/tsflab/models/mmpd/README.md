@@ -1,114 +1,34 @@
 ---
 name: "MMPD"
-summary: "MMPD (Multi-Mode Patch Diffusion) is a training-loss framework for patch-based time series forecasting models that replaces the standard MSE loss with a diffusion-based multi-mode objective, enabling models to generate diverse probabilistic forecasts corresponding to multiple plausible future outcomes. It is applicable to any patch-based backbone that outputs latent tokens for the future."
-paper: "https://proceedings.iclr.cc/paper_files/paper/2026/hash/be7b70477c8fca697f14b1dbb1c086d1-Abstract-Conference.html"
-paper_title: "MMPD: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss"
-venue: "ICLR 2026"
-year: 2026
-code: "https://github.com/Thinklab-SJTU/MMPD"
-revision: "8e42bfe0c4156eea920c4dd86eee4f1b8658143e"
-license: "NOASSERTION"
-tagline: "Multi-mode patch diffusion: denoiser conditioned on future-patch tokens; point forecast from an anchor step."
-tags: ["diffusion", "probabilistic", "patching", "channel-independent", "attention-variant", "loss-framework"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:future-query-cross-attention-backbone", "channel=local:channel-independent-flattened", "head=local:patch-consistent-denoiser-anchor", "loss=local:patch-diffusion-loss-method"]
+description: "Multi-mode patch diffusion: a denoiser conditioned on future-patch tokens, trained with a diffusion-plus-anchor loss; returns an anchor point forecast and can sample trajectories. Use for forecasting with diverse or multi-modal futures; not for cross-channel interaction or exogenous inputs."
 ---
+
 # MMPD
 
-## Key ideas
+## Idea
 
 - `FuturePatchBackbone` turns history patches into one token per future patch by cross-attending learned future queries to the patch embeddings.
-- `PatchConsistentDenoiser` predicts noise for noisy future patches, conditioned on the token, the diffusion step, and the left and right neighbouring patches, using AdaLN MLP blocks (`AdaLNMLPBlock`).
-- `diffusion_loss` mixes the noise-prediction loss with a deterministic anchor term (weight `diffusion_weight`); `sample` draws multi-mode trajectories.
-- `forward` returns the efficient anchor-step point forecast; `diffusion_loss` is declared as the model's `ModelSpec.training_objective`, so training uses it instead of the configured criterion; validation and test still score the anchor forecast with the standard loss.
-- Channels are flattened into the batch and series are standardized with detached mean and standard deviation.
+- `PatchConsistentDenoiser` predicts noise for noisy future patches, conditioned on the token, the diffusion step, and the left and right neighbouring patches, through AdaLN MLP blocks (`AdaLNMLPBlock`).
+- `diffusion_loss` mixes the noise-prediction loss with a deterministic anchor term (weight `diffusion_weight`); it is the model's `training_objective`, replacing the configured criterion during training only. Validation and test score the anchor forecast with the standard loss.
+- `forward` returns the efficient anchor-step point forecast; `sample` draws multi-mode trajectories.
+- Channels are flattened into the batch; series are standardized with detached mean and standard deviation.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Futures with several plausible outcomes, where an MSE-trained single-mode forecast blurs them: the diffusion loss models the future distribution and `sample` exposes diverse trajectories.
+- Tasks that need samples as well as a point forecast from one model.
+- Multivariate data with weakly related channels (channels are handled independently).
+- Not when cross-channel interaction carries the signal, when exogenous covariates or calendar marks matter (marks are ignored), or when mode probabilities are required (the GMM mode fitting is not implemented).
 
-## Paper and code
+## Configure
 
-- [paper](https://proceedings.iclr.cc/paper_files/paper/2026/hash/be7b70477c8fca697f14b1dbb1c086d1-Abstract-Conference.html); title: MMPD: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss; venue/year: ICLR 2026 / 2026
-- [codebase](https://github.com/Thinklab-SJTU/MMPD); revision: `8e42bfe0c4156eea920c4dd86eee4f1b8658143e`; license: `NOASSERTION`
+- `enc_in`: number of input channels; must equal the dataset's channel count.
+- `patch_len`: follows `pred_len`; it is clipped to `pred_len`, the horizon is split into `ceil(pred_len / patch_len)` future patches (the last replicate-padded), and the history is left-padded to a multiple of `patch_len`. Prefer a divisor of `pred_len` and `seq_len`.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/MMPD.toml`](../../../../configs/models/MMPD.toml).
+Other hyperparameters: preset defaults in `configs/models/MMPD.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `models/loss_funcs/mmpd/mmpd_loss.py`, `models/loss_funcs/mmpd/gaussian_diffusion.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-This local implementation follows diffusion Eq. (3), the token/step/left/
-right Patch Consistent MLP in Eq. (7), AdaLN-MLP Eqs. (12)--(13), and the
-deterministic anchor term in Eq. (8). `diffusion_loss` is the joint training
-objective, wired as the runner's training objective (it replaces the configured
-criterion during training only), and `sample` exposes conditional reverse trajectories; ordinary
-`forward` returns the efficient anchor point forecast required by TSFLab.
-The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
-probabilities are not part of the common point-forecast output and are not
-claimed here. The local patch backbone is compact and not a reproduction of
-every backbone in the paper. The reference-only source was inspected at the pinned revision or
-copied. Evidence is in `../../../../verification/evidence/MMPD.json`.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `dropout=0.1`, `patch_len=8`, `num_heads=4`, `adjacent_range=1`, `diffusion_steps=100`, `denoiser_depth=2`, `diffusion_weight=0.99`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: MMPD: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss
-- **Venue**: ICLR 2026
-- **Published**: 2026
-- **Proceedings**: https://proceedings.iclr.cc/paper_files/paper/2026/hash/be7b70477c8fca697f14b1dbb1c086d1-Abstract-Conference.html
-
-## Abstract
-Despite the flourishing in time series (TS) forecasting backbones, the training mostly relies on regression losses like Mean Square Error (MSE). However, MSE assumes a one-mode Gaussian distribution, which struggles to capture complex patterns, especially for real-world scenarios where multiple diverse outcomes are possible. We propose the Multi-Mode Patch Diffusion (MMPD) loss, which can be applied to any patch-based backbone that outputs latent tokens for the future. Models trained with MMPD loss generate diverse predictions (modes) with the corresponding probabilities. Technically, MMPD loss models the future distribution with a diffusion model conditioned on latent tokens from the backbone. A lightweight Patch Consistent MLP is introduced as the denoising network to ensure consistency across denoised patches. Multi-mode predictions are generated by a multi-mode inference algorithm that fits an evolving variational Gaussian Mixture Model (GMM) during diffusion. Experiments on eight datasets show its superiority in diverse forecasting. Its deterministic and probabilistic capabilities also match the strong competitor losses, MSE and Student-T, respectively.
-
-## Source and verification
-
-Pinned source inspection: `models/loss_funcs/mmpd/mmpd_loss.py`, `models/loss_funcs/mmpd/gaussian_diffusion.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-This local implementation follows diffusion Eq. (3), the token/step/left/
-right Patch Consistent MLP in Eq. (7), AdaLN-MLP Eqs. (12)--(13), and the
-deterministic anchor term in Eq. (8). `diffusion_loss` is the joint training
-objective, wired as the runner's training objective (it replaces the configured
-criterion during training only), and `sample` exposes conditional reverse trajectories; ordinary
-`forward` returns the efficient anchor point forecast required by TSFLab.
-The evolving variational-GMM mode fitting from Algorithm 1 and per-mode
-probabilities are not part of the common point-forecast output and are not
-claimed here. The local patch backbone is compact and not a reproduction of
-every backbone in the paper. The reference-only source was inspected at the pinned revision or
-copied. Evidence is in `../../../../verification/evidence/MMPD.json`.
-
-## In TSFLab
-Default config: `configs/models/MMPD.toml`; model specification: `spec.py`; local implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@inproceedings{zhang2026mmpd,
-  author    = {Yunhao Zhang and Wenyao Hu and Jiale Zheng and Lujia Pan and Junchi Yan},
-  title     = {{MMPD}: Diverse Time Series Forecasting via Multi-Mode Patch Diffusion Loss},
-  booktitle = {The Fourteenth International Conference on Learning Representations},
-  year      = {2026},
-  url       = {https://openreview.net/forum?id=NEUgHT8dvH},
-  code      = {https://github.com/Thinklab-SJTU/MMPD}
-}
-```
+- Local implementation of diffusion Eq. (3), the Patch Consistent MLP Eq. (7), the anchor term Eq. (8), and AdaLN-MLP Eqs. (12)-(13); official `mmpd_loss.py` and `gaussian_diffusion.py` inspected at the pinned revision as reference only (no license file upstream).
+- The evolving variational-GMM mode fitting (Algorithm 1) and per-mode probabilities are not implemented.
+- The patch backbone is a compact local one, not a reproduction of every backbone in the paper.

@@ -68,20 +68,6 @@ def audit_agent_assets() -> list[str]:
         errors.append(".agents/STANDARDS.md exceeds the 100-line on-demand budget")
     if not is_packaged_root(ROOT) and _link_target(claude_skills) != "../.agents/skills":
         errors.append(".claude/skills must link to ../.agents/skills")
-    for duplicate_root in (ROOT / ".pi" / "skills", ROOT / ".dsh" / "skills"):
-        if duplicate_root.exists() or duplicate_root.is_symlink():
-            errors.append(
-                f"{duplicate_root.relative_to(ROOT)} duplicates native .agents/skills discovery"
-            )
-    obsolete_agent_docs = (
-        ROOT / ".agents" / "HARNESS_COMPATIBILITY.md",
-        ROOT / ".agents" / "standards",
-    )
-    for obsolete_doc in obsolete_agent_docs:
-        if obsolete_doc.exists() or obsolete_doc.is_symlink():
-            errors.append(
-                f"{obsolete_doc.relative_to(ROOT)} duplicates .agents/STANDARDS.md"
-            )
     root_agent_docs = {path.name for path in (ROOT / ".agents").glob("*.md")}
     if root_agent_docs != ROOT_DOCS:
         errors.append(".agents may contain only STANDARDS.md and the generated README.md at its root")

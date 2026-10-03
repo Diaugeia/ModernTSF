@@ -78,7 +78,7 @@ locally to provide the same guarantee.
 Install only the integrations you use:
 
 ```bash
-UV_TORCH_BACKEND=auto uv sync --extra tensorboard --extra wandb --python 3.12
+uv sync --frozen --python 3.12 --extra tensorboard --extra wandb   # or: uv pip install -e ".[tensorboard,wandb]"
 ```
 
 Save an execution policy, for example `execution.toml`:
@@ -139,6 +139,12 @@ min_free_disk_gb = 10
 uv run tsf run <experiment.toml> --policy execution.toml
 ```
 
+Ready-made machine presets live in `configs/execution/` (`laptop-cpu.toml`,
+`single-gpu.toml`, `multi-gpu.toml`); `tsf env doctor` recommends one and prints the
+`--gpus`/`--jobs` flags for this host. `[resources] threads_per_run` caps
+OpenMP/MKL/OpenBLAS threads in each run process, which avoids CPU oversubscription
+when many runs share a large host.
+
 The budget applies to resolved runs, not just input files. Wall time includes
 queue waits. GPU-hours count allocated devices multiplied by execution time, not
 utilization. Live usage is persisted. Retries are disabled by default; when enabled,
@@ -197,7 +203,7 @@ uv run tsf agent interface schema --json
 `interface` groups basic experiment, execution, research, and asset workflows.
 The schema command exports the strict optional execution-policy contract.
 `run`, `env`, and `agent interface` support JSON for automation; existing
-catalog/task/verification commands keep their established public interfaces.
+catalog, task, and admission commands keep their established public interfaces.
 Use per-command `--help` instead of importing internal command modules.
 
 ## Scope of this version
@@ -334,7 +340,7 @@ not private reasoning or the number of prepared artifacts.
 
 ### Capability filtering
 
-`tsf catalog search --kind model --capability pretraining-stage --json` filters canonical model
+`tsf catalog search --kind model --capability pretraining-stage --json` filters model
 metadata. Repeat `--capability` to require every capability and optionally add
 text terms. This does not introduce another model registry or architecture tree.
 

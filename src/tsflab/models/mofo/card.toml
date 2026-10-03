@@ -1,0 +1,39 @@
+schema = "tsflab.card/1"
+kind = "model"
+name = "MoFo"
+tags = ["transformer", "periodicity", "attention-variant", "channel-independent", "normalization"]
+fits = ["strong-seasonality", "long-horizon", "efficiency"]
+fidelity = "reference-checked"
+issues_checked = "the card records a paper-driven implementation of period-structured sampling, phase-restricted query attention and the regulated relaxation bias (checked at its boundary values); the official repository is reference-only and no paper or official-code problem is documented."
+
+[paper]
+title = "MoFo: Empowering Long-term Time Series Forecasting with Periodic Pattern Modeling"
+url = "https://proceedings.neurips.cc/paper_files/paper/2025/hash/7a99ad21706dec5b28f9ad715e12197f-Abstract-Conference.html"
+venue = "NeurIPS 2025"
+year = 2025
+
+[code]
+url = "https://github.com/PoorOtterBob/MoFo"
+revision = "2d14b47ea839c3809952b412340d72393f2521dc"
+license = "MIT"
+reference_sources = []
+
+[composition]
+normalization = "component:revin"
+decomposition = "none"
+temporal = "local:period-modulated-attention"
+channel = "local:channel-independent-shared-weights"
+head = "local:per-step-future-query-projection"
+loss = "loss:mse"
+
+[data_params]
+enc_in = { from = "channels", rule = "equal to the dataset's channel count" }
+periodic = { from = "period", rule = "the dominant seasonal period in steps (24 for hourly daily cycles); keep seq_len a multiple of it so phases align" }
+
+[admission]
+status = "passed"
+date = "2026-10-03"
+commit = "ec1ae839"
+device = "cpu"
+reference = "official"
+note = "tsf model verify --all on UH_Public; pre-squash commit of the 1.0 consolidation"

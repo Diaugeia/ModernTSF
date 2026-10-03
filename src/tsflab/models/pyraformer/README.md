@@ -1,153 +1,36 @@
 ---
 name: "Pyraformer"
-summary: "Pyraformer is a Transformer-based time series forecasting model that builds a multi-resolution pyramidal attention module (PAM) over the input sequence. Inter-scale tree connections summarize temporal features at progressively coarser resolutions, while intra-scale connections between neighboring tokens model dependencies at each resolution. This design achieves O(1) maximum signal-path length with respect to sequence length and linear time and space complexity, making it efficient for long-range forecasting on both single-step and multi-step horizons."
-paper: "https://openreview.net/forum?id=0EXmFzUn5I"
-paper_title: "Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting"
-venue: "ICLR 2022"
-year: 2022
-code: "https://github.com/thuml/Time-Series-Library"
-revision: "3a4819420d14095354aae96750ce8c499ef5f05e"
-license: "MIT"
-tagline: "Pyramidal attention graph: strided-conv coarse scales plus intra-scale and parent-child links give O(1) signal paths."
-tags: ["transformer", "multi-scale", "attention-variant", "sparse-attention", "channel-mixing", "covariates"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:pyramidal-attention-encoder", "channel=local:channel-mixing-value-embedding", "head=local:ancestor-chain-linear-head", "loss=loss:mse"]
+description: "Pyramidal attention Transformer: strided convolutions build a multi-resolution tree of the lookback and each node attends only to its scale neighbours, children and parent. Use for long input windows under memory limits, with calendar marks; not when inputs need instance normalization against level shifts."
 ---
+
 # Pyraformer
 
-## Key ideas
+## Idea
 
 - `CoarseScaleConstructor` builds coarser scales with strided `Conv1d`s (`window_size`, default 4 x 4) and concatenates all scales into one node sequence.
-- `pyramid_neighbour_table` defines each node's attention set: `inner_size` neighbours at its scale plus its children and parent; `PyramidalAttention` attends only over that sparse set.
-- Inputs are a linear value embedding over all channels plus raw calendar marks and sinusoidal positions (no instance normalization).
+- `pyramid_neighbour_table` defines each node's attention set (PAM): `inner_size` neighbours at its scale plus its children and parent; `PyramidalAttention` attends only over that sparse set, so the signal path length is constant and cost linear in `L`.
+- Inputs are a linear value embedding over all channels, normalized raw calendar marks through a learned projection, and sinusoidal positions; no instance normalization.
 - The head concatenates the last finest node's ancestor chain across scales (`finest_ancestor_table`) and linearly emits `pred_len * enc_in` values.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long lookbacks where full attention is too costly: the pyramid captures short- and long-range dependencies at linear time and memory.
+- Data whose timestamps carry signal: raw calendar marks are embedded.
+- Channels are mixed in the value embedding. There is no instance normalization, so level shifts between train and test hurt; prefer a RevIN model there.
 
-## Paper and code
+## Configure
 
-- [paper](https://openreview.net/forum?id=0EXmFzUn5I); title: Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting; venue/year: ICLR 2022 / 2022
-- [codebase](https://github.com/thuml/Time-Series-Library); revision: `3a4819420d14095354aae96750ce8c499ef5f05e`; license: `MIT`
+- `enc_in` follows the channel count: must equal the number of input channels.
+- `window_size` follows `seq_len`: `seq_len` must be divisible by every successive branching factor (each at least 2), e.g. 96 with `[4, 4]`.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Pyraformer.toml`](../../../../configs/models/Pyraformer.toml).
+Other hyperparameters: preset defaults in `configs/models/Pyraformer.toml`; tune generically (`inner_size` must be odd).
 
 ## Differences
 
-Implementation: **clean-room rewrite** from the ICLR 2022 paper, especially
-Equations (2) and (3) and the architecture in Figure 2. The local code was
-written independently; source from the linked Time-Series-Library revision was
-not copied and is retained only as a historical `reference-only` link.
-Clean-room implementation: confirmed.
+Clean-room rewrite from Eqs. (2)-(3) and Fig. 2 of the paper; the linked Time-Series-Library revision is kept only as a reference link and nothing was copied.
 
-The rewrite constructs learned coarser temporal scales, explicitly builds the
-paper's scale-local/child/parent PAM neighbourhoods, applies sparse multi-head
-attention only across those edges, gathers the last observation's ancestor
-chain, and projects it to the full forecast horizon. Raw TSFLab marks are
-accepted as six columns `[year, month, day, weekday, hour, minute]` and are
-normalized locally before a learned calendar projection.
+- Direct multi-horizon prediction (strategy 1), learned strided convolutions for CSCM, pre-normalized residual blocks, and dense gathers over a padded sparse-neighbour table: the pyramidal graph is preserved, the paper's optimized-kernel wall-clock complexity and published results are not claimed.
+- Raw six-column marks `[year, month, day, weekday, hour, minute]` are normalized locally before a learned calendar projection.
+- The earlier official reference candidate passed `dropout` positionally into an embedding argument and expected preprocessed time features; it was replaced, not declared equivalent.
 
-This is not a reproduction of the official training system. It uses direct
-multi-horizon prediction strategy 1, learned strided convolutions for CSCM,
-pre-normalized residual blocks, and dense PyTorch gather operations over a
-padded sparse-neighbour table. It therefore preserves the defining pyramidal
-graph but does not claim the paper's optimized kernel wall-clock complexity or
-published numerical results.
-
-The previous official reference candidate was blocked because the pinned implementation
-passed `dropout` positionally into an embedding argument and expected
-preprocessed time features rather than this repository's raw six-column marks.
-That reference comparison blocker is resolved by replacement, not by pretending the two paths
-are equivalent.
-
-Configuration requires `d_model` to be divisible by `n_heads`, `inner_size` to
-be odd, and `seq_len` to remain exactly divisible by every successive
-`window_size` branching factor so the C-ary pyramid is unambiguous.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=128`, `n_heads=8`, `e_layers=2`, `d_ff=256`, `dropout=0.1`, `window_size=[4, 4]`, `inner_size=5`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting
-- **Venue**: ICLR 2022 (Oral)
-- **Published**: 2022
-- **arXiv**: N/A
-
-## Abstract
-Accurate prediction of the future given the past based on time series data is of paramount importance, since it opens the door for decision making and risk management ahead of time. In practice, the challenge is to build a flexible but parsimonious model that can capture a wide range of temporal dependencies. In this paper, we propose Pyraformer by exploring the multiresolution representation of the time series. Specifically, we introduce the pyramidal attention module (PAM) in which the inter-scale tree structure summarizes features at different resolutions and the intra-scale neighboring connections model the temporal dependencies of different ranges. Under mild conditions, the maximum length of the signal traversing path in Pyraformer is a constant (i.e., O(1)) with regard to the sequence length L, while its time and space complexity scale linearly with L. Extensive numerical results show that Pyraformer typically achieves the highest prediction accuracy in both single-step and long-range forecasting tasks with the least amount of time and memory consumption, especially when the sequence is long.
-
-## In TSFLab
-Default config: `configs/models/Pyraformer.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-Implementation: **clean-room rewrite** from the ICLR 2022 paper, especially
-Equations (2) and (3) and the architecture in Figure 2. The local code was
-written independently; source from the linked Time-Series-Library revision was
-not copied and is retained only as a historical `reference-only` link.
-Clean-room implementation: confirmed.
-
-The rewrite constructs learned coarser temporal scales, explicitly builds the
-paper's scale-local/child/parent PAM neighbourhoods, applies sparse multi-head
-attention only across those edges, gathers the last observation's ancestor
-chain, and projects it to the full forecast horizon. Raw TSFLab marks are
-accepted as six columns `[year, month, day, weekday, hour, minute]` and are
-normalized locally before a learned calendar projection.
-
-This is not a reproduction of the official training system. It uses direct
-multi-horizon prediction strategy 1, learned strided convolutions for CSCM,
-pre-normalized residual blocks, and dense PyTorch gather operations over a
-padded sparse-neighbour table. It therefore preserves the defining pyramidal
-graph but does not claim the paper's optimized kernel wall-clock complexity or
-published numerical results.
-
-The previous official reference candidate was blocked because the pinned implementation
-passed `dropout` positionally into an embedding argument and expected
-preprocessed time features rather than this repository's raw six-column marks.
-That reference comparison blocker is resolved by replacement, not by pretending the two paths
-are equivalent.
-
-Configuration requires `d_model` to be divisible by `n_heads`, `inner_size` to
-be odd, and `seq_len` to remain exactly divisible by every successive
-`window_size` branching factor so the C-ary pyramid is unambiguous.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/iclr/LiuYLLLLD22,
-  author       = {Shizhan Liu and
-                  Hang Yu and
-                  Cong Liao and
-                  Jianguo Li and
-                  Weiyao Lin and
-                  Alex X. Liu and
-                  Schahram Dustdar},
-  title        = {Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time
-                  Series Modeling and Forecasting},
-  booktitle    = {The Tenth International Conference on Learning Representations, {ICLR}
-                  2022, Virtual Event, April 25-29, 2022},
-  publisher    = {OpenReview.net},
-  year         = {2022},
-  url          = {https://openreview.net/forum?id=0EXmFzUn5I},
-  code         = {https://github.com/ant-research/Pyraformer},
-  timestamp    = {Fri, 02 Aug 2024 21:59:25 +0200},
-  biburl       = {https://dblp.org/rec/conf/iclr/LiuYLLLLD22.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Cite: Liu, Yu, Liao, Li, Lin, Liu, Dustdar, "Pyraformer: Low-Complexity Pyramidal Attention for Long-Range Time Series Modeling and Forecasting", ICLR 2022 (Oral); official code https://github.com/ant-research/Pyraformer.

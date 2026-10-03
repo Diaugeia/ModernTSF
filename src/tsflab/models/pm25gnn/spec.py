@@ -33,6 +33,6 @@ SPEC = ModelSpec(
     model_card='src/tsflab/models/pm25gnn/README.md',
     smoke_config=None,
     capabilities=frozenset(['covariate']),
-    components=('marks',),
+    components=('graph_conv_gru', 'marks'),
     contract_task={'seq_len': 24, 'pred_len': 24, 'label_len': 0},
 )

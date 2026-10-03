@@ -1,69 +1,31 @@
 ---
 name: "GaussianMLP"
-summary: "GaussianMLP is a simple **parametric probabilistic** baseline: an MLP maps the flattened input window to per-step Gaussian parameters `(loc, scale)` for every horizon step and channel, returning `(B, pred_len, C, 2)` with a strictly positive scale (`softplus + eps`). It is trained by maximum likelihood (`nll_gaussian`) and scored with the closed-form Gaussian CRPS plus coverage / width. It serves as the minimal reference for the `distribution` output type — the parametric counterpart to the quantile models."
-paper: ""
-paper_title: "Gaussian-head MLP (TSFLab parametric probabilistic baseline)"
-venue: "TSFLab"
-year: 2026
-tagline: "Flatten-MLP predicting per-step Gaussian location and positive scale, trained by negative log-likelihood."
-tags: ["mlp", "probabilistic", "distribution-output", "baseline", "channel-mixing"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:flatten-mlp-backbone", "channel=local:flattened-channel-mixing", "head=component:gaussian_parameter_head", "loss=loss:nll_gaussian"]
+description: "In-repository flatten-MLP baseline predicting per-step Gaussian location and positive scale, trained by negative log-likelihood. Use as a simple probabilistic baseline when the task needs a predictive distribution; not for point-forecast leaderboards or many-channel, long windows."
 ---
+
 # GaussianMLP
 
-## Key ideas
+## Idea
 
-- Flattens the `seq_len * enc_in` window and passes it through a ReLU/dropout MLP (`backbone`).
-- `gaussian_parameter_head` emits `loc` and `softplus + eps` scale per horizon step and channel, stacked as `(B, pred_len, C, 2)`.
-- Declares `output_type = "distribution"`; trained with `nll_gaussian`. Cross-channel and cross-horizon covariance are not modeled.
+- Flattens the `seq_len * enc_in` window and passes it through a ReLU/dropout MLP (`backbone`): `h_0 = vec(X)`, `h_l = Dropout(ReLU(W_l h_{l-1} + b_l))`.
+- `gaussian_parameter_head` emits `loc = W_mu h` and `scale = softplus(W_sigma h) + eps` per horizon step and channel, stacked as `(B, pred_len, C, 2)`.
+- Declares `output_type = "distribution"`, `distribution_family = "gaussian"`; trained with `nll_gaussian` (pair with `[training] loss = "nll_gaussian"`).
+- A standard parametric baseline (Gaussian likelihood head as popularized by DeepAR-style models); no single canonical paper. See `deepar` for an RNN-based distribution forecaster.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels, parameters]` distribution parameters.
+- When the task needs a predictive distribution (Gaussian NLL, CRPS) and a cheap reference point for richer probabilistic models.
+- Mixes channels only through the flattened input; the first layer has `seq_len * enc_in` inputs, so it grows with window length and channel count.
+- Not for heavy-tailed or multimodal targets (single Gaussian per step) or when cross-channel / cross-horizon covariance matters (not modeled).
+- No instance normalization: relies on the dataset's scaling.
 
-## Paper and code
+## Configure
 
-- paper: not available; title: Gaussian-head MLP (TSFLab parametric probabilistic baseline); venue/year: TSFLab / 2026
-- codebase: not available
+- `enc_in`: the dataset's channel count (input width `seq_len * enc_in`; with `features = "MS"` one output channel).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/GaussianMLP.toml`](../../../../configs/models/GaussianMLP.toml).
+Other hyperparameters: preset defaults in `configs/models/GaussianMLP.toml`; tune generically.
 
 ## Differences
 
-- Local implementation. This is an intentional in-repository baseline, not an external paper reproduction. Its defining map is `h_0 = vec(X)`, `h_l = Dropout(ReLU(W_l h_{l-1}+b_l))`, `loc = W_mu h`, and `scale = softplus(W_sigma h)+eps`.
-- It predicts independent Gaussian location/scale pairs; cross-channel and cross-horizon covariance are not modeled.
-
-## Shared components
-
-- [`gaussian_parameter_head`](../_components/gaussian_parameter_head/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `hidden_size=256`, `num_layers=2`, `dropout=0.1`
-<!-- model-card:canonical:end -->
-
-## Method
-A standard parametric forecasting baseline (Gaussian likelihood head, as
-popularized by DeepAR-style models). No single canonical paper; this is a
-TSFLab reference implementation of the `distribution` output axis.
-
-## In TSFLab
-`output_type = "distribution"`, `distribution_family = "gaussian"`; pair with
-`[training] loss = "nll_gaussian"`. Default config:
-`configs/models/GaussianMLP.toml`; specification: `spec.py`; implementation:
-`model.py`. See the `deepar` model for an RNN-based distribution forecaster.
-
-## Source and verification
-
-- Local implementation. This is an intentional in-repository baseline, not an external paper reproduction. Its defining map is `h_0 = vec(X)`, `h_l = Dropout(ReLU(W_l h_{l-1}+b_l))`, `loc = W_mu h`, and `scale = softplus(W_sigma h)+eps`.
-- It predicts independent Gaussian location/scale pairs; cross-channel and cross-horizon covariance are not modeled.
+- Intentional in-repository baseline, not an external paper reproduction.
+- Predicts independent Gaussian location/scale pairs; cross-channel and cross-horizon covariance are not modeled.

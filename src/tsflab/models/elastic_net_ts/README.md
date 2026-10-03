@@ -1,83 +1,33 @@
 ---
 name: "ElasticNetTS"
-summary: "ElasticNetTS is a direct channel-wise lag-regression forecast with the standard convex combination of L1 and L2 weight penalties exposed through `aux_loss`."
-paper: "https://doi.org/10.1111/j.1467-9868.2005.00503.x"
-paper_title: "Regularization and Variable Selection via the Elastic Net"
-venue: "Journal of the Royal Statistical Society Series B 2005"
-year: 2005
-tagline: "Shared linear lag regression trained with an L1/L2 elastic-net weight penalty added through aux_loss."
-tags: ["statistical", "linear", "baseline", "channel-independent", "lightweight"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:elastic-net-weight-penalty"]
+description: "Shared linear lag regression from lookback to all horizons, gradient-trained with an L1/L2 elastic-net weight penalty. Use as a cheap regularized linear baseline, especially on short training windows; not for nonlinear dynamics or cross-channel effects."
 ---
+
 # ElasticNetTS
 
-## Key ideas
+## Idea
 
 - A single `nn.Linear(seq_len, pred_len)` maps each channel's lags to all horizons, with coefficients shared across channels.
-- The forward pass sets `aux_loss = penalty * (l1_ratio * ||w||_1 + 0.5 (1 - l1_ratio) ||w||_2^2)`, the elastic-net penalty.
+- The forward pass sets `aux_loss = penalty * (l1_ratio * ||w||_1 + 0.5 (1 - l1_ratio) ||w||_2^2)`, the elastic-net penalty (Lasso sparsity plus Ridge stability, with grouping of correlated lags).
 - It is gradient-trained: no least-squares solution path or variable-selection procedure.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A sanity baseline: if a deep model cannot beat it, the extra capacity is not paying off.
+- The penalty keeps the many correlated lag coefficients stable and sparse, which helps when training windows are few.
+- Linear and channel-independent: misses nonlinear dynamics and cross-channel structure; no instance normalization, so level shifts between splits hurt it.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1111/j.1467-9868.2005.00503.x); title: Regularization and Variable Selection via the Elastic Net; venue/year: Journal of the Royal Statistical Society Series B 2005 / 2005
-- codebase: not available
+- `enc_in`: number of channels (shape check only; weights are shared).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/ElasticNetTS.toml`](../../../../configs/models/ElasticNetTS.toml).
+Other hyperparameters: preset defaults in `configs/models/ElasticNetTS.toml`; tune generically.
 
 ## Differences
 
-This is a clean-room, gradient-optimized direct multi-horizon adaptation. It shares coefficients across channels and does not reproduce the paper's least-squares solution path or variable-selection experiments. No third-party implementation was inspected or copied.
+Clean-room, gradient-optimized direct multi-horizon adaptation of Zou and Hastie (2005); no third-party implementation inspected or copied.
 
-## Shared components
+- Coefficients are shared across channels.
+- The paper's least-squares solution path (LARS-EN) and variable-selection experiments are not reproduced.
 
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `penalty=0.0001`, `l1_ratio=0.5`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Regularization and Variable Selection via the Elastic Net
-- **Venue**: Journal of the Royal Statistical Society, Series B
-- **Published**: 2005
-- **Link**: https://doi.org/10.1111/j.1467-9868.2005.00503.x
-
-## Abstract
-Elastic Net is a regularized regression method that linearly combines the L1 and L2 penalty terms of the Lasso and Ridge methods. It was introduced by Zou and Hastie (2005) to address the limitations of Lasso — in particular its instability when features are correlated and its inability to select more variables than observations. The Elastic Net penalty encourages a grouping effect in which strongly correlated predictors tend to be selected or dropped together. This combination achieves the sparsity of Lasso and the stability of Ridge, making it well suited to high-dimensional regression and variable selection problems where predictors exhibit correlation structure.
-
-## In TSFLab
-Default config: `configs/models/ElasticNetTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-This is a clean-room, gradient-optimized direct multi-horizon adaptation. It shares coefficients across channels and does not reproduce the paper's least-squares solution path or variable-selection experiments. No third-party implementation was inspected or copied.
-
-## Citation
-
-```bibtex
-@article{zou2005elasticnet,
-  author  = {Hui Zou and Trevor Hastie},
-  title   = {Regularization and Variable Selection via the Elastic Net},
-  journal = {Journal of the Royal Statistical Society: Series {B} (Statistical Methodology)},
-  volume  = {67},
-  number  = {2},
-  pages   = {301--320},
-  year    = {2005},
-  doi     = {10.1111/j.1467-9868.2005.00503.x}
-}
-```
+Citation: Zou, H., Hastie, T. "Regularization and Variable Selection via the Elastic Net." JRSS Series B 67(2), 301-320 (2005). doi:10.1111/j.1467-9868.2005.00503.x.

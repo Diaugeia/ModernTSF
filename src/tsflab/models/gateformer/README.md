@@ -1,90 +1,32 @@
 ---
 name: "Gateformer"
-summary: "Gateformer encodes each variate through two complementary pathways: a whole-window global embedding and a patched cross-time-attention embedding. It fuses them with a learned gate, applies cross-variate attention on the fused variate embeddings, and fuses again with a second gate before projecting to the forecast horizon."
-paper: "https://arxiv.org/abs/2505.00307"
-paper_title: "Gateformer: Advancing Multivariate Time Series Forecasting through Temporal and Variate-Wise Attention with Gated Representations"
-venue: "arXiv preprint"
-year: 2025
-
-tagline: "Gate-fused global-window and patch-attention variate embeddings, then cross-variate attention and a second gate."
-tags: ["transformer", "patching", "channel-mixing", "attention-variant", "gating"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=local:patch-transformer-encoder+component:positional_encoding+component:flatten_forecast_head", "channel=local:cross-variate-attention+component:gated_fusion", "head=local:linear-variate-token-projection", "loss=loss:mse"]
+description: "Transformer that gate-fuses a global-window and a patch-attention embedding per variate, then applies cross-variate attention with a second gate. Use for multivariate forecasting where both within-series temporal structure and cross-channel dependence matter; not for univariate series."
 ---
+
 # Gateformer
 
-## Key ideas
+## Idea
 
+- Combines cross-time and cross-variate attention through learned gates instead of concatenation or a fixed order (paper Sec. 3, Fig. 2).
 - Each variate gets a global embedding (the whole window projected to `d_model`, as in the inverted embedding) and a temporal embedding (patches encoded by a shared Transformer across patches, flattened by `flatten_forecast_head`).
 - `gate_global_temporal` (`gated_fusion`) blends the two embeddings per variate.
 - A variate-wise Transformer encoder attends across variates, and `gate_variate` blends its output with its input.
-- A linear layer projects each variate token to `pred_len`; normalization is local mean/std standardization restored on the output.
+- A linear layer projects each variate token to `pred_len`; local mean/std standardization is restored on the output.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 12, channels]` point forecast.
+- Designed for multivariate forecasting where both temporal patterns inside each series and dependencies between variates matter; the gates let training weigh the two.
+- Mixes channels by attention over variate tokens; cost is quadratic in the channel count.
+- Not for univariate series (cross-variate attention has nothing to mix). Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2505.00307); title: Gateformer: Advancing Multivariate Time Series Forecasting through Temporal and Variate-Wise Attention with Gated Representations; venue/year: arXiv preprint / 2025
-- codebase: not available
+- `enc_in`: the dataset's channel count (number of variate tokens).
+- `patch_len`, `stride`: `patch_len` must not exceed `seq_len`; the window is end-padded by `stride` steps, giving `(seq_len + stride - patch_len) // stride + 1` patches.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Gateformer.toml`](../../../../configs/models/Gateformer.toml).
+Other hyperparameters: preset defaults in `configs/models/Gateformer.toml`; tune generically.
 
 ## Differences
 
-The official implementation (`models/Gateformer.py`, `layers/Embed.py`) was
-inspected at the pinned revision (`298fd10db4af8ddab67e9d0044481279a2b11241`)
-to resolve patch padding (`stride`-length end replication) and the two gate
-equations exactly. The repository carries no `LICENSE` file at that
-revision, so this card omits `code`/`revision`/`license` provenance fields;
-`verification/models.toml` records the inspected files with pinned blob
-URLs instead. The official fixed sinusoidal position table is used verbatim
-(raw sin/cos amplitude); the reused `positional_encoding` component
-standardizes that table (zero mean, unit-scaled variance) before use, a
-minor magnitude difference that keeps the same relative-position content.
-No source file was copied or adapted.
-
-## Shared components
-
-- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
-- [`gated_fusion`](../_components/gated_fusion/README.md)
-- [`positional_encoding`](../_components/positional_encoding/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=12`. Default
-model parameters are: `enc_in=7`, `patch_len=16`, `stride=8`, `d_model=128`, `n_heads=8`, `e_layers=2`, `d_ff=256`, `dropout=0.1`
-<!-- model-card:canonical:end -->
-
-## Paper
-
-Gateformer combines cross-time and cross-variate attention through gated
-representations rather than simple concatenation or a fixed architectural
-order (paper Section 3, Figure 2): a global (inverted) embedding and a
-patch-attention temporal-dependency embedding are blended by a learned gate
-before cross-variate attention, and the pre- and post-cross-variate-attention
-representations are blended by a second learned gate before the forecast
-head.
-
-## Source and verification
-
-The official implementation (`models/Gateformer.py`, `layers/Embed.py`) was
-inspected at the pinned revision (`298fd10db4af8ddab67e9d0044481279a2b11241`)
-to resolve patch padding (`stride`-length end replication) and the two gate
-equations exactly. The repository carries no `LICENSE` file at that
-revision, so this card omits `code`/`revision`/`license` provenance fields;
-`verification/models.toml` records the inspected files with pinned blob
-URLs instead. The official fixed sinusoidal position table is used verbatim
-(raw sin/cos amplitude); the reused `positional_encoding` component
-standardizes that table (zero mean, unit-scaled variance) before use, a
-minor magnitude difference that keeps the same relative-position content.
-No source file was copied or adapted.
+- The official implementation (`models/Gateformer.py`, `layers/Embed.py`, revision `298fd10`) was inspected to resolve patch padding (`stride`-length end replication) and the exact gate equations. It has no `LICENSE` file, so `code` provenance is omitted and nothing was copied or adapted.
+- The official code uses a raw sinusoidal position table; the reused `positional_encoding` component standardizes it (zero mean, unit-scaled variance), a minor magnitude difference with the same relative-position content.

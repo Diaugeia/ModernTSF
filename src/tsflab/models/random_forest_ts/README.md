@@ -1,85 +1,34 @@
 ---
 name: "RandomForestTS"
-summary: "RandomForestTS is an independent differentiable forest baseline that averages soft trees with fixed random feature subspaces."
-paper: "https://doi.org/10.1023/A:1010933404324"
-paper_title: "Random Forests"
-venue: "Machine Learning 2001"
-year: 2001
-tagline: "Average of differentiable soft decision trees, each splitting on a fixed random subspace of the flattened window."
-tags: ["tree", "ensemble", "differentiable", "normalization", "baseline"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree", "channel=local:flattened-joint-lag-input", "head=local:forest-average", "loss=loss:mse"]
+description: "Differentiable random-forest baseline: an average of soft decision trees, each seeing a fixed random subset of the flattened lag window and emitting the whole forecast. Use as a tree-ensemble reference on small, short-train problems; not for long lookbacks with many channels or as a scikit-learn forest."
 ---
+
 # RandomForestTS
 
-## Key ideas
+## Idea
 
 - `SoftDecisionTree` gives a differentiable tree of depth `tree_depth` whose leaves output the full `pred_len * enc_in` forecast.
 - Each of `num_estimators` trees has a fixed random `split_mask` (`feature_fraction`) over the flattened `seq_len * enc_in` input, seeded by `random_seed`.
-- The forecast is the mean over trees (random-forest style bagging), trained by gradient descent rather than greedy splitting.
+- The forecast is the mean over trees (random-forest averaging), trained by gradient descent rather than greedy splitting.
 - `revin` normalizes the input; all channels enter each tree jointly.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A tree-ensemble baseline with small capacity, useful on short training sets and as a contrast to linear and deep models.
+- All channels enter jointly, so cross-channel information is available to every tree.
+- Not for many channels with long lookbacks (the flattened input grows as `seq_len * enc_in`, and every leaf emits `pred_len * enc_in` values); not equivalent to a classical random forest.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1023/A:1010933404324); title: Random Forests; venue/year: Machine Learning 2001 / 2001
-- codebase: not available
+- `enc_in` follows the channel count: must equal the number of input channels.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/RandomForestTS.toml`](../../../../configs/models/RandomForestTS.toml).
+Other hyperparameters: preset defaults in `configs/models/RandomForestTS.toml`; tune generically.
 
 ## Differences
 
-This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/RandomForestTS.json`.
+Clean-room baseline; the cited paper supplies the ensemble principle only, and no external source code was inspected or copied.
 
-## Shared components
+- Averages independently parameterized soft trees with deterministic random feature masks.
+- No bootstrap of training rows, greedy hard splits, out-of-bag error, or scikit-learn reproduction.
 
-- [`revin`](../_components/revin/README.md)
-- [`soft_tree`](../_components/soft_tree/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `num_estimators=16`, `tree_depth=3`, `feature_fraction=0.7`, `temperature=1.0`, `random_seed=1729`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Random Forests
-- **Venue**: Machine Learning, 2001
-- **Published**: 2001
-- **arXiv**: N/A
-
-## Abstract
-Random forests are a combination of tree predictors such that each tree depends on the values of a random vector sampled independently and with the same distribution for all trees in the forest. The generalization error for forests converges a.s. to a limit as the number of trees in the forest becomes large. The generalization error of a forest of tree classifiers depends on the strength of the individual trees in the forest and the correlation between them. Using a random selection of features to split each node yields error rates that compare favorably to Adaboost, but are more robust with respect to noise. Internal estimates monitor error, strength, and correlation and these are used to show the response to increasing the number of features used in the splitting. Internal estimates are also used to measure variable importance. These ideas are also applicable to regression.
-
-## In TSFLab
-Default config: `configs/models/RandomForestTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
-
-## Verification
-
-This clean-room baseline averages independently parameterized soft trees with deterministic random feature masks. It does not bootstrap training rows, greedily fit hard splits, estimate out-of-bag error, or reproduce scikit-learn. The cited paper supplies the ensemble principle only; no external source code was inspected or copied. Evidence is in `../../../../verification/evidence/RandomForestTS.json`.
-
-## Citation
-
-```bibtex
-@article{breiman2001random,
-  author  = {Leo Breiman},
-  title   = {Random Forests},
-  journal = {Machine Learning},
-  volume  = {45},
-  number  = {1},
-  pages   = {5--32},
-  year    = {2001},
-  doi     = {10.1023/A:1010933404324}
-}
-```
+Cite: Leo Breiman, "Random Forests", Machine Learning 45(1):5-32, 2001, doi:10.1023/A:1010933404324.

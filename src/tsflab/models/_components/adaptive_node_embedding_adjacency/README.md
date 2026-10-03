@@ -1,19 +1,11 @@
 ---
 name: "adaptive_node_embedding_adjacency"
-kind: "component"
-module: "tsflab.models._components.adaptive_node_embedding_adjacency"
-summary: "Dense row-stochastic adaptive adjacency from learnable node embeddings: softmax(relu(source @ target), dim=-1), with an implicit self-similarity form."
-category: "graph"
-input: "source [nodes, dim] or [..., nodes, dim]; target (optional) [dim, nodes] or [..., dim, nodes]"
-output: "adjacency [nodes, nodes] (or [..., nodes, nodes]), each row sums to 1"
-origin: "Self-adaptive adjacency of Graph WaveNet (Wu et al., IJCAI 2019) with the single-embedding self-similarity form of AGCRN (Bai et al., NeurIPS 2020); the exact origin of each call site is the consumer model, not recorded per-formula in history"
-origin_models: ["gwnet", "dfdgcn", "d2stgnn", "agcrn", "himnet"]
-tags: ["adaptive", "adjacency", "embedding", "graph", "node", "softmax", "relu", "row-stochastic", "self-adaptive", "graph-wavenet", "agcrn"]
+description: "Dense row-stochastic adjacency learned from node embeddings, softmax(relu(E1 @ E2)), with a single-embedding self-similarity form. Use for spatiotemporal data with a small-to-moderate node count and no or an incomplete predefined graph; not for large N (O(N^2) memory) or sparse graphs."
 ---
 
 # adaptive_node_embedding_adjacency
 
-## Purpose
+## What it does
 
 Builds a learned dense graph over `N` nodes from node embeddings, with no
 predefined graph needed:
@@ -25,21 +17,14 @@ predefined graph needed:
 Each row of `A` is a distribution over the columns, so `A` can be used directly as a
 random-walk style support (`A @ x`) or as a basis element in a polynomial expansion.
 
-## Origin and granularity
+## When to use
 
-Five spatiotemporal models (`origin_models`) carried a verbatim copy of this three-operation block;
-commit `dd8d8196` ("refactor(components): gated_dilated_conv and
-adaptive_node_embedding_adjacency") extracted it from `gwnet`, `dfdgcn`, `himnet`,
-`d2stgnn` and `agcrn`. The dual-embedding form is the Graph WaveNet self-adaptive
-adjacency; the single-embedding form is the node-adaptive graph used by AGCRN.
-The commit message and the module docstring record the models but not a per-copy
-paper citation, so the paper attributions above are the conventional ones and the
-repository only verifies the model list. The cut stops at the adjacency: how the
-embeddings are parameterised and initialised (e.g. `himnet` passes a batched
-per-sample "meta" embedding), identity/Chebyshev bases stacked on the adjacency
-(`agcrn`, `himnet`), and how the adjacency is mixed with static or dynamic
-supports stay model-local. `mtgnn` has a different graph constructor (frozen reference `_RefGraphConstructor`) and was
-deliberately left out of the extraction. `adamshyper` and `stdmae` consume it too.
+Use for a small-to-moderate node count where an `N x N` dense adjacency is
+affordable and a self-learned, row-normalized graph is wanted alongside or instead
+of a predefined one. Do not use for large `N` (memory is `O(N^2)`; see
+`regularized_adaptive_graph_conv`), when a sparse graph is required (see
+`sparse_connection_router`), or when a different graph constructor such as MTGNN's
+top-k asymmetric one is intended.
 
 ## Interface
 
@@ -55,72 +40,3 @@ parameters, buffers, or state):
 - It does no validation: shape mismatches surface as torch matmul errors.
 - Differentiable w.r.t. both embeddings. Rows whose scores are all non-positive
   become uniform (`relu` gives zeros), not zero rows.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_graph.py`: `test_adaptive_adjacency_contract` checks
-  the `[6, 6]` shape and dtype, row sums of 1, non-negativity, the batched `[2, 6, 4]`
-  self-form giving `[2, 6, 6]`, that the dual form equals
-  `softmax(relu(e @ t), -1)` with `t` used as supplied, that the single form equals
-  the dual form with `e.T`, and seeded values against
-  `tests/fixtures/components/adaptive_node_embedding_adjacency.pt`;
-  `test_adaptive_adjacency_gradient` checks non-zero gradients to both embeddings.
-  There is no error-path test (the function does not validate).
-- `tests/test_component_extraction_graph.py` holds frozen verbatim pre-extraction
-  copies of `gwnet`, `dfdgcn`, `himnet`, `d2stgnn` and `agcrn` and asserts identical
-  state-dict keys and values, identical eval outputs (`atol=1e-6`) and identical
-  gradients for each (`test_gwnet_gated_dilated_conv_and_adaptive_adjacency_equivalence`,
-  `test_dfdgcn_gated_dilated_conv_and_adaptive_adjacency_equivalence`,
-  `test_himnet_adaptive_adjacency_equivalence`,
-  `test_d2stgnn_adaptive_adjacency_equivalence`,
-  `test_agcrn_adaptive_adjacency_equivalence`). `adamshyper` and `stdmae` adopted the
-  component later and have no frozen pre-extraction copy.
-
-## Variants and options
-
-- Dual form (`target` given): independent source/target tables, asymmetric
-  adjacency (`gwnet`, `dfdgcn`, `d2stgnn`, `stdmae`, `adamshyper`; the last gives a
-  rectangular `[nodes, hyper_nodes]` result).
-- Single form (`target=None`): symmetric scores before the softmax, supports
-  batched embeddings (`agcrn`, `himnet`).
-- There is no temperature, top-k sparsification, or normalization variant; those
-  would be new components.
-
-## When to use and when not to use
-
-Use for a small-to-moderate node count where an `N x N` dense adjacency is
-affordable and a self-learned, row-normalized graph is wanted alongside or instead
-of a predefined one. Do not use for large `N` (memory is `O(N^2)`; see
-`regularized_adaptive_graph_conv`), when a sparse graph is required (see
-`sparse_connection_router`), or when a different graph constructor such as MTGNN's
-top-k asymmetric one is intended.
-
-## Related components
-
-`diffusion_conv` (consumes such adjacencies as supports),
-`graph_utils` (static
-supports mixed with this learned one), `regularized_adaptive_graph_conv` (linear-time
-node-embedding graph), `gated_dilated_conv` (co-extracted in the same commit),
-`sparse_connection_router` (learned sparse adjacency over positions).
-- `adj_norm`: normalizes the support this component produces.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `adaptive_node_embedding_adjacency(source: torch.Tensor, target: torch.Tensor | None=None)`
-  Return ``softmax(relu(source @ target), dim=-1)``.
-
-```python
-from tsflab.models._components.adaptive_node_embedding_adjacency import adaptive_node_embedding_adjacency
-```
-
-## Retrieval terms
-
-`adaptive`, `adjacency`, `embedding`, `graph`, `node`, `softmax`
-
-## Current model consumers (7)
-
-`adamshyper`, `agcrn`, `d2stgnn`, `dfdgcn`, `gwnet`, `himnet`, `stdmae`
-<!-- component-card:generated:end -->

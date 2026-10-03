@@ -1,0 +1,44 @@
+schema = "tsflab.card/1"
+kind = "model"
+name = "DynamicTMoE"
+tags = ["hybrid", "mixture-of-experts", "patching", "non-stationary", "channel-mixing", "normalization"]
+fits = ["non-stationary", "regime-changes"]
+fidelity = "reference-checked"
+
+[paper]
+title = "Dynamic TMoE: A Drift-Aware Dynamic Mixture of Experts Framework for Non-Stationary Time Series Forecasting"
+url = "https://arxiv.org/abs/2605.20678"
+venue = "ICML 2026"
+year = 2026
+
+[code]
+url = "https://github.com/andone-07/Dynamic-TMoE"
+revision = "3e4123530d40c8463cb9487992da49cd967fd9d7"
+license = "NOASSERTION"
+reference_sources = ["https://github.com/andone-07/Dynamic-TMoE/blob/3e4123530d40c8463cb9487992da49cd967fd9d7/models/Dynamic_TMoE/model.py", "https://github.com/andone-07/Dynamic-TMoE/blob/3e4123530d40c8463cb9487992da49cd967fd9d7/models/Dynamic_TMoE/memory_router.py", "https://github.com/andone-07/Dynamic-TMoE/blob/3e4123530d40c8463cb9487992da49cd967fd9d7/models/Dynamic_TMoE/cyclic_relation.py"]
+
+[composition]
+normalization = "component:revin"
+decomposition = "none"
+temporal = "component:topk_expert_router+local:drift-aware-memory-routed-heterogeneous-experts"
+channel = "local:cyclic-channel-relation-refinement"
+head = "local:flatten-linear-head"
+loss = "loss:mse"
+
+[data_params]
+enc_in = { from = "channels", rule = "equals the number of channels" }
+relation_period = { from = "period", rule = "cycle length in steps for the channel-relation prototypes (24 for an hourly daily cycle)" }
+
+[admission]
+status = "passed"
+date = "2026-10-03"
+commit = "ec1ae839"
+device = "cpu"
+reference = "official"
+note = "tsf model verify --all on UH_Public; pre-squash commit of the 1.0 consolidation"
+
+[[issues]]
+kind = "license"
+where = "repository root"
+what = "no license file at the pinned revision."
+resolution = "independent rewrite with `models/Dynamic_TMoE/model.py`, `memory_router.py`, and `cyclic_relation.py` used as reference only; license recorded as `NOASSERTION`."

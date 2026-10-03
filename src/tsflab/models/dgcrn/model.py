@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from torch import nn
 
+from tsflab.models._components.graph_conv_gru import GraphConvGRUCell
 from tsflab.models._components.marks import coerce_time_length, to_spatiotemporal
 
 
@@ -85,17 +86,14 @@ class DynamicGraphConvolution(nn.Module):
         return self.projection(self.dropout(torch.cat(terms, dim=-1)))
 
 
-class DynamicGraphGRUCell(nn.Module):
-    def __init__(self, input_dim: int, hidden: int, depth: int, static: torch.Tensor, dropout: float) -> None:
-        super().__init__()
-        self.hidden = hidden
-        self.gates = DynamicGraphConvolution(input_dim + hidden, 2 * hidden, depth, static, dropout)
-        self.candidate = DynamicGraphConvolution(input_dim + hidden, hidden, depth, static, dropout)
+class DynamicGraphGRUCell(GraphConvGRUCell):
+    """Graph GRU over static plus dynamic filters; ``forward(x, hidden, graphs)``."""
 
-    def forward(self, x: torch.Tensor, hidden: torch.Tensor, graphs: tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        reset, update = torch.sigmoid(self.gates(torch.cat((x, hidden), -1), graphs)).chunk(2, -1)
-        candidate = torch.tanh(self.candidate(torch.cat((x, reset * hidden), -1), graphs))
-        return update * hidden + (1.0 - update) * candidate
+    def __init__(self, input_dim: int, hidden: int, depth: int, static: torch.Tensor, dropout: float) -> None:
+        gates = DynamicGraphConvolution(input_dim + hidden, 2 * hidden, depth, static, dropout)
+        candidate = DynamicGraphConvolution(input_dim + hidden, hidden, depth, static, dropout)
+        super().__init__(gates, candidate)
+        self.hidden = hidden
 
 
 class Model(nn.Module):

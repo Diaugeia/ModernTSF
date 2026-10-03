@@ -2,8 +2,8 @@
 """Create an unregistered model workspace from resolved paper/source facts.
 
 Use ``tsf model scaffold`` only after paper extraction and component matching.
-The placeholder is not added to the catalog. After implementing it, adding
-manifest checks, and completing the card, run ``tsf model add --name``.
+The placeholder is not added to the catalog. After implementing it and
+completing the card, run ``tsf model add --name NAME --verify``.
 """
 
 from __future__ import annotations
@@ -151,59 +151,32 @@ def _card(
     year: int,
     codebase: tuple[str, str, str] | None,
     components: tuple[str, ...],
-) -> str:
-    source = ""
-    if codebase:
-        url, revision, license_name = codebase
-        source = (
-            f'code: "{url}"\n'
-            f'revision: "{revision}"\n'
-            f'license: "{license_name}"\n'
-        )
-    component_text = ", ".join(f"`{item}`" for item in components) or "none"
-    return f'''---
-name: "{name}"
-summary: "SCAFFOLD: replace with an evidence-backed method summary."
-paper: "{paper_url}"
-paper_title: "{paper_title}"
-venue: "{venue}"
-year: {year}
-{source}tagline: "SCAFFOLD: one line, at most 120 characters, mechanism first."
-tags: ["scaffold"]
-composition: ["normalization=SCAFFOLD", "decomposition=SCAFFOLD", "temporal=SCAFFOLD", "channel=SCAFFOLD", "head=SCAFFOLD", "loss=SCAFFOLD"]
----
-# {name}
+) -> dict[str, str]:
+    """Return the tsflab.card/1 files (card.toml, README.md) with SCAFFOLD placeholders."""
+    from tsflab.catalog.cards.render import card_files
 
-## Key ideas
-
-- SCAFFOLD: 2-6 bullets naming the defining mechanisms and the code that implements them.
-
-<!-- model-card:canonical:start -->
-## Input and output
-
-Document the four-input forecasting interface and exact output semantics.
-
-## Paper and code
-
-Explain which paper and pinned official-code details were checked.
-
-## Local implementation
-
-Map paper equations to `model.py`; do not copy external model source.
-
-## Differences
-
-Record every material difference from the paper or official implementation.
-
-## Shared components
-
-Planned components: {component_text}. Keep only verified imports.
-
-## Configuration constraints
-
-Document shape, parameter, optional-input, and artifact requirements.
-<!-- model-card:canonical:end -->
-'''
+    facts = {
+        "name": name,
+        "tags": ["scaffold", "scaffold-family", "scaffold-tag"],
+        "fits": [],
+        "fidelity": "reference-checked" if codebase else "paper-only",
+        "paper": {"title": paper_title, "url": paper_url, "venue": venue, "year": year},
+        "code": ({"url": codebase[0], "revision": codebase[1], "license": codebase[2], "reference_sources": []}
+                 if codebase else None),
+        "composition": {slot: "SCAFFOLD" for slot in
+                        ("normalization", "decomposition", "temporal", "channel", "head", "loss")},
+        "issues_checked": "SCAFFOLD: list upstream issues as [[issues]] tables, or say what was checked.",
+        "admission": {"status": "pending"},
+    }
+    planned = ", ".join(f"`{item}`" for item in components) or "none"
+    return card_files("model", facts, "SCAFFOLD: what the method is. Use for ...; not for ...", {
+        "Idea": "- SCAFFOLD: 2-6 bullets naming the defining mechanisms and the code that implements them.",
+        "When to use": "- SCAFFOLD: data/task conditions the method targets, and when not to use it.",
+        "Configure": ("- SCAFFOLD: data-dependent parameters only (period, frequency, channels, divisibility, "
+                      "graph, train-split statistics), mirrored in card.toml [data_params].\n"
+                      f"Other hyperparameters: preset defaults in `configs/models/{name}.toml`; tune generically."),
+        "Differences": f"SCAFFOLD: material differences from the paper/official code. Planned components: {planned}.",
+    })
 
 
 def _model(name: str, params: list[tuple[str, str, str | None]], graph: bool) -> str:
@@ -350,10 +323,10 @@ def main() -> None:
         package / "__init__.py": _package_init(name),
         package / "model.py": _model(name, params, graph),
         package / "spec.py": _spec(name, module, params, args.task_mode, components),
-        package / "README.md": _card(
+        **{package / filename: text for filename, text in _card(
             name, args.paper_title, args.paper_url, args.venue, args.year,
             codebase, components,
-        ),
+        ).items()},
         MODEL_CONFIG_DIR / f"{name}.toml": _model_config(name, params, graph),
         RUN_CONFIG_DIR / f"smoke_{module}.toml": _smoke(name, module, args.task_mode),
     }
@@ -370,8 +343,8 @@ def main() -> None:
     print(f"Created unregistered model workspace {name!r} ({module})")
     for path in targets:
         print(f"  + {path.relative_to(ROOT)}")
-    print("Next: replace SCAFFOLD code/card text, add manifest tests, then run")
-    print(f"  tsf model add --name {name}")
+    print("Next: replace SCAFFOLD code and card text (card.toml, README.md), then run")
+    print(f"  tsf model add --name {name} --verify")
 
 
 if __name__ == "__main__":

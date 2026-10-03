@@ -1,110 +1,34 @@
 ---
 name: "MAGE"
-summary: "MAGE (Mixture of Adaptive Graph Experts) is a spatiotemporal learning model for node-structured or graph-structured data. It introduces a sparse yet balanced mixture-of-experts strategy in which each expert perceives a unique underlying graph topology through kernel-based functions with linear complexity relative to the number of nodes, overcoming the noise amplification caused by ReLU activations in existing adaptive graph learning methods."
-paper: "https://proceedings.neurips.cc/paper_files/paper/2025/hash/54c9bfb0885ae07f23607f617ab64c2b-Abstract-Conference.html"
-paper_title: "Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting"
-venue: "NeurIPS 2025"
-year: 2025
-code: "https://github.com/PoorOtterBob/MAGE"
-revision: "f1fdd27da4e72a140c4f341f94d368fbcaec7507"
-license: "NOASSERTION"
-tagline: "Sparse top-k mixture of low-rank adaptive graph experts with linear node complexity and calendar prompts."
-tags: ["gnn", "spatiotemporal", "mixture-of-experts", "graph-learning", "covariates"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:flattened-history-linear-embedding", "channel=local:sparse-mixture-of-adaptive-graph-experts", "head=local:linear-horizon-head", "loss=loss:mse"]
+description: "Spatiotemporal forecaster built from a sparse top-k mixture of low-rank adaptive graph experts with linear node cost and calendar prompts. Use for node-level traffic or sensor networks with many nodes where the graph is learned; not for univariate or few-channel series."
 ---
+
 # MAGE
 
-## Key ideas
+## Idea
 
 - `AdaptiveGraphExpert` propagates with a factorised low-rank kernel `softmax(E_target) softmax(E_source)` applied to node features, so cost is linear in nodes and no `N x N` adjacency is built.
 - `MixtureGraphBlock` routes every node to its top-k experts (`topk`) by raw-logit selection, a masked softmax, and a 5% dense mix for balance, then applies an RMSNorm feed-forward.
 - Each node embeds its whole window (value plus calendar channels, `to_calendar_spatiotemporal`) with a linear layer, plus a pooled calendar embedding.
-- Three blocks are applied with 1, 2 and 3 recurrent passes (`recur_num` experts); the last result is subtracted from a skip, and a linear head gives the horizon. The supplied adjacency is unused, and the expert-count training loss is omitted.
+- Three blocks are applied with 1, 2 and 3 recurrent passes (`recur_num` experts); the last result is subtracted from a skip, and a linear head gives the horizon.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Designed for spatiotemporal node forecasting (traffic, sensor networks) where the graph topology is learned end to end rather than given.
+- Linear cost in the number of nodes suits large networks under tight compute budgets.
+- Uses time-of-day and day-of-week marks as calendar prompts.
+- Not for univariate or few, unrelated channels: the method exists to learn node interactions; the supplied adjacency is ignored.
 
-## Paper and code
+## Configure
 
-- [paper](https://proceedings.neurips.cc/paper_files/paper/2025/hash/54c9bfb0885ae07f23607f617ab64c2b-Abstract-Conference.html); title: Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting; venue/year: NeurIPS 2025 / 2025
-- [codebase](https://github.com/PoorOtterBob/MAGE); revision: `f1fdd27da4e72a140c4f341f94d368fbcaec7507`; license: `NOASSERTION`
+- `enc_in`: number of graph nodes (channels); the expert graphs are learned over them.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/MAGE.toml`](../../../../configs/models/MAGE.toml).
+Other hyperparameters: preset defaults in `configs/models/MAGE.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. The reference-only source code was not
-copied. The structure map covers factorised graph kernels, sparse balanced
-routing, and three recurrent depths. Calendar prompting is reduced and the
-training expert-count objective is omitted.
-
-`MixtureGraphBlock`'s gate was compared against the `topk_expert_router`
-component: it selects top-k on raw logits then applies a masked softmax
-(sums to one only over selected experts) and blends 5%/95% with the
-batch/node-mean dense softmax, which is a different routing formula from the
-floor-renormalized `topk_dense_mix` used by DUET and DynamicTMoE. It stays
-model-local rather than forcing a flag-driven shared abstraction.
-
-## Shared components
-
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=6`, `model_dim=64`, `recur_num=8`, `topk=2`, `node_dim=16`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting
-- **Venue**: NeurIPS 2025
-- **Published**: 2025
-- **arXiv**: N/A
-
-## Abstract
-The effectiveness of Spatiotemporal Graph Neural Networks (STGNNs) critically hinges on the quality of the underlying graph topology. While end-to-end adaptive graph learning methods have demonstrated promising results in capturing latent spatiotemporal dependencies, they often suffer from high computational complexity and limited expressive capacity. In this paper, we propose MAGE for efficient spatiotemporal forecasting. We first conduct a theoretical analysis demonstrating that the ReLU activation function employed in existing methods amplifies edge-level noise during graph topology learning, thereby compromising the fidelity of the learned graph structures. To enhance model expressiveness, we introduce a sparse yet balanced mixture-of-experts strategy, where each expert perceives the unique underlying graph through kernel-based functions and operates with linear complexity relative to the number of nodes. The sparsity mechanism ensures that each node interacts exclusively with compatible experts, while the balancing mechanism promotes uniform activation across all experts, enabling diverse and adaptive graph representations. Furthermore, we theoretically establish that a single graph convolution using the learned graph in MAGE is mathematically equivalent to multiple convolutional steps under conventional graphs. We evaluate MAGE against advanced baselines on multiple real-world spatiotemporal datasets. MAGE achieves competitive performance while maintaining strong computational efficiency.
-
-## In TSFLab
-Default config: `configs/models/MAGE.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-The local module is independently implemented from the NeurIPS paper. Each
-expert performs node→basis→node kernel propagation in linear node complexity;
-top-k routing is combined with a small balancing path, and three recurrent
-depths feed the residual forecast. The unlicensed author repository remains a
-reference-only link and none of its source is included.
-
-## Verification
-
-Clean-room implementation: confirmed. The reference-only source code was not
-copied. The structure map covers factorised graph kernels, sparse balanced
-routing, and three recurrent depths. Calendar prompting is reduced and the
-training expert-count objective is omitted.
-
-`MixtureGraphBlock`'s gate was compared against the `topk_expert_router`
-component: it selects top-k on raw logits then applies a masked softmax
-(sums to one only over selected experts) and blends 5%/95% with the
-batch/node-mean dense softmax, which is a different routing formula from the
-floor-renormalized `topk_dense_mix` used by DUET and DynamicTMoE. It stays
-model-local rather than forcing a flag-driven shared abstraction.
-
-## Citation
-
-```bibtex
-@inproceedings{ma2025less,
-  author    = {Jiaming Ma and Binwu Wang and Guanjun Wang and Kuo Yang and Zhengyang Zhou and Pengkun Wang and Xu Wang and Yang Wang},
-  title     = {Less but More: Linear Adaptive Graph Learning Empowering Spatiotemporal Forecasting},
-  booktitle = {Advances in Neural Information Processing Systems},
-  year      = {2025},
-  url       = {https://github.com/PoorOtterBob/MAGE}
-}
-```
+- Clean-room implementation from the NeurIPS paper; the unlicensed author repository was a reference only and none of its source is included.
+- Calendar prompting is reduced to node-window calendar channels plus one pooled calendar embedding.
+- The training expert-count (balance) objective is omitted; MSE only.
+- The supplied adjacency matrix is unused.
+- The routing gate stays model-local rather than reusing `topk_expert_router` (see reference.md).

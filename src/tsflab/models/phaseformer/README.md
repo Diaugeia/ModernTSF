@@ -1,116 +1,35 @@
 ---
 name: "PhaseFormer"
-summary: "PhaseFormer is an efficient time series forecasting model for standard univariate and multivariate prediction. It introduces a phase perspective for exploiting periodicity: instead of treating individual patches as tokens (which incurs large parameter counts), PhaseFormer groups time steps into compact phase embeddings aligned to the dominant period and uses a lightweight routing mechanism for cross-phase interaction, achieving state-of-the-art performance with approximately 1k parameters across benchmark datasets."
-paper: "https://arxiv.org/abs/2510.04134"
-paper_title: "PhaseFormer: From Patches to Phases for Efficient and Effective Time Series Forecasting"
-venue: "ICLR 2026"
-year: 2026
-code: "https://github.com/neumyor/PhaseFormer_TSL"
-revision: "ed1db61c6abfa9326d5ca2a56c6c4ba53ea592ab"
-license: "MIT"
-tagline: "Period-aligned phase tokens mixed through a few learned routers (aggregate, then distribute)."
-tags: ["transformer", "periodicity", "attention-variant", "channel-independent", "lightweight", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:cross-phase-router-attention", "channel=local:channel-independent-shared-weights", "head=local:per-phase-linear-predictor", "loss=loss:mse"]
+description: "Tiny periodicity model: tokenizes the lookback into one token per phase of the dominant period and mixes phases through a few learned routers. Use for efficient forecasting of strongly periodic series, including large channel sets; not for aperiodic data or when the period is unknown."
 ---
+
 # PhaseFormer
 
-## Key ideas
+## Idea
 
-- `_tokenize` reshapes the lookback into `period` phase tokens (default 24), each embedding that phase across past cycles.
-- `CrossPhaseRouter` uses a small set of learned router vectors that first attend to all phases (aggregate) and are then attended by them (distribute), avoiding full phase-to-phase attention.
-- `predictor` maps each phase token to the future cycles of that phase; outputs are interleaved back into time order.
+- `_tokenize` reshapes the lookback into `period` phase tokens (default 24), each embedding that phase across past cycles (`[phase, period-index]`).
+- `CrossPhaseRouter`: a small set of learned router vectors first attend to all phases (aggregate) and are then attended by them (distribute), avoiding full phase-to-phase attention.
+- One shared linear `predictor` maps each phase token to the future cycles of that phase; outputs are interleaved back into time order.
 - Channels share weights; `revin` (affine) wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Series with a strong, stable dominant period: every token is one phase, so the model only works when values at the same phase of successive cycles are related.
+- Tight compute or parameter budgets: the paper reports about 1k parameters and stresses large, complex datasets where comparably cheap models struggle.
+- Not for aperiodic series or a wrong period; channels are processed independently, so cross-channel dependence is not modelled.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2510.04134); title: PhaseFormer: From Patches to Phases for Efficient and Effective Time Series Forecasting; venue/year: ICLR 2026 / 2026
-- [codebase](https://github.com/neumyor/PhaseFormer_TSL); revision: `ed1db61c6abfa9326d5ca2a56c6c4ba53ea592ab`; license: `MIT`
+- `enc_in` follows the channel count: must equal the number of input channels.
+- `period` follows the dataset period (the paper estimates it by autocorrelation): the lookback is cut into `ceil(seq_len / period)` cycles (circularly padded when `seq_len` is not a multiple) and the forecast into `ceil(pred_len / period)` cycles, truncated to `pred_len`.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/PhaseFormer.toml`](../../../../configs/models/PhaseFormer.toml).
+Other hyperparameters: preset defaults in `configs/models/PhaseFormer.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `models/PhaseFormer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Clean-room rewrite of paper Eqs. (5)-(11), checked against `models/PhaseFormer.py` of the official MIT repository at the pinned revision; no source copied.
 
-Local implementation: confirmed.
+- `period` is an explicit configuration value; the paper estimates the dominant period by autocorrelation.
+- The default uses one routing layer and channel-independent processing; it does not claim the paper's exact training recipe, period-selection pipeline, or the reported ~1k-parameter setting for every dataset.
 
-This clean-room rewrite follows paper equations (5)--(11): circular phase
-tokenization produces `[phase, period-index]` tokens, `CrossPhaseRouter` performs
-phase-to-router aggregation and router-to-phase distribution, and one shared
-linear predictor maps every phase to future periods before de-tokenization. The
-linked repository is reference-only; its source was inspected at the pinned revision; no external source code was copied.
-
-The paper estimates the dominant period by autocorrelation, whereas this
-standalone runtime receives `period` as an explicit configuration value. The
-default uses one routing layer and channel-independent processing; it does not
-claim the paper's exact training recipe, learned period-selection pipeline, or
-reported approximately-1k-parameter setting for every dataset.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=16`, `dropout=0.0`, `period=24`, `num_routers=4`, `num_layers=1`, `num_heads=1`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: PhaseFormer: From Patches to Phases for Efficient and Effective Time Series Forecasting
-- **Venue**: ICLR 2026
-- **Published**: 2026 (arXiv: 2025-10)
-- **arXiv**: https://arxiv.org/abs/2510.04134
-
-## Abstract
-Periodicity is a fundamental characteristic of time series data and has long played a central role in forecasting. Recent deep learning methods strengthen the exploitation of periodicity by treating patches as basic tokens, thereby improving predictive effectiveness. However, their efficiency remains a bottleneck due to large parameter counts and heavy computational costs. This paper provides, for the first time, a clear explanation of why patch-level processing is inherently inefficient, supported by strong evidence from real-world data. To address these limitations, we introduce a phase perspective for modeling periodicity and present an efficient yet effective solution, PhaseFormer. PhaseFormer features phase-wise prediction through compact phase embeddings and efficient cross-phase interaction enabled by a lightweight routing mechanism. Extensive experiments demonstrate that PhaseFormer achieves state-of-the-art performance with around 1k parameters, consistently across benchmark datasets. Notably, it excels on large-scale and complex datasets, where models with comparable efficiency often struggle. This work marks a significant step toward truly efficient and effective time series forecasting.
-
-## Source and verification
-
-Pinned source inspection: `models/PhaseFormer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-This clean-room rewrite follows paper equations (5)--(11): circular phase
-tokenization produces `[phase, period-index]` tokens, `CrossPhaseRouter` performs
-phase-to-router aggregation and router-to-phase distribution, and one shared
-linear predictor maps every phase to future periods before de-tokenization. The
-linked repository is reference-only; its source was inspected at the pinned revision; no external source code was copied.
-
-The paper estimates the dominant period by autocorrelation, whereas this
-standalone runtime receives `period` as an explicit configuration value. The
-default uses one routing layer and channel-independent processing; it does not
-claim the paper's exact training recipe, learned period-selection pipeline, or
-reported approximately-1k-parameter setting for every dataset.
-
-## In TSFLab
-Default config: `configs/models/PhaseFormer.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@misc{niu2025phaseformer,
-  author        = {Yiming Niu and
-                  Jinliang Deng and
-                  Yongxin Tong},
-  title         = {PhaseFormer: From Patches to Phases for Efficient and Effective Time Series Forecasting},
-  year          = {2025},
-  eprint        = {2510.04134},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2510.04134}
-}
-```
+Cite: Niu, Deng, Tong, "PhaseFormer: From Patches to Phases for Efficient and Effective Time Series Forecasting", ICLR 2026 (arXiv:2510.04134).

@@ -26,7 +26,7 @@ MODULES: dict[str, dict[str, object]] = {
         "extras": ["data"],
         "purpose": "register, prepare, profile, and publish datasets",
         "commands": ["tsf data inspect", "tsf data analyze", "tsf data prepare", "tsf data add"],
-        "context": "dataset cards and presets; train-only profile `work_dirs/profiles/<name>/profile.{json,md}`",
+        "context": "dataset cards (characteristics, protocol) and presets; train-only profile `work_dirs/profiles/<name>/profile.{json,md}`",
     },
     "models": {
         "skills": ["discover-papers", "add-model", "integrate-foundation-model", "curate-components"],
@@ -34,7 +34,7 @@ MODULES: dict[str, dict[str, object]] = {
         "extras": ["models"],
         "purpose": "find papers, implement or adapt models, curate reusable components",
         "commands": ["tsf model scaffold", "tsf model add", "tsf model verify", "tsf model compose"],
-        "context": "model cards (tagline, tags, six-slot composition), component interfaces, verification evidence",
+        "context": "model cards (description, fits, fidelity, six-slot composition, data_params), component interfaces, admission records",
     },
     "experiments": {
         "skills": ["setup-environment", "run-experiment", "diagnose-experiment",
@@ -58,16 +58,16 @@ MODULES: dict[str, dict[str, object]] = {
         "tasks": ["autoresearch"],
         "extras": ["autoresearch"],
         "purpose": "budgeted research loops that consume the other modules' context",
-        "commands": ["tsf research start", "tsf research iteration", "tsf agent task start autoresearch"],
+        "commands": ["tsf catalog match", "tsf research start", "tsf research iteration", "tsf agent task start autoresearch"],
         "context": "round ledger `work_dirs/_research/<id>/` (hypotheses, runs, conclusions) and winning composition specs",
     },
     "maintenance": {
         "skills": ["audit", "handle-contribution"],
         "tasks": ["maintenance", "contribution"],
         "extras": [],
-        "purpose": "keep catalog, cards, evidence, and Agent assets consistent; triage issues and pull requests",
+        "purpose": "keep catalog, cards, admission records, and Agent assets consistent; triage issues and pull requests",
         "commands": ["tsf repo check", "tsf repo cards", "tsf model audit", "tsf agent task validate"],
-        "context": "gate results and regenerated cards and indexes",
+        "context": "gate results, card audits, and regenerated indexes",
     },
 }
 CHAIN = ("data", "models", "experiments", "release", "autoresearch")  # the default for `tsf init`

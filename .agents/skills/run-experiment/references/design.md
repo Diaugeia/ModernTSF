@@ -13,6 +13,9 @@ spending compute. Design in the current Agent; no design command is required.
    standalone project). Override only scientific variables under `experiment`,
    `task`, `training`, `model.params`, and `evaluation`; use `[sweep]` only for
    intended axes. The loader rejects unknown structural keys.
+   Set data-dependent parameters from the model card's `[data_params]` (period,
+   frequency, channels, nodes, seq_len, pred_len, graph, train-split) and the dataset
+   profile; other hyperparameters keep preset defaults or form a small, budgeted grid.
 4. Keep ablations one factor at a time unless interactions are the question. Match
    preprocessing, training budget, evaluation strategy, and metric direction across
    models; disclose unavoidable capability differences.

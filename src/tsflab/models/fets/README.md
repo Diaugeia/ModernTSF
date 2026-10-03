@@ -1,120 +1,34 @@
 ---
 name: "FeTS"
-summary: "FeTS (Feature-Aware Framework for Time Series) is a multivariate time-series forecasting model accepted at AAAI 2026. It learns adaptive temporal importance weightings over input feature-time combinations to selectively emphasize the most informative dimensions, improving forecasting accuracy across standard benchmarks in the standard time-series forecasting setting."
-paper: "https://doi.org/10.1609/aaai.v40i31.39838"
-paper_title: "FeTS: A Feature-Aware Framework for Time Series Forecasting"
-venue: "AAAI 2026"
-year: 2026
-code: "https://github.com/lllucky111/FeTS"
-revision: "d908e434b70f3cf69065004e295db13cdb9790b2"
-license: "NOASSERTION"
-tagline: "Patch tokens scored by a Fourier-plus-polynomial basis into a binary feature mask, then local-conv and global fusion."
-tags: ["cnn", "patching", "frequency", "channel-independent", "normalization", "feature-selection"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:fourier-poly-mask-adaptive-features+local:local-global-conv-fusion", "channel=local:channel-independent-shared-weights", "head=local:flatten-linear-head", "loss=loss:mse"]
+description: "Patch tokens scored by a Fourier-plus-polynomial basis into a binary feature mask that gates local feature aggregation, then local-conv and global fusion. Use for channel-independent long-term forecasting that benefits from selecting informative feature dimensions; not for cross-channel modelling."
 ---
+
 # FeTS
 
-## Key ideas
+## Idea
 
 - `FourierPolyMask` scores each patch-token dimension with a cosine, sine and polynomial basis and thresholds at the mean to get a binary mask; the forward mask is exact and a sigmoid straight-through estimator carries gradients.
-- `adaptive_features` uses the mask to gate a learned local aggregation kernel over neighbouring feature dimensions, added residually to the patch tokens.
-- A local `Conv1d` branch and a global mean branch are concatenated and fused (`fusion`), then flattened and projected linearly to the horizon.
-- Uses overlapping patches with channels folded into the batch and `revin` around the model.
+- `adaptive_features` (AdaFE) uses the mask to gate a learned local aggregation kernel over neighbouring feature dimensions, added residually to the patch tokens.
+- A local `Conv1d` branch and a global mean branch (DSFFN) are concatenated and fused, then flattened and projected linearly to the horizon.
+- Overlapping patches with channels folded into the batch; `revin` wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Designed to amplify informative feature dimensions and suppress irrelevant ones in long-term forecasting, with a compact model.
+- Channel-independent with shared weights: no cross-channel interaction.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1609/aaai.v40i31.39838); title: FeTS: A Feature-Aware Framework for Time Series Forecasting; venue/year: AAAI 2026 / 2026
-- [codebase](https://github.com/lllucky111/FeTS); revision: `d908e434b70f3cf69065004e295db13cdb9790b2`; license: `NOASSERTION`
+- `enc_in`: number of channels.
+- `patch_len`, `stride` (clamped to `seq_len`): choose so `seq_len - patch_len` is divisible by `stride`; otherwise the latest steps are dropped by patching.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/FeTS.toml`](../../../../configs/models/FeTS.toml).
+Other hyperparameters: preset defaults in `configs/models/FeTS.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `models/FeTS.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Written for TSFLab from Eqs. (2)-(14) of the AAAI paper; `models/FeTS.py` of `lllucky111/FeTS` at `d908e434` (no license file, recorded `NOASSERTION`) was inspected as reference only, nothing copied.
 
-Local implementation: confirmed. The code is derived from equations
-(2)--(14) in the AAAI paper: `FourierPolyMask` implements the Fourier/polynomial
-basis and threshold mask, `adaptive_features()` implements mask-controlled local
-aggregation, and the local/global branches implement DSFFN. The linked source is
-reference-only; its implementation was inspected at the pinned revision; no external source code was copied.
+- The paper's binary threshold mask is non-differentiable and the gradient path is unstated; here the forward mask stays exact with a sigmoid straight-through gradient in training.
+- One compact AdaFE/DSFFN block; the paper's dataset-specific training schedule and hyperparameter sweep are not reproduced.
 
-The paper uses a non-differentiable binary threshold. This rewrite preserves the
-exact binary forward mask while using a sigmoid straight-through gradient during
-training. It uses one compact AdaFE/DSFFN block and does not reproduce the paper's
-dataset-specific training schedule or hyperparameter sweep.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=32`, `patch_len=16`, `stride=8`, `fourier_order=2`, `polynomial_order=2`, `kernel_size=3`, `dropout=0.0`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: FeTS: A Feature-Aware Framework for Time Series Forecasting
-- **Venue**: AAAI 2026
-- **Published**: 2026
-- **arXiv**: N/A
-
-## Abstract
-FeTS is a feature-aware forecasting framework for multivariate time series that learns adaptive importance weightings over input feature-time combinations. By selectively amplifying the most informative feature dimensions while suppressing irrelevant ones, FeTS improves forecasting accuracy across standard benchmarks. The framework is trained end-to-end and integrates with common backbone architectures, enabling efficient parameter utilization and competitive performance in long-term forecasting settings. (No arXiv preprint was found; this description is based on the AAAI 2026 acceptance and the official implementation repository at https://github.com/lllucky111/FeTS.)
-
-## Source and verification
-
-Pinned source inspection: `models/FeTS.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed. The code is derived from equations
-(2)--(14) in the AAAI paper: `FourierPolyMask` implements the Fourier/polynomial
-basis and threshold mask, `adaptive_features()` implements mask-controlled local
-aggregation, and the local/global branches implement DSFFN. The linked source is
-reference-only; its implementation was inspected at the pinned revision; no external source code was copied.
-
-The paper uses a non-differentiable binary threshold. This rewrite preserves the
-exact binary forward mask while using a sigmoid straight-through gradient during
-training. It uses one compact AdaFE/DSFFN block and does not reproduce the paper's
-dataset-specific training schedule or hyperparameter sweep.
-
-## In TSFLab
-Default config: `configs/models/FeTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/aaai/WangCL26,
-  author       = {Le Wang and
-                  Jianyong Chen and
-                  Songbai Liu},
-  editor       = {Sven Koenig and
-                  Chad Jenkins and
-                  Matthew E. Taylor},
-  title        = {FeTS: {A} Feature-Aware Framework for Time Series Forecasting},
-  booktitle    = {Fortieth {AAAI} Conference on Artificial Intelligence, Thirty-Eighth
-                  Conference on Innovative Applications of Artificial Intelligence,
-                  Sixteenth Symposium on Educational Advances in Artificial Intelligence,
-                  {AAAI} 2026, Singapore, January 20-27, 2026},
-  pages        = {26328--26336},
-  publisher    = {{AAAI} Press},
-  year         = {2026},
-  url          = {https://doi.org/10.1609/aaai.v40i31.39838},
-  doi          = {10.1609/AAAI.V40I31.39838},
-  timestamp    = {Wed, 25 Mar 2026 16:59:58 +0100},
-  biburl       = {https://dblp.org/rec/conf/aaai/WangCL26.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Wang, L., Chen, J., Liu, S. "FeTS: A Feature-Aware Framework for Time Series Forecasting." AAAI 2026, pp. 26328-26336. doi:10.1609/aaai.v40i31.39838.

@@ -1,19 +1,11 @@
 ---
 name: "last_value_center"
-kind: "component"
-module: "tsflab.models._components.last_value_center"
-summary: "Subtract the detached last time step from a [B, L, C] history before a head, and add it back to the head output."
-category: "normalization"
-input: "x [batch, length, channels]; head_output [batch, horizon, channels]; level [batch, 1, channels]"
-output: "center_on_last_value: (centered [batch, length, channels], level [batch, 1, channels]); restore_last_value: [batch, horizon, channels]"
-origin: "Last-value (NLinear-style) normalization, Zeng et al., 'Are Transformers Effective for Time Series Forecasting?', AAAI 2023"
-origin_models: ["nlinear", "segrnn", "crossgnn"]
-tags: ["centering", "detach", "last-value", "level", "residual", "stateless"]
+description: "Stateless NLinear-style pair: subtract the detached last time step from a [B, L, C] history and add it back to the head output. Use for level shifts and drifting means in front of linear or recurrent heads; not for scale drift (use revin) or heads that change the channel layout."
 ---
 
 # last_value_center
 
-## Purpose
+## What it does
 
 Two stateless functions that remove and restore the most recent level of a
 history window. With `level = x[:, -1:, :].detach()`:
@@ -24,20 +16,14 @@ history window. With `level = x[:, -1:, :].detach()`:
 No scaling is applied. The detach means no gradient reaches the model through
 the additive level term (the centered path still gets gradient through `x`).
 
-## Origin and granularity
+## When to use
 
-The scheme is NLinear's last-value subtraction. The helper pair was added in
-commit `b1518394` ("last_value_center; migrate TimeMixer to
-series_decomposition"); the commit message names the consumers NLinear,
-SegRNN and CrossGNN (its anti-OOD branch), and states that CATS, HL and
-PatchTST keep their own variants with documented divergences. Later consumers:
-`mtlinear` (its `NLinear` layer type) and `composed` (the `last_value_center`
-normalization slot, via the `LastValueNorm` adapter in `models/_slots/adapters.py`),
-which are not in `origin_models` because they were not extracted from. It is cut at the
-arithmetic only: where the call goes, the head, padding, and the choice to
-bypass (CrossGNN passes `0.0` instead when `anti_ood=False`) stay local. The
-state is explicit: the caller keeps `level`, so the pair is stateless,
-unlike `revin`.
+Use when the series level drifts or jumps (non-stationary means, a level shift
+between training and evaluation windows) and a cheap correction is enough: the
+head forecasts the change from the last observation. Do not use when the scale
+also drifts (use `revin`), when the last step is noisy enough to bias the whole
+forecast, when the output channel layout differs from the input, or when
+gradient through the level is required.
 
 ## Interface
 
@@ -54,67 +40,3 @@ unlike `revin`.
   (a Python float such as `0.0` also works). Returns the sum with the
   broadcast shape. No validation, no parameters, no state-dict keys, no errors
   raised by the component.
-
-## Invariants and equivalence evidence
-
-- `test_last_value_center_contract_and_reference` in
-  `tests/test_component_contracts_basic.py` checks shapes, that `level` does not
-  require grad, that the last centered step is zero, that restoring the centered
-  tensor recovers `x`, that a float `0.0` level is accepted, and that the input
-  gradient is exactly ones (no path through the level); reference values are in
-  `tests/fixtures/components/last_value_center.pt`.
-- `tests/fixtures/component_extraction_batch7.pt` holds pre-refactor outputs,
-  state dicts, and input gradients for `nlinear`, `segrnn`, and `crossgnn` (with
-  `anti_ood` true and false); `tests/test_component_extraction_batch7.py`
-  requires identical state-dict keys and values, plus outputs and input gradients
-  within `atol=1e-6`.
-- `test_nlinear_restores_the_last_observation` in
-  `tests/test_compact_local_implementations.py` shows a zero head returns the
-  last observation repeated over the horizon.
-
-## Variants and options
-
-None. For mean/std normalization with reversible statistics use `revin`
-(`subtract_last=True` gives a stateful last-value-centred variant that still
-divides by the standard deviation). Not extracted: CATS keeps its own non-detached
-variant (see the `cats` card), HL has no head between subtract and restore (see the
-`hl` card), and PatchTST uses `revin(subtract_last=True)`.
-
-## When to use and when not to use
-
-Use for a cheap level-shift correction in front of a linear or recurrent head
-whose output has the same channel count. Do not use when the scale also drifts
-(use `revin`), when the output channel layout differs from the input, or when
-gradient through the level is required.
-
-## Related components
-
-- `revin`: stateful mean/std alternative, optionally last-value-centred; also
-  normalizes scale.
-- `channel_wise_linear`: the NLinear head typically placed between centre and restore.
-- `series_decomposition`: removes a smoothed trend, not just the last level.
-- `adain_style_norm`: rescales to externally supplied statistics rather than the last step.
-- `dlinear`: the NLinear/DLinear alternative that uses this centering.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `center_on_last_value(x: torch.Tensor)`
-  Subtract the detached final timestep from every step of ``x``.
-- `restore_last_value(head_output: torch.Tensor, level: torch.Tensor)`
-  Add the centering ``level`` back onto a head's forecast.
-
-```python
-from tsflab.models._components.last_value_center import center_on_last_value, restore_last_value
-```
-
-## Retrieval terms
-
-`centering`, `detach`, `last-value`, `level`, `residual`
-
-## Current model consumers (5)
-
-`composed`, `crossgnn`, `mtlinear`, `nlinear`, `segrnn`
-<!-- component-card:generated:end -->

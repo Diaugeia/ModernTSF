@@ -14,7 +14,7 @@ scanning or dispatching.
 
 - A time window and optional focus (task, architecture, data regime).
 - The deduplication baseline: `uv run tsf catalog list --kind model --json` (paper URLs, titles,
-  public names from the model cards).
+  public names from the model cards) and `catalog/declined.toml` (papers already declined).
 
 ## Steps
 

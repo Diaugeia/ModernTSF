@@ -31,13 +31,12 @@ class BuildWithRepositoryAssets(build_py):
         )
         # Runtime Python packages are already installed by build_py. The asset
         # tree contains only catalogs required by public inspection, verified
-        # configs/evidence, and Agent workflows. Tests, scripts, and human docs
+        # configs, and Agent workflows. Tests, scripts, and human docs
         # deliberately remain checkout-only.
         for directory in (
             ".agents",
             "catalog",
             "configs",
-            "verification",
         ):
             shutil.copytree(
                 ROOT / directory,
@@ -51,7 +50,7 @@ class BuildWithRepositoryAssets(build_py):
         # and in a wheel.
         model_assets = ROOT / "src" / "tsflab" / "models"
         for source in model_assets.rglob("*"):
-            if not source.is_file() or source.name not in {"README.md", "spec.py"}:
+            if not source.is_file() or source.name not in {"README.md", "card.toml", "reference.md", "spec.py"}:
                 continue
             destination = target / "src" / "tsflab" / "models" / source.relative_to(
                 model_assets

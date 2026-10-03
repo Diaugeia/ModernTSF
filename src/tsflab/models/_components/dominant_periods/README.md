@@ -1,19 +1,11 @@
 ---
 name: "dominant_periods"
-kind: "component"
-module: "tsflab.models._components.dominant_periods"
-summary: "Top-k FFT period selection: integer periods T // f from the batch-mean amplitude spectrum, plus per-sample amplitudes at those frequencies."
-category: "frequency"
-input: "x [batch, time, channels]"
-output: "periods int64 ndarray [k] (shared by the batch, not a tensor); amplitudes [batch, k]"
-origin: "Period discovery step of TimesNet, Wu et al., ICLR 2023 (TimesNet: Temporal 2D-Variation Modeling for General Time Series Analysis); the same routine is reused by MSGNet (AAAI 2024)"
-origin_models: ["timesnet", "msgnet"]
-tags: ["amplitude", "fft", "frequency", "period", "spectrum", "top-k", "numpy-output"]
+description: "Top-k FFT period selection: integer periods T // f from the batch-mean amplitude spectrum, plus per-sample amplitudes at those frequencies. Use for multi-period models (TimesNet-style folding) on seasonal data; not for per-sample periods (they are batch-shared), fully on-device calls, or frequency-domain gating."
 ---
 
 # dominant_periods
 
-## Purpose
+## What it does
 
 `dominant_periods(x, k=2)` finds the `k` strongest non-DC frequencies of a
 batch of series and converts them to integer periods. With
@@ -26,17 +18,13 @@ batch of series and converts them to integer periods. With
 The periods are one set shared across the whole batch; the amplitudes are
 per-sample and keep the autograd graph, the periods do not.
 
-## Origin and granularity
+## When to use
 
-The routine is the period-discovery step of TimesNet (FFT_for_Period) and is
-reused by `msgnet` for its scale-graph branches. The git history does not
-record the first extraction commit of this component (the file was moved
-during the colocation refactor `33ea2050`); the origin is taken from its two
-consumers and from the test name. It is cut at the pure function: spectrum,
-top-k, period arithmetic. Model-local: how periods are used (TimesNet folds the
-series into a 2D image of shape `[B, ceil(T/p), p, C]` and applies an Inception
-block; MSGNet builds one graph branch per period), and the weighting of branch
-outputs (softmax over the amplitudes in both consumers).
+Use for multi-period models that fold or group a `[B, T, C]` window by a small
+number of dominant cycles. Do not use when periods must differ per sample (they
+are batch-shared), when the whole call must stay on-device (it returns a numpy
+array), or when a frequency-domain gate is needed instead of integer periods
+(see `harmonic_energy_gate`).
 
 ## Interface
 
@@ -53,66 +41,3 @@ outputs (softmax over the amplitudes in both consumers).
   zero input after DC removal) `topk` may return index 0, which gives a numpy
   divide-by-zero warning and a period of 0; callers must guard `period >= 1`
   (MSGNet clamps with `max(1, ...)`; TimesNet does not).
-
-## Invariants and equivalence evidence
-
-- `test_dominant_periods_contract_and_reference` in
-  `tests/test_component_contracts_basic.py` checks shapes, integer dtype, the
-  recovered periods `[6, 12]` of a two-sine input (strongest first), gradient to
-  `x`, `k` out of range (0 and 13 for `T=24`) and non-3-D input errors; reference
-  values are stored in `tests/fixtures/components/dominant_periods.pt`.
-- `test_dominant_periods_matches_timesnet_msgnet_reference` in
-  `tests/test_repository_contracts.py` checks periods, amplitudes, and the
-  gradient of the amplitudes against an inline reference implementation.
-- `test_timesnet_period_discovery_equation` in
-  `tests/test_transformer_patch_forecasters_a.py` checks that a sine of period 4
-  over length 16 yields period `[4]` and amplitudes of shape `[1, 1]`.
-- no pre-refactor model fixture: no stored before/after outputs of `timesnet` or
-  `msgnet`; the inline reference above is the equivalence evidence.
-
-## Variants and options
-
-Only `k`. There is no option for per-sample periods, windowing, or
-interpolation of fractional periods: the period is the integer quotient
-`T // f`, so non-divisor frequencies are rounded down.
-
-## When to use and when not to use
-
-Use for multi-period models that fold or group a `[B, T, C]` window by a small
-number of dominant cycles. Do not use when periods must differ per sample (they
-are batch-shared), when the whole call must stay on-device (it returns a numpy
-array), or when a frequency-domain gate is needed instead of integer periods
-(see `harmonic_energy_gate`).
-
-## Related components
-
-- `harmonic_energy_gate`: periodicity as a spectral energy ratio (a soft weight,
-  not integer periods).
-- `frequency_band_sampler`: selects contiguous FFT bands by depth; does not turn
-  frequencies into periods.
-- `periodic_query_bank`: gathers a learnable table for a fixed known period instead
-  of a discovered one.
-- `spectral_descriptor`: per-window spectral summary (entropy, band-energy ratios)
-  from the same kind of channel-averaged spectrum, with no period output.
-- `periodic_alibi_bias`: its periods can parameterize the bias slopes.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `dominant_periods(x: torch.Tensor, k: int=2)`
-  Return top-k integer periods and per-sample FFT amplitudes for BLC data.
-
-```python
-from tsflab.models._components.dominant_periods import dominant_periods
-```
-
-## Retrieval terms
-
-`amplitude`, `fft`, `frequency`, `period`, `spectrum`
-
-## Current model consumers (2)
-
-`msgnet`, `timesnet`
-<!-- component-card:generated:end -->

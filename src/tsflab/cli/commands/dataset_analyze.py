@@ -182,6 +182,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="channels sampled for spectral statistics (default 128)")
     parser.add_argument("--out", help="output directory (default work_dirs/profiles/<name>)")
     parser.add_argument("--json", action="store_true", help="print the JSON profile instead of markdown")
+    parser.add_argument("--write-card", action="store_true",
+                        help="record the fired data characteristics in the preset's dataset card")
     args = parser.parse_args(argv)
     if bool(args.preset) == bool(args.path):
         parser.error("give exactly one of <preset> or --path FILE")
@@ -200,6 +202,21 @@ def main(argv: list[str] | None = None) -> int:
     (out / "profile.md").write_text(markdown, encoding="utf-8")
     print(json.dumps(report, indent=2) if args.json else markdown)
     print(f"Output: {out}/profile.json, {out}/profile.md", file=sys.stderr if args.json else sys.stdout)
+    if args.write_card:
+        if not args.preset:
+            parser.error("--write-card needs a preset")
+        from datetime import date
+
+        from tsflab.catalog.cards.datasets import write_characteristics
+        from tsflab.core.paths import repository_root
+
+        config = Path(args.preset) if Path(args.preset).suffix else Path("configs/datasets") / f"{args.preset}.toml"
+        fired = [str(rule["id"]) for rule in report["recommendations"]["fired"]]
+        basis = (f"measured by tsf data analyze ({prof.SCHEMA}, decision-safe train/val metrics, "
+                 f"thresholds in profile_rules.toml) on {date.today().isoformat()}")
+        card = write_characteristics(repository_root(), config.as_posix(), fired, basis)
+        print(f"Characteristics written to {card}: {', '.join(fired) or 'none fired'}",
+              file=sys.stderr if args.json else sys.stdout)
     return 0
 
 

@@ -1,98 +1,34 @@
 ---
 name: "DPWMixer"
-summary: "DPWMixer replaces average-pooling multi-scale downsampling with a lossless Haar wavelet pyramid, forecasting every resolution with a dual-path (global-linear trend plus patch-MLP local) mixer and fusing the per-channel, per-scale forecasts with a learned softmax weighting."
-paper: "https://arxiv.org/abs/2512.02070"
-paper_title: "DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2025
-code: "https://github.com/hit636/DPWMixer"
-revision: "0a787be2aeba845914bd4ea88428a1ddb982abad"
-license: "Apache-2.0"
-tagline: "Lossless Haar wavelet pyramid replaces pooling; each scale gets linear-trend plus patch-MLP paths, softmax-fused."
-tags: ["mlp", "wavelet", "multi-scale", "patching", "channel-independent", "normalization"]
-composition: ["normalization=component:revin", "decomposition=component:wavelet", "temporal=local:dual-path-global-linear-and-patch-mlp-mixer", "channel=local:channel-independent-shared-weights", "head=local:softmax-multi-scale-fusion", "loss=loss:mse"]
+description: "Haar wavelet pyramid (no pooling loss); each scale gets a linear-trend path plus a patch-MLP path, fused by softmax weights. Use for channel-independent long-term forecasting where structure spans several resolutions; not for tasks needing cross-channel modelling."
 ---
+
 # DPWMixer
 
-## Key ideas
+## Idea
 
-- `wavelet` (`DecimatedWaveletTransform`, Haar) is applied once per level, keeping the approximation signal to build a multi-resolution pyramid without average-pooling information loss.
+- `wavelet` (`DecimatedWaveletTransform`, Haar) is applied once per level, keeping the approximation signal, to build a multi-resolution pyramid without average-pooling information loss.
 - `DualPathTrendMixer` forecasts each resolution by combining a global linear trend path with a patch-embedding MLP path, mixed by two learnable scalars (`path_weight`).
-- Per-scale, per-channel forecasts are fused by softmax over learned `fusion_weight` logits; `revin` wraps the model.
+- Per-scale, per-channel forecasts are fused by softmax over learned `fusion_weight` logits; `revin` wraps the model; channels share weights.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 12, channels]` point forecast.
+- Designed for long-term forecasting where both a global trend and local patch patterns at several resolutions matter.
+- Lightweight MLP model; a reasonable choice under tight compute.
+- Channel-independent: does not model cross-channel dependence.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2512.02070); title: DPWMixer: Dual-Path Wavelet Mixer for Long-Term Time Series Forecasting; venue/year: arXiv preprint / 2025
-- [codebase](https://github.com/hit636/DPWMixer); revision: `0a787be2aeba845914bd4ea88428a1ddb982abad`; license: `Apache-2.0`
+- `enc_in`: number of channels (the fusion logits are learned per channel).
+- `patch_len` / `stride` are clamped to each resolution's length, so they impose no divisibility constraint on `seq_len`.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/DPWMixer.toml`](../../../../configs/models/DPWMixer.toml).
+Other hyperparameters: preset defaults in `configs/models/DPWMixer.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. The wavelet split, dual-path mixer, and
-adaptive fusion were re-derived from the paper's description and the pinned
-official file's module boundaries and default hyperparameters; no source
-lines were copied.
+Clean-room re-derivation from the paper and the module boundaries and defaults of `hit636/DPWMixer` at `0a787be2` (Apache-2.0); no source copied.
 
-- The official `HaarWaveletSplit` is a fixed one-level Haar analysis filter
-  applied iteratively; this is reused here as one call per level of the
-  cataloged, general `DecimatedWaveletTransform` (which also supports other
-  wavelets and an exact multi-level inverse, unused by this model).
-- The official code's per-resolution `DualTrendMixer` patch stage always uses
-  the configured `patch_len`/`stride` regardless of how short the downsampled
-  resolution has become, then zero-pads short inputs; this implementation
-  additionally clamps `patch_len`/`stride` to the resolution's length so the
-  patch count is never degenerate for very short scales.
-- Official defaults use `d_model=64` and no `patch_len`/`stride` CLI
-  exposure beyond 16/8; the TSFLab preset keeps `patch_len=16`, `stride=8`,
-  and raises `d_model` to 128 to match this catalog's other mixer presets.
-- The fusion softmax is computed once per forward call over
-  `(down_sampling_layers + 1, enc_in)` learned logits, matching the official
-  `Softmax(dim=0)` over the same shape.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-- [`wavelet`](../_components/wavelet/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=12`. Default
-model parameters are: `enc_in=7`, `d_model=128`, `dropout=0.1`, `patch_len=16`, `stride=8`, `down_sampling_layers=2`
-<!-- model-card:canonical:end -->
-
-## Source and verification
-
-Clean-room implementation: confirmed. The wavelet split, dual-path mixer, and
-adaptive fusion were re-derived from the paper's description and the pinned
-official file's module boundaries and default hyperparameters; no source
-lines were copied.
-
-- The official `HaarWaveletSplit` is a fixed one-level Haar analysis filter
-  applied iteratively; this is reused here as one call per level of the
-  cataloged, general `DecimatedWaveletTransform` (which also supports other
-  wavelets and an exact multi-level inverse, unused by this model).
-- The official code's per-resolution `DualTrendMixer` patch stage always uses
-  the configured `patch_len`/`stride` regardless of how short the downsampled
-  resolution has become, then zero-pads short inputs; this implementation
-  additionally clamps `patch_len`/`stride` to the resolution's length so the
-  patch count is never degenerate for very short scales.
-- Official defaults use `d_model=64` and no `patch_len`/`stride` CLI
-  exposure beyond 16/8; the TSFLab preset keeps `patch_len=16`, `stride=8`,
-  and raises `d_model` to 128 to match this catalog's other mixer presets.
-- The fusion softmax is computed once per forward call over
-  `(down_sampling_layers + 1, enc_in)` learned logits, matching the official
-  `Softmax(dim=0)` over the same shape.
+- The official `HaarWaveletSplit` (a fixed one-level Haar analysis filter applied iteratively) is replaced by one call per level of the cataloged `DecimatedWaveletTransform` (its other wavelets and exact inverse are unused).
+- The official patch stage keeps `patch_len`/`stride` at every resolution and zero-pads short inputs; here they are clamped to the resolution's length so very short scales never get a degenerate patch count.
+- The official default `d_model` is 64; the preset keeps `patch_len = 16`, `stride = 8` and raises `d_model` to 128 to match the catalog's other mixer presets.
+- The fusion softmax over `(down_sampling_layers + 1, enc_in)` logits matches the official `Softmax(dim=0)`.

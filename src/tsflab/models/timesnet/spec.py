@@ -44,6 +44,6 @@ SPEC = ModelSpec(
     model_card="src/tsflab/models/timesnet/README.md",
     smoke_config=None,
     capabilities=frozenset(["time-series"]),
-    components=("dominant_periods",),
+    components=("dominant_periods", "forecast_embedding", "inception_block"),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
 )

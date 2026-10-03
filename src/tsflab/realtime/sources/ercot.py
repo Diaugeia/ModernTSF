@@ -80,10 +80,34 @@ def parse_native_load(payload: bytes) -> pd.DataFrame:
     rows = read_xlsx_rows(payload)
     header = [h.strip() for h in rows[0]]
     body = pd.DataFrame([r + [""] * (len(header) - len(r)) for r in rows[1:] if r], columns=header)
-    body = body[body["Hour Ending"].str.strip() != ""]
+    # 2019/2020 archives spell the stamp column ``HourEnding``, later ones ``Hour Ending``.
+    stamp_col = next((h for h in header if h.replace(" ", "").lower() == "hourending"), None)
+    if stamp_col is None:
+        raise ValueError(f"Native_Load sheet has no hour-ending column; header: {header}")
+    body = body[body[stamp_col].str.strip() != ""]
     frame = body[ZONES].apply(pd.to_numeric, errors="coerce")
-    frame.index = _hour_ending(body["Hour Ending"])
+    frame.index = _hour_ending(body[stamp_col].map(_stamp_text))
     return _collapse(frame)
+
+
+_EXCEL_EPOCH = pd.Timestamp("1899-12-30")
+
+
+def _stamp_text(value: str) -> str:
+    """Pass ``MM/DD/YYYY HH:00`` through; turn an Excel serial date into that form.
+
+    A few archive cells (e.g. 2022-12-01 01:00 in ``Native_Load_2022``) hold the
+    stamp as a numeric serial (``44896.041666``) instead of text. Serials cannot
+    say ``24:00``; midnight is written as ``00:00`` of the next day, which
+    ``_hour_ending`` maps to the same covered hour.
+    """
+    text = str(value).strip()
+    try:
+        serial = float(text)
+    except ValueError:
+        return text
+    stamp = (_EXCEL_EPOCH + pd.to_timedelta(serial, unit="D")).round("h")
+    return stamp.strftime("%m/%d/%Y %H:00")
 
 
 def parse_weather_zone_csv(text: str) -> pd.DataFrame:

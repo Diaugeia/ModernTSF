@@ -1,7 +1,6 @@
 graft .agents
 graft catalog
 graft configs
-graft verification
 graft src/tsflab/models
 include AGENTS.md
 include LICENSE

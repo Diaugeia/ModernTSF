@@ -275,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
     print("  files         : submission.json, trajectory.jsonl, report.md")
 
     # The leaderboard is GitHub-canonical: contribute the bundle via a PR on the
-    # TSFLab repo, under the nested append-only layout that `leaderboard-build`
+    # TSFLab repo, under the nested append-only layout that `tsf result leaderboard`
     # scans recursively. There is no Hugging Face Submissions dataset.
     dest = f"apps/web/submissions/{track}/{_slug(ds_spec.id)}/{_slug(record.model)}/{submission_id}"
 

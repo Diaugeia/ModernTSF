@@ -3,20 +3,20 @@ from __future__ import annotations
 import numpy as np
 import torch
 from torch import nn
+from tsflab.models._components.graph_conv_gru import graph_gru_step
 from tsflab.models._components.marks import coerce_time_length, future_time_features, to_spatiotemporal
 
 class MetaGraphCell(nn.Module):
     def __init__(self,input_width:int,hidden:int,cheb_k:int)->None:
         super().__init__(); self.hidden,self.cheb_k=hidden,cheb_k; features=(input_width+hidden)*(cheb_k+1)
         self.gates,self.candidate=nn.Linear(features,2*hidden),nn.Linear(features,hidden)
-    def _features(self,x,h,graph):
-        base=torch.cat((x,h),-1); states=[base]; current=base
+    def _features(self,joined,graph):
+        states=[joined]; current=joined
         for _ in range(self.cheb_k): current=torch.einsum("bnm,bmd->bnd",graph,current); states.append(current)
         return torch.cat(states,-1)
     def forward(self,x,h,graph):
-        reset,update=torch.sigmoid(self.gates(self._features(x,h,graph))).chunk(2,-1)
-        candidate=torch.tanh(self.candidate(self._features(x,reset*h,graph)))
-        return update*h+(1-update)*candidate
+        # Shared graph-GRU gating; each map is a Linear over [z, G z, .., G^K z] of the joined input z.
+        return graph_gru_step(x,h,lambda joined:self.gates(self._features(joined,graph)),lambda joined:self.candidate(self._features(joined,graph)))
 
 class Model(nn.Module):
     def __init__(self,seq_len:int,pred_len:int,num_nodes:int,adj_mx=None,input_dim:int=3,rnn_units:int=32,

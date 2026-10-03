@@ -26,14 +26,15 @@ adding a dataset, and reporting issues.
 ## Setup
 
 ```bash
-# The PyTorch build (CPU vs CUDA) is chosen at install time via UV_TORCH_BACKEND.
-# Let uv auto-detect, or pin explicitly (cpu / cu126 / cu128 / ...).
-UV_TORCH_BACKEND=auto uv sync --python 3.12
-bash scripts/detect_hardware.sh   # reports the recommended backend
+bash scripts/detect_hardware.sh   # install profile: cpu | cuda126 | cuda130
+uv sync --frozen --python 3.12    # cuda130 (driver >= 580) and macOS
+uv run tsf env doctor             # verifies torch; prints cuda126/cpu commands
 ```
 
-Do **not** add a hardcoded `+cuXXX` torch pin to `pyproject.toml` — it breaks
-CPU/macOS installs. The backend is selected via `UV_TORCH_BACKEND`.
+`uv sync` installs the locked cu130 build; other backends use
+`uv pip install --torch-backend <cu126|cpu>` (see `docs/en/README.md`). Do **not**
+add a hardcoded `+cuXXX` torch pin or index to `pyproject.toml` or edit `uv.lock`
+for a local driver — it breaks other machines.
 
 ## Reporting issues
 
@@ -53,18 +54,19 @@ maintainers). The same workflow scans the literature weekly.
 
 ## CI and the agent maintainer
 
-> **Current state:** CI runs the static checks and the test suite on every push
-> and pull request; model verification (`ci.yml` → *Run workflow* → `verify`),
-> deployment, release, and the agent and weekly workflows are started manually
-> until their secrets are configured. The rest of this section describes the
-> full setup they return to.
+> **Current state:** CI runs the static checks, the infrastructure test suite,
+> and admission for changed models on every push and pull request; deployment,
+> release, and the agent and weekly workflows are started manually until their
+> secrets are configured. The rest of this section describes the full setup they
+> return to.
 
 Three workflows, organized by module:
 
 - `ci.yml`: on every push and pull request, `tsf repo check` (the single
-  definition of mergeable: schema, agent assets, cards, verification staleness,
-  repository audit, web submissions, pytest, and the affected-model smoke run on
-  pull requests), the wheel check, and the web build. A push to the deploy branch
+  definition of mergeable: schema, agent assets, cards, repository audit, web
+  submissions, pytest, and the affected-model smoke run on pull requests),
+  `tsf model verify --changed` (admission for every model whose package, preset,
+  or used component changed), the wheel check, and the web build. A push to the deploy branch
   (`DEPLOY_BRANCH`, default `main`) deploys the site; a `v*` tag builds, creates
   the GitHub release, and publishes to PyPI.
 - `agent.yml`: weekly paper discovery, issue handling, and contributor pull
@@ -92,49 +94,72 @@ Run `uv run tsf repo check --scope changed` before opening a pull request.
 See the [model workflow](docs/en/workflows.md#add-a-model-or-method). In short:
 
 1. Deduplicate and extract the paper; inspect pinned official code when available.
-2. Fix the retrieval-layer facts first, because readers find a model through them:
-   a `tagline` (at most 120 characters), `tags` (including one architecture family),
-   and the six-slot `composition`
-   (`normalization|decomposition|temporal|channel|head|loss`). Match the defining
-   operations against existing components with `tsf catalog search --kind component` and
-   `tsf catalog show`.
-3. Run `tsf model scaffold` with the paper/source facts and component decisions.
-   It creates an unregistered workspace.
-4. Implement locally, complete the card (including `## Key ideas`), and declare
-   focused tests in `verification/models.toml`.
-5. Run `tsf model add --name <Name>`. Admission registers the model, regenerates
-   the cards, runs verification and the audits, and rolls the registration back if
-   any gate fails.
+   Match the defining operations against existing components with
+   `tsf catalog search --kind component` and `tsf catalog show`.
+2. Run `tsf model scaffold` with the paper/source facts and component decisions.
+   It creates an unregistered workspace whose card has placeholders.
+3. Implement locally and complete the card (see [Cards](#cards)): the facts in
+   `card.toml` and the short `README.md`.
+4. Run `tsf model add --name <Name> --verify`. Admission registers the model, runs
+   the audits and the executable contract, records the result in the card's
+   `[admission]`, and rolls the registration back if any gate fails.
 
 ## Adding a dataset
 
 See the [data workflow](docs/en/workflows.md#data). A dataset has a preset, a
-card, and exactly one TSFLab protocol (split, scaling, lookbacks, horizons) in the
-card's `protocol` field; the protocol used in the literature, when different, goes
-in `literature_protocol`. Dataset files live under `dataset/` and are never
+card under `catalog/datasets/<name>/`, and exactly one TSFLab protocol (split,
+scaling, lookbacks, horizons) in the card's `[protocol]` table; the protocol used in
+the literature, when different, goes in `[protocol].literature`. Dataset files live under `dataset/` and are never
 committed. Smoke and synthetic inputs under `configs/fixtures/` are test fixtures,
-not datasets. Check a new card with `tsf data audit` and profile the data with
-`tsf data analyze <preset>`.
+not datasets. Check a new card with `tsf data audit`, and profile the data and record its
+characteristics with `tsf data analyze <preset> --write-card`.
 
-## Verifying
+## Cards
 
-Every model needs unified evidence and strict runtime checks:
+Every model, component, and dataset has one card directory with three files:
+
+- `card.toml`: structured facts. For a model: tags, the data characteristics it
+  fits, fidelity (`reference-checked`, `paper-only`, `inferred`, `composed`),
+  paper, official code at a pinned revision, the six-slot composition
+  (`normalization|decomposition|temporal|channel|head|loss`), data-dependent
+  parameters (`[data_params]`: which data property sets a parameter, such as the
+  seasonal period or the channel count), upstream issues, and the admission record.
+  Components record their role, slot, fits, and interface shapes; datasets their
+  source and license, shape, protocol, and measured characteristics.
+- `README.md`: a short description in the front matter (what it is, when to use it
+  and when not), then fixed sections: Idea, When to use, Configure, Differences for
+  models; What it does, When to use, Interface for components; Overview, Protocol
+  and pitfalls for datasets. At most 60 lines.
+- `reference.md` (optional): longer derivations or provenance.
+
+Nothing generated is stored in a card: config paths, parameters, imports,
+consumers, and loaders are read from the code. `tsf catalog show <name>` opens a
+card, and `tsf catalog match <dataset>` lists the models and components whose fits
+match a dataset's characteristics.
+
+## Admission
+
+A model is checked once when it is added, and again only when its package, its
+preset, or a component it uses changes. The check runs the executable contract on
+CPU (construction, forward, backward, finite outputs, active gradients, state-dict
+round trip) and writes the result into the card's `[admission]` table:
 
 ```bash
-uv run tsf model verify <Name>
-uv run tsf repo check --contracts strict --models <Name>
+uv run tsf model verify <Name>                  # one or more models
+uv run tsf model verify --changed --base origin/dev   # models touched since a ref
 uv run tsf repo check --audit
 ```
 
-The final repository gate requires CPU construction, forward, backward, boundaries,
-active gradients, finite outputs, and state-dict round trips; do not waive a failed
-contract with documentation.
+There is no per-model test suite; `tests/` covers the infrastructure. Never edit
+`[admission]` by hand or waive a failed contract with documentation. A final
+release requires every admission to be `passed` (`tsf repo check --scope release`).
 
 ## Documentation
 
 Human documentation (this file, `README.md`, `docs/en/`, and the resource cards)
-describes public behavior and CLI workflows. Cards and generated tables are
-projections of code: change the model, spec, config, or schema first, then run
+describes public behavior and CLI workflows. Cards are curated by hand; the model
+table in `docs/en/models.md` and the Agent index are generated from the cards and
+code: change the card, model, spec, config, or schema first, then run
 `uv run tsf repo cards`. `uv run tsf repo check --audit` checks that the documentation
 and cards agree with the code.
 
