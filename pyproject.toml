@@ -24,13 +24,11 @@ dependencies = [
     "ipython",
     "jupyterlab",
     # PyTorch — the build/backend (CPU vs CUDA cuXXX) is chosen at install time
-    # via UV_TORCH_BACKEND (auto|cpu|cu118|cu121|cu124|cu126|cu128). Do NOT pin a
-    # +cuXXX local version or an explicit index here, or it overrides backend
-    # selection.
-    "torch==2.6.0",
+    # via UV_TORCH_BACKEND (auto|cpu|cu126|cu128|cu130). Do NOT pin a +cuXXX local
+    # version or an explicit index here, or it overrides backend selection.
+    # 2.14 ships sm_120 kernels (RTX 50xx / Blackwell).
+    "torch==2.14.1",
     "torchinfo",
-    "torchvision==0.21.0",
-    "torchaudio==2.6.0",
     # HuggingFace datasets (for GIFT-EVAL data loading)
     "datasets",
     # ODE solvers for the CauAir AirPhyNet / AirDualODE physics-informed models
@@ -85,6 +83,6 @@ testpaths = ["tests"]
 markers = ["e2e: end-to-end CPU chain on fixture data (slow; run with -m e2e)"]
 
 # PyTorch backend (CPU/CUDA) is resolved at install time by uv via
-# UV_TORCH_BACKEND (auto|cpu|cu118|cu121|cu124|cu126|cu128). No explicit
+# UV_TORCH_BACKEND (auto|cpu|cu126|cu128|cu130). No explicit
 # [tool.uv.sources]/[[tool.uv.index]] pin is declared here so backend selection
 # is not overridden.

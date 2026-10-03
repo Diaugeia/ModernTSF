@@ -22,7 +22,7 @@ uv run tsf --help
 uv run tsf repo check --audit          # in a TSFLab checkout; skip in a standalone project
 ```
 
-Use an explicit backend (`cpu`, `cu121`, ...) only when auto-detection is wrong or
+Use an explicit backend (`cpu`, `cu128`, ...) only when auto-detection is wrong or
 reproducibility requires it. For a specific experiment, check readiness with
 `uv run tsf env audit --config <run.toml> --json`; the audit reports facts and never
 changes the environment.

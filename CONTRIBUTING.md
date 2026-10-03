@@ -27,7 +27,7 @@ adding a dataset, and reporting issues.
 
 ```bash
 # The PyTorch build (CPU vs CUDA) is chosen at install time via UV_TORCH_BACKEND.
-# Let uv auto-detect, or pin explicitly (cpu / cu121 / cu124 / ...).
+# Let uv auto-detect, or pin explicitly (cpu / cu126 / cu128 / ...).
 UV_TORCH_BACKEND=auto uv sync --python 3.12
 bash scripts/detect_hardware.sh   # reports the recommended backend
 ```
