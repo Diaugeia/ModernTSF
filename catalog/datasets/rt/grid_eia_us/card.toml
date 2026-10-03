@@ -1,0 +1,32 @@
+schema = "tsflab.card/1"
+kind = "dataset"
+name = "rt/grid_eia_us"
+domain = "Energy / electricity load"
+tags = ["electricity", "demand", "load", "eia-930", "balancing-authority", "united-states", "hourly", "real-time", "spatiotemporal"]
+related = ["rt/grid_ercot", "rt/solar_eia_us", "electricity"]
+realtime_track = "grid_eia_us"
+
+[source]
+name = "EIA-930 hourly demand per US balancing authority"
+url = "https://www.eia.gov/electricity/gridmonitor/"
+citation = "n/a (no dataset paper; TSFLab real-time track)"
+citation_url = "n/a"
+license = "US government work, public domain (per docs/en/realtime.md)"
+redistribution = "allowed"
+
+[shape]
+frequency = "hourly (1h)"
+time_span = "the 365 days before the bootstrap; grows with each weekly release"
+length = "grows weekly; the bootstrap covers 365 days of API backfill"
+channels = "up to 80 (config max_series; balancing authorities reporting at least 90% of hours at bootstrap; the exact set is in the store manifest)"
+channel_kind = "stations"
+target = "demand (megawatt-hours per hour per the EIA-930 series; unit not re-measured) per balancing authority"
+missing_values = "operator-reported values have gaps and outliers; unobserved hours are NaN and the loader forward-fills them"
+stats_basis = "source-reported"
+
+[protocol]
+protocol = "TSFLab static protocol on a frozen release: chronological 7:1:2 split, one z-score from the training rows, seq_len 168 and horizon 24 as in the real-time track; the live rolling rounds are the separate real-time evaluation"
+literature = ""
+split = "7:1:2"
+seq_lens = [168]
+pred_lens = [24]

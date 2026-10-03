@@ -37,6 +37,7 @@ import torch
 import torch.nn as nn
 
 from tsflab.models._components.deviation_memory import PrototypeMemory, deviation_score
+from tsflab.models._components.graph_conv_gru import graph_gru_step
 from tsflab.models._components.graph_utils import adj_to_supports
 from tsflab.models._components.marks import coerce_time_length, future_time_features, to_spatiotemporal
 
@@ -84,10 +85,12 @@ class ChebGRUCell(nn.Module):
     """Graph-convolutional GRU cell (paper Eq. for the recurrent encoder/decoder).
 
     Follows the official recurrence exactly: the gate convolution produces a
-    pair ``(z, r)``; ``z`` mixes into the candidate state while ``r`` blends
-    the previous state with the candidate to form the new state. This swaps
-    which split index plays "reset" vs. "update" relative to a textbook GRU,
-    but is preserved for fidelity to the reference recurrence.
+    pair ``(z, r)``; ``z`` (first half) mixes into the candidate state while
+    ``r`` (second half) blends the previous state with the candidate to form
+    the new state. The official names are swapped relative to a textbook GRU,
+    but the split positions and roles are exactly those of the shared
+    ``graph_gru_step`` (first half resets, second half updates), which this
+    cell calls with its two Chebyshev convolutions.
     """
 
     def __init__(self, dim_in: int, hidden_dim: int, cheb_k: int, num_supports: int) -> None:
@@ -97,9 +100,12 @@ class ChebGRUCell(nn.Module):
         self.candidate_conv = ChebGraphConv(dim_in + hidden_dim, hidden_dim, cheb_k, num_supports)
 
     def forward(self, x: torch.Tensor, state: torch.Tensor, supports: list[torch.Tensor]) -> torch.Tensor:
-        z, r = torch.split(torch.sigmoid(self.gate_conv(torch.cat((x, state), dim=-1), supports)), self.hidden_dim, dim=-1)
-        candidate = torch.tanh(self.candidate_conv(torch.cat((x, z * state), dim=-1), supports))
-        return r * state + (1.0 - r) * candidate
+        return graph_gru_step(
+            x,
+            state,
+            lambda joined: self.gate_conv(joined, supports),
+            lambda joined: self.candidate_conv(joined, supports),
+        )
 
 
 class Model(nn.Module):

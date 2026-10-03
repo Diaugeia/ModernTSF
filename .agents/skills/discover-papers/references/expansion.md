@@ -13,12 +13,13 @@ without it, stop at the ranked queue.
    implementation) or `integrate-foundation-model` for a released pretrained runtime.
    Build the `reuse-existing` / `extract-new` / `model-local` map before code.
 4. Papers are independent: run them in parallel workers only on disjoint model
-   directories, and merge shared aggregate files (catalog registry, verification
-   manifest, component catalog, pinned counts) once at the end.
-5. Each model passes focused tests, unified verification, strict runtime, model
-   audit, component audit, and the repository audit.
+   directories, and merge shared aggregate files (catalog registry, component
+   catalog) once at the end.
+5. Each model is admitted with `tsf model add --name <Name> --verify` (`[admission]`
+   passed) and passes the model audit, component audit, and repository audit.
+   A declined paper goes into `catalog/declined.toml` with its reason and issues.
 
-Outcome: every admitted model verified with a truthful card; skipped candidates
+Outcome: every admitted model has a truthful card and a passed admission; skipped candidates
 listed with reasons. No candidate clearing the gate is a valid no-change result.
 Stop when the budget is exhausted or ambiguity would require inventing a claim. Never
 use search relevance or a shape-only test as implementation evidence. Do not publish,

@@ -1,0 +1,26 @@
+# gift_eval/kdd_cup_2018_with_missing_D — reference
+
+## Provenance and license
+
+- Original source: KDD Cup 2018 air quality, via the Monash repository; https://zenodo.org/records/4656719.
+- Packaging: GIFT-Eval (https://arxiv.org/abs/2410.10393; data on Hugging Face `Salesforce/GiftEval`; code https://github.com/SalesforceAIResearch/gift-eval). The benchmark itself is `apache-2.0` (Hugging Face dataset card and repository LICENSE).
+- License of the underlying data: `CC-BY-4.0` (explicit license found for the source).
+- Bytes are not bundled; download them with `tsf data prepare --from gift`.
+
+## Structure and statistics
+
+| Item | Value | Basis |
+| --- | --- | --- |
+| Series | 270 | source-reported (GIFT-Eval paper, Table 13) |
+| Variates per series | 1 | source-reported |
+| Mean length per series | 455 | source-reported |
+| Total observations | 122,791 | source-reported |
+| Frequency | daily (1d) | source-reported |
+| Short-term test windows | 2 | source-reported |
+
+All values are source-reported; nothing here was measured from local files because GIFT-Eval data are not bundled. The loader reports the series count through its own windowing, not through this table.
+
+## Related datasets
+
+- [`gift_eval/kdd_cup_2018_with_missing_H`](../kdd_cup_2018_with_missing_H/README.md)
+- [`gift_eval`](../README.md): the GIFT-Eval family card.

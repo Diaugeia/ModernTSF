@@ -8,11 +8,10 @@ from tsflab.cli.runtime import passthrough
 
 
 def regenerate_cards(args: list[str]) -> int:
-    """Rewrite every generated card and index from the catalogs (checkout only)."""
+    """Regenerate derived indexes (Agent module index, docs); cards themselves are never generated."""
     if args:
         print("tsf repo cards takes no arguments", file=sys.stderr)
         return 2
-    from tsflab.catalog.cards.resources import write_resource_cards
     from tsflab.core.paths import require_checkout
 
     try:
@@ -20,16 +19,6 @@ def regenerate_cards(args: list[str]) -> int:
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    from tsflab.catalog.cards.models import update_model_card
-
-    models = sorted(
-        card for card in (root / "src" / "tsflab" / "models").glob("*/README.md")
-        if not card.parent.name.startswith("_")
-    )
-    changed = sum(update_model_card(card) for card in models)
-    print(f"Regenerated model card bodies: {changed} of {len(models)} changed")
-    count = write_resource_cards(root)
-    print(f"Generated {count} component and dataset cards")
     from tsflab.agent.index import render_index
 
     index = root / ".agents" / "README.md"
@@ -43,21 +32,21 @@ def regenerate_cards(args: list[str]) -> int:
 def run_audit() -> int:
     """Run the static repository audits in-process; return a nonzero code on failure."""
     from tsflab.agent.assets import main as audit_agent_assets
-    from tsflab.catalog.cards.resources import audit_resource_cards
+    from tsflab.catalog.cards.audit import audit_cards as _audit_cards
     from tsflab.core.paths import repository_root
 
     def audit_cards() -> int:
-        errors = audit_resource_cards(repository_root())
+        errors = _audit_cards(repository_root())
         for error in errors:
             print(f"ERROR: {error}")
         if not errors:
-            print("Resource cards OK")
+            print("Cards OK (tsflab.card/1)")
         return 1 if errors else 0
 
     checks = [
         ("agent-assets", audit_agent_assets),
         ("components", lambda: __import__("tsflab.catalog.component_audit", fromlist=["main"]).main()),
-        ("resource-cards", audit_cards),
+        ("cards", audit_cards),
         ("model-catalog", lambda: passthrough("check_registry.py", [])),
         ("documentation", lambda: passthrough("check_docs.py", [])),
     ]

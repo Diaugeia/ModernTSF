@@ -1,19 +1,11 @@
 ---
 name: "self_attention_family"
-kind: "component"
-module: "tsflab.models._components.self_attention_family"
-summary: "Time-Series-Library-style attention cores (full softmax, ProbSparse, flow, tiled flash-style, Reformer LSH) plus the AttentionLayer that wraps any core with Q/K/V/output projections."
-category: "attention"
-input: "AttentionLayer: queries [batch, len_q, d_model], keys/values [batch, len_k, d_model]; cores: queries [batch, len_q, heads, d_head], keys/values [batch, len_k, heads, d_head]"
-output: "AttentionLayer: ([batch, len_q, d_model], attention map or None); FullAttention/FlowAttention/FlashAttention cores: ([batch, len_q, heads, d_head], map or None); ProbAttention core: ([batch, len_q, heads, d_head], map or None)"
-origin: "Attention classes follow the Informer / Time-Series-Library layer API (Zhou et al., AAAI 2021 for ProbSparse; Vaswani et al., 2017 for full attention); FlowAttention, FlashAttention and ReformerLayer are named after Flowformer, tiled flash attention and Reformer LSH attention but their upstream source is not recorded in history"
-origin_models: ["informer", "transformer"]
-tags: ["attention", "full", "probabilistic", "probsparse", "causal-mask", "multi-head", "stateless", "flow", "flash", "reformer", "lsh", "informer"]
+description: "Time-Series-Library-style attention cores (full softmax, ProbSparse, flow, tiled flash-style, Reformer LSH) plus AttentionLayer with Q/K/V/output projections. Use for Informer/Transformer encoder-decoders that swap the attention core; not for patch encoders, score biases, or deterministic ProbSparse."
 ---
 
 # self_attention_family
 
-## Purpose
+## What it does
 
 A bundle of interchangeable attention "cores" sharing one call signature
 `core(queries, keys, values, attn_mask, tau=None, delta=None) -> (output, attn_or_None)`
@@ -36,127 +28,36 @@ heads, calls a core, and projects back.
   (`reformer` has its own local LSH attention).
 - `AttentionLayer(attention, d_model, n_heads, d_keys=None, d_values=None)`.
 
-## Origin and granularity
+## When to use
 
-Present since the initial commit and consolidated in the component move
-(`33ea2050`, "colocate shared components under models"). The cut keeps the
-head-split core separate from the projection wrapper so encoder and decoder
-blocks (`transformer_encdec`) can swap cores (full vs ProbSparse) without
-changing anything else; `informer` and `transformer` build exactly this way, while
-`dualformer` and `gpht` reuse `AttentionLayer` (`dualformer` also with its own
-frequency-domain core).
-Per-model choices stay model-local: which core to use per role, mask objects,
-`factor`, and distilling. Which paper each non-Informer core was copied from is
-not recorded in history; the identification above is by class behaviour only.
+Use for encoder/decoder Transformers in the Informer/Transformer line where the
+attention core must be swappable behind `AttentionLayer`: exact attention for
+short token sequences, ProbSparse or flow attention when quadratic cost over long
+sequences matters. Do not use `ProbAttention` for deterministic evaluation or
+short sequences (it samples even when it falls back to all queries); do not use
+`FlashAttention` as a performance primitive (it is a reference). For patch-token
+encoders use `tst_transformer`; for noise-cancelling or routed variants see
+`differential_attention` and `topk_expert_attention`.
 
 ## Interface
 
 Cores `FullAttention`, `ProbAttention`, `FlashAttention`: `(mask_flag=True,
-factor=5, scale=None, attention_dropout=0.1, output_attention=False)`;
-`factor` is used only by `ProbAttention`; `FullAttention` uses `scale`,
-`attention_dropout` and `output_attention`, and `ProbAttention` the same except that
-its softmax is not dropped out. `FlashAttention` accepts but ignores `mask_flag`,
-`factor`, `scale`, `attention_dropout` and `output_attention` (it always scales by
-`1/sqrt(d_head)`, applies no dropout and returns `None` for the map).
-`FlowAttention(attention_dropout=0.1)` stores a dropout module that is never applied.
-`ReformerLayer(attention, d_model, n_heads, d_keys=None, d_values=None,
-causal=False, bucket_size=4, n_hashes=4)`; `attention`, `d_keys`, `d_values` are
-unused, `forward(queries, keys, values, attn_mask, tau, delta)` requires `tau` and
-`delta` positionally and returns `(out [B, L, d_model], None)`. It raises
-`ImportError` at construction if `reformer_pytorch` is missing (`LSHSelfAttention`
-is then `None`).
+factor=5, scale=None, attention_dropout=0.1, output_attention=False)`; `factor`
+is used only by `ProbAttention`, and `FlashAttention` ignores all five.
+`FlowAttention(attention_dropout=0.1)`. `ReformerLayer(attention, d_model,
+n_heads, d_keys=None, d_values=None, causal=False, bucket_size=4, n_hashes=4)`
+needs the optional `reformer_pytorch` package. All cores are stateless and
+parameter-free; per-core argument quirks are in reference.md.
 
 `AttentionLayer(attention, d_model, n_heads, d_keys=None, d_values=None)`:
-`d_keys`/`d_values` default to `d_model // n_heads`; `d_model` should be divisible
-by `n_heads` when defaults are used. Parameters/state-dict keys:
-`query_projection`, `key_projection`, `value_projection` (`d_model -> d_keys *
-n_heads`, `d_values * n_heads`) and `out_projection`, plus whatever the inner
-core holds under `inner_attention.*` (the cores have no parameters). `forward(queries,
-keys, values, attn_mask, tau=None, delta=None)` takes batch-first
-`[B, L, d_model]`, returns `(out [B, L_q, d_model], attn)`.
+`d_keys`/`d_values` default to `d_model // n_heads`. State-dict keys:
+`query_projection`, `key_projection`, `value_projection`, `out_projection`, plus
+`inner_attention.*` of the core. `forward(queries, keys, values, attn_mask,
+tau=None, delta=None)` takes batch-first `[B, L, d_model]` and returns
+`(out [B, L_q, d_model], attn)`.
 
-Mask handling: `attn_mask` must be an object with a `.mask` bool tensor (see
-`masking`: `TriangularCausalMask`, `ProbMask`). `FullAttention` with
-`mask_flag=True` and `attn_mask=None` builds a causal mask itself; with
-`mask_flag=False` the mask is ignored. `FlashAttention` instead treats
-`attn_mask` as a `[batch, len_k]` 0/1 key-padding tensor and never applies a
-causal mask. `tau`/`delta` are accepted and ignored by every core here
-(they exist for de-stationary attention consumers). `output_attention=True`
-returns the `[B, H, L_q, L_k]` map (`ProbAttention`: `[B, H, L_v, L_v]`, with uniform `1/L_v` rows for
-unselected queries; `FlowAttention` and `FlashAttention` always return `None`). Sampling in `ProbAttention` uses unseeded `torch.randint`
-on CPU, so it is stochastic even in eval mode; `FullAttention` dropout is the
-only other randomness. All cores are stateless.
-
-Layout note: `ProbAttention.forward` transposes its context back to
-`[B, len_q, heads, d_head]` like the other cores and like the original Informer
-code (zhouhaoyi/Informer2020), so `AttentionLayer`'s `view(B, L, -1)` concatenates
-heads per time step. The pinned Time-Series-Library revision keeps the un-transposed
-`[B, heads, len_q, d_head]` context (a head/time reinterpretation before
-`out_projection`); TSFLab deliberately follows the original Informer instead. The
-sampled-score squeeze is the explicit `squeeze(-2)`, so batch or head count 1 is safe.
-Its `_get_initial_context` still asserts `len_q == len_k` when `mask_flag=True`.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_attention.py`: shape, state-dict key, invariant, gradient-flow and seeded numerical-regression tests for every public symbol; reference values in `tests/fixtures/components/self_attention_family_flash.pt`, `tests/fixtures/components/self_attention_family_flow.pt`, `tests/fixtures/components/self_attention_family_full.pt`, `tests/fixtures/components/self_attention_family_layer.pt`, `tests/fixtures/components/self_attention_family_prob.pt`.
-- `tests/test_local_attention_forecasters.py`: `FullAttention` matches the
-  scaled dot-product equation; `transformer` uses `FullAttention` in the encoder
-  and decoder roles (decoder self-attention causal, cross-attention not);
-  `informer` uses `ProbAttention` with distilling.
-- `tests/test_dualformer_forecaster.py` checks `AttentionLayer` wrapping
-  `FullAttention` alongside a model-local core.
-- The same contract file checks `FullAttention` against the explicit masked softmax
-  and the causal default, `AttentionLayer` state-dict keys and gradients, `FlowAttention`
-  finiteness and gradients, `FlashAttention` equal to `FullAttention` unmasked and
-  invariant to values at padded keys, and `ProbAttention` shapes (including the
-  time-first layout and batch/head count 1), row sums, the `len_q == len_k` assertion, and seeded
-  reproducibility. `ReformerLayer` is only checked for its optional-dependency behavior.
-- no fixture: no pre-refactor fixture exists, and `FlowAttention`, `FlashAttention` and
-  `ReformerLayer` have no recorded upstream reference.
-
-## Variants and options
-
-Choose the core by role: `FullAttention` (exact, `O(L^2)`), `ProbAttention`
-(sub-quadratic, stochastic, needs `factor`), `FlowAttention` (linear in length,
-no map), `FlashAttention` (exact, key-padding mask only, slow Python loops),
-`ReformerLayer` (optional dependency; ignores keys/values and `attn_mask`,
-pads length to a multiple of `2 * bucket_size`).
-
-## When to use and when not to use
-
-Use for encoder/decoder Transformers in the Informer/Transformer line where the
-attention core must be swappable behind `AttentionLayer`. Do not use
-`ProbAttention` for deterministic evaluation or short sequences (it falls back to
-all queries when `u >= len_q` but still samples); do not use `FlashAttention` as
-a performance primitive (it is a reference). For patch-token encoders with
-a fused PyTorch attention use `tst_transformer`; for noise-cancelling or routed
-variants see `differential_attention` and `topk_expert_attention`.
-
-## Related components
-
-`transformer_encdec` (blocks that consume `AttentionLayer`), `tst_transformer`
-(patch-token encoder with fused PyTorch attention), `differential_attention`,
-`topk_expert_attention`, `global_patch_compression_attention`, `graph_masked_attention`
-(adjacency-restricted attention) and `periodic_alibi_bias` (additive score bias; these
-cores have no bias hook, so a model that needs one writes its own attention as `penguin`
-does) differ in the attention rule they implement; `masking` supplies the mask objects.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- Import the module and use its documented functions/classes.
-
-```python
-import tsflab.models._components.self_attention_family
-```
-
-## Retrieval terms
-
-`attention`, `full`, `probabilistic`
-
-## Current model consumers (4)
-
-`dualformer`, `gpht`, `informer`, `transformer`
-<!-- component-card:generated:end -->
+`attn_mask` is an object with a `.mask` bool tensor (see `masking`);
+`FullAttention` with `mask_flag=True` and no mask builds a causal one, while
+`FlashAttention` takes a `[batch, len_k]` 0/1 key-padding tensor instead.
+`tau`/`delta` are accepted and ignored. `ProbAttention` sampling is stochastic
+even in eval mode. Mask, attention-map and layout details: reference.md.

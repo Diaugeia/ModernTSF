@@ -1,6 +1,6 @@
 name = "intake"
 title = "Model intake"
-summary = "Models module: watch for forecasting papers, or turn one approved paper or a bounded search into verified catalog models; read-only unless implementation is authorized."
+summary = "Models module: watch for forecasting papers, or turn one approved paper or a bounded search into admitted catalog models; read-only unless implementation is authorized."
 skills = ["discover-papers", "add-model", "integrate-foundation-model", "curate-components", "audit"]
 acceptance = [
   "Search arXiv and Hugging Face Papers, deduplicate against canonical model cards, and return source-linked candidates or an explicit no-change result.",
@@ -8,7 +8,7 @@ acceptance = [
   "Before writing code, confirm paper identity, deduplication, inputs, outputs, defining equations, and official-source facts (pinned revision and license).",
   "Classify every required block as reuse-existing, extract-new, or model-local; reuse an existing equivalent first.",
   "Write ordinary architectures locally; use the official offline runtime only for a released pretrained foundation model.",
-  "Admit at most the authorized number of models; each passes unified verification, model audit, focused tests, strict runtime contracts, component audit, and repository audit.",
+  "Admit at most the authorized number of models with `tsf model add --name <Name> --verify`; each has a tsflab.card/1 card with truthful facts, [admission] status passed, and passes the model audit, component audit, and repository audit.",
   "Adding no model is a valid outcome when no candidate clears the threshold.",
 ]
 prompt = """
@@ -22,7 +22,8 @@ integrate at most one model: before writing code, confirm the paper identity, in
 outputs, defining equations, and official-source facts; build a component decision
 map and reuse existing components when equivalence is proven; keep unmatched
 paper-specific operations model-local; use the official offline runtime for a released
-pretrained foundation model. Record deviations and source facts. Do not weaken
+pretrained foundation model. Record deviations, upstream issues, and source facts in
+the card, and admit the model with `tsf model add --name {model_name} --verify`. Do not weaken
 contracts, edit unrelated models, publish, push, dispatch additional tasks, or open
 external issues. If nothing clears the gate, leave the repository unchanged.
 """

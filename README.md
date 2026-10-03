@@ -32,7 +32,7 @@ TSFLab automates that loop. Coding agents read new papers, implement them
 behind one verified interface, and evaluate them under one protocol on static
 datasets and on **rolling real-time tracks** that refresh every week. TSFLab
 ships no agent of its own: it is the infrastructure (catalog, contracts, data,
-protocols, evidence) that any coding agent operates through declarative skills.
+protocols, run records) that any coding agent operates through declarative skills.
 
 ---
 
@@ -41,9 +41,9 @@ protocols, evidence) that any coding agent operates through declarative skills.
 | Module | What it does |
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
-| 🧩 **Code & interface** | 217 methods as peers in one flat catalog, composed from 53 shared components, one forecasting signature, a 13-check verification battery with pinned-reference comparison; every card opens with a tagline, tags, and a six-slot composition |
-| 🗃️ **Data** | 101 dataset presets (77 conventional, including the GIFT-Eval family, and 24 spatiotemporal or covariate; 16 of them are frozen releases of the real-time tracks), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
-| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf data analyze` profiles a dataset and `tsf model compose` dry-runs a recombination for AutoResearch |
+| 🧩 **Code & interface** | 311 methods as peers in one flat catalog, composed from 63 shared components, one forecasting signature, and an executable admission contract recorded in every card; each card states its fidelity to the paper and pinned official code, a six-slot composition, the data characteristics it fits, and its data-dependent parameters |
+| 🗃️ **Data** | 108 dataset presets (84 conventional, including the GIFT-Eval family, and 24 spatiotemporal or covariate; 16 of them are frozen releases of the real-time tracks), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
+| ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf data analyze` profiles a dataset, `tsf catalog match` maps its characteristics to models and components, and `tsf model compose` dry-runs a recombination for AutoResearch |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
 ---
@@ -61,7 +61,7 @@ codex          # or any other coding agent
 ```text
 > Set up the environment for my GPU.
 > Benchmark DLinear, PatchTST and iTransformer on ETTh1 and give me a leaderboard.
-> Implement the paper at <arXiv URL> as a catalog model and verify it.
+> Implement the paper at <arXiv URL> as a catalog model and admit it.
 > Forecast this week's traffic round with PatchTST and submit it.
 ```
 
@@ -86,9 +86,10 @@ extras: `tsflab[data]`, `[models]`, `[experiments]`, `[hub]`, `[realtime]`,
 ```bash
 uv run tsf catalog                                      # counts, then the next commands
 uv run tsf catalog search "reversible normalization"    # L0: one line per match
-uv run tsf catalog show PatchTST                          # L1: facts, composition, key ideas
-uv run tsf catalog show revin --depth 2               # L2: full card (--depth 3: paths)
-uv run tsf data analyze etth1                        # profile a dataset, map it to components
+uv run tsf catalog show PatchTST                        # L1: card facts and short README
+uv run tsf catalog show revin --depth 2                 # L2: adds the reference (--depth 3: paths)
+uv run tsf data analyze etth1                           # profile a dataset (train-only statistics)
+uv run tsf catalog match etth1                          # models and components that fit its characteristics
 uv run tsf realtime list
 ```
 
@@ -147,7 +148,7 @@ The literature is also scanned weekly by the `agent` workflow. See
 
 ## 📖 Documentation
 
-- [Workflow documentation](docs/en/README.md): catalog, models, data, AutoResearch, verification, experiments
+- [Workflow documentation](docs/en/README.md): catalog, models, data, AutoResearch, admission, experiments
 - [Projects and the Hub](docs/en/hub.md): `tsf init`, `hf://` assets, weights bundles
 - [Real-time tracks](docs/en/realtime.md): rounds, forecasts, scoring, weekly automation
 
@@ -159,8 +160,8 @@ Exact command options stay in `tsf <command> --help`.
 
 | Path | Contents |
 | --- | --- |
-| `src/tsflab/` | One package per module, mirrored by the CLI: `catalog` (cards, registries, verification), `data`, `models` (flat catalog, `_components`, `_slots`), `experiments` (config, runner, evaluation, execution), `release` (Hub, submissions), `realtime`, `research` (rounds, recombination), `agent` (assets, tasks, `tsf init`), `core` (contracts), `cli` |
-| `configs/`, `catalog/`, `verification/` | Run, model, and dataset presets, real-time track configs, `configs/fixtures/` (smoke and synthetic test inputs, not datasets), dataset cards, verification evidence |
+| `src/tsflab/` | One package per module, mirrored by the CLI: `catalog` (cards, registries, admission), `data`, `models` (flat catalog, `_components`, `_slots`), `experiments` (config, runner, evaluation, execution), `release` (Hub, submissions), `realtime`, `research` (rounds, recombination), `agent` (assets, tasks, `tsf init`), `core` (contracts), `cli` |
+| `configs/`, `catalog/` | Run, model, and dataset presets, real-time track configs, `configs/fixtures/` (smoke and synthetic test inputs, not datasets), dataset cards, declined papers |
 | `dataset/` | Local dataset bytes fetched with `tsf data download` (not packaged) |
 | `apps/web/` | TSFLab Leaderboard: static site, submission pipeline, `submissions/`, real-time rounds |
 | `experiments/` | Local research workspace; only `*/scripts/` is tracked |

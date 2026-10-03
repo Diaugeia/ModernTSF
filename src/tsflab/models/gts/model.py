@@ -10,6 +10,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from tsflab.models._components.channel_alignment import fit_channels
+from tsflab.models._components.graph_conv_gru import GraphConvGRUCell
 from tsflab.models._components.marks import to_spatiotemporal
 
 
@@ -90,17 +91,14 @@ class LearnedDiffusion(nn.Module):
         return self.projection(torch.cat(terms, -1))
 
 
-class GraphGRUCell(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int, order: int) -> None:
-        super().__init__()
-        self.hidden_dim = hidden_dim
-        self.gates = LearnedDiffusion(input_dim + hidden_dim, 2 * hidden_dim, order)
-        self.candidate = LearnedDiffusion(input_dim + hidden_dim, hidden_dim, order)
+class GraphGRUCell(GraphConvGRUCell):
+    """Graph GRU over learned-graph diffusion; ``forward(x, hidden, graph)``."""
 
-    def forward(self, x: torch.Tensor, hidden: torch.Tensor, graph: torch.Tensor) -> torch.Tensor:
-        reset, update = torch.sigmoid(self.gates(torch.cat((x, hidden), -1), graph)).chunk(2, -1)
-        candidate = torch.tanh(self.candidate(torch.cat((x, reset * hidden), -1), graph))
-        return update * hidden + (1.0 - update) * candidate
+    def __init__(self, input_dim: int, hidden_dim: int, order: int) -> None:
+        gates = LearnedDiffusion(input_dim + hidden_dim, 2 * hidden_dim, order)
+        candidate = LearnedDiffusion(input_dim + hidden_dim, hidden_dim, order)
+        super().__init__(gates, candidate)
+        self.hidden_dim = hidden_dim
 
 
 class RecurrentStack(nn.Module):

@@ -1,90 +1,32 @@
 ---
 name: "Sensorformer"
-summary: "Sensorformer patches each variable's window the way PatchTST does, then refines the patch representations with a stack of two-stage Sensor Attention Blocks: stage one compresses every variable's patches into one 'Sensor' summary token via cross-attention (using the variable's last patch as query and all variables' patches as key/value), and stage two lets every patch attend back to those summaries, jointly extracting cross-variable and cross-time dependencies at a fraction of pure cross-patch self-attention's cost; a shared linear head then maps each variable's flattened final patch representations to the forecast horizon."
-paper: "https://arxiv.org/abs/2501.03284"
-paper_title: "Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting"
-venue: "arXiv preprint"
-year: 2025
-
-tagline: "PatchTST-style patches with two-stage sensor attention: per-variable summary tokens, then patches attend back."
-tags: ["transformer", "patching", "attention-variant", "channel-mixing", "sparse-attention"]
-composition: ["normalization=none", "decomposition=none", "temporal=component:embed+component:global_patch_compression_attention", "channel=component:global_patch_compression_attention", "head=component:flatten_forecast_head", "loss=loss:mse"]
+description: "PatchTST-style patch Transformer with two-stage sensor attention: per-variable summary tokens, then every patch attends back to them. Use for multivariate data with cross-variable dependence across many channels at sub-quadratic cost; not for non-stationary level shifts (no instance norm) or probabilistic output."
 ---
+
 # Sensorformer
 
-## Key ideas
+## Idea
 
 - `PatchEmbedding` (`embed`) replicate-pads by `stride`, extracts overlapping patches per variable, and embeds them with positions.
 - `GlobalPatchCompressionAttention` stage one uses each variable's last patch as the query over all variables' patches to build one Sensor summary token per variable.
 - Stage two lets every patch of every variable attend to those summaries, capturing cross-variable and cross-time dependence without full quadratic cross-patch attention.
 - `FlattenForecastHead` maps each variable's final patches to the horizon; there is no instance normalization.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Multivariate data where variables influence each other with time lags: patches attend across variables through per-variable summaries.
+- Many channels: compression to one summary token per variable avoids full attention over all patches of all variables.
+- No instance normalization, so train/test level or scale shifts are not compensated inside the model. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2501.03284); title: Sensorformer: Cross-patch attention with global-patch compression is effective for high-dimensional multivariate time series forecasting; venue/year: arXiv preprint / 2025
-- codebase: not available
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Sensorformer.toml`](../../../../configs/models/Sensorformer.toml).
+- `enc_in` follows the dataset channel count; it must equal it exactly.
+- `patch_len` follows `seq_len`: `patch_len <= seq_len + stride` (after replicate padding by `stride`).
+- Other hyperparameters: preset defaults in `configs/models/Sensorformer.toml`; tune generically.
 
 ## Differences
 
-**No official code was available.** The repository linked by the paper
-(https://github.com/BigYellowTiger/Sensorformer) is an empty GitHub
-repository — verified via the GitHub API: zero commits, and a contents
-request returns `"Git Repository is empty."` No revision could be pinned.
+No official code: the repository linked by the paper (`BigYellowTiger/Sensorformer`) is empty (zero commits), so no revision can be pinned and no reference comparison applies.
 
-**Paper-only implementation.** This model is implemented directly from the
-paper's Section 3 text, Fig. 2, and the pseudocode in Algorithms 1-2, which
-fully specify the patching scheme (explicitly "the same patch strategy as
-PatchTST"), the two-stage attention's queries/keys/values, and the
-`LayerNorm`/MLP wrapping of each stage. The paper does not specify patch
-length, stride, `d_model`, number of heads, feed-forward width, number of
-layers, or normalization before patching; this implementation exposes them as
-ordinary parameters with PatchTST-style defaults rather than guessing
-paper-specific values that were never published. `reference_comparison` is
-declared not-applicable in `verification/models.toml` because there is no
-official implementation to compare against.
-
-## Shared components
-
-- [`embed`](../_components/embed/README.md)
-- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
-- [`global_patch_compression_attention`](../_components/global_patch_compression_attention/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `n_heads=4`, `d_ff=128`, `layers=2`, `patch_len=16`, `stride=8`, `dropout=0.1`
-<!-- model-card:canonical:end -->
-
-## Source and verification
-
-**No official code was available.** The repository linked by the paper
-(https://github.com/BigYellowTiger/Sensorformer) is an empty GitHub
-repository — verified via the GitHub API: zero commits, and a contents
-request returns `"Git Repository is empty."` No revision could be pinned.
-
-**Paper-only implementation.** This model is implemented directly from the
-paper's Section 3 text, Fig. 2, and the pseudocode in Algorithms 1-2, which
-fully specify the patching scheme (explicitly "the same patch strategy as
-PatchTST"), the two-stage attention's queries/keys/values, and the
-`LayerNorm`/MLP wrapping of each stage. The paper does not specify patch
-length, stride, `d_model`, number of heads, feed-forward width, number of
-layers, or normalization before patching; this implementation exposes them as
-ordinary parameters with PatchTST-style defaults rather than guessing
-paper-specific values that were never published. `reference_comparison` is
-declared not-applicable in `verification/models.toml` because there is no
-official implementation to compare against.
+- Implemented from Section 3, Fig. 2, and Algorithms 1-2, which specify the patching ("the same patch strategy as PatchTST"), the two-stage attention's queries, keys, and values, and the LayerNorm/MLP wrapping of each stage.
+- Patch length, stride, `d_model`, heads, feed-forward width, layer count, and normalization before patching are not given in the paper; they are ordinary parameters with PatchTST-style defaults.

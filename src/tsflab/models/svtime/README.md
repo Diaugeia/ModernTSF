@@ -1,92 +1,33 @@
 ---
 name: "SVTime"
-summary: "SVTime is a compact time-series forecasting model that distils inter-period consistency and patch-wise variety from large vision forecasters into patch-specific linear period maps. A backcast-residual decomposition separates the period-oriented forecast from a learned trend correction and combines them with a scalar gate."
-paper: "https://arxiv.org/abs/2510.09780"
-paper_title: "SVTime: Small Time Series Forecasting Models Informed by \\\"Physics\\\" of Large Vision Model Forecasters"
-venue: "arXiv preprint"
-year: 2025
-tagline: "Patch-specific linear maps across periods give the seasonal forecast; backcast residual feeds a gated trend term."
-tags: ["linear", "decomposition", "patching", "channel-independent", "normalization", "lightweight"]
-composition: ["normalization=component:revin", "decomposition=local:backcast-residual-trend", "temporal=local:patch-wise-period-map", "channel=local:channel-independent-shared-weights", "head=local:scalar-gated-trend-seasonal-sum", "loss=loss:mse"]
+description: "Small linear forecaster encoding inductive biases of large vision-model forecasters: patch-specific inter-period linear maps for seasonality plus a gated trend term on the backcast residual. Use for long-term forecasting of periodic series under tight compute; not for aperiodic data or cross-channel structure."
 ---
+
 # SVTime
 
-## Key ideas
+## Idea
 
 - Reshapes the lookback into whole periods and applies a separate learned inter-period linear map per within-period patch (`PatchWisePeriodMap`), producing both a backcast and future periods.
 - The backcast residual `history - backcast` is projected linearly as a trend and mixed with the period forecast by a learned scalar sigmoid gate.
-- Wrapped in reversible instance normalization (`revin`); the SVTime-t annealing constraint is deliberately not included.
+- Channel-independent with shared weights; wrapped in optional reversible instance normalization (`revin`).
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long-term forecasting of series with a clear, known period (e.g. daily cycle in hourly data); the seasonal path works on whole periods.
+- Resource-constrained settings: the paper reports rivaling large models with about 10^3 fewer parameters than vision-model forecasters.
+- Lookbacks of several periods: only `seq_len // period` whole periods are used.
+- Not for data without a stable period, or where cross-channel interactions matter.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2510.09780); title: SVTime: Small Time Series Forecasting Models Informed by \"Physics\" of Large Vision Model Forecasters; venue/year: arXiv preprint / 2025
-- codebase: not available
+- `enc_in`: number of channels; input must be `[B, seq_len, enc_in]`.
+- `period`: the dataset's dominant seasonal period in steps (24 for hourly daily cycles); must be in `[1, seq_len]`; ideally `seq_len` is a multiple, since the remainder of the lookback is dropped.
+- `patch_size`: within-period patch length, in `[1, period]`; ideally divides `period` (the last patch is shorter otherwise).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/SVTime.toml`](../../../../configs/models/SVTime.toml).
+Other hyperparameters: preset defaults in `configs/models/SVTime.toml`; tune generically.
 
 ## Differences
 
-- Implementation: **rewrite** (clean-room confirmed) directly from Sections 3.1, 3.2, 3.4, and Eq. 3 of the paper; no external implementation was inspected or copied.
-- This package implements the paper's named **SVTime** variant: learned patch-specific matrices encode IB1/IB2. It intentionally does not claim the distance-attenuating annealing constraint, which belongs to the separate **SVTime-t** variant.
-- RevIN is a repository-side optional normalization. Reported benchmark numbers, multi-block dataset tuning, and SVTime-t are not reproduction claims of this implementation.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `period=24`, `patch_size=6`, `revin=True`, `affine=False`, `subtract_last=False`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: SVTime: Small Time Series Forecasting Models Informed by "Physics" of Large Vision Model Forecasters
-- **Venue**: arXiv preprint
-- **Published**: 2025 (arXiv: 2025-10)
-- **arXiv**: https://arxiv.org/abs/2510.09780
-
-## Abstract
-Time series AI is crucial for analyzing dynamic web content, driving a surge of pre-trained large models known for their strong knowledge encoding and transfer capabilities across diverse tasks. However, given their energy-intensive training, inference, and hardware demands, using large models as a one-fits-all solution raises serious concerns about carbon footprint and sustainability. For a specific task, a compact yet specialized, high-performing model may be more practical and affordable, especially for resource-constrained users such as small businesses. This motivates the question: Can we build cost-effective lightweight models with large-model-like performance on core tasks such as forecasting? This paper addresses this question by introducing SVTime, a novel Small model inspired by large Vision model (LVM) forecasters for long-term Time series forecasting (LTSF). Recently, LVMs have been shown as powerful tools for LTSF. We identify a set of key inductive biases of LVM forecasters -- analogous to the "physics" governing their behaviors in LTSF -- and design small models that encode these biases through meticulously crafted linear layers and constraint functions. Across 21 baselines spanning lightweight, complex, and pre-trained large models on 8 benchmark datasets, SVTime outperforms state-of-the-art (SOTA) lightweight models and rivals large models with 10^3 fewer parameters than LVMs, while enabling efficient training and inference in low-resource settings.
-
-## In TSFLab
-Default config: `configs/models/SVTime.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Source and verification
-
-- Implementation: **rewrite** (clean-room confirmed) directly from Sections 3.1, 3.2, 3.4, and Eq. 3 of the paper; no external implementation was inspected or copied.
-- This package implements the paper's named **SVTime** variant: learned patch-specific matrices encode IB1/IB2. It intentionally does not claim the distance-attenuating annealing constraint, which belongs to the separate **SVTime-t** variant.
-- RevIN is a repository-side optional normalization. Reported benchmark numbers, multi-block dataset tuning, and SVTime-t are not reproduction claims of this implementation.
-
-## Citation
-
-```bibtex
-@misc{shen2025svtime,
-  author        = {ChengAo Shen and
-                  Ziming Zhao and
-                  Hanghang Tong and
-                  Dongjin Song and
-                  Dongsheng Luo and
-                  Qingsong Wen and
-                  Jingchao Ni},
-  title         = {SVTime: Small Time Series Forecasting Models Informed by "Physics" of Large Vision Model Forecasters},
-  year          = {2025},
-  eprint        = {2510.09780},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2510.09780}
-}
-```
+- Clean-room rewrite from Sections 3.1, 3.2, 3.4 and Eq. 3 of the paper; no external implementation inspected or copied.
+- Implements the named **SVTime** variant (learned patch-specific matrices encode IB1/IB2); the distance-attenuating annealing constraint of **SVTime-t** is deliberately not included.
+- RevIN is a repository-side option; reported benchmark numbers and multi-block dataset tuning are not reproduced.

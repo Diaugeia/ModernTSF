@@ -6,48 +6,19 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from tsflab.models._components.adaptive_node_embedding_adjacency import (
-    adaptive_node_embedding_adjacency,
-)
+from tsflab.models._components.graph_conv_gru import GraphConvGRUCell
 from tsflab.models._components.marks import normalized_time_features, to_spatiotemporal
+from tsflab.models._components.node_adaptive_graph_conv import NodeAdaptiveGraphConv
 
 
-class MetaGraphConvolution(nn.Module):
-    """Generate node-specific graph filters from hierarchical meta embeddings."""
+class MetaGraphGRUCell(GraphConvGRUCell):
+    """Graph GRU over meta-parameterized filters; ``forward(x, state, meta)``."""
 
-    def __init__(self, in_dim: int, out_dim: int, order: int, meta_dim: int) -> None:
-        super().__init__()
-        self.order = order
-        self.weight_bank = nn.Parameter(torch.empty(meta_dim, order, in_dim, out_dim))
-        self.bias_bank = nn.Parameter(torch.empty(meta_dim, out_dim))
-        nn.init.xavier_uniform_(self.weight_bank)
-        nn.init.zeros_(self.bias_bank)
-
-    def forward(self, x: torch.Tensor, meta: torch.Tensor) -> torch.Tensor:
-        graph = adaptive_node_embedding_adjacency(meta)
-        identity = torch.eye(meta.shape[1], device=x.device, dtype=x.dtype).expand(x.shape[0], -1, -1)
-        basis = [identity]
-        if self.order > 1:
-            basis.append(graph)
-        for _ in range(2, self.order):
-            basis.append(2 * graph @ basis[-1] - basis[-2])
-        neighborhoods = torch.einsum("bknm,bmc->bnkc", torch.stack(basis, 1), x)
-        weights = torch.einsum("bnd,dkio->bnkio", meta, self.weight_bank)
-        bias = torch.einsum("bnd,do->bno", meta, self.bias_bank)
-        return torch.einsum("bnki,bnkio->bno", neighborhoods, weights) + bias
-
-
-class MetaGraphGRUCell(nn.Module):
     def __init__(self, in_dim: int, hidden: int, order: int, meta_dim: int) -> None:
-        super().__init__()
+        gates = NodeAdaptiveGraphConv(in_dim + hidden, 2 * hidden, order, meta_dim)
+        candidate = NodeAdaptiveGraphConv(in_dim + hidden, hidden, order, meta_dim)
+        super().__init__(gates, candidate)
         self.hidden = hidden
-        self.gates = MetaGraphConvolution(in_dim + hidden, 2 * hidden, order, meta_dim)
-        self.candidate = MetaGraphConvolution(in_dim + hidden, hidden, order, meta_dim)
-
-    def forward(self, x: torch.Tensor, state: torch.Tensor, meta: torch.Tensor) -> torch.Tensor:
-        reset, update = torch.sigmoid(self.gates(torch.cat((x, state), -1), meta)).chunk(2, -1)
-        proposal = torch.tanh(self.candidate(torch.cat((x, reset * state), -1), meta))
-        return update * state + (1 - update) * proposal
 
 
 class Model(nn.Module):
@@ -123,4 +94,4 @@ class Model(nn.Module):
         return torch.stack(outputs, dim=1)
 
 
-__all__ = ["Model", "MetaGraphConvolution", "MetaGraphGRUCell"]
+__all__ = ["Model", "MetaGraphGRUCell"]

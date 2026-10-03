@@ -7,6 +7,7 @@ import math
 import torch
 import torch.nn as nn
 
+from tsflab.models._components.decomposition_encdec import DecompositionDecoderLayer, DecompositionEncoderLayer
 from tsflab.models._components.forecast_embedding import ForecastEmbedding
 from tsflab.models._components.series_decomposition import SeriesDecomposition
 
@@ -113,50 +114,22 @@ class FrequencyEnhancedAttention(nn.Module):
         return self.output(output.reshape(batch, query_length, width))
 
 
-def _feed_forward(d_model: int, d_ff: int, dropout: float, activation: str) -> nn.Sequential:
-    nonlinear: nn.Module = nn.GELU() if activation == "gelu" else nn.ReLU()
-    return nn.Sequential(
-        nn.Linear(d_model, d_ff), nonlinear, nn.Dropout(dropout),
-        nn.Linear(d_ff, d_model), nn.Dropout(dropout),
-    )
-
-
-class FEDformerEncoderLayer(nn.Module):
+class FEDformerEncoderLayer(DecompositionEncoderLayer):
     def __init__(self, d_model: int, n_heads: int, length: int, modes: int, mode_select: str, d_ff: int, moving_avg: int, dropout: float, activation: str) -> None:
-        super().__init__()
-        self.frequency_block = FrequencyEnhancedBlock(
-            d_model, n_heads, length, modes, mode_select
+        super().__init__(
+            FrequencyEnhancedBlock(d_model, n_heads, length, modes, mode_select),
+            d_model, d_ff, moving_avg, dropout, activation, mixer_name="frequency_block",
         )
-        self.decomposition_one = SeriesDecomposition(moving_avg)
-        self.feed_forward = _feed_forward(d_model, d_ff, dropout, activation)
-        self.decomposition_two = SeriesDecomposition(moving_avg)
-
-    def forward(self, values: torch.Tensor) -> torch.Tensor:
-        seasonal, _ = self.decomposition_one(values + self.frequency_block(values))
-        seasonal, _ = self.decomposition_two(seasonal + self.feed_forward(seasonal))
-        return seasonal
 
 
-class FEDformerDecoderLayer(nn.Module):
+class FEDformerDecoderLayer(DecompositionDecoderLayer):
     def __init__(self, d_model: int, n_heads: int, query_length: int, key_length: int, modes: int, mode_select: str, d_ff: int, moving_avg: int, dropout: float, activation: str, c_out: int) -> None:
-        super().__init__()
-        self.self_frequency = FrequencyEnhancedBlock(
-            d_model, n_heads, query_length, modes, mode_select
+        super().__init__(
+            FrequencyEnhancedBlock(d_model, n_heads, query_length, modes, mode_select),
+            FrequencyEnhancedAttention(d_model, n_heads, query_length, key_length, modes, mode_select),
+            d_model, d_ff, moving_avg, dropout, activation, c_out,
+            mixer_names=("self_frequency", "cross_frequency"),
         )
-        self.cross_frequency = FrequencyEnhancedAttention(
-            d_model, n_heads, query_length, key_length, modes, mode_select
-        )
-        self.feed_forward = _feed_forward(d_model, d_ff, dropout, activation)
-        self.decompositions = nn.ModuleList([SeriesDecomposition(moving_avg) for _ in range(3)])
-        self.trend_projections = nn.ModuleList([nn.Linear(d_model, c_out, bias=False) for _ in range(3)])
-
-    def forward(self, seasonal: torch.Tensor, memory: torch.Tensor, trend: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        seasonal, trend_one = self.decompositions[0](seasonal + self.self_frequency(seasonal))
-        seasonal, trend_two = self.decompositions[1](seasonal + self.cross_frequency(seasonal, memory))
-        seasonal, trend_three = self.decompositions[2](seasonal + self.feed_forward(seasonal))
-        for projection, extracted in zip(self.trend_projections, (trend_one, trend_two, trend_three)):
-            trend = trend + projection(extracted)
-        return seasonal, trend
 
 
 class Model(nn.Module):

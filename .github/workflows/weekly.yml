@@ -92,7 +92,7 @@ jobs:
       pull-requests: write
       actions: write
     env:
-      UV_TORCH_BACKEND: cpu
+      UV_NO_SYNC: "1"  # cpu profile: installed with uv pip --torch-backend cpu
       GH_TOKEN: ${{ github.token }}
       BASE: ${{ vars.INTAKE_BASE || 'dev' }}
     steps:
@@ -102,8 +102,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: astral-sh/setup-uv@v6
-      - name: Install TSFLab (CPU)
-        run: uv sync --python 3.12 --frozen
+      - name: Install TSFLab (CPU profile)
+        run: |
+          uv venv --python 3.12
+          uv pip install --torch-backend cpu -e ".[models,data,experiments]" pytest
       - name: Mergeable check
         run: |
           git fetch --no-tags origin "$BASE"
@@ -127,4 +129,4 @@ jobs:
       - name: Check pinned dataset files
         run: |
           pip install --quiet "pydantic==2.12.5"
-          PYTHONPATH=src python -m tsflab.cli.main dataset download --check
+          PYTHONPATH=src python -m tsflab.cli.main data download --check

@@ -37,7 +37,7 @@ def _model_resources(root: Path) -> list[tuple[dict[str, object], dict[str, str]
     for fields in model_records(root):
         card = (root / str(fields["model_card"])).read_text(encoding="utf-8")
         tags = list(dict.fromkeys(
-            [*fields.get("tags", ()), *sorted(set(fields.get("capabilities", ()))),
+            [*fields.get("tags", ()), *fields.get("fits", ()), *sorted(set(fields.get("capabilities", ()))),
              *fields.get("components", ())]
         ))
         paper = dict(fields["paper"])
@@ -80,7 +80,9 @@ def _card_resources(root: Path, kind: str) -> list[tuple[dict[str, object], dict
         extra = ""
         if kind == "component":
             extra = " ".join(
-                (source.contract, *source.public_symbols, str(card.front.get("category", "")))
+                (source.contract, *source.public_symbols, str(card.front.get("category", "")),
+                 str(card.front.get("slot", "")), *card.front.get("fits", ()),
+                 str(card.front.get("summary", "")))
             )
         else:
             extra = " ".join(
@@ -116,9 +118,10 @@ def search_catalog(
             matched = {t for t in terms if any(t in text for text in surfaces.values())}
             if terms and not matched:
                 continue
+            # Each matched term scores every surface it appears in, so a term carried by
+            # the tags, the description, and the paper outranks one found only in prose.
             score = len(matched) * 100 + sum(
-                next(w for surface, w in _WEIGHTS.items() if t in surfaces[surface])
-                for t in matched
+                w for t in matched for surface, w in _WEIGHTS.items() if t in surfaces[surface]
             )
             # An exact name (or alias) hit outranks partial matches on longer names.
             if set(surfaces["name"].split()) & terms:

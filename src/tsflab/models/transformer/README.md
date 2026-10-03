@@ -1,106 +1,33 @@
 ---
 name: "Transformer"
-summary: "Transformer is the standard encoder-decoder attention architecture applied to time-series forecasting, with full scaled dot-product self-attention, causal decoder attention, encoder-decoder cross-attention, positional/value embeddings, and a one-shot forecast projection."
-paper: "https://proceedings.neurips.cc/paper/7181-attention-is-all-you-need"
-paper_title: "Attention Is All You Need"
-venue: "NeurIPS 2017"
-year: 2017
-code: "https://github.com/thuml/Time-Series-Library"
-revision: "2fb5b84ecef67c45a759f7cf82023d27afe27882"
-license: "MIT"
-tagline: "Vanilla encoder-decoder Transformer with full attention, causal decoder, cross-attention and a one-shot decoder window."
-tags: ["transformer", "covariates", "channel-mixing", "baseline"]
-composition: ["normalization=none", "decomposition=none", "temporal=component:transformer_encdec+component:self_attention_family", "channel=component:embed", "head=local:decoder-linear-projection-last-pred-len", "loss=loss:mse"]
+description: "Vanilla encoder-decoder Transformer with full attention over channel-mixed time-step tokens, a causal decoder, and one-shot horizon output. Use as an attention baseline on multivariate data with calendar marks; not for long lookbacks or many channels where quadratic cost and mixed tokens hurt."
 ---
+
 # Transformer
 
-## Key ideas
+## Idea
 
-- Embeds values and calendar marks with `DataEmbedding` (a linear map over channels per time step, so channels are mixed into one token).
-- `Encoder`/`EncoderLayer` stack with full self-attention (`FullAttention` in `AttentionLayer`); `Decoder` with a causal self-attention, encoder-decoder cross-attention, and a linear projection to the channels.
-- Takes the decoder input (label window plus placeholder horizon) and returns the last `pred_len` steps in one pass.
+- `DataEmbedding` embeds values and calendar marks per time step with a linear map over channels, so all channels share one token.
+- `Encoder` stacks full self-attention (`FullAttention` in `AttentionLayer`) with feed-forward residual blocks.
+- `Decoder` applies causal self-attention, encoder-decoder cross-attention, and a linear projection to the channels.
+- The decoder input (label window plus placeholder horizon) returns the last `pred_len` steps in one pass.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A reference baseline for attention-based forecasting.
+- Tokens mix all channels at each step, which assumes correlated channels; on weakly correlated channels channel-independent models usually fit better.
+- Calendar marks enter through the time-feature embedding, so timestamp signal can be used.
+- Full attention is quadratic in `seq_len`; avoid very long lookbacks.
 
-## Paper and code
+## Configure
 
-- [paper](https://proceedings.neurips.cc/paper/7181-attention-is-all-you-need); title: Attention Is All You Need; venue/year: NeurIPS 2017 / 2017
-- [codebase](https://github.com/thuml/Time-Series-Library); revision: `2fb5b84ecef67c45a759f7cf82023d27afe27882`; license: `MIT`
+- `enc_in`: must equal the dataset channel count; `dec_in` and `c_out` follow it when unset.
+- `freq`: must match the dataset sampling frequency (`h`, `t`, `d`, ...) so the `timeF` mark embedding has the right width.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Transformer.toml`](../../../../configs/models/Transformer.toml).
+Other hyperparameters: preset defaults in `configs/models/Transformer.toml`; tune generically.
 
 ## Differences
 
-**Paper-driven local implementation.** TSFLab assembles the paper's scaled
-dot-product attention, encoder/decoder residual blocks, causal decoder mask,
-cross-attention, and position-wise feed-forward layers from verified shared
-components. The time-series embedding and one-shot forecast boundary are local
-integration choices. The external repository is reference-only; no source file
-was copied or adapted. Published benchmark reproduction remains separate from
-the independent code validation.
-
-## Shared components
-
-- [`embed`](../_components/embed/README.md)
-- [`self_attention_family`](../_components/self_attention_family/README.md)
-- [`transformer_encdec`](../_components/transformer_encdec/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=128`, `n_heads=8`, `e_layers=2`, `d_layers=1`, `d_ff=256`, `dropout=0.1`, `activation='gelu'`, `embed='timeF'`, `freq='h'`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Attention Is All You Need
-- **Venue**: NeurIPS 2017
-- **Published**: 2017 (arXiv: 2017-06)
-- **arXiv**: https://arxiv.org/abs/1706.03762
-
-## Abstract
-The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.
-
-## In TSFLab
-Default config: `configs/models/Transformer.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-**Paper-driven local implementation.** TSFLab assembles the paper's scaled
-dot-product attention, encoder/decoder residual blocks, causal decoder mask,
-cross-attention, and position-wise feed-forward layers from verified shared
-components. The time-series embedding and one-shot forecast boundary are local
-integration choices. The external repository is reference-only; no source file
-was copied or adapted. Published benchmark reproduction remains separate from
-the independent code validation.
-
-## Citation
-
-```bibtex
-@misc{vaswani2017attention,
-  author        = {Ashish Vaswani and
-                  Noam Shazeer and
-                  Niki Parmar and
-                  Jakob Uszkoreit and
-                  Llion Jones and
-                  Aidan N. Gomez and
-                  Lukasz Kaiser and
-                  Illia Polosukhin},
-  title         = {Attention Is All You Need},
-  year          = {2017},
-  eprint        = {1706.03762},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/1706.03762}
-}
-```
+- Assembled from the paper's scaled dot-product attention, encoder/decoder residual blocks, causal decoder mask, cross-attention, and position-wise feed-forward layers using shared components.
+- The time-series embedding and the one-shot forecast boundary are TSFLab integration choices, not part of the paper.
+- Time-Series-Library is a reference only; no source was copied. Published benchmark numbers are not reproduced.

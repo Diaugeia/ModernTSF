@@ -28,7 +28,7 @@ import argparse
 import csv
 import os
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Optional
 
 import numpy as np
@@ -72,6 +72,7 @@ class _TaskConfig:
     label_len: int
     pred_len: int
     features: str
+    seq_len_from_preset: bool = True
 
 
 @dataclass(frozen=True)
@@ -109,6 +110,7 @@ def _load_partial_config(path: str) -> _PartialConfig:
         label_len=int(task_cfg.get("label_len", task_defaults.get("label_len", 0))),
         pred_len=int(task_cfg.get("pred_len", task_defaults.get("pred_len", 24))),
         features=task_cfg.get("features", task_defaults.get("features", "M")),
+        seq_len_from_preset="seq_len" in task_cfg,
     )
     return _PartialConfig(dataset=dataset, task=task)
 
@@ -132,16 +134,69 @@ def _build_dataset(config, split: str):
     )
 
 
-def _extract_series(dataset) -> np.ndarray:
-    """Return the underlying split series as a ``(T, C)`` float64 array."""
-    if not hasattr(dataset, "data"):
-        raise RuntimeError(
-            "Dataset has no `.data` attribute; cannot extract raw series."
+def _build_dataset_for_inspect(config, split: str):
+    """Build the split, shrinking an inherited ``seq_len`` that leaves no windows.
+
+    A dataset-only preset takes ``[task]`` values from the preset itself and only
+    falls back to ``configs/base.toml`` for missing keys. The base ``seq_len`` is a
+    model-run default and can exceed short series (GIFT-EVAL ``covid_deaths``,
+    ``solar/W`` ...); when the preset did not set ``seq_len`` and the split has no
+    windows (or cannot be built), inspection retries with ``seq_len = pred_len``.
+    """
+    try:
+        dataset, error = _build_dataset(config, split), None
+    except (RuntimeError, ValueError) as exc:
+        dataset, error = None, exc
+    task = config.task
+    shrinkable = (
+        isinstance(config, _PartialConfig)
+        and not task.seq_len_from_preset
+        and task.seq_len > task.pred_len
+    )
+    if (dataset is None or len(dataset) == 0) and shrinkable:
+        print(
+            f"Inherited seq_len={task.seq_len} leaves no '{split}' windows; "
+            f"inspecting with seq_len={task.pred_len} (set [task] seq_len to override)"
         )
-    arr = np.asarray(dataset.data, dtype=np.float64)
+        config = replace(config, task=replace(task, seq_len=task.pred_len))
+        return _build_dataset(config, split), config
+    if dataset is None:
+        raise error
+    return dataset, config
+
+
+def _extract_series(dataset) -> np.ndarray:
+    """Return the underlying split series as a ``(T, C)`` float64 array.
+
+    Loaders that do not keep one contiguous ``.data`` array (GIFT-EVAL, the
+    real-time panels) expose ``series_array()`` instead, which is preferred.
+    Spatio-temporal loaders hold ``(T, N, C)`` with the observed value in feature
+    0 and calendar covariates after it; their nodes become the channels. Panels
+    wider than ``_MAX_CHANNELS`` are subsampled evenly so the pairwise channel
+    correlation stays tractable.
+    """
+    if callable(getattr(dataset, "series_array", None)):
+        raw = dataset.series_array()
+    elif hasattr(dataset, "data"):
+        raw = dataset.data
+    else:
+        raise RuntimeError(
+            "Dataset has neither `series_array()` nor a `.data` attribute; "
+            "cannot extract raw series."
+        )
+    arr = np.asarray(raw, dtype=np.float64)
     if arr.ndim == 1:
         arr = arr[:, None]
+    elif arr.ndim == 3:
+        arr = arr[..., 0]
+    if arr.shape[1] > _MAX_CHANNELS:
+        keep = np.linspace(0, arr.shape[1] - 1, _MAX_CHANNELS).astype(np.int64)
+        print(f"Analysing {_MAX_CHANNELS} of {arr.shape[1]} channels (evenly spaced)")
+        arr = arr[:, keep]
     return arr
+
+
+_MAX_CHANNELS = 1024
 
 
 @dataclass(frozen=True)
@@ -318,7 +373,7 @@ def main() -> None:
         print("Config is dataset-only; using task defaults for analysis")
         config = _load_partial_config(args.config)
 
-    dataset = _build_dataset(config, args.split)
+    dataset, config = _build_dataset_for_inspect(config, args.split)
     series = _extract_series(dataset)
     if series.shape[0] < 4:
         raise SystemExit(
@@ -330,6 +385,10 @@ def main() -> None:
 
     name = config.dataset.alias or config.dataset.name
     print(f"Dataset: {name} | split: {args.split}")
+    print(
+        f"Windows: {len(dataset)} (seq_len={config.task.seq_len}, "
+        f"pred_len={config.task.pred_len})"
+    )
     if not _HAS_STATSMODELS:
         print("statsmodels not installed; stationarity uses rolling-moment fallback")
     _print_table(rows)

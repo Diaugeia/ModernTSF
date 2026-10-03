@@ -1,19 +1,22 @@
 # Workflows and architecture
 
 TSFLab has one flat model catalog, one shared-component area, one data
-pipeline, and one verification route. Models and methods are peers.
+pipeline, one card format, and one admission check per model. Models and methods
+are peers.
 
 ```text
-src/tsflab/models/<slug>/              local model code, spec, and model card
+src/tsflab/models/<slug>/              local model code, spec, and card (card.toml, README.md)
 src/tsflab/models/_components/<name>/  reusable component code and card
 src/tsflab/data/                       dataset loaders and parameter schemas
 dataset/                        local dataset bytes (not packaged)
-catalog/datasets/<preset>/      dataset cards: curated facts plus a generated runtime block
+catalog/datasets/<preset>/      dataset cards (card.toml, README.md)
+catalog/declined.toml           papers reviewed but not admitted
 configs/                        composable model, dataset, and run TOML
-verification/                   manifest, generated index, per-model evidence
 work_dirs/                      experiment checkpoints, metrics, and records
 work_dirs/_research/<round>/    optional goals, events, prompts, and full logs
 ```
+
+Set `TSFLAB_WORK_DIR` to keep research rounds outside the checkout's `work_dirs/`.
 
 ## Model runtime interface
 
@@ -47,7 +50,10 @@ the criterion (card slot `loss:mse+local:<name>`) or replace it (`local:<name>`)
 An optional `ModelSpec.training_setup(model, train_loader, *, pred_len, features)`
 runs once before a fresh run to fit training-split state such as a label basis.
 The objective is used only while training; validation, early stopping, and test
-metrics always use `forward` with the configured observation loss. Objectives are
+metrics always use `forward` with the configured observation loss. The strict
+contract check back-propagates the declared objective's loss (after
+`training_setup` on a synthetic stride-1 loader) instead of the `forward` output,
+so `forward` may sample without gradients. Objectives are
 unsupported with `DataParallel`. Do not advertise one as a capability or leave a
 `training_loss()` method that the runner does not call; a paper objective whose
 inputs the runner cannot supply (for example a second historical window) stays off
@@ -70,9 +76,9 @@ catalog entry.
 2. Read the paper and supplement. Locate official code when available, record its
    license, and pin a revision. Use it to clarify omitted implementation details;
    do not copy or import its model source.
-3. Decide the retrieval-layer facts first, since readers find a model through them:
-   a `tagline` (at most 120 characters), `tags` (with one architecture family), and
-   the six-slot `composition` (below). Map every defining operation to an existing
+3. Decide the card facts readers find a model through first: a one-sentence
+   description, `tags` (with one architecture family), the data characteristics it
+   `fits`, and the six-slot `composition` ([Cards](#cards)). Map every defining operation to an existing
    component, a justified new shared component, or a model-local block. Start with:
 
    ```bash
@@ -99,19 +105,29 @@ catalog entry.
    `--components none` only after matching found no equivalent. Select
    `--task-mode spatiotemporal` or `covariate` when required.
 5. Replace every scaffold marker, implement locally, preserve useful paper
-   equations/comments, complete the card (`tagline`, `tags`, `composition`, and a
-   `## Key ideas` section before the generated block), and add focused tests plus a declaration
-   in `verification/models.toml`. Official code requires a reference-comparison
-   test; absence of official code is recorded as `not-applicable`.
+   equations/comments, and complete the card ([Cards](#cards)): `card.toml` facts
+   (fidelity, paper, code with the inspected `reference_sources`, composition,
+   `[data_params]`, and `[[issues]]`) and the README sections Idea, When to use,
+   Configure, Differences. Upstream issues record what the reimplementation exposed in
+   the paper or official code (bugs, paper/code mismatches, missing details, leakage,
+   license problems), each with TSFLab's resolution; `tsf model issues --summary`
+   aggregates them across the catalog. When nothing was found, `issues_checked` says
+   what was checked. A paper reviewed but not admitted (out of scope, not
+   implementable without inventing its defining operations, a composite of other
+   pretrained models, or a duplicate) is recorded in `catalog/declined.toml` with its
+   reason and the same issue kinds. Fidelity is `reference-checked` only when the
+   implementation was compared against official code at the pinned revision.
 6. Admit the entry:
 
    ```bash
-   uv run tsf model add --name MyModel
+   uv run tsf model add --name MyModel --verify
    ```
 
-   Admission registers the model, regenerates the cards, runs unified
-   verification, the focused model audit, strict runtime contracts, the component
-   audit, and the repository audit. Registration is rolled back if any gate fails.
+   Admission registers the model, runs the model audit, the component audit, and
+   the repository audit, then runs the executable contract and records the result
+   in the card's `[admission]`. Registration is rolled back if any gate fails.
+   Without `--verify` the admission stays `pending`; `tsf repo check --scope release`
+   requires every admission to be `passed` before a final release.
 
 ## Foundation models and artifacts
 
@@ -171,18 +187,18 @@ The cache defaults to the user cache directory and may be changed with
 `TSFLAB_CACHE`. A required artifact must exist and match SHA-256 before the
 artifact-aware factory runs. Ordinary models keep the two-argument factory;
 artifact-backed models explicitly receive a mapping of verified local paths.
-Artifact tests, loading behavior, offline failure, and the exact checkpoint claim
-belong in verification and the model card.
+Loading behavior, offline failure, and the exact checkpoint claim belong in the
+model card; the admission contract runs offline from verified local paths.
 
 ## Components
 
 Components live only in `src/tsflab/models/_components/<name>/`. Each directory has an
-implementation, a catalog contract, focused tests, and a README card. The card is
-curated (purpose and formula, origin and why it was cut at this boundary, every
-public symbol with parameters and tensor shapes, equivalence evidence, variants,
-when to use and not to use, related components); its API, import line, and
-consumers are generated between the card markers. `tsf model audit --components` enforces
-both parts.
+implementation, a catalog contract, and a card ([Cards](#cards)): `card.toml` records
+the role, the composition slot it fills, the data characteristics it fits, its
+category, input and output shapes, and origin; the README covers What it does, When
+to use, and Interface (every public symbol with parameters, tensor shapes, and
+state). Consumers and the import line are derived from code, never stored.
+`tsf model audit --components` checks the cards against the catalog.
 Extract only mathematically and operationally equivalent behavior—matching names
 or tensor rank is insufficient. Validate axes, normalization, masking, residual
 order, initialization, state, outputs, gradients, and serialization.
@@ -192,7 +208,16 @@ uv run tsf catalog list --kind component
 uv run tsf catalog search --kind component "patch forecast head"
 uv run tsf catalog show flatten_forecast_head --depth 1
 uv run tsf model audit --components
+uv run tsf model similar --top 20     # ranked extraction/reuse candidates
 ```
+
+`tsf model similar` finds candidates statically: it parses every model and
+component, renames identifiers, keeps library operators (`torch.fft.rfft`,
+`nn.Linear`, `.softmax`), and clusters units whose token shingles and operator
+profiles agree (`--threshold`, default 0.6). Each cluster is marked as a
+`reuse-existing` or `extract-new` candidate. It nominates only; equivalence is
+still shown against fixtures captured before any code moves, and every model that
+uses a changed component is re-admitted (`tsf model verify --changed`).
 
 ### Reading the catalog
 
@@ -209,33 +234,58 @@ uv run tsf catalog show PatchTST --depth 3    # L3
 
 | Depth | Content |
 | --- | --- |
-| 0 | one line: `name`, `kind`, `summary`, `tags` (what search returns) |
-| 1 | front matter plus the interface and constraint sections (default) |
-| 2 | the full card |
-| 3 | the source, config, test, and evidence paths to open |
+| 0 | one line: `name`, `kind`, the README `description`, `tags` (what search returns) |
+| 1 | `card.toml` facts, runtime facts derived from code, and the README body (default) |
+| 2 | L1 plus `reference.md` when the card has one |
+| 3 | the source, config, and card paths to open |
 
 `catalog search` ranks all three kinds; `--kind` restricts it, `--capability`
 (repeatable) filters models, `--limit` caps results, and `--json` gives
-structured output. The per-kind `search` and `show` commands return the same lines
-and cards.
+structured output. `tsf catalog match <dataset>` starts from data instead of
+words: it intersects the dataset card's characteristics with the `fits` of every
+model and component card and ranks the overlaps, components grouped by slot
+(`--extra probabilistic-output` adds task terms). A match is a hypothesis to test,
+not a verdict.
 
-What each card records:
+### Cards
 
-- **Model:** a `tagline`, `tags` (one is the architecture family), and a
-  `composition` of six slots, `normalization`, `decomposition`, `temporal`,
-  `channel`, `head`, `loss`, each `component:<name>`, `local:<block>`,
-  `loss:<name>`, or `none`. A `## Key ideas` section lists what is distinctive. The
-  paper, venue, and (when it exists) official code, pinned revision, and license
-  come with it, and the body maps operations to local code and lists differences
-  from the paper and official code.
-- **Component:** `summary`, `category`, `input`/`output` shapes, `origin`, `tags`,
-  and the sections Purpose, Origin and granularity, Interface (every public symbol
-  with shapes and state), Invariants and equivalence evidence, Variants and
-  options, When to use and when not to use, and Related components.
-- **Dataset:** domain, source, citation, license, redistribution, frequency, time
-  span, length, channels, target, missing values, the TSFLab `protocol`, the
-  `literature_protocol` when the published one differs, lookbacks and horizons,
-  split, and whether the statistics were measured or source-reported. See Data.
+Models, components, and datasets share one card format (`tsflab.card/1`). Each card
+directory holds `card.toml` (structured facts), `README.md` (front matter `name`
+and `description`, then a short body of at most 60 lines in fixed sections), and an
+optional `reference.md` for detail that does not fit. Nothing generated is stored
+in a card: config paths, parameter schemas, imports, consumers, loaders, and task
+modes are derived from code when a card is read.
+
+- **Model:** `tags` (one is the architecture family), `fits`, `fidelity`
+  (`reference-checked`, `paper-only`, `inferred`, or `composed`), `[paper]`,
+  `[code]` (official repository, pinned revision, license, and the inspected
+  `reference_sources`), a `[composition]` of six slots (`normalization`,
+  `decomposition`, `temporal`, `channel`, `head`, `loss`, each `component:<name>`,
+  `local:<block>`, `loss:<name>`, or `none`), `[data_params]`, `[[issues]]` (or
+  `issues_checked`), and `[admission]`. README sections: Idea, When to use,
+  Configure, Differences.
+- **Component:** `role`, `slot`, `fits`, `category`, `tags`, `input`/`output`
+  shapes, `origin`, `origin_models`. README sections: What it does, When to use,
+  Interface.
+- **Dataset:** `domain`, `tags`, `characteristics` with their basis, `related`,
+  `[source]` (citation, license, redistribution), `[shape]` (frequency, span,
+  length, channels, target, missing values, whether measured or source-reported),
+  and `[protocol]` (the TSFLab protocol, the literature protocol when it differs,
+  split, lookbacks, horizons). README sections: Overview, Protocol and pitfalls.
+
+`fits` and `characteristics` use one vocabulary. Data terms are the rules of the
+dataset profiler (`tsf data analyze`), such as `non-stationary`,
+`strong-seasonality`, or `train-val-level-shift`; `tsf data analyze <preset>
+--write-card` measures them and records them in the dataset card. Task terms
+(`spatial-graph`, `calendar-effects`, `exogenous-covariates`, `long-horizon`,
+`probabilistic-output`, `low-data`, ...) describe the forecasting setup, and `any`
+marks a generic building block.
+
+`[data_params]` names the parameters whose right value depends on the data, with
+the property they follow (`period`, `frequency`, `channels`, `nodes`, `seq_len`,
+`pred_len`, `graph`, or `train-split`) and a rule, for example a moving-average
+kernel set from the dominant period. Generic hyperparameters (width, depth,
+dropout, learning rate) are not listed; tune them within the experiment budget.
 
 Paper-specific variants stay inside the model package. Named model packages must
 not import implementation code from another named model.
@@ -246,17 +296,18 @@ Data has three non-overlapping layers:
 
 - `dataset/`: local files, downloads, and converted arrays; never code or cards.
 - `src/tsflab/data/`: executable loaders, base contracts, and Pydantic parameter schemas.
-- `catalog/datasets/`: one README card per runnable dataset preset, plus one family
-  card for GIFT-Eval. Each card pairs curated facts (domain, source, license,
-  statistics, protocol, pitfalls) with a generated runtime block.
+- `catalog/datasets/`: one card per runnable dataset preset, plus one family card
+  for GIFT-Eval ([Cards](#cards)): curated facts (domain, source, license, shape,
+  protocol, measured characteristics) and a short README with the pitfalls. Loader,
+  files, and task modes are derived from the preset and code.
 
-There are 101 dataset presets: 77 conventional `time_series` presets (including the
+There are 108 dataset presets: 84 conventional `time_series` presets (including the
 GIFT-Eval series) and 24 spatiotemporal or covariate presets; 16 presets under
 `rt/` are frozen releases of the real-time tracks. Every dataset has
 exactly one TSFLab protocol, stated in its card (chronological split, scaling fitted
 on the training split only, lookbacks and horizons), so results on a dataset are
 comparable across models. Where the literature uses a different protocol, the card
-records it separately as `literature_protocol`. `configs/fixtures/` holds smoke and
+records it separately as `[protocol].literature`. `configs/fixtures/` holds smoke and
 synthetic test inputs; they are not datasets and have no cards.
 
 Fetch a published preset's files, pinned and checksum-verified, into `dataset/`
@@ -273,17 +324,16 @@ card's domain, tags, frequency, and source; `show` returns the card's facts:
 ```bash
 uv run tsf catalog search --kind dataset hourly electricity
 uv run tsf catalog show etth1       # preset record plus card facts
-uv run tsf data audit            # required facts, no placeholders, generated block current
+uv run tsf catalog match etth1      # models and components that fit its characteristics
+uv run tsf data audit            # required facts, no placeholders
 ```
 
-Card front matter (short facts: `summary`, `domain`, `tags`, `source`, `license`,
-`redistribution`, `frequency`, `time_span`, `length`, `channels`, `target`,
-`missing_values`, `protocol`, `literature_protocol`, `seq_lens`, `pred_lens`, `split`, `stats_basis`,
-`related`, and optionally `realtime_track`) is the quick reference; the body adds provenance, statistics, standard
-protocol, and known pitfalls. `license: "unknown"` means no explicit terms were
-found, not that redistribution is allowed. `stats_basis` says whether numbers
-were measured from local files or reported by the source. `tsf repo cards`
-rewrites only the marked runtime block and the generated front-matter keys.
+`card.toml` is the quick reference (`[source]`, `[shape]`, `[protocol]`,
+`characteristics`, `related`, optionally `realtime_track`); the README adds the
+overview, protocol, and known pitfalls, and `reference.md` longer provenance or
+statistics. `license = "unknown"` means no explicit terms were found, not that
+redistribution is allowed. `stats_basis` says whether numbers were measured from
+local files or reported by the source.
 
 Use an existing CSV preset or create a loader-backed dataset:
 
@@ -292,6 +342,7 @@ uv run tsf data add --name my_data --pattern custom \
   --path ./dataset/my_data/my_data.csv --target OT
 uv run tsf data inspect --config configs/datasets/my_data.toml
 uv run tsf data analyze my_data      # model-selection profile (JSON + markdown)
+uv run tsf data analyze my_data --write-card   # record its characteristics in the card
 uv run tsf catalog show my_data
 uv run tsf data audit
 ```
@@ -299,12 +350,14 @@ uv run tsf data audit
 `dataset analyze <preset>` (or `--path FILE`) profiles the training split (length,
 missingness, scale, periods, seasonality, trend, forecastability, cross-channel
 structure, outliers) plus train/validation shift, recommends lookback candidates, and
-maps findings to catalog components and models. Test-split shift is labelled
-diagnostic-only. Results go to `work_dirs/profiles/<name>/` (`--out` changes it,
+maps findings to catalog components and models. The rules that fire are the
+dataset's data characteristics; `--write-card` records them, with their basis, in
+the dataset card, where `tsf catalog match` reads them. Test-split shift is labelled
+diagnostic-only and never becomes a characteristic. Results go to `work_dirs/profiles/<name>/` (`--out` changes it,
 `--json` prints the profile). For a file that has no preset, pass `--path FILE`
 with `--split-ratio TRAIN VAL TEST` and optionally `--freq`.
 
-`dataset prepare`, `convert-traffic`, and `gift-download` provide explicit
+`tsf data prepare [--from traffic|ultratraffic|gift]` provides explicit
 conversion/download operations; inspect their `--help` before writing. Scaling
 must fit training data only, split boundaries must be stable, and graph/covariate
 loaders must declare compatible task modes.
@@ -381,7 +434,7 @@ uv run tsf research status <round-id> completed --message "No improvement observ
 
 A round is only a small workspace containing `round.json`, append-only events,
 complete command logs, and an optional rendered prompt. It does not alter model,
-dataset, config, verification, or result contracts. Resolved runs consume the
+dataset, config, admission, or result contracts. Resolved runs consume the
 declared budget atomically; failures remain visible. Existing Harnesses can be
 rendered alone or started with a round:
 
@@ -399,8 +452,13 @@ AutoResearch asks which design suits a dataset and tests it, instead of running 
 fixed benchmark. It composes three public pieces and needs no new state beyond an
 optional research round.
 
-1. **Profile the data.** `tsf data analyze <preset>` reports the training-split
-   statistics and the recommended lookbacks and catalog options (see Data).
+1. **Profile the data and match the catalog.** `tsf data analyze <preset>` reports
+   the training-split statistics, the recommended lookbacks, and the data
+   characteristics that fired (see Data). `tsf catalog match <preset>` ranks the
+   models and components whose card `fits` overlap those characteristics, grouped by
+   slot; that is the candidate menu for the baseline panel and the slot grid. Set
+   each candidate's `[data_params]` from the profile (for example a period-sized
+   kernel); generic hyperparameters are tuned within the run budget.
 2. **Fill the slot grid.** A model is described by six slots, `normalization`,
    `decomposition`, `temporal`, `channel`, `head`, and `loss`, plus at most one
    bounded free-form block for something the catalog cannot express. Options are
@@ -480,11 +538,11 @@ optional research round.
    ```bash
    uv run tsf model compose spec.toml --register SeasonalRevLinear --dry-run   # lists the files
    uv run tsf model compose spec.toml --register SeasonalRevLinear
-   uv run tsf model add --name SeasonalRevLinear   # verification, audits, catalog entry; rolls back on failure
+   uv run tsf model add --name SeasonalRevLinear --verify   # audits, admission, catalog entry; rolls back on failure
    ```
 
-   `--register` writes `src/tsflab/models/<slug>/` (model, spec, card, preset) plus a
-   `verification/models.toml` entry; the generated model fixes the slots, so its
+   `--register` writes `src/tsflab/models/<slug>/` (model, spec, a card with
+   `fidelity = "composed"`, preset); the generated model fixes the slots, so its
    quantile or Gaussian head declares the matching output capability. Combine
    `--register NAME --write-config PATH` to get a config that runs the new model.
 
@@ -493,31 +551,33 @@ parameter in the run config. Register a new model only after it beats the baseli
 with confirmation seeds, through the normal path in
 [Add a model or method](#add-a-model-or-method).
 
-## Verification and repository gates
+## Admission and repository gates
 
-There is one model verification structure:
-
-```text
-verification/models.toml
-verification/index.json
-verification/evidence/<Model>.json
-```
-
-Evidence checks paper structure, equations, construction, forward, backward,
-finite outputs, active gradients, state-dict round trip, CPU, batch and sequence
-boundaries, input contract, and reference comparison. The index is generated.
+Each model is checked once, when it enters the catalog, and again only when its
+package, its preset, or a component it uses changes. The check runs the strict
+executable contract on CPU (construction from the preset, forward and backward or
+one synthetic training step, output shape, finite outputs, active gradients, and a
+state-dict round trip) and writes the result into the `[admission]` table of the
+model's `card.toml` (status, date, commit, device, whether official code was the
+reference, and a note). There are no separate evidence files, fingerprints, or a
+per-model test suite; `tests/` covers the infrastructure.
 
 ```bash
-uv run tsf model verify DLinear
-uv run tsf model verify --stale
-uv run tsf model verify --all --jobs 8
-uv run tsf model verify --index
-uv run tsf model audit --summary
-uv run tsf repo check --contracts strict
+uv run tsf model verify DLinear                       # one or more models
+uv run tsf model verify --changed --base origin/dev   # models touched since a ref
+uv run tsf model verify --all --jobs 8                # the whole catalog
+uv run tsf model audit --summary                      # card facts and admission records
+uv run tsf model audit --summary --release            # also require every admission passed
 uv run tsf repo check --audit
+uv run tsf repo check --scope release
 ```
 
-Paper-result reproduction is separate from code verification: reproduce datasets,
+CI runs static checks and the infrastructure tests; it does not run models. The
+pull request records `[admission]` for every changed model. A final release
+requires every admission to be `passed`; release candidates report the audit as a
+warning.
+
+Paper-result reproduction is separate from admission: reproduce datasets,
 splits, preprocessing, optimization, seeds, metrics, and reported cells through
 run configs, then state all deviations instead of treating a successful forward
 pass as a reproduced paper result.

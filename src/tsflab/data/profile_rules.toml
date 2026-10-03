@@ -6,7 +6,7 @@
 # names catalog facts: `components` (tsf catalog list --kind component), `models` (tsf model
 # list), and `slots` options for the recombination slots below. Options are
 # "component:<name>", "model:<name>" (a donor design to borrow the idea from),
-# or "loss:<name>" (training.loss). tests/test_dataset_profile.py checks that every
+# or "loss:<name>" (training.loss). tests/test_data.py checks that every
 # name exists. Thresholds are priors, not laws: treat a fired rule as a hypothesis
 # to test against the baseline panel.
 

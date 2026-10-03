@@ -39,7 +39,7 @@ def _now() -> str:
 
 def research_root() -> Path:
     """Return the research workspace without creating it."""
-    configured = os.environ.get("TSF_WORK_DIR")
+    configured = os.environ.get("TSFLAB_WORK_DIR")
     work_dir = Path(configured) if configured else working_root() / "work_dirs"
     return work_dir.expanduser().resolve() / "_research"
 

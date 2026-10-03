@@ -1,98 +1,37 @@
 ---
 name: "GTS"
-summary: "GTS jointly learns a discrete probabilistic graph and a diffusion-recurrent forecaster for multiple time series. This clean-room implementation encodes each node's observed history, classifies every directed edge, samples edges with straight-through Gumbel-Softmax during training, and uses the sampled graph in bidirectional graph-GRU recurrence."
-paper: "https://arxiv.org/abs/2101.06861"
-paper_title: "Discrete Graph Structure Learning for Forecasting Multiple Time Series"
-venue: "ICLR 2021"
-year: 2021
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "Jointly learns a discrete node graph via Gumbel-Softmax edge sampling and a bidirectional diffusion graph-GRU seq2seq."
-tags: ["gnn", "rnn", "spatiotemporal", "graph-learning", "covariates", "probabilistic-graph"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:diffusion-graph-gru-encoder-decoder", "channel=local:learned-discrete-graph-diffusion", "head=local:autoregressive-linear-decoder", "loss=loss:mse+local:graph-prior-bce"]
+description: "Jointly learns a discrete node graph via Gumbel-Softmax edge sampling and a bidirectional diffusion graph-GRU seq2seq. Use for multiple related series (sensor networks) whose graph is unknown or only approximate; not for independent channels or long horizons."
 ---
+
 # GTS
 
-## Key ideas
+## Idea
 
-- `DiscreteGraphDiscovery` encodes each node's history, classifies every directed edge, and samples edges with straight-through Gumbel-Softmax in training (probabilities in evaluation).
-- The supplied adjacency is only a weak edge-logit prior and the target of `graph_prior_loss`; the `training_objective` adds that BCE (weight 1) to the configured criterion, only when an adjacency is supplied.
-- `LearnedDiffusion` does bidirectional polynomial (Chebyshev-style) propagation on the sampled graph inside `GraphGRUCell`, stacked as `RecurrentStack` encoder and decoder.
-- The decoder generates the horizon autoregressively from a zero start, projecting each step to one value per node.
+- `DiscreteGraphDiscovery` encodes each node's history, classifies every directed edge, and samples edges with straight-through Gumbel-Softmax in training (probabilities in evaluation), so the graph is learned end-to-end with the forecaster.
+- A supplied adjacency is only a weak edge-logit prior and the target of `graph_prior_loss`; the training objective adds that BCE (weight 1) to the configured criterion only when an adjacency is supplied.
+- `LearnedDiffusion` does bidirectional polynomial (Chebyshev-style) propagation on the sampled graph inside `GraphGRUCell` (shared `graph_conv_gru` gating), stacked as encoder and decoder.
+- The decoder generates the horizon autoregressively from a zero start, one value per node per step.
+- The paper casts structure learning as optimizing mean performance over a parameterized graph distribution, reported simpler and more efficient than bilevel graph learning.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Designed for multiple time series whose pairwise relations help forecasting but whose graph is unknown (or only approximately known); traffic sensor networks are the typical case.
+- Mixes nodes through the learned graph; brings nothing when channels move independently.
+- Edge classification is quadratic in the node count, and autoregressive GRU decoding suits short horizons.
+- Point output only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2101.06861); title: Discrete Graph Structure Learning for Forecasting Multiple Time Series; venue/year: ICLR 2021 / 2021
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
+- `enc_in`: the dataset's node count (runner-injected `num_nodes` takes precedence).
+- `adj_mx`: optional known graph, injected by the runner; only a prior, the graph is still learned.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/GTS.toml`](../../../../configs/models/GTS.toml).
+Other hyperparameters: preset defaults in `configs/models/GTS.toml`; tune generically.
 
 ## Differences
 
-- Local implementation: the graph learner, diffusion recurrence, and forecasting head are written against TSFLab contracts; BasicTS is retained as a cited reference.
-- Formula mapping: `DiscreteGraphDiscovery` implements node-series encoding, pairwise edge probabilities, and differentiable discrete sampling; `LearnedDiffusion` provides bidirectional polynomial graph propagation; `GraphGRUCell` and the encoder/decoder stacks implement the forecasting network.
-- Adjacency and marks: supplied adjacency is a shape-checked weak edge-logit prior and the target of `graph_prior_loss`; graph discovery still occurs end-to-end. Encoder marks are accepted through `input_dim`. No future target is consumed.
-- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The graph prior BCE is part of the runner training objective, active only when `adj_mx` is given (the prior is the supplied adjacency, not the official k-nearest-neighbour graph from the training series). The official data pipeline, training schedule, and published metrics remain caller responsibilities.
-
-## Shared components
-
-- [`channel_alignment`](../_components/channel_alignment/README.md)
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `rnn_units=16`, `num_rnn_layers=1`, `max_diffusion_step=2`, `embedding_dim=16`, `temp=0.5`, `prior_strength=0.1`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Discrete Graph Structure Learning for Forecasting Multiple Time Series
-- **Venue**: ICLR 2021
-- **Published**: 2021 (arXiv: 2021-01)
-- **arXiv**: https://arxiv.org/abs/2101.06861
-
-## Abstract
-Time series forecasting is an extensively studied subject in statistics, economics, and computer science. Exploration of the correlation and causation among the variables in a multivariate time series shows promise in enhancing the performance of a time series model. When using deep neural networks as forecasting models, we hypothesize that exploiting the pairwise information among multiple (multivariate) time series also improves their forecast. If an explicit graph structure is known, graph neural networks (GNNs) have been demonstrated as powerful tools to exploit the structure. In this work, we propose learning the structure simultaneously with the GNN if the graph is unknown. We cast the problem as learning a probabilistic graph model through optimizing the mean performance over the graph distribution. The distribution is parameterized by a neural network so that discrete graphs can be sampled differentiably through reparameterization. Empirical evaluations show that our method is simpler, more efficient, and better performing than a recently proposed bilevel learning approach for graph structure learning, as well as a broad array of forecasting models, either deep or non-deep learning based, and graph or non-graph based.
-
-## In TSFLab
-Default config: `configs/models/GTS.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Verification
-
-- Local implementation: the graph learner, diffusion recurrence, and forecasting head are written against TSFLab contracts; BasicTS is retained as a cited reference.
-- Formula mapping: `DiscreteGraphDiscovery` implements node-series encoding, pairwise edge probabilities, and differentiable discrete sampling; `LearnedDiffusion` provides bidirectional polynomial graph propagation; `GraphGRUCell` and the encoder/decoder stacks implement the forecasting network.
-- Adjacency and marks: supplied adjacency is a shape-checked weak edge-logit prior and the target of `graph_prior_loss`; graph discovery still occurs end-to-end. Encoder marks are accepted through `input_dim`. No future target is consumed.
-- Differences and limits: graph features use the current input window rather than a separate full-training-series feature file. Evaluation uses edge probabilities instead of random samples. The graph prior BCE is part of the runner training objective, active only when `adj_mx` is given (the prior is the supplied adjacency, not the official k-nearest-neighbour graph from the training series). The official data pipeline, training schedule, and published metrics remain caller responsibilities.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/iclr/Shang0B21,
-  author       = {Chao Shang and
-                  Jie Chen and
-                  Jinbo Bi},
-  title        = {Discrete Graph Structure Learning for Forecasting Multiple Time Series},
-  booktitle    = {9th International Conference on Learning Representations, {ICLR} 2021,
-                  Virtual Event, Austria, May 3-7, 2021},
-  publisher    = {OpenReview.net},
-  year         = {2021},
-  url          = {https://openreview.net/forum?id=WEHSlH5mOk},
-  timestamp    = {Wed, 23 Jun 2021 17:36:39 +0200},
-  biburl       = {https://dblp.org/rec/conf/iclr/Shang0B21.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Local implementation against TSFLab contracts; BasicTS (pinned revision) is a cited reference.
+- Graph features use the current input window instead of a separate full-training-series feature file.
+- Evaluation uses edge probabilities instead of random samples.
+- The graph-prior BCE uses the supplied adjacency, not the official k-nearest-neighbour graph from the training series, and is active only when `adj_mx` is given.
+- Encoder marks enter through `input_dim` (default 3: value, time of day, day of week); no future target is consumed. The official data pipeline, training schedule and published metrics are not reproduced.
+- Citation: Shang, C., Chen, J., Bi, J. "Discrete Graph Structure Learning for Forecasting Multiple Time Series." ICLR 2021.

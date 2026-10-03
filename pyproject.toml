@@ -80,7 +80,10 @@ include = ["tsflab*"]
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
-markers = ["e2e: end-to-end CPU chain on fixture data (slow; run with -m e2e)"]
+markers = [
+    "e2e: end-to-end CPU runs on fixture data; everything under tests/e2e (run with -m e2e)",
+    "model: builds catalog models; skipped unless TSFLAB_MODEL_TESTS=1 (admission covers models)",
+]
 
 # PyTorch backend (CPU/CUDA) is resolved at install time by uv via
 # UV_TORCH_BACKEND (auto|cpu|cu126|cu128|cu130). No explicit

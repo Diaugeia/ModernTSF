@@ -20,19 +20,19 @@ semantics match. A released pretrained foundation model is not rewritten; use
 5. For pretrained weights or tokenizers, declare checksum-pinned `ModelArtifact`
    entries (`hf://`, `https://`, or `file://`), never download implicitly, and add an
    `artifact_factory(cfg, params, paths)` that uses verified local paths only.
-6. Complete the card: paper and official-code facts, local mapping, reused and
-   model-local blocks, deviations, limits, and verification.
-7. Add focused equation/structure checks and, when official code exists, a bounded
-   `reference_comparison`; otherwise record it as `not-applicable`.
+6. Complete the card: `card.toml` facts (paper, code with `reference_sources`,
+   fidelity, composition, data_params, issues) and the README sections Idea, When
+   to use, Configure (data-dependent parameters only), Differences.
+7. Check equations and structure against the paper and, when official code exists,
+   compare against it at the pinned revision; the card's `fidelity` and Differences
+   record what was compared (`reference-checked` needs official code).
 
 ```bash
 uv run tsf catalog show <Name>     # L1; --depth 2 for the full card, --depth 3 for paths
-uv run tsf model verify <Name>   # existing model; new entries verify during model add
+uv run tsf model verify <Name>   # existing model; new entries use tsf model add --verify
 uv run tsf model audit <Name>
-uv run tsf repo check --contracts strict --models <Name>
 uv run tsf model audit --components
 ```
 
-Success: unified evidence covers every check, the card is truthful, no peer-model
-import, no unresolved defining operation. Stop rather than add a placeholder when the
-paper, inputs, or defining behavior are too ambiguous to implement truthfully.
+Success: `[admission]` passed, the card is truthful, no peer-model import, no
+unresolved defining operation. Stop rather than add a placeholder when the paper, inputs, or defining behavior are too ambiguous to implement truthfully.

@@ -40,13 +40,3 @@ def file_lock(path: Path, *, blocking=True):
             yield stream.fileno()
         finally:
             fcntl.flock(stream, fcntl.LOCK_UN)
-
-
-def __getattr__(name):
-    # Compatibility for callers of the original storage module. New consumers
-    # use fingerprints explicitly; basic persistence imports no scientific code.
-    if name in {"dataset_fingerprint", "code_fingerprint", "dependency_fingerprint"}:
-        from tsflab.experiments.infra import fingerprints
-
-        return getattr(fingerprints, name)
-    raise AttributeError(name)

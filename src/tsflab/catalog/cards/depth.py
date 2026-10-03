@@ -3,14 +3,12 @@
 One depth model serves every catalog resource, so an agent can spend context
 only as needed:
 
-* L0 - one line: ``name``, ``kind``, ``tagline`` (else the first sentence of
-  ``summary``), ``tags``.
-* L1 - front matter plus the interface/constraint sections of the card.
-* L2 - the full card.
-* L3 - the source, config, test, and evidence paths to open next.
+* L0 - one line: ``name``, ``kind``, the README ``description``, ``tags``.
+* L1 - ``card.toml`` facts, runtime facts derived from code, and the README body.
+* L2 - L1 plus ``reference.md`` when the card has one.
+* L3 - the source, config, and card paths to open next.
 
-The reader is generic: it needs only a card's flat front matter and its
-level-two sections, so card content can evolve without touching this module.
+Cards follow ``tsflab.card/1`` (see ``tsflab.catalog.cards.schema``).
 """
 
 from __future__ import annotations
@@ -19,7 +17,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import re
 
-from tsflab.catalog.cards.metadata import read_front_matter
 
 DEPTHS = (0, 1, 2, 3)
 DEPTH_HELP = (
@@ -28,9 +25,6 @@ DEPTH_HELP = (
 )
 L0_SUMMARY_CHARS = 160
 # Sections shown at L1: how the resource is called and what limits composition.
-_L1_SECTION = re.compile(
-    r"key ideas|input|output|interface|contract|constraint|when to use", re.IGNORECASE
-)
 
 
 @dataclass(frozen=True)
@@ -41,6 +35,10 @@ class Card:
     front: dict[str, object]
     text: str
     sections: tuple[tuple[str, str], ...] = field(default_factory=tuple)
+    #: ``card.toml`` verbatim, the README body (L1), and ``reference.md`` (L2).
+    facts_text: str = ""
+    body: str = ""
+    reference: str | None = None
 
     @property
     def name(self) -> str:
@@ -56,8 +54,8 @@ class Card:
 
     @property
     def headline(self) -> str:
-        """The L0 text: the curated tagline when present, else the summary."""
-        return " ".join(str(self.front.get("tagline") or self.summary).split())
+        """The L0 text: the README description (Skill-style what + when to use)."""
+        return " ".join(str(self.front.get("description") or self.front.get("tagline") or self.summary).split())
 
     @property
     def tags(self) -> tuple[str, ...]:
@@ -81,10 +79,25 @@ def split_sections(text: str) -> tuple[tuple[str, str], ...]:
 
 
 def read_card(path: Path) -> Card:
-    """Parse one README card; raise ``ValueError`` without front matter."""
-    front = read_front_matter(path)
-    text = path.read_text(encoding="utf-8")
-    return Card(path=path, front=front, text=text, sections=split_sections(text))
+    """Parse one card directory (or its README); raise ``ValueError`` when malformed."""
+    from tsflab.catalog.cards.store import load
+
+    directory = path if path.is_dir() else path.parent
+    files = load(directory)
+    front = {**files.facts, "summary": files.description, "description": files.description}
+    readme = directory / "README.md"
+    text = readme.read_text(encoding="utf-8")
+    if files.reference:
+        text = text.rstrip() + "\n\n" + files.reference
+    return Card(
+        path=readme,
+        front=front,
+        text=text,
+        sections=files.sections + files.reference_sections,
+        facts_text=(directory / "card.toml").read_text(encoding="utf-8"),
+        body=files.body,
+        reference=files.reference,
+    )
 
 
 def card_tags(front: dict[str, object]) -> tuple[str, ...]:
@@ -141,17 +154,15 @@ def approx_tokens(text: str) -> int:
 
 
 def front_matter_text(card: Card) -> str:
-    """Return the card's front matter block verbatim, delimiters included."""
-    lines = card.text.splitlines()
-    end = lines.index("---", 1)
-    return "\n".join(lines[: end + 1])
+    """Return the card's facts (``card.toml``) verbatim."""
+    return card.facts_text.rstrip()
 
 
 def l1_sections(card: Card) -> tuple[tuple[str, str], ...]:
-    """Return the interface/constraint sections shown at L1."""
-    return tuple(
-        (title, body) for title, body in card.sections if _L1_SECTION.search(title)
-    )
+    """Return the README (L1) sections."""
+    from tsflab.catalog.cards.store import split_sections as _split
+
+    return _split(card.body)
 
 
 def render_text(
@@ -172,20 +183,23 @@ def render_text(
         return line
     if depth == 3:
         return "\n".join([line, "", *(f"- {path}" for path in (paths or []))])
-    if depth == 2:
-        return card.text.rstrip() + "\n"
-    parts = [front_matter_text(card)]
+    parts = [line, "", front_matter_text(card)]
     if facts:
         parts.append(
             "Runtime facts:\n"
             + "\n".join(f"- {key}: {_format_fact(value)}" for key, value in facts.items())
         )
-    for title, body in l1_sections(card):
-        parts.append(f"## {title}\n\n{body}")
-    parts.append(
-        f"Next: --depth 2 for the full card (~{approx_tokens(card.text)} tokens), "
-        "--depth 3 for the files to open."
-    )
+    parts.append(card.body.rstrip())
+    if depth == 2 and card.reference:
+        parts.append(card.reference.rstrip())
+    elif depth == 1 and card.reference:
+        from tsflab.catalog.cards.store import split_sections as _split
+
+        titles = ", ".join(title for title, _ in _split(card.reference))
+        parts.append(f"Next: --depth 2 adds reference.md ({titles}; ~{approx_tokens(card.reference)} tokens); "
+                     "--depth 3 lists the files to open.")
+    elif depth == 1:
+        parts.append("Next: --depth 3 lists the files to open (this card has no reference.md).")
     return "\n\n".join(parts) + "\n"
 
 
@@ -205,12 +219,11 @@ def card_payload(
     """Return the structured form of ``render_text`` for ``--json`` output."""
     payload: dict[str, object] = {"depth": depth, **card_l0(card)}
     if depth in (1, 2):
-        payload["front_matter"] = card.front
+        payload["card"] = card.front
         payload["facts"] = facts or {}
-    if depth == 1:
         payload["sections"] = dict(l1_sections(card))
     if depth == 2:
-        payload["text"] = card.text
+        payload["reference"] = card.reference or ""
     if depth == 3:
         payload["paths"] = paths or []
     return payload

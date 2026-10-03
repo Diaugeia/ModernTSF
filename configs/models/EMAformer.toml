@@ -1,0 +1,14 @@
+[model]
+name = "EMAformer"
+
+[model.params]
+enc_in = 7
+cycle = 24
+d_model = 512
+n_heads = 8
+e_layers = 2
+d_ff = 2048
+dropout = 0.1
+output_proj_dropout = 0.1
+activation = "gelu"
+use_norm = true

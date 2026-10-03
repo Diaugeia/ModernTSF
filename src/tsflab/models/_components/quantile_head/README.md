@@ -1,19 +1,11 @@
 ---
 name: "quantile_head"
-kind: "component"
-module: "tsflab.models._components.quantile_head"
-summary: "Non-crossing quantile head: a median anchor Linear(base) plus cumulative softplus gaps above and below it give an ascending [B, L, C, Q] grid; interval width depends on the input."
-category: "head"
-input: "[batch, pred_len, channels, in_features]"
-output: "[batch, pred_len, channels, Q] ascending along the last axis, ordered like quantile_levels"
-origin: "TSFLab probabilistic-forecasting rail (commit b9946b39, 'probabilistic forecasting', #20); monotone-gap construction is the repo's own design, no paper recorded"
-origin_models: ["quantile_dlinear", "quantile_patchtst", "mqrnn", "tirex"]
-tags: ["monotone", "non-crossing", "probabilistic", "quantile", "softplus", "cumulative", "pinball", "median-anchor", "quantile-levels", "prediction-interval"]
+description: "Non-crossing quantile head: a median anchor plus cumulative softplus gaps give an ascending [B, L, C, Q] quantile grid with input-dependent width. Use for tasks needing quantiles or intervals scored by pinball/CRPS; not for parametric distributions or independent per-level heads."
 ---
 
 # quantile_head
 
-## Purpose
+## What it does
 
 Given per-step base features `base [B, L, C, F]`, `QuantileHead(levels, F)` emits
 `Q = len(levels)` quantiles that cannot cross. With `m` the index of the level
@@ -25,16 +17,13 @@ closest to 0.5:
 So the output is non-decreasing in the level index by construction, and interval
 width depends on the input.
 
-## Origin and granularity
+## When to use
 
-Introduced with the first probabilistic-forecasting batch (commit `b9946b39`, PR
-#20, originally the file `_quantile_head.py` under the then-flat models directory) for TiRex-, QuantileDLinear-,
-QuantilePatchTST-, and MQRNN-style models, then moved into `_components`
-(`33ea2050`) and extended with level validation (`db5b2970`). The construction is
-a repository design choice; no paper is recorded for the anchor-plus-gaps scheme,
-and the models using it differ from their published quantile heads accordingly. The pinball
-loss, quantile levels from `config.evaluation.quantile_levels`, and the
-trunk producing `base` stay model-local.
+Use when the task needs quantiles or prediction intervals (pinball or CRPS-style
+scoring) and the quantiles must not cross. Do not use when independent per-level
+heads are wanted (levels are coupled through the anchor), when the distribution
+is parametric or sample-based, or when the levels must be stored with the
+checkpoint (they are not).
 
 ## Interface
 
@@ -46,69 +35,3 @@ Public symbols: `QuantileHead`, `validate_quantile_levels`, `DEFAULT_QUANTILE_LE
 - `forward(base [B, L, C, in_features]) -> [B, L, C, Q]` (any leading shape also works because only the last axis is projected, but the output is documented for rank 4). `Q == 1` returns just the anchor (`offset_proj` is then an empty `[0, F]` Linear that still appears in the state dict). Raises the `Linear` shape error when the trailing width mismatches.
 - Parameters and state-dict keys: `anchor_proj.weight/bias` (`[1, F]`), `offset_proj.weight/bias` (`[Q-1, F]`). The levels are a non-persistent buffer `_levels` and are not in the state dict, so the checkpoint does not record the levels.
 - Even-length level lists with 0.5 absent pick the level closest to 0.5 (ties go to the lower index, up to float32 rounding of the stored levels) as the anchor; the anchor is then not an exact median.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_signal.py`: `test_quantile_levels_validation` checks
-  the `None` default and the rejected level lists;
-  `test_quantile_head_monotone_and_median_anchor` (levels with Q = 5, 3, 1, 2) checks
-  shape and dtype, ascending order, `output[..., median_idx] == anchor_proj(base)`,
-  the median index being the level closest to 0.5, and `_levels` absent from the state
-  dict; `test_quantile_head_grad_and_reference` checks input and parameter gradients,
-  the four state-dict keys, and seeded values against
-  `tests/fixtures/components/quantile_head.pt`.
-- `tests/test_repository_contracts.py`
-  (`test_quantile_head_is_monotone_and_differentiable`) checks the `[2, 8, 3, 3]`
-  output, monotonicity, gradient finiteness, the default median level, and rejected
-  level lists.
-- `tests/test_probabilistic_forecasters.py` checks that `mqrnn` equals
-  `quantile_head(local_decoder(...))`, ascending quantiles, and its `[2, 3, 2, 9]` output.
-- The tie rule for even level lists is not covered by a test.
-
-## Variants and options
-
-The level set is configurable (any strictly increasing set in (0, 1)); odd
-`Q` with 0.5 included makes the anchor the exact median. Not covered: crossing
-heads that fit each level independently, heteroscedastic Gaussian heads (see
-`gaussian_parameter_head`), or learned level embeddings.
-
-## When to use and when not to use
-
-Use for models whose probabilistic output is a rank-4 quantile grid scored with a
-pinball/CRPS-style loss and where non-crossing is required. Do not use when
-independent per-level heads are wanted (it couples levels through the anchor), when
-the distribution is parametric, or when levels must be stored with the checkpoint.
-
-## Related components
-
-`gaussian_parameter_head` (parametric Gaussian `loc`/`scale` output scored by NLL; this
-head is distribution-free, emits a non-crossing quantile grid, and is scored by pinball
-loss), `dlinear` and
-`patchtst` (backbones feeding the anchor in the quantile consumers),
-`flatten_forecast_head` (point-forecast head). `composed` names this head in its
-`head` literal but rejects it (point output only).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `QuantileHead(quantile_levels: list[float], in_features: int=1)`
-  Monotone quantile head producing a non-crossing (B, L, C, Q) grid.
-- `validate_quantile_levels(values: list[float] | tuple[float, ...] | None)`
-  Return a validated, strictly increasing quantile-level list.
-- `DEFAULT_QUANTILE_LEVELS`
-  Public module constant.
-
-```python
-from tsflab.models._components.quantile_head import QuantileHead, validate_quantile_levels, DEFAULT_QUANTILE_LEVELS
-```
-
-## Retrieval terms
-
-`monotone`, `non-crossing`, `probabilistic`, `quantile`
-
-## Current model consumers (4)
-
-`mqrnn`, `quantile_dlinear`, `quantile_patchtst`, `tirex`
-<!-- component-card:generated:end -->

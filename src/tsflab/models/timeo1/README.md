@@ -1,100 +1,30 @@
 ---
 name: "TimeO1"
-summary: "Time-o1 is a model-agnostic transformation-augmented forecasting objective that aligns the most significant decorrelated label components. The local runtime provides per-variate SVD basis fitting, the published mixed objective, and a small independent temporal carrier model."
-paper: "https://arxiv.org/abs/2505.17847"
-paper_title: "Time-o1: Time-Series Forecasting Needs Transformed Label Alignment"
-venue: "NeurIPS 2025"
-year: 2025
-code: "https://github.com/Master-PLC/Time-o1"
-revision: "c93d4c545ee0fe4929d0b8ba37268d0da161bb9d"
-license: "MIT"
-tagline: "Training objective aligning leading per-variate SVD label components, carried by a small MLP-plus-linear forecaster."
-tags: ["mlp", "linear", "channel-independent", "lightweight", "label-alignment"]
-composition: ["normalization=none", "decomposition=local:per-variate-svd-label-basis", "temporal=local:mlp-plus-linear-skip", "channel=local:channel-independent-shared-weights", "head=local:mlp-plus-linear-skip", "loss=loss:mse+local:svd-transformed-label-alignment"]
+description: "Time-o1 training objective: forecasts and labels are projected onto a per-variate SVD basis of the training labels and the leading decorrelated components are aligned, carried by a small MLP-plus-linear forecaster. Use for long horizons with strongly autocorrelated labels; not as an architecture study."
 ---
+
 # TimeO1
 
-## Key ideas
+## Idea
 
-- `fit_projection` computes a per-variate SVD basis from standardized training labels; `transform` projects forecasts and targets onto it.
-- `transformed_alignment_loss` mixes an L1 loss on the top `rank_ratio` components with a squared-error term via `alpha` (the Time-o1 objective).
-- The forecaster is only a runnable carrier (MLP plus linear skip, channel independent); the model declares a `ModelSpec.training_setup` that fits the per-variate projection on the training labels and a `training_objective` that mixes the transformed-label L1 term with the configured criterion.
+- `fit_projection` computes a per-variate SVD basis from standardized training labels (`training_setup` runs it once on the training split); `transform` projects forecasts and targets onto it.
+- `transformed_alignment_loss` mixes an L1 loss on the top `rank_ratio` components with the temporal term via `alpha` (Eq. 5).
+- The forecaster is only a runnable carrier: a channel-independent MLP plus linear skip; `training_objective` combines the transformed-label term with the configured criterion.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long-horizon forecasting where temporal MSE suffers from label autocorrelation and a large number of per-step tasks; the transform yields decorrelated components ranked by significance.
+- When studying the objective: Time-o1 is compatible with various forecasters, and here it ships with a deliberately simple carrier.
+- Not for comparing architectures, or for cross-channel or covariate-driven targets (the carrier is channel-independent and ignores marks).
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2505.17847); title: Time-o1: Time-Series Forecasting Needs Transformed Label Alignment; venue/year: NeurIPS 2025 / 2025
-- [codebase](https://github.com/Master-PLC/Time-o1); revision: `c93d4c545ee0fe4929d0b8ba37268d0da161bb9d`; license: `MIT`
+- `enc_in`: number of channels; one `pred_len x pred_len` basis per channel, fitted from the training labels (for `MS` targets only the trailing channel).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/TimeO1.toml`](../../../../configs/models/TimeO1.toml).
+Other hyperparameters: preset defaults in `configs/models/TimeO1.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `utils/polynomial.py`, `README.md` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. The runner fits the projection once on the training split (`training_setup`) and trains with `alpha * mean|transformed difference| + (1 - alpha) * criterion(forecast, target)`. Mean reductions and the configured criterion for the temporal term follow the pinned official trainer (`exp_long_term_forecasting.py`, which also precomputes the basis from training data); `transformed_alignment_loss` keeps the paper's summed Eq. (5) as its default. For `MS` targets the basis is fitted for the trailing channel only. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `alpha=0.8`, `rank_ratio=0.5`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Time-o1: Time-Series Forecasting Needs Transformed Label Alignment
-- **Venue**: NeurIPS 2025
-- **Published**: 2025 (arXiv: 2025-05)
-- **arXiv**: https://arxiv.org/abs/2505.17847
-
-## Abstract
-Training time-series forecast models presents unique challenges in designing effective learning objectives. Existing methods predominantly utilize the temporal mean squared error, which faces two critical challenges: (1) label autocorrelation, which leads to bias from the label sequence likelihood; (2) excessive amount of tasks, which increases with the forecast horizon and complicates optimization. To address these challenges, we propose Time-o1, a transformation-augmented learning objective tailored for time-series forecasting. The central idea is to transform the label sequence into decorrelated components with discriminated significance. Models are then trained to align the most significant components, thereby effectively mitigating label autocorrelation and reducing task amount. Extensive experiments demonstrate that Time-o1 achieves state-of-the-art performance and is compatible with various forecast models. Code is available at https://github.com/Master-PLC/Time-o1.
-
-## Source and verification
-
-Pinned source inspection: `utils/polynomial.py`, `README.md` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-Time-o1 does not prescribe a forecasting architecture, so the local temporal MLP plus linear skip is only a runnable carrier. The runner fits the projection once on the training split (`training_setup`) and trains with `alpha * mean|transformed difference| + (1 - alpha) * criterion(forecast, target)`. Mean reductions and the configured criterion for the temporal term follow the pinned official trainer (`exp_long_term_forecasting.py`, which also precomputes the basis from training data); `transformed_alignment_loss` keeps the paper's summed Eq. (5) as its default. For `MS` targets the basis is fitted for the trailing channel only. The reference-only codebase was inspected at the pinned revision; no external source code was copied.
-
-## In TSFLab
-Default config: `configs/models/TimeO1.toml`; model specification: `spec.py`; clean-room objective/backbone: `model.py`.
-
-## Citation
-
-```bibtex
-@misc{wang2025timeo,
-  author        = {Hao Wang and
-                  Licheng Pan and
-                  Zhichao Chen and
-                  Xu Chen and
-                  Qingyang Dai and
-                  Lei Wang and
-                  Haoxuan Li and
-                  Zhouchen Lin},
-  title         = {Time-o1: Time-Series Forecasting Needs Transformed Label Alignment},
-  year          = {2025},
-  eprint        = {2505.17847},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2505.17847}
-}
-```
+- Checked against the pinned `utils/polynomial.py`, `README.md` and the official trainer; the local module was written for TSFLab and copies no external source.
+- The runner trains with `alpha * mean|transformed difference| + (1 - alpha) * criterion(forecast, target)`: mean reductions and the configured criterion follow the official trainer (which also precomputes the basis from training data); `transformed_alignment_loss` keeps the paper's summed Eq. (5) as its default.
+- The forecasting architecture is a local carrier; Time-o1 does not prescribe one.

@@ -1,103 +1,34 @@
 ---
 name: "AWEMixer"
-summary: "AWEMixer adaptively weights undecimated wavelet subbands with a Frequency Router driven by four spectral/temporal descriptors, then lets multi-scale temporal anchors selectively absorb that weighted frequency context through a Coherent Gated Fusion cross-attention block before a linear forecast head."
-paper: "https://arxiv.org/abs/2511.04722"
-paper_title: "AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2025
-code: "https://github.com/hit636/AWEMixer"
-revision: "8e660f93c2535e6eb64ba47647babf21f3dbacfa"
-license: "Apache-2.0"
-tagline: "Router weights undecimated wavelet subbands by spectral descriptors; temporal anchors absorb them via gated attention."
-tags: ["hybrid", "wavelet", "frequency", "multi-scale", "attention-variant", "normalization", "channel-independent"]
-composition: ["normalization=component:revin", "decomposition=component:wavelet", "temporal=local:multi-scale-conv-anchors+local:coherent-gated-fusion", "channel=local:channel-independent-shared-weights", "head=local:linear-head", "loss=loss:mse"]
+description: "Router weights undecimated wavelet subbands by spectral descriptors; temporal anchors absorb them via gated attention. Use for long-term forecasting of series mixing several periodicities with local bursts; not for very short lookbacks or cross-channel tasks."
 ---
+
 # AWEMixer
 
-## Key ideas
+## Idea
 
 - `wavelet` (`UndecimatedWaveletTransform`) splits each channel into `wavelet_level + 1` same-length subbands, each embedded linearly.
 - `FrequencyRouter` softmax-weights subbands from four z-scored descriptors: FFT band energy, wavelet energy, peak local burst energy, and spectral entropy.
 - `MultiScaleTemporalEmbedding` makes one anchor per scale from convolutions of kernel `2s+1` with global pooling.
-- `CoherentGatedFusion` lets anchors cross-attend the weighted frequency features and injects them through a sigmoid gate; `CrossScaleMixer` mixes scales, then a linear `head` forecasts, wrapped by `revin`.
+- `CoherentGatedFusion` lets anchors cross-attend the weighted frequency features and injects them through a sigmoid gate; `CrossScaleMixer` mixes scales; a linear head forecasts inside `revin`.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 12, channels]` point forecast.
+- Long-term forecasting where energy is spread over several frequency bands and localized bursts matter, so an input-adaptive weighting of wavelet subbands helps.
+- Channel-independent with shared weights; no cross-channel modelling.
+- Needs a lookback long enough for the wavelet padding at the chosen level; point output only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2511.04722); title: AWEMixer: Adaptive Wavelet-Enhanced Mixer Network for Long-Term Time Series Forecasting; venue/year: arXiv preprint / 2025
-- [codebase](https://github.com/hit636/AWEMixer); revision: `8e660f93c2535e6eb64ba47647babf21f3dbacfa`; license: `Apache-2.0`
+- `enc_in`: number of channels.
+- `wavelet_level`: `seq_len` must be at least `(filter_len - 1) * 2 ** (level - 1)` (db4 at level 3: 28 steps).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/AWEMixer.toml`](../../../../configs/models/AWEMixer.toml).
+Other hyperparameters: preset defaults in `configs/models/AWEMixer.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. The Frequency Router descriptor
-equations, the Coherent Gated Fusion Block, and the overall data flow were
-re-derived from the pinned official file's module boundaries and comments
-describing which paper equations they implement; no source lines were
-copied.
+Clean-room implementation: the Frequency Router descriptors, the Coherent Gated Fusion block and the data flow were re-derived from the pinned official file's module boundaries and comments; no lines copied.
 
-- The official code builds its undecimated wavelet filters from `pywt`
-  (dividing PyWavelets' already-orthonormal filters by an extra `sqrt(2)`,
-  and reversing them). This implementation uses the cataloged
-  `UndecimatedWaveletTransform`, whose filter taps are the standard
-  orthonormal Daubechies coefficients without that extra rescaling; this is
-  a fixed, learnable-linear-layer-absorbed scale difference, not a
-  structural one, since every subband is immediately passed through a
-  learned `Linear` embedding.
-- The official FFT band-splitting loop computes band edges with a Python
-  `for` loop of per-band start/end indices; this implementation computes the
-  same evenly spaced edges with one `torch.linspace` call, which is
-  numerically equivalent.
-- `return_aux` (an optional auxiliary-output diagnostic mode in the official
-  code) is not exposed; the equivalent tensors (`last_router_weights`,
-  `last_gates`) are always recorded as instance attributes instead, for
-  parity with this catalog's structural-test conventions.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-- [`wavelet`](../_components/wavelet/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=12`. Default
-model parameters are: `enc_in=7`, `d_model=128`, `dropout=0.2`, `num_scales=3`, `wavelet_level=3`, `wavelet='db4'`, `num_fusion_layers=1`
-<!-- model-card:canonical:end -->
-
-## Source and verification
-
-Clean-room implementation: confirmed. The Frequency Router descriptor
-equations, the Coherent Gated Fusion Block, and the overall data flow were
-re-derived from the pinned official file's module boundaries and comments
-describing which paper equations they implement; no source lines were
-copied.
-
-- The official code builds its undecimated wavelet filters from `pywt`
-  (dividing PyWavelets' already-orthonormal filters by an extra `sqrt(2)`,
-  and reversing them). This implementation uses the cataloged
-  `UndecimatedWaveletTransform`, whose filter taps are the standard
-  orthonormal Daubechies coefficients without that extra rescaling; this is
-  a fixed, learnable-linear-layer-absorbed scale difference, not a
-  structural one, since every subband is immediately passed through a
-  learned `Linear` embedding.
-- The official FFT band-splitting loop computes band edges with a Python
-  `for` loop of per-band start/end indices; this implementation computes the
-  same evenly spaced edges with one `torch.linspace` call, which is
-  numerically equivalent.
-- `return_aux` (an optional auxiliary-output diagnostic mode in the official
-  code) is not exposed; the equivalent tensors (`last_router_weights`,
-  `last_gates`) are always recorded as instance attributes instead, for
-  parity with this catalog's structural-test conventions.
+- Wavelet filters are the cataloged orthonormal Daubechies taps; the official code divides PyWavelets' filters by an extra `sqrt(2)` and reverses them. The fixed scale is absorbed by the learned `Linear` subband embeddings.
+- FFT band edges come from one `torch.linspace` call instead of the official per-band loop (numerically equivalent).
+- The official `return_aux` diagnostic mode is not exposed; `last_router_weights` and `last_gates` are always recorded as attributes.

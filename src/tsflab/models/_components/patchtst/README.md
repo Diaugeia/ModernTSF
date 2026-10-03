@@ -1,19 +1,11 @@
 ---
 name: "patchtst"
-kind: "component"
-module: "tsflab.models._components.patchtst"
-summary: "Channel-independent PatchTST forecaster: RevIN, per-channel unfold patching, linear patch embedding, position table, TSTEncoder, flatten head, RevIN denorm; direct multi-horizon output."
-category: "backbone"
-input: "[batch, context_window, channels]"
-output: "[batch, target_window, channels]"
-origin: "PatchTST, Nie et al., ICLR 2023 (A Time Series is Worth 64 Words: Long-term Forecasting with Transformers)"
-origin_models: ["patchtst"]
-tags: ["backbone", "channel-independent", "patch", "transformer", "forecasting", "composite", "revin", "flatten-head"]
+description: "Channel-independent PatchTST backbone: RevIN, patching, linear patch embedding, position table, TSTEncoder, flatten head; direct multi-horizon point output. Use for a reusable backbone on weakly correlated channels (e.g. under a quantile head); not for channel mixing, covariates, or matching the patchtst model."
 ---
 
 # patchtst
 
-## Purpose
+## What it does
 
 `PatchTSTBackbone` is the whole PatchTST forward pass as a reusable module.
 For input `x [B, L, C]`:
@@ -29,19 +21,13 @@ For input `x [B, L, C]`:
    linear to `target_window`, shared or per-channel via `individual`),
    transpose to `[B, H, C]`, RevIN `denorm`.
 
-## Origin and granularity
+## When to use
 
-Implements PatchTST (Nie et al., ICLR 2023); `origin_models` lists `patchtst`
-as the source design although that model no longer imports this component. It was a shared component from the
-initial refactors and was rewritten as a clean-room composition in `fba5fa99`
-("finish clean-room shared forecasting layer"); the flatten head was split out
-in `d38451c3`. The cut keeps the composition (normalize, patch, embed, encode,
-head) separate from the pieces that are reusable alone: `revin`,
-`positional_encoding`, `tst_transformer`, `flatten_forecast_head`. In the
-repository the backbone is consumed only by `quantile_patchtst`; the
-`patchtst` model package keeps its own model-local implementation (it imports
-only `revin`), so this component is not what the point-forecast `patchtst`
-model runs. Quantile heads, decomposition and masked pretraining stay outside.
+Use as the point-forecast backbone when channels are best modelled
+independently with shared weights (weakly correlated channels), for example
+under a quantile head. Do not use when cross-channel mixing, marks or exogenous
+inputs matter, for masked pretraining, or to reproduce the model-local `patchtst`
+numerics (the `patchtst` model does not run this component).
 
 ## Interface
 
@@ -73,74 +59,3 @@ forward pass through the RevIN statistics cache (detached, so no gradient flows
 through the instance mean/std) and the encoder's BatchNorm running statistics;
 do not share one instance across concurrent forwards. `denorm` is only valid
 after a `norm` in the same forward, which the module guarantees.
-
-## Invariants and equivalence evidence
-
-- `test_patchtst_backbone` in `tests/test_component_contracts_attention.py`
-  (parametrized over end-padding/shared head and no padding/individual head)
-  checks output shape and dtype, the state-dict prefixes above, that extra
-  positional arguments are ignored, finite input gradients and parameter gradients;
-  reference outputs are in `tests/fixtures/components/patchtst_end_shared.pt` and
-  `tests/fixtures/components/patchtst_nopad_ind.pt`. `test_patchtst_channel_independence_and_validation`
-  in the same file checks channel-permutation equivariance with `revin=False` and the
-  `ValueError` cases (wrong length, `head_type`, `padding_patch`, `patch_len > context_window`).
-- `tests/test_repository_contracts.py` pins the dependency closure of `patchtst`
-  to `flatten_forecast_head`, `patchtst`, `positional_encoding`, `revin`,
-  `tst_transformer`.
-- `tests/test_probabilistic_attention_forecasters.py` runs it through
-  `QuantilePatchTST` (shape, quantile contracts).
-- `tests/test_transformer_patch_forecasters_a.py` checks patch overlap and channel
-  independence on the model-local `PatchTST` (channel permutation equivariance),
-  not on this backbone directly; the backbone shares the same channel-folding
-  structure.
-- no fixture: no numeric fixture compares this backbone with the original PatchTST
-  code or with the model-local `patchtst` model; the only fixtures are seeded
-  self-references.
-
-## Variants and options
-
-`padding_patch="end"` (original PatchTST option) adds one extra patch;
-`individual=True` gives one linear head per channel; `revin=False` /
-`subtract_last=True` / `affine` for normalization; `pre_norm`, `pe`, `learn_pe`,
-`norm` for the encoder. Decomposition (`DLinear`-style) and `head_type` other
-than `"flatten"` are not supported.
-
-## When to use and when not to use
-
-Use as the point-forecast backbone for channel-independent patch Transformers
-(for example under a quantile head). Do not use for channel-mixing, masked
-pretraining or models that need marks or exogenous inputs, and do not expect it
-to reproduce the model-local `patchtst` numerics.
-
-## Related components
-
-- `revin`, `positional_encoding`, `tst_transformer`, `flatten_forecast_head`: the
-  pieces this composition wires together; use them directly for variants.
-- `quantile_head`: probabilistic output layer used with it in `quantile_patchtst`;
-  the backbone itself is point-forecast only.
-- `dlinear`, `channel_wise_linear`: linear channel-independent point backbones
-  with no patching or attention; `global_patch_compression_attention`: patch
-  attention that mixes channels, unlike this channel-independent encoder.
-- `mixer_block`: an MLP-mixer alternative to patch attention (`patchtst`'s
-  encoder is a TST attention stack).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `PatchTSTBackbone(c_in: int, context_window: int, target_window: int, patch_len: int, stride: int, padding_patch: str | None, n_layers: int, d_model: int, n_heads: int, d_k: int | None, d_v: int | None, d_ff: int, activation: str, norm: str, attn_dropout: float, res_dropout: float, ffn_dropout: float, proj_dropout: float, head_dropout: float, pre_norm: bool, pe: str, learn_pe: bool, head_type: str, individual: bool, revin: bool, affine: bool, subtract_last: bool)`
-  Patch each channel independently, encode patches, and forecast directly.
-
-```python
-from tsflab.models._components.patchtst import PatchTSTBackbone
-```
-
-## Retrieval terms
-
-`backbone`, `channel-independent`, `patch`, `transformer`
-
-## Current model consumers (1)
-
-`quantile_patchtst`
-<!-- component-card:generated:end -->

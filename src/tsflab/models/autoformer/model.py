@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from tsflab.models._components.decomposition_encdec import DecompositionDecoderLayer, DecompositionEncoderLayer
 from tsflab.models._components.forecast_embedding import ForecastEmbedding
 from tsflab.models._components.series_decomposition import SeriesDecomposition
 
@@ -78,51 +79,26 @@ class AutoCorrelation(nn.Module):
         return self.output(self.dropout(merged))
 
 
-def _feed_forward(d_model: int, d_ff: int, dropout: float, activation: str) -> nn.Sequential:
-    nonlinearity: nn.Module = nn.GELU() if activation == "gelu" else nn.ReLU()
-    return nn.Sequential(
-        nn.Linear(d_model, d_ff),
-        nonlinearity,
-        nn.Dropout(dropout),
-        nn.Linear(d_ff, d_model),
-        nn.Dropout(dropout),
-    )
-
-
-class AutoformerEncoderLayer(nn.Module):
+class AutoformerEncoderLayer(DecompositionEncoderLayer):
     """Equation (3): correlation and feed-forward, each followed by decomposition."""
 
     def __init__(self, d_model: int, n_heads: int, d_ff: int, moving_avg: int, factor: float, dropout: float, activation: str) -> None:
-        super().__init__()
-        self.correlation = AutoCorrelation(d_model, n_heads, factor, dropout)
-        self.decomposition_one = SeriesDecomposition(moving_avg)
-        self.feed_forward = _feed_forward(d_model, d_ff, dropout, activation)
-        self.decomposition_two = SeriesDecomposition(moving_avg)
-
-    def forward(self, values: torch.Tensor) -> torch.Tensor:
-        seasonal, _ = self.decomposition_one(values + self.correlation(values))
-        seasonal, _ = self.decomposition_two(seasonal + self.feed_forward(seasonal))
-        return seasonal
+        super().__init__(
+            AutoCorrelation(d_model, n_heads, factor, dropout),
+            d_model, d_ff, moving_avg, dropout, activation, mixer_name="correlation",
+        )
 
 
-class AutoformerDecoderLayer(nn.Module):
+class AutoformerDecoderLayer(DecompositionDecoderLayer):
     """Equation (4): three decompositions and progressive trend accumulation."""
 
     def __init__(self, d_model: int, n_heads: int, d_ff: int, moving_avg: int, factor: float, dropout: float, activation: str, c_out: int) -> None:
-        super().__init__()
-        self.self_correlation = AutoCorrelation(d_model, n_heads, factor, dropout)
-        self.cross_correlation = AutoCorrelation(d_model, n_heads, factor, dropout)
-        self.feed_forward = _feed_forward(d_model, d_ff, dropout, activation)
-        self.decompositions = nn.ModuleList([SeriesDecomposition(moving_avg) for _ in range(3)])
-        self.trend_projections = nn.ModuleList([nn.Linear(d_model, c_out, bias=False) for _ in range(3)])
-
-    def forward(self, seasonal: torch.Tensor, memory: torch.Tensor, trend: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        seasonal, trend_one = self.decompositions[0](seasonal + self.self_correlation(seasonal))
-        seasonal, trend_two = self.decompositions[1](seasonal + self.cross_correlation(seasonal, memory))
-        seasonal, trend_three = self.decompositions[2](seasonal + self.feed_forward(seasonal))
-        for projection, extracted in zip(self.trend_projections, (trend_one, trend_two, trend_three)):
-            trend = trend + projection(extracted)
-        return seasonal, trend
+        super().__init__(
+            AutoCorrelation(d_model, n_heads, factor, dropout),
+            AutoCorrelation(d_model, n_heads, factor, dropout),
+            d_model, d_ff, moving_avg, dropout, activation, c_out,
+            mixer_names=("self_correlation", "cross_correlation"),
+        )
 
 
 class Model(nn.Module):

@@ -1,91 +1,32 @@
 ---
 name: "LassoRegressionTS"
-summary: "LassoRegressionTS applies a shared channel-wise lag projection to the forecast horizon and exposes the Lasso L1 weight penalty through `aux_loss` for the standard trainer."
-paper: "https://doi.org/10.1111/j.2517-6161.1996.tb02080.x"
-paper_title: "Regression Shrinkage and Selection via the Lasso"
-venue: "Journal of the Royal Statistical Society Series B 1996"
-year: 1996
-tagline: "One shared linear lag-to-horizon map per channel with an L1 weight penalty exposed as an auxiliary training loss."
-tags: ["linear", "statistical", "regularization", "channel-independent", "baseline"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:l1-weight-penalty-aux-loss"]
+description: "Shared linear lag-to-horizon map per channel with an L1 weight penalty, fit by gradient descent. Use as a sparse linear baseline for short training data or tight budgets; not for nonlinear dynamics, cross-channel effects, or level shifts (no normalization)."
 ---
+
 # LassoRegressionTS
 
-## Key ideas
+## Idea
 
 - A single `nn.Linear(seq_len, pred_len)` is applied along time to every channel with shared coefficients.
 - `aux_loss = l1_penalty * |W|_1` is exposed so the standard trainer adds the Lasso penalty to the forecasting loss.
 - Fit by gradient descent rather than coordinate descent, so coefficients are only approximately sparse.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A sanity baseline when only a few lags carry signal; the L1 term shrinks uninformative lag weights.
+- Short training windows or tight compute: one `seq_len x pred_len` matrix.
+- Channels are treated independently with shared weights; no cross-channel information.
+- Purely linear and without instance normalization, so nonlinear dynamics and level shifts are out of reach.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x); title: Regression Shrinkage and Selection via the Lasso; venue/year: Journal of the Royal Statistical Society Series B 1996 / 1996
-- codebase: not available
+- `enc_in`: number of data channels (input-shape check; coefficients are shared).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/LassoRegressionTS.toml`](../../../../configs/models/LassoRegressionTS.toml).
+Other hyperparameters: preset defaults in `configs/models/LassoRegressionTS.toml`; tune generically.
 
 ## Differences
 
-This is an independent implementation from the cited Lasso objective; no
-external source implementation was inspected or copied. It optimizes a direct
-multi-horizon lag projection with gradient descent rather than a coordinate
-descent solver. Coefficients are shared across channels, and the L1 weight term
-is exposed to the trainer as `aux_loss`.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `l1_penalty=1e-05`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Regression Shrinkage and Selection via the Lasso
-- **Venue**: Journal of the Royal Statistical Society: Series B, 1996
-- **Published**: 1996
-- **arXiv**: N/A
-
-## Abstract
-Lasso (Least Absolute Shrinkage and Selection Operator) is a classical penalised regression method introduced by Tibshirani (1996). It minimises the residual sum of squares subject to the sum of the absolute values of the regression coefficients being less than a constant. This L1 constraint has the effect of shrinking some coefficients exactly to zero, producing sparse and interpretable models while avoiding the instability of ordinary subset selection. The method combines the variable-selection capability of subset regression with the continuous shrinkage of ridge regression, making it effective when only a small subset of predictors is truly informative. In the time-series forecasting setting, Lasso regression is applied channel-by-channel over lag features derived from the historical input window, using L1 regularisation to identify the most predictive lags for each output channel.
-
-## In TSFLab
-Default config: `configs/models/LassoRegressionTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-This is an independent implementation from the cited Lasso objective; no
-external source implementation was inspected or copied. It optimizes a direct
-multi-horizon lag projection with gradient descent rather than a coordinate
-descent solver. Coefficients are shared across channels, and the L1 weight term
-is exposed to the trainer as `aux_loss`.
-
-## Citation
-
-```bibtex
-@article{tibshirani1996regression,
-  author  = {Robert Tibshirani},
-  title   = {Regression Shrinkage and Selection via the Lasso},
-  journal = {Journal of the Royal Statistical Society: Series B (Methodological)},
-  volume  = {58},
-  number  = {1},
-  pages   = {267--288},
-  year    = {1996},
-  doi     = {10.1111/j.2517-6161.1996.tb02080.x}
-}
-```
+- Independent implementation of the Lasso objective; no external implementation inspected or copied.
+- Direct multi-horizon lag projection optimized by gradient descent, not a coordinate-descent solver.
+- Coefficients are shared across channels; the L1 term reaches the trainer as `aux_loss`.
+- Citation: R. Tibshirani, "Regression Shrinkage and Selection via the Lasso", JRSS Series B 58(1):267-288, 1996, doi:10.1111/j.2517-6161.1996.tb02080.x.

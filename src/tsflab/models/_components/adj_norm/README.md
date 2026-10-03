@@ -1,19 +1,11 @@
 ---
 name: "adj_norm"
-kind: "component"
-module: "tsflab.models._components.adj_norm"
-summary: "Dense numpy adjacency normalizations: symmetric normalized and scaled Laplacian, GCN renormalization, and forward/reverse random-walk transition matrices."
-category: "graph"
-input: "adj [N, N] dense adjacency (array-like, any numeric dtype)"
-output: "[N, N] float64 numpy array"
-origin: "Standard graph-normalization definitions (Kipf and Welling GCN renormalization; DCRNN-style random-walk transitions), following BasicTS adjacent_matrix_norm.py (Apache-2.0)"
-origin_models: []
-tags: ["adjacency", "graph", "laplacian", "normalization", "gcn", "transition", "numpy", "stateless"]
+description: "NumPy normalizations of a dense static adjacency: normalized and rescaled Laplacian, GCN renormalization, forward/reverse random-walk transitions. Use for preparing a small dataset graph; not for large sparse graphs, learned or batched adjacencies (not differentiable), or ready supports (use graph_utils)."
 ---
 
 # adj_norm
 
-## Purpose
+## What it does
 
 Pure-numpy helpers that turn a dense adjacency matrix `A` into the matrices that
 spatiotemporal GNN layers consume. With `D` the diagonal of row sums:
@@ -27,22 +19,13 @@ spatiotemporal GNN layers consume. With `D` the diagonal of row sums:
 Zero-degree rows get inverse degree 0, so results stay finite (an isolated
 node has Laplacian diagonal 1, transition row 0).
 
-## Origin and granularity
+## When to use
 
-The math is the published standard; the module docstring records that the
-definitions are also used by BasicTS `adjacent_matrix_norm.py` (Apache-2.0). It
-began as an external utility module and now sits among the shared components. No
-model package imports it directly and no origin model is recorded; the component
-audit exempts it from the "has a consumer" rule for that reason. It has two
-consumers. The `graph_utils` component uses `symmetric_normalized_laplacian`,
-`transition_matrix`, and `reverse_transition_matrix` to build the named supports
-`normlap`, `symadj` (`I - L`), `transition`, and `doubletransition`.
-`gcn_norm` and `lambda_rescaled_laplacian` are not used by `graph_utils`. The
-experiment runner (`src/tsflab/experiments/runner/run_one.py`, `_normalize_adj`)
-applies any of the five functions to a data-derived adjacency when the dataset
-parameter `adj_norm` is set. Input validation of finite values, the choice among
-normalization types, float32 and torch conversion, and the eigenvalue-based scaled
-Laplacian stay in `graph_utils` / `graph_spectral`.
+Use for small dense static graphs when a numpy-side normalization is needed
+before converting to tensors. Do not use for large sparse graphs (it
+materializes `N x N` dense matrices and diagonal matrices), for learned or
+batched adjacencies (it is numpy, not differentiable), or when a validated,
+float32, ready-made support list is wanted (use `graph_utils`).
 
 ## Interface
 
@@ -64,73 +47,3 @@ never modified.
 - `reverse_transition_matrix(adj)`: normalizes by the in-degree
   (column sums of `adj`).
 - Private helpers `_as_dense`, `_inv_sqrt_degree`, `_inv_degree` are not public.
-
-## Invariants and equivalence evidence
-
-- `test_adj_norm_contract_and_invariants` in `tests/test_component_contracts_graph.py`
-  checks that all five outputs are `[N, N]` `float64` and finite, transition rows
-  sum to 1 except zero-degree rows (0), `reverse_transition_matrix(A) ==
-  transition_matrix(A.T)`, `lambda_rescaled_laplacian` equals `L - I` at the default and
-  `0.5 L - I` at `lambda_max=4`, the Laplacian of a symmetric graph is symmetric,
-  `gcn_norm` of an all-zero graph is the identity, and non-square input raises
-  `ValueError`. Reference values: `tests/fixtures/components/adj_norm.pt`.
-- `test_shared_adjacency_normalizers_are_finite` in
-  `tests/test_repository_contracts.py` checks `gcn_norm` and `transition_matrix`
-  are finite on a graph with an isolated node, and that `adj_to_supports`
-  returns `transition_matrix(A)` and `transition_matrix(A.T)` as float32.
-- No pre-refactor fixture exists, so the `graph_utils` supports used by graph
-  models (`dcrnn`, `gwnet`, `d2stgnn`, `dfdgcn`, `st_ssdl`) are covered only
-  through their own contract tests.
-
-## Variants and options
-
-- `lambda_rescaled_laplacian(adj, lambda_max)` (formerly `scaled_laplacian`, renamed to
-  avoid clashing with `graph_spectral.scaled_laplacian`) is a different function: that one symmetrizes by default,
-  rejects non-finite input, computes `lambda_max` from the spectrum, returns
-  float32, and is what `graph_utils` uses for `scalap`. This one only rescales
-  with the given `lambda_max`.
-
-## When to use and when not to use
-
-Use for small dense static graphs when a numpy-side normalization is needed
-before converting to tensors. Do not use for large sparse graphs (it
-materializes `N x N` dense matrices and diagonal matrices), for learned or
-batched adjacencies (it is numpy, not differentiable), or when a validated,
-float32, ready-made support list is wanted (use `graph_utils`).
-
-## Related components
-
-`graph_utils` (the consumer that builds supports), `graph_spectral`
-(eigenvalue-scaled Laplacian and Chebyshev supports), `diffusion_conv` (consumes
-the resulting supports),
-`adaptive_node_embedding_adjacency` (learned adjacency, already normalized by
-softmax).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `symmetric_normalized_laplacian(adj)`
-  Symmetric normalized Laplacian ``L = I - D^{-1/2} A D^{-1/2}``.
-- `lambda_rescaled_laplacian(adj, lambda_max: float=2.0)`
-  Scaled Laplacian ``2L / lambda_max - I`` for Chebyshev polynomials.
-- `gcn_norm(adj)`
-  GCN renormalization ``D^{-1/2} (A + I) D^{-1/2}`` (Kipf & Welling).
-- `transition_matrix(adj)`
-  Random-walk transition matrix ``D^{-1} A`` (row-normalized).
-- `reverse_transition_matrix(adj)`
-  Reverse random-walk transition matrix ``(D^{-1} A)`` on ``A^T``.
-
-```python
-from tsflab.models._components.adj_norm import symmetric_normalized_laplacian, lambda_rescaled_laplacian, gcn_norm, transition_matrix, reverse_transition_matrix
-```
-
-## Retrieval terms
-
-`adjacency`, `graph`, `laplacian`, `normalization`
-
-## Current model consumers (0)
-
-No model currently declares this component directly.
-<!-- component-card:generated:end -->

@@ -28,7 +28,7 @@ from tsflab.core.paths import repository_root, require_checkout
 ROOT = repository_root()
 DS_DIR = ROOT / "src" / "tsflab" / "data" / "datasets"
 SCHEMA_DIR = ROOT / "src" / "tsflab" / "data" / "schemas" / "datasets"
-NAME_MAP_FILE = ROOT / "src" / "tsflab" / "benchmark" / "registry" / "datasets.py"
+NAME_MAP_FILE = ROOT / "src" / "tsflab" / "catalog" / "registry" / "datasets.py"
 DS_CONFIG_DIR = ROOT / "configs" / "datasets"
 
 
@@ -189,22 +189,40 @@ def main() -> None:
     if args.pattern == "single":
         status = _insert_name_map(name)
 
-    from tsflab.catalog.cards.resources import write_resource_cards
+    card_dir = ROOT / "catalog" / "datasets" / name
+    if not (card_dir / "card.toml").exists() or args.force:
+        from tsflab.catalog.cards.render import card_files
 
-    write_resource_cards(ROOT)
+        todo = "TODO(card-v1)"
+        files = card_files("dataset", {
+            "name": name,
+            "domain": todo,
+            "tags": [todo, "dataset", name],
+            "source": {"name": todo, "url": todo, "citation": todo, "citation_url": todo,
+                       "license": "unknown", "redistribution": "unknown"},
+            "shape": {"frequency": todo, "target": args.target or todo, "stats_basis": "measured"},
+            "protocol": {"protocol": todo},
+        }, f"{todo}: what the data is. Use for ...; not for ...", {
+            "Overview": f"{todo}: what it is, domain, scale, and why it is used.",
+            "Protocol and pitfalls": f"{todo}: split, scaling, lookbacks/horizons, and known pitfalls.",
+        })
+        card_dir.mkdir(parents=True, exist_ok=True)
+        for filename, text in files.items():
+            (card_dir / filename).write_text(text, encoding="utf-8")
 
     print(f"✓ Scaffolded dataset '{name}' (pattern: {args.pattern})")
     for path in targets:
         print(f"  + {path.relative_to(ROOT)}")
     if args.pattern == "single":
         print(f"  ~ DATASET_NAME_MAP: {status}")
-    print(f"  + catalog/datasets/{name}/README.md  (curated facts are TODO placeholders)")
+    print(f"  + catalog/datasets/{name}/card.toml and README.md  (TODO placeholders)")
     print()
     print("Next steps:")
     if args.pattern == "single":
         print(f"  1. Implement the loader in src/tsflab/data/datasets/{name}.py (_read_data).")
-    print(f"  - Fill every TODO in catalog/datasets/{name}/README.md with verified facts")
+    print(f"  - Fill every TODO in catalog/datasets/{name}/card.toml and README.md with verified facts")
     print("    (source, license, statistics, protocol); `tsf data audit` fails until done.")
+    print(f"  - Measure characteristics: `tsf data analyze {name} --write-card`.")
     print(f"  - Put the data at {data_path}, then reference the config from a")
     print(f"    run config via `extends = [..., \"../datasets/{name}.toml\", ...]`.")
 

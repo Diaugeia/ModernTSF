@@ -1,19 +1,11 @@
 ---
 name: "marks"
-kind: "component"
-module: "tsflab.models._components.marks"
-summary: "Adapters from raw six-column timestamp marks to normalized calendar features, spatiotemporal (value + covariate) tensors, and Time-Series-Library mark layouts."
-category: "utility"
-input: "values [batch, time, nodes]; marks raw [batch, time, 6] = [year, month, day, weekday, hour, minute] or node covariates [batch, time, nodes, features]"
-output: "normalized_time_features [batch, time, 2]; to_spatiotemporal [batch, time, nodes, 1 + F]; future_time_features [batch, time, nodes, F]; adapt_tslib_marks [batch, time, k]"
-origin: "TSFLab's own input contract; the value-plus-normalized-calendar layout follows the BasicTS / LargeST tensor convention as stated in the module docstring"
-origin_models: []
-tags: ["calendar", "covariate", "spatiotemporal", "timestamp", "time-in-day", "day-in-week", "adapter", "time-series-library", "time-feature", "marks"]
+description: "Adapters from raw six-column timestamp marks to normalized calendar features, spatiotemporal node tensors, Time-Series-Library timeF layouts, and civil-date day and minute counts. Use for models where timestamps carry signal; not for year/month features, other mark layouts, or sub-minute sampling."
 ---
 
 # marks
 
-## Purpose
+## What it does
 
 Pure tensor helpers (no parameters) that turn the framework's decoder-style
 4-tuple marks into what model families expect.
@@ -25,23 +17,33 @@ Pure tensor helpers (no parameters) that turn the framework's decoder-style
 - `future_time_features(marks, n)`: only the `feats` part, `[B, T, N, F]`.
 - `coerce_time_length(marks, length)`: keep the last `length` steps, or repeat the last step to pad.
 - `adapt_tslib_marks`: convert raw marks to the Time-Series-Library layout.
+- `encoder_timef_marks(marks, *, seq_len, freq, enabled)`: the encoder-window guard of
+  inverted-token forecasters: `None` when disabled or absent, else checks
+  `[B, seq_len, k]` and returns `adapt_tslib_marks(marks, embed_type="timeF", freq)`.
+- `days_from_civil(y, m, d)`: proleptic Gregorian date to days since 1970-01-01,
+  `era * 146097 + doe - 719468` with `y' = y - [m <= 2]`, `era = floor(y' / 400)`,
+  `yoe = y' - 400 era`, `doy = floor((153 ((m + 9) mod 12) + 2) / 5) + d - 1`,
+  `doe = 365 yoe + floor(yoe / 4) - floor(yoe / 100) + doy`.
+- `elapsed_minutes(marks)`: `1440 * days_from_civil(year, month, day) + 60 hour + minute`
+  on float64-rounded int64 marks.
 
-## Origin and granularity
+## When to use
 
-Added with the PoorOtterBob spatiotemporal/air-quality models (commit `1b0e2f7d`,
-"Add six PoorOtterBob models") and the forecasting data-setting modes (`7b7c4704`),
-then extended by later refactors (`ef3dd5d2` made the model/data contracts
-explicit). The module docstring states the layout follows the BasicTS / LargeST
-convention, restricted to two calendar features by user specification; no single
-paper is recorded. It is cut at the data-contract boundary so that node-structured models,
-air-quality models, and TSLib transformers read the same marks consistently.
-Model-specific handling stays local: how embeddings consume the features, and
-any model that needs other calendar features.
+Use when timestamps carry signal (daily and weekly cycles, calendar effects) and
+a model needs them in its own layout: the normalized time-of-day/day-of-week
+helpers feed graph, spatiotemporal and air-quality models and future covariate
+blocks; `encoder_timef_marks` gives inverted-token models hourly `timeF` calendar
+tokens; `days_from_civil` / `elapsed_minutes` give an absolute time index (phase,
+window position) from raw marks. Do not use when a model needs year, month, or
+day features (discarded here), when marks have a different column layout or are
+already normalized or TSLib-preprocessed, or when sampling is finer than one
+minute. Most functions assume the layout and do not validate it.
 
 ## Interface
 
 Public symbols: `TIME_FEATURES`, `TSLIB_TIME_FEATURE_DIMS`,
-`tslib_time_feature_dimension`, `adapt_tslib_marks`, `normalized_time_features`,
+`tslib_time_feature_dimension`, `adapt_tslib_marks`, `encoder_timef_marks`,
+`days_from_civil`, `elapsed_minutes`, `normalized_time_features`,
 `to_spatiotemporal`, `to_calendar_spatiotemporal`, `future_time_features`,
 `coerce_time_length`. All are stateless tensor ops on float tensors; none has parameters.
 
@@ -49,85 +51,11 @@ Public symbols: `TIME_FEATURES`, `TSLIB_TIME_FEATURE_DIMS`,
 - `TSLIB_TIME_FEATURE_DIMS`: `{"h": 4, "t": 5, "s": 6, "m": 1, "a": 1, "w": 2, "d": 3, "b": 3}`, the pinned TSLib `timeF` widths.
 - `tslib_time_feature_dimension(freq)`: case-insensitive lookup; raises `ValueError` listing supported keys.
 - `adapt_tslib_marks(marks, *, embed_type, freq)`: `None` returns `None`; `marks.ndim != 3` raises `ValueError`. For `embed_type != "timeF"`: width 6 returns `marks[..., 1:]` (drops year), width 5 passes through, otherwise `ValueError`. For `"timeF"`: width equal to the pinned width passes through; width 6 with `freq == "h"` is converted to `[hour/23 - 0.5, weekday/6 - 0.5, (day-1)/30 - 0.5, (day_of_year-1)/365 - 0.5]` (leap-year aware); anything else raises `ValueError` (only hourly can be reconstructed from raw marks).
+- `encoder_timef_marks(marks, *, seq_len, freq, enabled=True)`: returns `None` when `enabled` is false or `marks is None`; raises `ValueError("x_mark_enc must be [batch, seq_len, mark_columns]")` unless `marks` is 3-D with `shape[1] == seq_len`; otherwise `adapt_tslib_marks(marks, embed_type="timeF", freq=freq)` (so `[B, seq_len, 4]` for hourly raw marks).
+- `days_from_civil(year, month, day) -> int64`: elementwise on broadcastable integer tensors (int64 expected; `month` 1-12). Exact integer arithmetic with floor division, valid for negative years; day 0 is 1970-01-01. No validation of day or month ranges.
+- `elapsed_minutes(marks [..., 6]) -> int64 [...]`: `marks.double().round().long()`, then `days * 1440 + hour * 60 + minute`; the weekday column is ignored and the width is not checked (callers that need a check, such as `ssclforecaster.mark_minutes`, validate first).
 - `normalized_time_features(marks [B, T, 6]) -> [B, T, 2]`: reads columns 3 (weekday), 4 (hour), 5 (minute); no shape validation, values are not clamped.
 - `to_spatiotemporal(values [B, T, N], marks) -> [B, T, N, 1 + F]`: `marks` 4-D is used unchecked; `None` is replaced by zeros `[B, T, 6]` (so both features become 0); otherwise `marks` is read as `[B, T, 6]`.
 - `to_calendar_spatiotemporal(values, marks)`: raises `ValueError` if `marks` is 4-D with last dim != 2 (embedding-index models would otherwise index out of range), else delegates.
 - `future_time_features(marks, n) -> [B, T, N, F]`: 4-D returned as-is; else normalized features expanded to `n` nodes (expand, not copy). `marks=None` is not handled (raises).
 - `coerce_time_length(marks, length)`: adjusts dim 1 only; works for raw or node-structured marks. Padding repeats the last step; an empty time axis is not handled.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_signal.py` (`test_marks_constants_and_dimension`,
-  `test_normalized_time_features`, `test_to_spatiotemporal_variants`,
-  `test_future_time_features_and_coerce`, `test_adapt_tslib_marks`) checks the constants
-  and case-insensitive width lookup, the `[0, 1)` range and exact values of the two
-  normalized features, the 3-D/4-D/`None` branches of `to_spatiotemporal` (zero features
-  for `None`), the `to_calendar_spatiotemporal` rejection of a 5-channel covariate,
-  `future_time_features` and `coerce_time_length` (truncate, pad by repeating the last
-  step, identity returns the same object), and `adapt_tslib_marks` (drop year, pass-through
-  of preprocessed widths, hourly `timeF` conversion with the Feb-29 day-of-year value,
-  the three `ValueError` cases), plus a seeded regression against
-  `tests/fixtures/components/marks.pt` (`normalized`, `spatiotemporal`, `tslib_hourly`).
-- `tests/test_repository_contracts.py` (`test_shared_spatiotemporal_adapter_shape`) checks the
-  `[2, 12, 4, 3]` output and that channel 0 equals the values.
-  `tests/test_component_extraction_graph.py` runs graph consumers on `to_spatiotemporal`
-  output and uses `normalized_time_features` in a decoder reference model.
-- The TSLib adapter (`adapt_tslib_marks`, `tslib_time_feature_dimension`) is used by `fredf` and `pgn`.
-
-## Variants and options
-
-- Raw 3-D marks (forecasting datasets) vs. 4-D node covariates (air-quality datasets): same function, branch on `marks.dim()`.
-- `to_calendar_spatiotemporal` restricts to 2-channel calendar covariates for models that index embedding tables by time-in-day and day-in-week.
-- Time-of-day scale assumes minute-resolution stamps; `weekday` is assumed to be 0 to 6.
-
-## When to use and when not to use
-
-Use to feed graph / spatiotemporal / air-quality models and to build future
-covariate blocks from decoder marks. Do not use when a model needs year, month,
-or day features (they are discarded here), when marks have a different column
-layout, or when sampling resolution is finer than one minute. Do not rely on it to
-validate marks; most functions assume the layout.
-
-## Related components
-
-`embed` (consumes the TSLib-layout marks `adapt_tslib_marks` produces; its
-`TemporalEmbedding` expects five columns without year), `forecast_embedding` (embeds raw
-six-column marks directly with its own scaling, not the normalized calendar features here),
-`graph_utils` (graph supports used by the same consumers).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `TIME_FEATURES`
-  Public module constant.
-- `TSLIB_TIME_FEATURE_DIMS`
-  Public module constant.
-- `tslib_time_feature_dimension(freq: str)`
-  Return the pinned Time-Series-Library ``timeF`` width for ``freq``.
-- `adapt_tslib_marks(marks: torch.Tensor | None, *, embed_type: str, freq: str)`
-  Adapt TSFLab marks to the pinned Time-Series-Library contract.
-- `normalized_time_features(marks: torch.Tensor)`
-  Convert raw integer marks to normalized calendar features.
-- `to_spatiotemporal(values: torch.Tensor, marks: torch.Tensor)`
-  Build a ``(B, T, N, 1 + F)`` spatiotemporal tensor.
-- `to_calendar_spatiotemporal(values: torch.Tensor, marks: torch.Tensor)`
-  Build ``(B, T, N, 1 + 2)`` = ``[value, time_in_day, day_in_week]``.
-- `future_time_features(marks: torch.Tensor, n: int)`
-  Build a ``(B, T, N, F)`` tensor of future covariate features.
-- `coerce_time_length(marks: torch.Tensor, length: int)`
-  Coerce a mark tensor to an exact temporal length.
-
-```python
-from tsflab.models._components.marks import TIME_FEATURES, TSLIB_TIME_FEATURE_DIMS, tslib_time_feature_dimension, adapt_tslib_marks, normalized_time_features, to_spatiotemporal, to_calendar_spatiotemporal, future_time_features, coerce_time_length
-```
-
-## Retrieval terms
-
-`calendar`, `covariate`, `spatiotemporal`, `timestamp`
-
-## Current model consumers (41)
-
-`agcrn`, `aircade`, `airdualode`, `airformer`, `airphynet`, `astgcn`, `bigst`, `bist`, `cauair`, `d2stgnn`, `dcrnn`, `deepair`, `dfdgcn`, `dgcrn`, `extralonger`, `fredf`, `gagnn`, `gclstm`, `gts`, `gwnet`, `himnet`, `lstm`, `mage`, `megacrn`, `mtgnn`, `pcdcnet`, `pgn`, `pm25gnn`, `ragc`, `st_ssdl`, `staeformer`, `stdmae`, `stdn`, `stgcn`, `stgode`, `stid`, `stnorm`, `stop`, `sttn`, `stwave`, `visifold`
-<!-- component-card:generated:end -->

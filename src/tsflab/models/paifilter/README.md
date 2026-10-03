@@ -1,109 +1,31 @@
 ---
 name: "PaiFilter"
-summary: "PaiFilter implements the plain shaping filter variant from the FilterNet framework for time series forecasting. It adopts a universal frequency kernel for signal filtering and temporal modeling, using randomly initialized learnable weight parameters that are multiplied with the input to selectively pass or attenuate frequency components. This design allows FilterNet-style forecasting without the contextual gating of the full FilterNet model, serving as an efficient baseline for frequency-domain time series forecasting."
-paper: "https://arxiv.org/abs/2411.01623"
-paper_title: "FilterNet: Harnessing Frequency Filters for Time Series Forecasting"
-venue: "NeurIPS 2024"
-year: 2024
-code: "https://github.com/aikunyi/FilterNet"
-revision: "cdb321c4e338e0c07b45cee92f54b3c5bd5a809e"
-license: "Apache-2.0"
-tagline: "Learnable complex frequency mask on the rFFT of the input (plain shaping filter), then a two-layer MLP, inside RevIN."
-tags: ["mlp", "frequency", "filter", "channel-independent", "normalization", "lightweight"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:plain-shaping-frequency-filter", "channel=local:channel-independent-shared-weights", "head=local:two-layer-mlp-head", "loss=loss:mse"]
+description: "FilterNet's plain shaping filter: a learnable complex frequency mask on the rFFT of each channel, then a shared two-layer MLP, inside RevIN. Use for efficient long-horizon forecasting of noisy periodic series; not for cross-channel dependence, exogenous inputs, or probabilistic output."
 ---
+
 # PaiFilter
 
-## Key ideas
+## Idea
 
-- `PlainShapingFilter` multiplies the rFFT spectrum by a learnable complex weight per frequency bin (initialized to identity) and inverts it.
-- A two-layer MLP (`forecast`, GELU) maps the filtered window to the horizon, shared across channels.
-- `revin` wraps the model for distribution shift.
+- `PlainShapingFilter` multiplies each channel's rFFT spectrum by one shared learnable complex weight per frequency bin (initialized to identity) and inverts it (paper Eq. 8).
+- The filter selectively passes or attenuates frequency components, targeting high-frequency noise while using the whole spectrum.
+- A two-layer MLP (GELU) maps the filtered window to the horizon, shared across channels; `revin` wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Series whose structure lives in a few frequency components (strong or multiple periodicities) mixed with high-frequency noise.
+- Tight compute budgets: one frequency mask plus an MLP, no attention.
+- Not when cross-channel dependence carries the signal (channel-independent), when timestamps or covariates matter (marks are ignored), or when quantiles are needed (point output).
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2411.01623); title: FilterNet: Harnessing Frequency Filters for Time Series Forecasting; venue/year: NeurIPS 2024 / 2024
-- [codebase](https://github.com/aikunyi/FilterNet); revision: `cdb321c4e338e0c07b45cee92f54b3c5bd5a809e`; license: `Apache-2.0`
+- `enc_in`: number of input channels; must equal the dataset's channel count (sizes RevIN).
+- The filter has `seq_len // 2 + 1` frequency weights and the MLP input is `seq_len`; both are derived from the task, not set.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/PaiFilter.toml`](../../../../configs/models/PaiFilter.toml).
+Other hyperparameters: preset defaults in `configs/models/PaiFilter.toml`; tune generically.
 
 ## Differences
 
-**Paper-driven local implementation.** The universal complex kernel follows
-Equation (8): the rFFT of each channel is multiplied elementwise by one shared
-learnable frequency response and transformed back before a channel-independent
-forecast head. TSFLab reuses canonical RevIN. The external repository is
-reference-only; no source file was copied or adapted.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `hidden_size=256`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: FilterNet: Harnessing Frequency Filters for Time Series Forecasting
-- **Venue**: NeurIPS 2024
-- **Published**: 2024 (arXiv: 2024-11)
-- **arXiv**: https://arxiv.org/abs/2411.01623
-
-## Abstract
-Given the ubiquitous presence of time series data across various domains, precise forecasting of time series holds significant importance and finds widespread real-world applications such as energy, weather, healthcare, etc. While numerous forecasters have been proposed using different network architectures, the Transformer-based models have state-of-the-art performance in time series forecasting. However, forecasters based on Transformers are still suffering from vulnerability to high-frequency signals, efficiency in computation, and bottleneck in full-spectrum utilization, which essentially are the cornerstones for accurately predicting time series with thousands of points. In this paper, we explore a novel perspective of enlightening signal processing for deep time series forecasting. Inspired by the filtering process, we introduce one simple yet effective network, namely FilterNet, built upon our proposed learnable frequency filters to extract key informative temporal patterns by selectively passing or attenuating certain components of time series signals. Concretely, we propose two kinds of learnable filters in the FilterNet: (i) Plain shaping filter, that adopts a universal frequency kernel for signal filtering and temporal modeling; (ii) Contextual shaping filter, that utilizes filtered frequencies examined in terms of its compatibility with input signals for dependency learning. Equipped with the two filters, FilterNet can approximately surrogate the linear and attention mappings widely adopted in time series literature, while enjoying superb abilities in handling high-frequency noises and utilizing the whole frequency spectrum that is beneficial for forecasting. Finally, we conduct extensive experiments on eight time series forecasting benchmarks, and experimental results have demonstrated our superior performance in terms of both effectiveness and efficiency compared with state-of-the-art methods. Our code is available at https://github.com/aikunyi/FilterNet.
-
-## In TSFLab
-Default config: `configs/models/PaiFilter.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-**Paper-driven local implementation.** The universal complex kernel follows
-Equation (8): the rFFT of each channel is multiplied elementwise by one shared
-learnable frequency response and transformed back before a channel-independent
-forecast head. TSFLab reuses canonical RevIN. The external repository is
-reference-only; no source file was copied or adapted.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/nips/0001FZHHL024,
-  author       = {Kun Yi and
-                  Jingru Fei and
-                  Qi Zhang and
-                  Hui He and
-                  Shufeng Hao and
-                  Defu Lian and
-                  Wei Fan},
-  editor       = {Amir Globersons and
-                  Lester Mackey and
-                  Danielle Belgrave and
-                  Angela Fan and
-                  Ulrich Paquet and
-                  Jakub M. Tomczak and
-                  Cheng Zhang},
-  title        = {FilterNet: Harnessing Frequency Filters for Time Series Forecasting},
-  booktitle    = {Advances in Neural Information Processing Systems 37: Annual Conference
-                  on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver,
-                  BC, Canada, December 10 - 15, 2024},
-  year         = {2024},
-  url          = {http://papers.nips.cc/paper\_files/paper/2024/hash/6323d96f79d5d49e0d3fc88835c082cd-Abstract-Conference.html},
-  timestamp    = {Tue, 26 May 2026 17:12:08 +0200},
-  biburl       = {https://dblp.org/rec/conf/nips/0001FZHHL024.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Paper-driven local implementation of the universal complex kernel (Eq. 8); the Apache-2.0 official repository is reference-only and no source was copied.
+- TSFLab reuses canonical RevIN.
+- Only the plain shaping filter is implemented; the contextual shaping filter (TexFilter) is a separate model.

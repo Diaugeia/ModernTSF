@@ -7,27 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from tsflab.models._components.dominant_periods import dominant_periods
-
-
-class Inception2D(nn.Module):
-    """Parameter-efficient average of odd square convolution kernels."""
-
-    def __init__(self, in_channels: int, out_channels: int, num_kernels: int) -> None:
-        super().__init__()
-        self.kernels = nn.ModuleList(
-            [
-                nn.Conv2d(
-                    in_channels,
-                    out_channels,
-                    kernel_size=2 * index + 1,
-                    padding=index,
-                )
-                for index in range(num_kernels)
-            ]
-        )
-
-    def forward(self, values: torch.Tensor) -> torch.Tensor:
-        return torch.stack([kernel(values) for kernel in self.kernels], dim=-1).mean(-1)
+from tsflab.models._components.forecast_embedding import RawCalendarEmbedding
+from tsflab.models._components.inception_block import InceptionBlock2d
 
 
 class TimesBlock(nn.Module):
@@ -38,9 +19,9 @@ class TimesBlock(nn.Module):
         self.total_length = total_length
         self.top_k = top_k
         self.convolution = nn.Sequential(
-            Inception2D(d_model, d_ff, num_kernels),
+            InceptionBlock2d(d_model, d_ff, num_kernels, init_weight=False),
             nn.GELU(),
-            Inception2D(d_ff, d_model, num_kernels),
+            InceptionBlock2d(d_ff, d_model, num_kernels, init_weight=False),
         )
         self.last_periods: torch.Tensor | None = None
 
@@ -66,18 +47,6 @@ class TimesBlock(nn.Module):
         return values + (stacked * weights).sum(dim=-1)
 
 
-class CalendarEmbedding(nn.Module):
-    def __init__(self, d_model: int) -> None:
-        super().__init__()
-        self.projection = nn.Linear(6, d_model, bias=False)
-
-    def forward(self, marks: torch.Tensor) -> torch.Tensor:
-        if marks.ndim != 3 or marks.shape[-1] != 6:
-            raise ValueError("calendar marks must have shape (batch, time, 6)")
-        scales = marks.new_tensor((2100.0, 12.0, 31.0, 6.0, 23.0, 59.0))
-        return self.projection(marks / scales - 0.5)
-
-
 class Model(nn.Module):
     """Forecast-only TimesNet with stacked residual TimesBlocks."""
 
@@ -95,7 +64,7 @@ class Model(nn.Module):
         self.pred_len = pred_len
         self.channels = enc_in
         self.value_embedding = nn.Linear(enc_in, d_model)
-        self.calendar_embedding = CalendarEmbedding(d_model)
+        self.calendar_embedding = RawCalendarEmbedding(d_model)
         self.embedding_dropout = nn.Dropout(dropout)
         self.temporal_projection = nn.Linear(seq_len, total_length)
         self.blocks = nn.ModuleList(

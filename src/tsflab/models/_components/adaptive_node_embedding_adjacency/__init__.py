@@ -5,8 +5,9 @@ spatiotemporal forecasters to complement predefined or dynamic supports. It
 covers both the dual embedding form (independent source/target parameters)
 and the single self-similarity form (one embedding compared against its own
 transpose); the pairwise scoring, ``relu``, and row-wise ``softmax`` are
-identical in both cases. Any Chebyshev or other polynomial basis built on top
-of the resulting adjacency is paper-specific and stays model-local.
+identical in both cases. The node-adaptive Chebyshev filter of AGCRN and HimNet
+built on top of it lives in ``node_adaptive_graph_conv``; other polynomial bases
+stay model-local.
 """
 
 from __future__ import annotations

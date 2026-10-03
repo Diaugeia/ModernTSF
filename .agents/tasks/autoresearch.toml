@@ -3,20 +3,22 @@ title = "Bounded forecasting autoresearch"
 summary = "AutoResearch module: reading the other modules' context (dataset profile, model cards, component interfaces, result board, round ledger), profile the data, hypothesize, run a baseline panel, recombine catalog pieces, and conclude under explicit budgets and leakage guards."
 skills = ["run-autoresearch"]
 acceptance = [
-  "Profile every approved dataset with the dataset analyzer before choosing models.",
+  "Profile every approved dataset with the dataset analyzer before choosing models, and retrieve candidates with `tsf catalog match` on its characteristics.",
   "State falsifiable hypotheses tied to profile facts and a fixed validation-based selection rule before execution.",
   "Evaluate a baseline panel first; preview every resolved run matrix and stay within the declared run budget.",
   "Change one experimental factor per iteration; preserve failed runs; never select on test metrics.",
   "Confirm finalists with multiple seeds and return evidence, uncertainty, limitations, and a stop/continue recommendation.",
-  "Register a recombined winner as a catalog model only when separately authorized, with composition provenance and passing verification.",
+  "Register a recombined winner as a catalog model only when separately authorized, with composition provenance and a passed admission (`tsf model add --verify`).",
 ]
 prompt = """
 Investigate: {question}. Use datasets {datasets}, primary metric {metric}, and no
 more than {max_runs} total runs. Profile each dataset first, then write hypotheses
-tied to the profile. Retrieve candidates from the catalog shortest card level first,
+tied to the profile. Retrieve candidates with `tsf catalog match <dataset>` (card fits
+against dataset characteristics), then the catalog shortest card level first,
 run the baseline panel, and search from the best baseline by changing one slot
 (normalization, decomposition, temporal backbone, channel strategy, head, loss) per
-iteration. Choose by validation behavior only, confirm finalists over seeds, record
+iteration. Set data-dependent parameters from card [data_params] and the profile;
+tune generic hyperparameters yourself within the run budget. Choose by validation behavior only, confirm finalists over seeds, record
 hypotheses, decisions, runs, and conclusions in the research round, never overwrite
 outputs, and stop on budget exhaustion, repeated infrastructure failure, or lack of
 measurable progress. Heavy runs execute on GPU machines or CI: preview each matrix,

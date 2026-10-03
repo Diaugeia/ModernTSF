@@ -1,19 +1,11 @@
 ---
 name: "freq_band_moe"
-kind: "component"
-module: "tsflab.models._components.freq_band_moe"
-summary: "Instance-normalizes a [B, C, T] series, splits its rfft into expert_num contiguous bands at sorted sigmoid boundaries, mixes bands with input-conditioned softmax gates, and rescales."
-category: "decomposition"
-input: "x [batch, channels, seq_len]"
-output: "(combined [batch, channels, seq_len], boundaries [expert_num + 1], gating_scores [batch, expert_num])"
-origin: "Frequency-band decomposition mixture of experts of FreqMoE, Enhancing Time Series Forecasting through Frequency Decomposition Mixture of Experts (arXiv 2501.15125, AISTATS 2025)"
-origin_models: ["freqmoe"]
-tags: ["band", "decomposition", "experts", "frequency", "gating", "mixture", "rfft", "instance-normalization", "straight-through", "fixed-length"]
+description: "Instance-normalize a [B, C, T] series, split its rfft into contiguous bands at sorted sigmoid boundaries, mix bands with input-conditioned softmax gates, restore scale. Use for a frequency-band gating front-end on fixed-length windows; not for variable sequence length or when a shared revin should own normalization."
 ---
 
 # freq_band_moe
 
-## Purpose
+## What it does
 
 `FrequencyBandMixtureOfExperts(expert_num, seq_len)` denoises a series by a
 gated recombination of frequency bands. For `x [B, C, T]`:
@@ -29,15 +21,14 @@ gated recombination of frequency bands. For `x [B, C, T]`:
    `Linear(F, F) -> ReLU -> Linear(F, expert_num)`, so `g` is `[B, expert_num]`.
 5. `out = irfft(sum_e g[b, e] * (F masked to band e), n=T) * sqrt(v) + mu`.
 
-## Origin and granularity
+## When to use
 
-Extracted from `freqmoe` (commit `6b491e13`, automated intake). The module
-docstring calls it a paper-neutral block for frequency-domain MoE forecasters.
-Kept here: normalization, band split, gate, recombination, and restoration of
-the instance scale. Model-local in `freqmoe`: the downstream frequency-extension
-blocks (complex linear layers upsampling the spectrum from `seq_len` to
-`seq_len + pred_len`), the complex ReLU/dropout, and the use of the returned
-boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_scores`).
+Use as a front-end that gates frequency bands of a `[B, C, T]` window with a
+fixed window length. Pass `learnable_boundaries=True` when the boundaries should
+be learned. Do not use when the sequence length varies, or when the normalization
+should be handled by a shared `revin` (this module normalizes internally and
+restores scale itself). Note it expects channels on axis 1 (`[B, C, T]`), unlike
+the `[B, T, C]` layout of most components, so permute first (as `freqmoe` does).
 
 ## Interface
 
@@ -62,81 +53,3 @@ boundaries and gate scores (stored as `last_band_boundaries`, `last_gating_score
 - Stateless between calls (no cached tensors in the module). No dropout. Input
   must be a real floating tensor (`rfft`); the gate and masks follow its dtype and
   device. `torch.var` is the unbiased estimate, so `seq_len == 1` yields NaN.
-
-## Invariants and equivalence evidence
-
-- `test_frequency_band_moe_partitions_are_contiguous_and_gates_sum_to_one` in
-  `tests/test_frequency_wavelet_attention_forecasters.py` checks output shape,
-  boundary vector length and monotonicity, and gate rows summing to 1.
-- no fixture: no pre-refactor tensor fixture; consumer-level behaviour is
-  covered by the `freqmoe` model tests in the same file.
-- `tests/test_component_numeric_fixes.py`:
-  `test_band_boundaries_default_is_buffer_and_loads_old_checkpoint` (default
-  `band_boundaries` is a buffer with no gradient, round-trips through
-  `state_dict`, and a learnable module's checkpoint loads into the default one),
-  `test_learnable_boundaries_receive_gradient_with_identical_forward` (forward
-  output, boundaries and gates equal the fixed module's; `band_boundaries.grad`
-  is finite and nonzero), and `test_single_expert_has_no_boundaries`
-  (`expert_num == 1` returns `[0.0, 1.0]`, finite output). No fixture compares the
-  default forward against the pre-change implementation; that was a one-off
-  manual check and is not reproducible from the repository.
-- Paper vs code: the paper (Sec. on the frequency-decomposition MoE) says the
-  boundaries are learned end-to-end, but the official code casts them to integers,
-  which blocks every gradient. The default follows the official code (fixed,
-  random-initialization boundaries; a buffer, so the module no longer advertises a
-  parameter that cannot train). Learning is opt-in.
-- Bands that round to zero width are empty (their mask is all zero). With
-  `expert_num == 1` the single band covers all bins and `boundaries == [0, 1]`.
-
-## Variants and options
-
-`learnable_boundaries=True` turns `band_boundaries` into a Parameter trained with
-a straight-through estimator: the forward uses the exact hard 0/1 band masks, the
-backward uses soft masks `sigmoid((bin + 0.5 - edge) / T)` differences, with
-`edge = boundary * freq_len`. `boundary_temperature` is `T` (bins). This is not in
-the paper or official code. Boundaries are shared over channels and batch;
-only the gate depends on the input, and it sees the channel-averaged amplitude
-spectrum.
-
-## When to use and when not to use
-
-Use as a front-end that gates frequency bands of a `[B, C, T]` window with a
-fixed window length. Pass `learnable_boundaries=True` when the boundaries should
-be learned. Do not use when the sequence length varies, or when the normalization
-should be handled by a shared `revin` (this module normalizes internally and
-restores scale itself). Note it expects channels on axis 1 (`[B, C, T]`), unlike
-the `[B, T, C]` layout of most components, so permute first (as `freqmoe` does).
-
-## Related components
-
-- `frequency_band_sampler`: deterministic depth-indexed bands over an FFT axis;
-  no gate, no learned boundaries, no recombination.
-- `revin`: external reversible normalization; this module normalizes and restores
-  scale internally with its own (non-affine) statistics.
-- `series_decomposition`: time-domain trend/residual split; here the split is
-  spectral and recombined by gates.
-- `topk_expert_router`: input-conditioned routing over experts that is not tied to
-  a spectrum; this module's gate is dense softmax (no top-k).
-- `wavelet`, `haar_dwt1d`: alternative multi-band decompositions (fixed filter
-  banks) instead of learned rfft band edges.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `FrequencyBandMixtureOfExperts(expert_num: int, seq_len: int, learnable_boundaries: bool=False, boundary_temperature: float=1.0)`
-  Decompose a series into frequency bands and gate their mixture.
-
-```python
-from tsflab.models._components.freq_band_moe import FrequencyBandMixtureOfExperts
-```
-
-## Retrieval terms
-
-`band`, `decomposition`, `experts`, `frequency`, `gating`, `mixture`, `rfft`
-
-## Current model consumers (1)
-
-`freqmoe`
-<!-- component-card:generated:end -->

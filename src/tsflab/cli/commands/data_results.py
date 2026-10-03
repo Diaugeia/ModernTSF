@@ -88,10 +88,10 @@ def dataset_read(action: str, rest: list[str]) -> int:
     if rest:
         print("tsf data audit takes no arguments", file=sys.stderr)
         return 2
-    failures = [error for error in audit_resource_cards(ROOT) if "dataset" in error]
+    failures = [error for error in audit_resource_cards(ROOT) if "catalog/datasets" in error]
     for failure in failures:
         print(f"ERROR: {failure}")
-    failing = sum(any(f"catalog/datasets/{record.name}/README.md" in item for item in failures) for record in records)
+    failing = sum(any(f"catalog/datasets/{record.name}" in item for item in failures) for record in records)
     print(f"Dataset cards: {len(records) - failing}/{len(records)} complete and current")
     return 1 if failures else 0
 

@@ -19,8 +19,10 @@ implementation units, never model categories; read the components section of
 
 ## Steps
 
-1. Build a shortlist from model-local code (repeated classes, exact or normalized
-   AST matches, recent additions). Lexical similarity only nominates candidates.
+1. Build the shortlist with `uv run tsf model similar [slug...] [--json]`: static,
+   alpha-renamed AST clusters ranked by breadth x agreement, each marked
+   `reuse-existing candidate: <component>` or `extract-new candidate`. It only
+   nominates; triage per [references/similarity.md](references/similarity.md).
 2. For each candidate compare equations, tensor axes and shapes, normalization and
    residual order, masking, initialization, state, dtype/device behavior, outputs,
    and error contracts. Decide `reuse-existing`, `extract-new`, or
@@ -31,18 +33,19 @@ implementation units, never model categories; read the components section of
 4. Before editing, capture reference fixtures from the unmodified models under a
    fixed seed and input: `state_dict()` keys and values, eval-mode outputs, and
    gradients. Keep parameter attribute names so checkpoints still load.
-5. Define the smallest paper-neutral API; add its `ComponentSpec`, unit tests, and
-   explicit imports; write the curated card (front matter and sections in the
-   components section of `.agents/STANDARDS.md`) from the code, not from memory. Migrate consumers in reviewable groups without flags that
+5. Define the smallest paper-neutral API; add its `ComponentSpec` and explicit
+   imports; write the card from the code, not from memory: `card.toml` (`role`,
+   `slot`, `fits`, `category`, `tags`, `input`, `output`, `origin`,
+   `origin_models`) and `README.md` (What it does, When to use, Interface; detail
+   in `reference.md`). Migrate consumers in reviewable groups without flags that
    hide material variants; keep attribution and explanatory comments.
-6. Add a focused equivalence test against the fixtures, regenerate cards, and
-   re-verify every touched model:
+6. Compare every migrated consumer against the fixtures (keys, outputs, gradients),
+   then re-admit every model that uses a touched component:
 
    ```bash
-   uv run tsf repo cards
-   uv run tsf model verify <Name...>
-   uv run tsf repo check --contracts strict --models <Name...>
+   uv run tsf model verify --changed --base <ref>   # writes [admission] per consumer
    uv run tsf model audit --components
+   uv run tsf repo cards
    uv run tsf repo check --audit
    ```
 
@@ -50,14 +53,16 @@ implementation units, never model categories; read the components section of
 
 - Module: Models.
 - Reads: component cards (L0-L2) and model-local code.
-- Produces: component cards with interface, invariants, consumers; equivalence tests.
+- Produces: component cards (role, slot, fits, interface); consumers derived from imports; re-admitted consumers.
 - Hands off to: `add-model` and `run-autoresearch` (recombination reads component interfaces), `audit`.
 
 ## Success
 
-- Each new component has a curated card that passes `tsf model audit --components`, unit tests, and declared consumers.
-- Every migrated consumer passes the equivalence test (keys, outputs, gradients).
-- No peer-model imports; tests that pin the component count are updated.
+- Each new component has a curated card that passes `tsf model audit --components`
+  and declared consumers.
+- Every migrated consumer matches its fixtures (keys, outputs, gradients) and has
+  `[admission]` status `passed`.
+- No peer-model imports.
 
 ## Stop and hand off
 

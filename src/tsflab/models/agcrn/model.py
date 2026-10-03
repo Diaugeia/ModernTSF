@@ -6,59 +6,24 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from tsflab.models._components.adaptive_node_embedding_adjacency import (
-    adaptive_node_embedding_adjacency,
-)
+from tsflab.models._components.graph_conv_gru import GraphConvGRUCell
 from tsflab.models._components.marks import to_spatiotemporal
+from tsflab.models._components.node_adaptive_graph_conv import NodeAdaptiveGraphConv
 
 
-def _adaptive_basis(nodes: torch.Tensor, order: int) -> torch.Tensor:
-    adjacency = adaptive_node_embedding_adjacency(nodes)
-    basis = [torch.eye(nodes.shape[0], device=nodes.device, dtype=nodes.dtype)]
-    if order > 1:
-        basis.append(adjacency)
-    for _ in range(2, order):
-        basis.append(2 * adjacency @ basis[-1] - basis[-2])
-    return torch.stack(basis)
+class AdaptiveGraphGRUCell(GraphConvGRUCell):
+    """GRU gates and candidate parameterized by adaptive graph filters.
 
-
-class NodeAdaptiveConvolution(nn.Module):
-    """Node-conditioned Chebyshev convolution from the AGCRN equation."""
-
-    def __init__(self, in_dim: int, out_dim: int, order: int, node_dim: int) -> None:
-        super().__init__()
-        self.order = order
-        self.weight_bank = nn.Parameter(torch.empty(node_dim, order, in_dim, out_dim))
-        self.bias_bank = nn.Parameter(torch.empty(node_dim, out_dim))
-        nn.init.xavier_uniform_(self.weight_bank)
-        nn.init.zeros_(self.bias_bank)
-
-    def forward(self, x: torch.Tensor, nodes: torch.Tensor) -> torch.Tensor:
-        basis = _adaptive_basis(nodes, self.order)
-        neighborhoods = torch.einsum("knm,bmc->bnkc", basis, x)
-        weights = torch.einsum("nd,dkio->nkio", nodes, self.weight_bank)
-        bias = nodes @ self.bias_bank
-        return torch.einsum("bnki,nkio->bno", neighborhoods, weights) + bias
-
-
-class AdaptiveGraphGRUCell(nn.Module):
-    """GRU gates and candidate parameterized by adaptive graph filters."""
+    ``forward(x, state, nodes)`` is the shared ``graph_conv_gru`` recurrence with
+    both filters called as ``conv(joined, nodes)``.
+    """
 
     def __init__(self, in_dim: int, hidden_dim: int, order: int, node_dim: int) -> None:
-        super().__init__()
-        self.hidden_dim = hidden_dim
         joint = in_dim + hidden_dim
-        self.gates = NodeAdaptiveConvolution(joint, 2 * hidden_dim, order, node_dim)
-        self.candidate = NodeAdaptiveConvolution(joint, hidden_dim, order, node_dim)
-
-    def forward(self, x: torch.Tensor, state: torch.Tensor, nodes: torch.Tensor) -> torch.Tensor:
-        reset, update = torch.sigmoid(
-            self.gates(torch.cat((x, state), dim=-1), nodes)
-        ).chunk(2, dim=-1)
-        proposal = torch.tanh(
-            self.candidate(torch.cat((x, reset * state), dim=-1), nodes)
-        )
-        return update * state + (1.0 - update) * proposal
+        gates = NodeAdaptiveGraphConv(joint, 2 * hidden_dim, order, node_dim)
+        candidate = NodeAdaptiveGraphConv(joint, hidden_dim, order, node_dim)
+        super().__init__(gates, candidate)
+        self.hidden_dim = hidden_dim
 
 
 class Model(nn.Module):
@@ -131,4 +96,4 @@ class Model(nn.Module):
         return self.readout(torch.cat((final, horizon), dim=-1)).squeeze(-1)
 
 
-__all__ = ["Model", "NodeAdaptiveConvolution", "AdaptiveGraphGRUCell"]
+__all__ = ["Model", "AdaptiveGraphGRUCell"]

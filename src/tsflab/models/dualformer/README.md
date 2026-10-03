@@ -1,107 +1,37 @@
 ---
 name: "Dualformer"
-summary: "Dualformer is a dual-branch Transformer for long-term time series forecasting that processes time and frequency domains in parallel. A hierarchical frequency-sampling module allocates a different, depth-indexed frequency band to each encoder layer so shallow layers keep high-frequency detail while deep layers specialize on low-frequency trend, and a periodicity-aware harmonic-energy gate fuses the two branches per channel."
-paper: "https://arxiv.org/abs/2601.15669"
-paper_title: "Dualformer: Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2026
-code: "https://github.com/Akira-221/Dualformer"
-revision: "ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19"
-license: "NOASSERTION"
-tagline: "Time and frequency Transformer branches fed depth-specific bands, fused by a harmonic-energy periodicity gate."
-tags: ["transformer", "frequency", "attention-variant", "multi-scale", "normalization", "covariates"]
-composition: ["normalization=component:revin", "decomposition=component:frequency_band_sampler", "temporal=component:transformer_encdec+component:self_attention_family+local:auto-correlation-attention-frequency-branch", "channel=component:forecast_embedding", "head=component:harmonic_energy_gate+local:last-step-linear-projection", "loss=loss:mse"]
+description: "Time- and frequency-domain Transformer branches fed depth-specific frequency bands, fused by a harmonic-energy periodicity gate. Use for long-term forecasting of heterogeneous or weakly periodic series where high-frequency detail matters; not for tasks needing per-channel independence or probabilistic output."
 ---
+
 # Dualformer
 
-## Key ideas
+## Idea
 
-- `frequency_band_sampler` (`HierarchicalFrequencySampler`) gives each encoder depth its own contiguous frequency band: shallow layers keep high-frequency detail, deep layers low-frequency trend.
-- A time branch uses ordinary `FullAttention` encoder layers; a frequency branch uses a local `AutoCorrelationAttention` (FFT top-lag aggregation) in the same `transformer_encdec` layers.
-- Layers are truly stacked on the running state, unlike the pinned official code where only the last layer contributes.
-- `harmonic_energy_gate` weights the branches by periodicity evidence; only the last fused step is projected to the horizon. `revin` and `forecast_embedding` (values plus calendar marks) frame the model.
+- `frequency_band_sampler` gives each encoder depth its own contiguous frequency band: shallow layers keep high-frequency detail, deep layers low-frequency trend (countering the Transformer low-pass effect).
+- A time branch uses `FullAttention` encoder layers; a frequency branch uses a local `AutoCorrelationAttention` (FFT top-lag aggregation) in the same `transformer_encdec` layers.
+- Layers are truly stacked on the running state (a fix over the pinned official code).
+- `harmonic_energy_gate` weights the branches by periodicity evidence; the last fused step is projected to the horizon. `revin` and `forecast_embedding` (values plus calendar marks) frame the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Designed for long-term forecasting where deep Transformers lose high-frequency information; the paper reports its largest gains on heterogeneous or weakly periodic data.
+- The gate adapts between time and frequency branches, so it is a hedge when periodicity strength varies across datasets.
+- Channels are embedded jointly per step (token embedding), so it does not keep channels independent.
+- Uses calendar marks when present (zero-filled otherwise).
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2601.15669); title: Dualformer: Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting; venue/year: arXiv preprint / 2026
-- [codebase](https://github.com/Akira-221/Dualformer); revision: `ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19`; license: `NOASSERTION`
+- `enc_in`, `c_out`: number of channels; must be equal.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Dualformer.toml`](../../../../configs/models/Dualformer.toml).
+Other hyperparameters: preset defaults in `configs/models/Dualformer.toml`; tune generically.
 
 ## Differences
 
-**Clean-room implementation: confirmed.** No source was copied from the official repository (`https://github.com/Akira-221/Dualformer`, revision `ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19`, `NOASSERTION`-licensed and treated as reference-only); its files were read only to resolve equation ambiguities. Structural and runtime evidence is generated by `uv run tsf model verify Dualformer`. Disclosed material differences from the pinned official code:
+Clean-room rewrite; `Akira-221/Dualformer` at `ebd4ccf8` (no license file, recorded `NOASSERTION`) was read only to resolve equation ambiguities.
 
-- **Depth-wise chaining (correctness fix).** In the pinned revision, every layer's band-limited input is recomputed directly from the *original* embedding's spectrum, and each layer's encoder output overwrites the previous one without being consumed by it — so only the last encoder layer of each branch ever reaches the fused output or receives a training gradient, and the paper's stated depth-wise curriculum ("shallow layers keep high-frequency detail, deep layers model low-frequency trend") never actually composes across depth. This implementation instead re-derives the spectrum from each branch's *running* state every layer, so all `e_layers` layers are genuinely stacked, contribute to the forecast, and receive gradients.
-- **Band-pass reconstruction placement.** The pinned code calls `torch.fft.irfft` directly on the sliced (small) frequency tensor with `n=seq_len`, which reinterprets the sampled bins as if they started at frequency 0. This implementation zero-pads the unselected bins back to their true position in the full-length spectrum before inverting, the standard alias-free band-pass reconstruction the paper's "Padding" step implies.
-- **Embedding.** The pinned code uses `DataEmbedding_wo_pos` (a learned token embedding plus a learned/linear calendar embedding selected by `embed`/`freq`). This implementation reuses the shared `forecast_embedding` component (linear value projection plus a fixed-scale six-column raw-calendar projection); it is not asserted numerically equivalent to the official tokenizer.
-- **Autocorrelation attention.** The frequency branch's auto-correlation attention (`AutoCorrelationAttention`) is an independent clean-room rewrite of the Wiener-Khinchin autocorrelation-attention algorithm used unmodified as the frequency branch's mechanism by the pinned Dualformer code (originally popularized by Autoformer); no source, including this catalog's own Autoformer implementation, was imported. Only the batch-shared, "training-style" top-lag selection is implemented; the official repository's separate, CUDA-only "inference" code path is not reproduced, since this implementation must run on CPU regardless of `model.training`.
-- **Band tiling (fix).** The shared `frequency_band_sampler` now builds non-overlapping bands from shared integer edges `floor(n*k/L)`, so they tile the spectrum exactly; previously integer truncation left gaps (for example the highest bin). Outputs change only when the tiling regime applies (`alpha <= 1/e_layers`) or when `alpha * n_bins` is not an integer in the sliding regime; the default `alpha=1.0` is unchanged. The paper (Sec. 3.1) states that case 1 enforces uniform partitioning "to prevent information gaps" but gives only real-valued `p_n`, `q_n`, so the integer rounding is an implementation choice.
-- Marks and decoder arguments (`x_dec`, `x_mark_dec`) are accepted per the shared four-input forward contract; `x_mark_enc` defaults to zero-filled six-column marks when omitted, and decoder arguments are otherwise ignored, since Dualformer has no decoder.
-- No checkpoint or metric reference comparison against the official training recipe is performed; verification covers structure and the runtime contract only.
-
-## Shared components
-
-- [`forecast_embedding`](../_components/forecast_embedding/README.md)
-- [`frequency_band_sampler`](../_components/frequency_band_sampler/README.md)
-- [`harmonic_energy_gate`](../_components/harmonic_energy_gate/README.md)
-- [`revin`](../_components/revin/README.md)
-- [`self_attention_family`](../_components/self_attention_family/README.md)
-- [`transformer_encdec`](../_components/transformer_encdec/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `c_out=7`, `d_model=512`, `n_heads=8`, `e_layers=3`, `d_ff=2048`, `dropout=0.1`, `activation='gelu'`, `factor=1.0`, `alpha=1.0`, `num_harmonics=3`, `dc_bins=3`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Dualformer: Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting
-- **Venue**: arXiv preprint
-- **Published**: 2026 (arXiv: 2026-01)
-- **arXiv**: https://arxiv.org/abs/2601.15669
-
-## Abstract
-Transformer-based models for long-term time series forecasting suffer from an inherent low-pass filtering effect, caused by the undifferentiated propagation of frequency components across layers, which progressively attenuates high-frequency information. We propose Dualformer, a dual-branch architecture that concurrently models complementary temporal patterns in both the time and frequency domains. Dualformer introduces a hierarchical frequency sampling module that allocates distinct frequency bands to different layers, preserving high-frequency details in lower layers while modeling low-frequency trends in deeper layers, together with a periodicity-aware weighting mechanism that dynamically balances contributions from the dual branches based on the harmonic energy ratio of the inputs. Extensive experiments on eight benchmarks demonstrate that Dualformer achieves superior performance over both time- and frequency-domain baselines, particularly on heterogeneous or weakly periodic data, highlighting its robustness and adaptability to diverse time series.
-
-## In TSFLab
-Default config: `configs/models/Dualformer.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
-
-## Source and verification
-
-**Clean-room implementation: confirmed.** No source was copied from the official repository (`https://github.com/Akira-221/Dualformer`, revision `ebd4ccf8bc5634f0c965d0b8d5797d1b926daa19`, `NOASSERTION`-licensed and treated as reference-only); its files were read only to resolve equation ambiguities. Structural and runtime evidence is generated by `uv run tsf model verify Dualformer`. Disclosed material differences from the pinned official code:
-
-- **Depth-wise chaining (correctness fix).** In the pinned revision, every layer's band-limited input is recomputed directly from the *original* embedding's spectrum, and each layer's encoder output overwrites the previous one without being consumed by it — so only the last encoder layer of each branch ever reaches the fused output or receives a training gradient, and the paper's stated depth-wise curriculum ("shallow layers keep high-frequency detail, deep layers model low-frequency trend") never actually composes across depth. This implementation instead re-derives the spectrum from each branch's *running* state every layer, so all `e_layers` layers are genuinely stacked, contribute to the forecast, and receive gradients.
-- **Band-pass reconstruction placement.** The pinned code calls `torch.fft.irfft` directly on the sliced (small) frequency tensor with `n=seq_len`, which reinterprets the sampled bins as if they started at frequency 0. This implementation zero-pads the unselected bins back to their true position in the full-length spectrum before inverting, the standard alias-free band-pass reconstruction the paper's "Padding" step implies.
-- **Embedding.** The pinned code uses `DataEmbedding_wo_pos` (a learned token embedding plus a learned/linear calendar embedding selected by `embed`/`freq`). This implementation reuses the shared `forecast_embedding` component (linear value projection plus a fixed-scale six-column raw-calendar projection); it is not asserted numerically equivalent to the official tokenizer.
-- **Autocorrelation attention.** The frequency branch's auto-correlation attention (`AutoCorrelationAttention`) is an independent clean-room rewrite of the Wiener-Khinchin autocorrelation-attention algorithm used unmodified as the frequency branch's mechanism by the pinned Dualformer code (originally popularized by Autoformer); no source, including this catalog's own Autoformer implementation, was imported. Only the batch-shared, "training-style" top-lag selection is implemented; the official repository's separate, CUDA-only "inference" code path is not reproduced, since this implementation must run on CPU regardless of `model.training`.
-- **Band tiling (fix).** The shared `frequency_band_sampler` now builds non-overlapping bands from shared integer edges `floor(n*k/L)`, so they tile the spectrum exactly; previously integer truncation left gaps (for example the highest bin). Outputs change only when the tiling regime applies (`alpha <= 1/e_layers`) or when `alpha * n_bins` is not an integer in the sliding regime; the default `alpha=1.0` is unchanged. The paper (Sec. 3.1) states that case 1 enforces uniform partitioning "to prevent information gaps" but gives only real-valued `p_n`, `q_n`, so the integer rounding is an implementation choice.
-- Marks and decoder arguments (`x_dec`, `x_mark_dec`) are accepted per the shared four-input forward contract; `x_mark_enc` defaults to zero-filled six-column marks when omitted, and decoder arguments are otherwise ignored, since Dualformer has no decoder.
-- No checkpoint or metric reference comparison against the official training recipe is performed; verification covers structure and the runtime contract only.
-
-## Citation
-
-```bibtex
-@misc{bai2026dualformer,
-  title         = {Dualformer: Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting},
-  author        = {Bai, Jingjing and Kawahara, Yoshinobu},
-  year          = {2026},
-  eprint        = {2601.15669},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2601.15669}
-}
-```
+- Depth-wise chaining fix: the official code recomputes each layer from the original embedding, so only the last layer counts; here all `e_layers` stack.
+- Band-pass fix: unselected bins are zero-padded back to their true positions before the inverse FFT.
+- Bands tile from shared integer edges `floor(n*k/L)` (the paper gives real-valued edges).
+- Embedding is the shared `forecast_embedding`, not the official `DataEmbedding_wo_pos`.
+- Only the training-style top-lag autocorrelation path is implemented (the official CUDA-only inference path is not).
+- No checkpoint or metric comparison against the official recipe. Details in `reference.md`.

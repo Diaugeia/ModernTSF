@@ -55,6 +55,6 @@ SPEC = ModelSpec(
     model_card="src/tsflab/models/fedformer/README.md",
     smoke_config=None,
     capabilities=frozenset(["time-series"]),
-    components=("forecast_embedding", "series_decomposition"),
+    components=("decomposition_encdec", "forecast_embedding", "series_decomposition"),
     contract_task={"seq_len": 96, "pred_len": 96, "label_len": 0},
 )

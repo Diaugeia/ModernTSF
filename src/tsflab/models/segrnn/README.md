@@ -1,97 +1,34 @@
 ---
 name: "SegRNN"
-summary: "SegRNN is an RNN-based model for long-term multivariate time-series forecasting that replaces the traditional point-wise recurrence with two complementary strategies: Segment-wise Iterations, which process fixed-length segments rather than individual time steps, and Parallel Multi-step Forecasting (PMF), which generates all future steps in a single parallel pass instead of autoregressively. Together these strategies drastically reduce the number of recurrent iterations, cutting runtime and memory by more than 78% compared to standard RNNs while outperforming Transformer-based competitors."
-paper: "https://arxiv.org/abs/2308.11200"
-paper_title: "SegRNN: Segment Recurrent Neural Network for Long-Term Time Series Forecasting"
-venue: "arXiv preprint"
-year: 2023
-code: "https://github.com/lss-1138/SegRNN"
-revision: "8e869ecfdf1daab3a0ba14d1d620796c1a5d2c4f"
-license: "Apache-2.0"
-tagline: "Segment-wise GRU over fixed-length segments and parallel multi-step decoding from positional segment queries."
-tags: ["rnn", "segmenting", "channel-independent", "normalization", "direct-multistep"]
-composition: ["normalization=component:last_value_center", "decomposition=none", "temporal=local:segment-wise-gru-encoder-decoder", "channel=local:channel-independent-shared-weights", "head=local:segment-linear-decoder", "loss=loss:mse"]
+description: "Channel-independent GRU over fixed-length segments of the lookback with parallel multi-step decoding from positional segment queries. Use for long-lookback, long-horizon forecasting under tight compute; not for exploiting cross-channel dependencies or probabilistic output."
 ---
+
 # SegRNN
 
-## Key ideas
+## Idea
 
-- The lookback is cut into `seg_len` segments, each linearly embedded (`segment_projection`) and fed to a GRU as one step, shortening the recurrence.
-- Parallel multi-step forecasting: every future segment is decoded in one pass from relative-position and channel-position embeddings with the encoder's final state as initial state.
-- `segment_decoder` maps each decoder output to `seg_len` values; channels are folded into the batch and share weights.
-- `center_on_last_value` / `restore_last_value` handle level shift.
+- RNNs struggle in long-term forecasting because of the many recurrent iterations; SegRNN reduces them with segment-wise iterations and parallel multi-step forecasting (PMF).
+- The lookback is cut into `seg_len` segments, each linearly embedded (`segment_projection`) and fed to a GRU as one step.
+- Every future segment is decoded in one pass from relative-position and channel-position embeddings with the encoder's final state as initial state (no autoregression).
+- `segment_decoder` maps each decoder output to `seg_len` values; channels are folded into the batch and share weights; `center_on_last_value` / `restore_last_value` handle level shift.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long lookbacks and horizons where a step-wise RNN would be slow; the paper reports large runtime and memory savings over Transformers.
+- Channels treated independently with shared weights: suits weakly correlated channels, not data whose signal lies in channel interactions.
+- Last-value centering makes it robust to level offsets between windows. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2308.11200); title: SegRNN: Segment Recurrent Neural Network for Long-Term Time Series Forecasting; venue/year: arXiv preprint / 2023
-- [codebase](https://github.com/lss-1138/SegRNN); revision: `8e869ecfdf1daab3a0ba14d1d620796c1a5d2c4f`; license: `Apache-2.0`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/SegRNN.toml`](../../../../configs/models/SegRNN.toml).
+- `enc_in` follows the dataset channel count; it must equal it exactly.
+- `seg_len` follows `seq_len` and `pred_len`: the model uses `ceil(seq_len / seg_len)` and `ceil(pred_len / seg_len)` segments; non-multiples are replicate-padded (local extension), so prefer a common divisor.
+- Other hyperparameters: preset defaults in `configs/models/SegRNN.toml`; tune generically (`d_model` must be even).
 
 ## Differences
 
-**Paper-driven local implementation.** Histories are last-value centered, split into segments, projected and recurrently encoded by a shared GRU. Relative-horizon and channel identifiers form decoder inputs; each future segment is processed independently with the same encoded state, preserving Parallel Multi-step Forecasting rather than autoregression. Boundary padding is a local runtime extension. The external repository is reference-only and no source file was copied or adapted.
+Paper-driven local implementation; the official repository is reference-only and no source was copied or adapted.
 
-## Shared components
+- Histories are last-value centered, split into segments, projected, and encoded by a shared GRU; relative-horizon and channel identifiers form decoder inputs, and each future segment is decoded independently from the same encoded state (PMF, not autoregression).
+- Boundary padding for lengths that are not multiples of `seg_len` is a local runtime extension.
 
-- [`last_value_center`](../_components/last_value_center/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `dropout=0.1`, `seg_len=24`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: SegRNN: Segment Recurrent Neural Network for Long-Term Time Series Forecasting
-- **Venue**: arXiv preprint
-- **Published**: 2023 (arXiv: 2023-08)
-- **arXiv**: https://arxiv.org/abs/2308.11200
-
-## Abstract
-RNN-based methods have faced challenges in the Long-term Time Series Forecasting (LTSF) domain when dealing with excessively long look-back windows and forecast horizons. Consequently, the dominance in this domain has shifted towards Transformer, MLP, and CNN approaches. The substantial number of recurrent iterations are the fundamental reasons behind the limitations of RNNs in LTSF. To address these issues, we propose two novel strategies to reduce the number of iterations in RNNs for LTSF tasks: Segment-wise Iterations and Parallel Multi-step Forecasting (PMF). RNNs that combine these strategies, namely SegRNN, significantly reduce the required recurrent iterations for LTSF, resulting in notable improvements in forecast accuracy and inference speed. Extensive experiments demonstrate that SegRNN not only outperforms SOTA Transformer-based models but also reduces runtime and memory usage by more than 78%. These achievements provide strong evidence that RNNs continue to excel in LTSF tasks and encourage further exploration of this domain with more RNN-based approaches.
-
-## In TSFLab
-Default config: `configs/models/SegRNN.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-**Paper-driven local implementation.** Histories are last-value centered, split into segments, projected and recurrently encoded by a shared GRU. Relative-horizon and channel identifiers form decoder inputs; each future segment is processed independently with the same encoded state, preserving Parallel Multi-step Forecasting rather than autoregression. Boundary padding is a local runtime extension. The external repository is reference-only and no source file was copied or adapted.
-
-## Citation
-
-```bibtex
-@article{DBLP:journals/iotj/LinLWZMZ26,
-  author       = {Shengsheng Lin and
-                  Weiwei Lin and
-                  Wentai Wu and
-                  Feiyu Zhao and
-                  Ruichao Mo and
-                  Haotong Zhang},
-  title        = {SegRNN: Segment Recurrent Neural Network for Long-Term Time-Series
-                  Forecasting},
-  journal      = {{IEEE} Internet Things J.},
-  volume       = {13},
-  number       = {5},
-  pages        = {9861--9871},
-  year         = {2026},
-  url          = {https://doi.org/10.1109/JIOT.2025.3647705},
-  doi          = {10.1109/JIOT.2025.3647705},
-  timestamp    = {Wed, 11 Mar 2026 08:24:56 +0100},
-  biburl       = {https://dblp.org/rec/journals/iotj/LinLWZMZ26.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Lin, Lin, Wu, Zhao, Mo, Zhang, "SegRNN: Segment Recurrent Neural Network for Long-Term Time-Series Forecasting", IEEE Internet of Things Journal 13(5), 2026, doi:10.1109/JIOT.2025.3647705 (arXiv:2308.11200).

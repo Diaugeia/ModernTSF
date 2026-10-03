@@ -54,6 +54,6 @@ SPEC = ModelSpec(
     model_card="src/tsflab/models/st_ssdl/README.md",
     smoke_config=None,
     capabilities=frozenset(["spatiotemporal"]),
-    components=("deviation_memory", "graph_utils", "marks"),
+    components=('deviation_memory', 'graph_conv_gru', 'graph_utils', 'marks'),
     contract_task={"seq_len": 12, "pred_len": 12, "label_len": 0},
 )

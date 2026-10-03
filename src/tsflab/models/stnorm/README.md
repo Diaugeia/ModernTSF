@@ -1,98 +1,34 @@
 ---
 name: "STNorm"
-summary: "STNorm is a spatiotemporal forecasting model that augments a WaveNet-style backbone with two dedicated normalization modules — spatial normalization and temporal normalization — to separately refine high-frequency temporal components and local spatial components in multi-variate time-series data. It operates on node-structured data and does not require an externally provided static adjacency matrix."
-paper: "https://doi.org/10.1145/3447548.3467330"
-paper_title: "ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting"
-venue: "KDD 2021"
-year: 2021
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "WaveNet-style gated dilated convs whose layers also see spatially and temporally normalized streams; no adjacency."
-tags: ["cnn", "spatiotemporal", "normalization", "covariates", "channel-mixing"]
-composition: ["normalization=local:spatial-and-temporal-normalization-streams", "decomposition=none", "temporal=local:gated-dilated-causal-conv", "channel=local:spatial-normalization-across-nodes", "head=local:relu-conv-skip-head", "loss=loss:mse"]
+description: "WaveNet-style gated dilated causal convolutions whose layers also see spatially and temporally normalized streams, without an adjacency. Use for multivariate sensor-network data mixing global (shared) and local, high- and low-frequency components; not for probabilistic output or graph-based propagation."
 ---
+
 # STNorm
 
-## Key ideas
+## Idea
 
-- Each `NormalizedTemporalLayer` concatenates the raw hidden state with a `SpatialNormalization` stream (statistics across nodes) and a `TemporalNormalization` stream (per-node statistics over batch and time, with running averages at eval) before the gated convolution.
+- Multivariate series come from hybrid systems with global/local (spatial) and low/high-frequency (temporal) impacts; spatial and temporal normalization refine the local and high-frequency components and plug into backbones such as WaveNet.
+- Each `NormalizedTemporalLayer` concatenates the raw hidden state with a `SpatialNormalization` stream (statistics across nodes) and a `TemporalNormalization` stream (per-node statistics over batch and time, running averages at eval) before the gated convolution.
 - The backbone is a Graph-WaveNet-like stack of tanh/sigmoid gated dilated causal convolutions with residual and skip connections; `adj_mx` is ignored.
-- Skip outputs are summed and a 1x1 conv head emits the pred_len values at the last time step.
+- Skip outputs are summed and a 1x1 conv head emits the `pred_len` values at the last time step.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Node or channel sets driven partly by a shared global signal (spatial normalization separates each node's local deviation from it), e.g. traffic networks (METR-LA, PEMS-BAY in the paper).
+- No graph needed; cross-node information enters only through the spatial statistics.
+- Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1145/3447548.3467330); title: ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting; venue/year: KDD 2021 / 2021
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/STNorm.toml`](../../../../configs/models/STNorm.toml).
+- `enc_in` follows the node count; it must equal it exactly.
+- `input_dim` follows the loader's input features (value plus calendar covariates).
+- Other hyperparameters: preset defaults in `configs/models/STNorm.toml`; tune generically.
 
 ## Differences
 
-TSFLab rewrites ST-Norm locally after reviewing the paper and pinned official codebase. Spatial and temporal normalization streams are concatenated with the raw hidden state inside a causal dilated temporal backbone with residual and skip paths. Canonical evidence is stored in [`verification/evidence/STNorm.json`](../../../../verification/evidence/STNorm.json).
+Local rewrite after reviewing the paper and the pinned BasicTS implementation (`GestaltCogTeam/BasicTS@c218c07`, Apache-2.0).
 
-## Shared components
+- Spatial and temporal normalization streams are concatenated with the raw hidden state inside a causal dilated temporal backbone with residual and skip paths, as in the reference.
+- `tnorm_bool` / `snorm_bool` switch each stream off; `adj_mx` is accepted and ignored.
 
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `channels=16`, `kernel_size=2`, `blocks=2`, `layers=2`, `tnorm_bool=True`, `snorm_bool=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting
-- **Venue**: KDD 2021
-- **Published**: 2021
-- **arXiv**: N/A
-
-## Abstract
-Multi-variate time series (MTS) data is generated from hybrid dynamical systems with unknown dynamics. The hybrid nature of such systems is a result of complex external impacts, which can be summarized as high-frequency and low-frequency from the temporal view, or global and local if we take the spatial view. These impacts are paramount to capture in time series forecasting tasks. In this paper, we propose temporal and spatial normalization modules which separately refine the high-frequency component and the local component underlying the raw data and can be integrated into canonical deep learning architectures such as WaveNet and Transformer. We conduct extensive experiments to demonstrate that the proposed method achieves superior performance on two public traffic network datasets, METR-LA and PEMS-BAY.
-
-## In TSFLab
-Default config: `configs/models/STNorm.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-TSFLab rewrites ST-Norm locally after reviewing the paper and pinned official codebase. Spatial and temporal normalization streams are concatenated with the raw hidden state inside a causal dilated temporal backbone with residual and skip paths. Canonical evidence is stored in [`verification/evidence/STNorm.json`](../../../../verification/evidence/STNorm.json).
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/kdd/DengCJST21,
-  author       = {Jinliang Deng and
-                  Xiusi Chen and
-                  Renhe Jiang and
-                  Xuan Song and
-                  Ivor W. Tsang},
-  editor       = {Feida Zhu and
-                  Beng Chin Ooi and
-                  Chunyan Miao},
-  title        = {ST-Norm: Spatial and Temporal Normalization for Multi-variate Time
-                  Series Forecasting},
-  booktitle    = {{KDD} '21: The 27th {ACM} {SIGKDD} Conference on Knowledge Discovery
-                  and Data Mining, Virtual Event, Singapore, August 14-18, 2021},
-  pages        = {269--278},
-  publisher    = {{ACM}},
-  year         = {2021},
-  url          = {https://doi.org/10.1145/3447548.3467330},
-  doi          = {10.1145/3447548.3467330},
-  timestamp    = {Tue, 07 May 2024 20:08:07 +0200},
-  biburl       = {https://dblp.org/rec/conf/kdd/DengCJST21.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Deng, Chen, Jiang, Song, Tsang, "ST-Norm: Spatial and Temporal Normalization for Multi-variate Time Series Forecasting", KDD 2021, doi:10.1145/3447548.3467330.

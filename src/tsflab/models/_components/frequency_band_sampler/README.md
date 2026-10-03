@@ -1,19 +1,11 @@
 ---
 name: "frequency_band_sampler"
-kind: "component"
-module: "tsflab.models._components.frequency_band_sampler"
-summary: "Maps a layer index to a contiguous half-open FFT bin range (layer 0 highest frequencies, last layer near-DC) and slices a spectrum to it."
-category: "frequency"
-input: "spectrum complex [batch, freq, ...] (sample); num_bins and layer_idx integers (band)"
-output: "band: (start, end) ints; sample: spectrum[:, start:end] with shape [batch, end - start, ...]"
-origin: "Hierarchical frequency sampling of Dualformer, Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting (arXiv 2601.15669, 2026)"
-origin_models: ["dualformer"]
-tags: ["band", "depth", "fft", "frequency", "hierarchical", "sampling", "spectral"]
+description: "Map a layer index to a contiguous half-open FFT bin range (layer 0 highest frequencies, last layer near DC) and slice a spectrum to it. Use for giving each encoder depth a fixed, deterministic frequency slice (Dualformer); not for learned band boundaries (freq_band_moe) or a frequency axis other than dim 1."
 ---
 
 # frequency_band_sampler
 
-## Purpose
+## What it does
 
 `HierarchicalFrequencySampler(num_layers, alpha)` allocates a spectral band to
 each network depth: shallow layers get high frequencies, deep layers get low
@@ -32,15 +24,12 @@ num_layers`, layer `i`:
   With `n < L` the tiling cannot avoid empty bands, so each band keeps one bin and
   bands overlap.
 
-## Origin and granularity
+## When to use
 
-Extracted from `dualformer` (commit `dd63af6c`, automated intake of SDMixer,
-SEMixer, LSINet, Dualformer), where the frequency branch gives each encoder
-layer its own band. The docstring describes it as the band arithmetic of
-several dual time-frequency architectures; only Dualformer is recorded as the
-source. Model-local in `dualformer`: the rfft/irfft around it (it builds a
-band-limited signal by zeroing bins outside the range), the encoder layers, and
-the fusion with the time branch.
+Use to give each depth a fixed, deterministic frequency slice of a
+`[batch, freq, ...]` spectrum (high to low). Do not use when bands must be
+learned (see `freq_band_moe` for learned boundaries),
+or when the frequency axis is not dim 1.
 
 ## Interface
 
@@ -57,57 +46,3 @@ the fusion with the time branch.
 - No parameters, buffers, or state; attributes `num_layers`, `alpha`.
 - Examples for 17 bins: `L=3, alpha=0.3` gives `(11,17), (5,11), (0,5)`;
   `L=2, alpha=0.3` gives `(8,17), (0,8)`.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_numeric_fixes.py` checks exact tiling (union equals every
-  bin, adjacent bands meet, layer 0 ends at `n`) over many bin and layer counts, and
-  that sliding windows reach both ends (`alpha` in 0.3, 0.55, 1.0), plus the
-  `alpha=1.0` full-width case. The `n < num_layers` fallback, argument validation,
-  and `sample` are not directly unit-tested.
-- `tests/test_dualformer_forecaster.py` checks that `dualformer` records distinct
-  per-layer bands with layer 0 at higher frequency than the last layer.
-- no fixture: this is integer band arithmetic with no numerical reference tensor.
-
-## Variants and options
-
-`alpha` switches between tiling (`alpha <= 1/num_layers`) and overlapping
-sliding windows (larger `alpha`). There is no log-spaced or learned variant.
-
-## When to use and when not to use
-
-Use to give each depth a fixed, deterministic frequency slice of a
-`[batch, freq, ...]` spectrum (high to low). Do not use when bands must be
-learned (see `freq_band_moe` for learned boundaries),
-or when the frequency axis is not dim 1.
-
-## Related components
-
-`freq_band_moe` (also splits an rfft into contiguous bands, but with learned
-boundaries and gated mixing inside one block, whereas this one is fixed
-arithmetic that assigns one band per depth), `harmonic_energy_gate` (the other
-Dualformer frequency component), `energy_frequency_pooling` (energy-driven
-selection over tokens rather than fixed bins), `wavelet` (multi-resolution
-alternative).
-- `dominant_periods`: period selection rather than band sampling.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `HierarchicalFrequencySampler(num_layers: int, alpha: float=1.0)`
-  Assign a depth-indexed contiguous frequency band out of ``num_layers``.
-
-```python
-from tsflab.models._components.frequency_band_sampler import HierarchicalFrequencySampler
-```
-
-## Retrieval terms
-
-`band`, `depth`, `fft`, `frequency`, `hierarchical`, `sampling`, `spectral`
-
-## Current model consumers (1)
-
-`dualformer`
-<!-- component-card:generated:end -->

@@ -1,110 +1,35 @@
 ---
 name: "PHAT"
-summary: "PHAT (Period Heterogeneity-Aware Transformer) is a Transformer-based model for multivariate time series forecasting that explicitly models periodic heterogeneity — the fact that different variables exhibit distinct and dynamically changing periods. It organises inputs into a three-dimensional periodic bucket tensor and applies a positive-negative attention mechanism to capture both periodic alignment and periodic deviation."
-paper: "https://arxiv.org/abs/2602.00654"
-paper_title: "PHAT: Modeling Period Heterogeneity for Multivariate Time Series Forecasting"
-venue: "ICLR 2026"
-year: 2026
-code: "https://github.com/PoorOtterBob/PHAT"
-revision: "313987b52b5fc8184efba7fb9c8b5707c6f03448"
-license: "MIT"
-tagline: "Per-variable FFT periods fold the series into phase-by-cycle buckets; positive-negative attention plus a linear path."
-tags: ["transformer", "periodicity", "frequency", "attention-variant", "channel-independent", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:period-bucket-positive-negative-attention", "channel=local:channel-independent-shared-weights", "head=local:linear-bucket-forecast-projection", "loss=loss:mse"]
+description: "Period-heterogeneity Transformer: arranges each variable into a phase-by-cycle bucket from its own FFT period and applies positive-negative attention inside the bucket. Use for multivariate series whose variables have different or shifting periods; not for aperiodic data or tasks needing cross-variable mixing."
 ---
+
 # PHAT
 
-## Key ideas
+## Idea
 
 - `_periods` takes the top FFT periods of each variable (or a fixed `period_list`); `_bucket_path` reshapes the embedded series into a phase-by-cycle bucket.
-- `PositiveNegativeAttention` combines a positive softmax over phases that are closer than the query with a gated negative term over farther ones, plus an aligned same-phase attention, using distance masks.
+- `PositiveNegativeAttention` combines a positive softmax over phases closer than the query with a gated negative term over farther ones, plus an aligned same-phase attention, using distance masks (periodic alignment and deviation).
 - Gated SiLU feed-forward blocks (`_PHATBlock`) follow the attention; the bucket is unfolded and projected to a scalar per step.
-- The final forecast is the mean of the bucket path (`forecast_projection`) and a plain `base_projection` linear path, inside `revin`.
+- The forecast is the mean of the bucket path (`forecast_projection`) and a plain `base_projection` linear path, inside `revin`.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Multivariate data where variables have distinct and changing periods (period heterogeneity): each variable is bucketed by its own detected period, avoiding interference from inconsistent periods.
+- Seasonal data generally; the averaged linear path keeps a plain baseline when periodicity is weak.
+- Not for tasks where cross-variable dependence carries the signal: interactions stay within a variable's bucket.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2602.00654); title: PHAT: Modeling Period Heterogeneity for Multivariate Time Series Forecasting; venue/year: ICLR 2026 / 2026
-- [codebase](https://github.com/PoorOtterBob/PHAT); revision: `313987b52b5fc8184efba7fb9c8b5707c6f03448`; license: `MIT`
+- `enc_in` follows the channel count: must equal the number of input channels (RevIN statistics).
+- `period_list` (optional) follows the dataset period: fixed cycle lengths in steps, capped at `seq_len`; when absent, the top `period_topk` FFT periods of each window are used.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/PHAT.toml`](../../../../configs/models/PHAT.toml).
+Other hyperparameters: preset defaults in `configs/models/PHAT.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. Reference-only source code was not copied.
+Independent clean-room implementation of paper Eqs. (4)-(13); the MIT repository is kept as a pinned reference and no source was copied.
 
-- Independent clean-room implementation from paper equations (4)-(13); the
-  repository is retained only as a pinned reference and no source was copied.
-- Special zero-period bucket, dataset-specific periods, and published-result
-  reference comparison are not included.
+- The special zero-period bucket and dataset-specific periods are not included.
+- No comparison with published results is claimed.
 
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=6`, `d_model=64`, `n_heads=8`, `d_layers=1`, `attn_dropout=0.1`, `ffn_dropout=0.1`, `ffn_expand_ratio=2.66667`, `period_topk=1`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: PHAT: Modeling Period Heterogeneity for Multivariate Time Series Forecasting
-- **Venue**: ICLR 2026
-- **Published**: 2026 (arXiv: 2026-02)
-- **arXiv**: https://arxiv.org/abs/2602.00654
-
-## Abstract
-While existing multivariate time series forecasting models have advanced significantly in modeling periodicity, they largely neglect the periodic heterogeneity common in real-world data, where variables exhibit distinct and dynamically changing periods. To effectively capture this periodic heterogeneity, we propose PHAT (Period Heterogeneity-Aware Transformer). Specifically, PHAT arranges multivariate inputs into a three-dimensional "periodic bucket" tensor, where the dimensions correspond to variable group characteristics with similar periodicity, time steps aligned by phase, and offsets within the period. By restricting interactions within buckets and masking cross-bucket connections, PHAT effectively avoids interference from inconsistent periods. We also propose a positive-negative attention mechanism, which captures periodic dependencies from two perspectives: periodic alignment and periodic deviation. Additionally, the periodic alignment attention scores are decomposed into positive and negative components, with a modulation term encoding periodic priors. This modulation constrains the attention mechanism to more faithfully reflect the underlying periodic trends. A mathematical explanation is provided to support this property. We evaluate PHAT comprehensively on 14 real-world datasets against 18 baselines, and the results show that it significantly outperforms existing methods, achieving highly competitive forecasting performance.
-
-## In TSFLab
-Default config: `configs/models/PHAT.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Source and verification
-
-Clean-room implementation: confirmed. Reference-only source code was not copied.
-
-- Independent clean-room implementation from paper equations (4)-(13); the
-  repository is retained only as a pinned reference and no source was copied.
-- Special zero-period bucket, dataset-specific periods, and published-result
-  reference comparison are not included.
-
-## Citation
-
-```bibtex
-@article{DBLP:journals/corr/abs-2602-00654,
-  author       = {Jiaming Ma and
-                  Qihe Huang and
-                  Haofeng Ma and
-                  Guanjun Wang and
-                  Sheng Huang and
-                  Zhengyang Zhou and
-                  Pengkun Wang and
-                  Binwu Wang and
-                  Yang Wang},
-  title        = {{PHAT:} Modeling Period Heterogeneity for Multivariate Time Series
-                  Forecasting},
-  journal      = {CoRR},
-  volume       = {abs/2602.00654},
-  year         = {2026},
-  url          = {https://doi.org/10.48550/arXiv.2602.00654},
-  doi          = {10.48550/ARXIV.2602.00654},
-  eprinttype   = {arXiv},
-  eprint       = {2602.00654},
-  timestamp    = {Sat, 14 Mar 2026 17:13:45 +0100},
-  biburl       = {https://dblp.org/rec/journals/corr/abs-2602-00654.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Cite: Ma, Huang, Ma, Wang, Huang, Zhou, Wang, Wang, Wang, "PHAT: Modeling Period Heterogeneity for Multivariate Time Series Forecasting", ICLR 2026 (arXiv:2602.00654).

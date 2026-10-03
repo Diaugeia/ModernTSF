@@ -1,0 +1,50 @@
+schema = "tsflab.card/1"
+kind = "model"
+name = "FeTS"
+tags = ["cnn", "patching", "frequency", "channel-independent", "normalization", "feature-selection"]
+fits = ["long-horizon", "weak-cross-correlation"]
+fidelity = "reference-checked"
+
+[paper]
+title = "FeTS: A Feature-Aware Framework for Time Series Forecasting"
+url = "https://doi.org/10.1609/aaai.v40i31.39838"
+venue = "AAAI 2026"
+year = 2026
+
+[code]
+url = "https://github.com/lllucky111/FeTS"
+revision = "d908e434b70f3cf69065004e295db13cdb9790b2"
+license = "NOASSERTION"
+reference_sources = ["https://github.com/lllucky111/FeTS/blob/d908e434b70f3cf69065004e295db13cdb9790b2/models/FeTS.py"]
+
+[composition]
+normalization = "component:revin"
+decomposition = "none"
+temporal = "local:fourier-poly-mask-adaptive-features+local:local-global-conv-fusion"
+channel = "local:channel-independent-shared-weights"
+head = "local:flatten-linear-head"
+loss = "loss:mse"
+
+[data_params]
+enc_in = { from = "channels", rule = "equals the number of channels" }
+stride = { from = "seq_len", rule = "seq_len - patch_len should be divisible by stride, else the latest steps are dropped" }
+
+[admission]
+status = "passed"
+date = "2026-10-03"
+commit = "ec1ae839"
+device = "cpu"
+reference = "official"
+note = "tsf model verify --all on UH_Public; pre-squash commit of the 1.0 consolidation"
+
+[[issues]]
+kind = "underspecified"
+where = "Eqs. (2)-(14) threshold mask"
+what = "the paper's binary threshold mask is non-differentiable and the paper does not say how gradients reach the mask parameters."
+resolution = "the exact binary mask in the forward pass with a sigmoid straight-through gradient during training."
+
+[[issues]]
+kind = "license"
+where = "repository root"
+what = "no license file at the pinned revision."
+resolution = "independent rewrite; license recorded as `NOASSERTION`."

@@ -1,19 +1,11 @@
 ---
 name: "harmonic_energy_gate"
-kind: "component"
-module: "tsflab.models._components.harmonic_energy_gate"
-summary: "Per-channel share of spectral energy carried by the dominant low-frequency fundamental and its first harmonics, used as a periodicity gate in [0, 1]."
-category: "frequency"
-input: "x [batch, length, channels]"
-output: "[batch, 1, channels], values in [0, 1]"
-origin: "Harmonic-energy weighting of Dualformer, Time-Frequency Dual Domain Learning for Long-term Time Series Forecasting (arXiv 2601.15669, 2026)"
-origin_models: ["dualformer"]
-tags: ["energy", "fusion", "gate", "harmonic", "periodicity", "spectral", "weighting", "non-differentiable-selection", "dualformer", "fft", "rfft", "dual-branch", "harmonics"]
+description: "Parameter-free per-channel share of spectral energy on the dominant low-frequency fundamental and its harmonics, a periodicity gate in [0, 1]. Use for weighting frequency against time branches per channel on periodic data; not for very short windows, aperiodic signals with an ambiguous fundamental, or a learned gate."
 ---
 
 # harmonic_energy_gate
 
-## Purpose
+## What it does
 
 `HarmonicEnergyGate(num_harmonics=3, low_freq_guard=3)` measures how periodic
 each channel is. With `A = |rfft(x - mean_t x)|` (`nb = length // 2 + 1` bins):
@@ -26,15 +18,13 @@ each channel is. With `A = |rfft(x - mean_t x)|` (`nb = length // 2 + 1` bins):
 A channel whose energy sits on one fundamental and its harmonics scores near
 1; diffuse spectra score near 0.
 
-## Origin and granularity
+## When to use
 
-Introduced with `dualformer` as a standalone module (commit `dd63af6c`, automated
-intake of SDMixer, SEMixer, LSINet and Dualformer). The
-consumer applies it to the embedded sequence `[B, L, d_model]` and mixes
-`freq_state * w + time_state * (1 - w)`; the code comment calls this the paper's
-periodicity-aware gate. Cut at the ratio itself; the two branches, the fusion
-rule, and the choice of what to feed it remain in `dualformer`. The module is
-parameter-free.
+Use to weight a frequency-domain branch against a time-domain branch per
+channel from a `[B, L, C]` tensor. Do not use for very short sequences relative
+to `low_freq_guard * num_harmonics`, for signals with aperiodic structure where
+the low-frequency fundamental is ambiguous, or when a learned gate is needed
+(this one has no parameters).
 
 ## Interface
 
@@ -51,60 +41,3 @@ parameter-free.
 - Quirk: when `nb // num_harmonics <= low_freq_guard` the candidate range is
   empty, every candidate is zero, `f0` is the tied argmax (index 0 in practice), and the output is about 0 (DC removed), so
   short inputs or many harmonics silently yield a zero gate.
-
-## Invariants and equivalence evidence
-
-- `tests/test_component_contracts_signal.py`:
-  `test_harmonic_gate_contract` checks an empty state dict, the `[2, 1, 3]` shape and
-  dtype, outputs in `[0, 1 + 1e-6]`, a pure 4-cycle sinusoid over length 64 scoring above
-  0.99, white noise scoring below it, and seeded values against
-  `tests/fixtures/components/harmonic_energy_gate.pt`;
-  `test_harmonic_gate_errors` checks the `ValueError`s (non-positive constructor
-  arguments, rank not 3, too-short sequence);
-  `test_harmonic_gate_dtype_double_and_grad` checks float64 output and finite gradients.
-- The ratio never exceeds 1 up to the `1e-5` stabilizer: the fundamental is below
-  `nb // num_harmonics`, so `num_harmonics * f0 <= nb - 1`, the `clamp` never fires, and
-  each harmonic bin is distinct and counted once.
-- A pure sinusoid scores just under 1 (`E / (E + 1e-5)`), not exactly 1.
-- `tests/test_dualformer_forecaster.py` exercises the gate through the `dualformer` model.
-
-## Variants and options
-
-`num_harmonics` and `low_freq_guard` only. The ratio uses the sample's own
-spectrum (no running statistics), so it is recomputed per forward call.
-
-## When to use and when not to use
-
-Use to weight a frequency-domain branch against a time-domain branch per
-channel from a `[B, L, C]` tensor. Do not use for very short sequences relative
-to `low_freq_guard * num_harmonics`, for signals with aperiodic structure where
-the low-frequency fundamental is ambiguous, or when a learned gate is needed
-(this one has no parameters).
-
-## Related components
-
-`dominant_periods` (explicit period discovery), `gated_fusion` (learned fusion
-gates; this component is parameter-free and spectrum-driven), `frequency_band_sampler`
-(the other Dualformer frequency component), `spectral_descriptor` (per-window spectral
-entropy and band-energy ratios, a different spectral summary), `energy_frequency_pooling`.
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `HarmonicEnergyGate(num_harmonics: int=3, low_freq_guard: int=3)`
-  Return each channel's harmonic-energy share of its total spectral energy.
-
-```python
-from tsflab.models._components.harmonic_energy_gate import HarmonicEnergyGate
-```
-
-## Retrieval terms
-
-`energy`, `fusion`, `gate`, `harmonic`, `periodicity`, `spectral`, `weighting`
-
-## Current model consumers (1)
-
-`dualformer`
-<!-- component-card:generated:end -->

@@ -1,106 +1,36 @@
 ---
 name: "PMDformer"
-summary: "PMDformer is a Transformer-based long-term time-series forecasting model for the standard time-series setting. It decouples patch-level local shape fluctuations from their mean (trend) level through Patch-Mean Decoupling (PMD), combines Proximal Variable Attention (PVA) to focus on the most relevant inter-variable interactions, and applies Trend Recovery Attention (TRA) to restore long-term trend information, improving both forecasting accuracy and computational efficiency."
-paper: "https://arxiv.org/abs/2606.26549"
-paper_title: "PMDformer: Patch-Mean Decoupling Information Transformer for Long-term Forecasting"
-venue: "ICLR 2026"
-year: 2026
-code: "https://github.com/aohu1105/PMDformer"
-revision: "d9296b7b857d8e1075838759ec5d0aa3f3539f7e"
-license: "NOASSERTION"
-tagline: "Patch-mean decoupling into shape tokens plus means, proximal variable attention, and trend-restoring attention."
-tags: ["transformer", "patching", "decomposition", "channel-mixing", "attention-variant", "normalization"]
-composition: ["normalization=component:revin", "decomposition=local:patch-mean-decoupling", "temporal=local:trend-restoration-attention", "channel=local:proximal-variable-attention", "head=local:flatten-linear-head", "loss=loss:mse"]
+description: "Patch Transformer that decouples each patch into its mean level and a zero-mean shape, attends across variables only at the latest patch, and restores trend through the attention values. Use for long-term forecasting of correlated multivariate series; not for univariate or independent channels."
 ---
+
 # PMDformer
 
-## Key ideas
+## Idea
 
-- `patch_mean_decouple` splits each patch into its mean and a zero-mean shape residual; only the residual is embedded.
-- Proximal variable attention (`proximal_attention`) lets the last patch token attend across variables, so each channel mixes only its most recent context.
-- `TrendRestorationAttention` computes Q and K from shape tokens only and adds the patch means to the values, restoring level information.
-- `projection` flattens all patch tokens to `pred_len`; `revin` wraps the model.
+- `patch_mean_decouple` splits each patch into its mean and a zero-mean shape residual; only the residual is embedded (Eqs. 1-3).
+- Proximal variable attention lets the last patch token attend across variables, so channels mix only through their most recent context (Eqs. 4-5).
+- `TrendRestorationAttention` computes Q and K from shape tokens only and adds the patch means to the values, restoring level information (Eqs. 6-8).
+- `projection` flattens all patch tokens to `pred_len` (Eq. 9); `revin` wraps the model.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Long-term forecasting where local shape and absolute level should be modelled separately: attention matches shapes without being biased by the mean level, and levels are added back afterwards.
+- Multivariate data whose channels interact, with the most recent inter-variable relations mattering most (PVA); the paper also reports lower memory than earlier patch Transformers.
+- Not for univariate series or channels that move independently: the cross-variable block adds nothing there.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2606.26549); title: PMDformer: Patch-Mean Decoupling Information Transformer for Long-term Forecasting; venue/year: ICLR 2026 / 2026
-- [codebase](https://github.com/aohu1105/PMDformer); revision: `d9296b7b857d8e1075838759ec5d0aa3f3539f7e`; license: `NOASSERTION`
+- `enc_in` follows the channel count: must equal the number of input channels.
+- `patch_len` follows `seq_len`: when `seq_len` is not a multiple, the history is left-padded by replicating the first value.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/PMDformer.toml`](../../../../configs/models/PMDformer.toml).
+Other hyperparameters: preset defaults in `configs/models/PMDformer.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `model/PMDformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Compact clean-room rewrite of Eqs. (1)-(9), checked against `model/PMDformer.py` of the official repository at the pinned revision (no license file; nothing copied).
 
-Local implementation: confirmed. Equations (1)--(3) map to
-`patch_mean_decouple()` and `patch_projection`; equations (4)--(5) map to the
-last-patch cross-variable attention; equations (6)--(8) map to
-`TrendRestorationAttention`; and equation (9) maps to the restored flattened
-projection. The linked repository is reference-only; its source was inspected at the pinned revision; no external source code was copied.
+- One PVA block and one parameter-shared TRA block; single-head trend restoration.
+- Non-divisible histories are left-padded by replicating the first observation.
+- The full paper training configuration, numerical reference comparison, and reported hyperparameter sweep are not claimed.
 
-This compact rewrite uses one PVA and one parameter-shared TRA block, left-pads
-non-divisible histories by replicating the first observation, and uses single-head
-trend restoration rather than the full paper training configuration. It does not
-claim numerical reference comparison or reproduce the reported hyperparameter sweep.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `patch_len=16`, `num_heads=4`, `dropout=0.0`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: PMDformer: Patch-Mean Decoupling Information Transformer for Long-term Forecasting
-- **Venue**: ICLR 2026
-- **Published**: 2026 (arXiv: 2026-06)
-- **arXiv**: https://arxiv.org/abs/2606.26549
-
-## Abstract
-PMDformer introduces three core innovations: (1) Patch-Mean Decoupling (PMD), which separates local shape fluctuations from their absolute magnitude (mean level) to reduce bias and better capture underlying patterns; (2) Proximal Variable Attention (PVA), which strengthens focus on the most relevant and temporally proximal inter-variable interactions; and (3) Trend Restoration Attention (TRA), which restores long-term trend information to improve both responsiveness and stability in forecasting. Together, these components deliver stronger forecasting accuracy and stability while reducing memory usage compared to previous patch-based Transformer methods.
-
-## Source and verification
-
-Pinned source inspection: `model/PMDformer.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed. Equations (1)--(3) map to
-`patch_mean_decouple()` and `patch_projection`; equations (4)--(5) map to the
-last-patch cross-variable attention; equations (6)--(8) map to
-`TrendRestorationAttention`; and equation (9) maps to the restored flattened
-projection. The linked repository is reference-only; its source was inspected at the pinned revision; no external source code was copied.
-
-This compact rewrite uses one PVA and one parameter-shared TRA block, left-pads
-non-divisible histories by replicating the first observation, and uses single-head
-trend restoration rather than the full paper training configuration. It does not
-claim numerical reference comparison or reproduce the reported hyperparameter sweep.
-
-## In TSFLab
-Default config: `configs/models/PMDformer.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@inproceedings{hu2026pmdformer,
-  author    = {Ao Hu and Liangjian Wen and Jiang Duan and Yong Dai and Yan He and Dongkai Wang and Jun Wang and Yukun Zhang and Ruoxi Jiang and Zenglin Xu},
-  title     = {{PMD}former: Patch-Mean Decoupling Information Transformer for Long-term Forecasting},
-  booktitle = {The Fourteenth International Conference on Learning Representations},
-  year      = {2026},
-  url       = {https://openreview.net/forum?id=rfJ41gK9Ct}
-}
-```
+Cite: Hu, Wen, Duan, Dai, He, Wang, Wang, Zhang, Jiang, Xu, "PMDformer: Patch-Mean Decoupling Information Transformer for Long-term Forecasting", ICLR 2026, https://openreview.net/forum?id=rfJ41gK9Ct.

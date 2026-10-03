@@ -1,8 +1,9 @@
 """Validate human documentation projections, links, and audience boundaries.
 
 Catches the exact kind of drift that's easy to introduce by hand and easy to
-miss in review: stale generated model pages, unindexed guides, and Agent-only
-implementation details leaking into user documentation.
+miss in review: a stale generated model table (``docs/en/models.md``, rendered
+from card facts), unindexed guides, prose about the retired verification system,
+and Agent-only implementation details leaking into user documentation.
 Pure text/file checks keep this safe and fast enough for every PR.
 """
 from __future__ import annotations
@@ -28,6 +29,18 @@ OBSOLETE_DOC_TOKENS = (
     "src/tsflab/models/module",
     "src/tsflab/models/_external",
 )
+#: Tokens of the retired verification and card system (before ``tsflab.card/1``).
+#: Scanned in human docs and Agent assets; cards are audited by their own schema.
+REMOVED_SYSTEM_TOKENS = (
+    "verification/evidence",
+    "verification/models.toml",
+    "verification/index.json",
+    "verify --stale",
+    "verify --index",
+    "model-card:canonical",
+    "component-card:generated",
+    "dataset-card:canonical",
+)
 AGENT_ONLY_TOKENS = (
     ".agents/",
     ".claude/skills",
@@ -38,27 +51,39 @@ AGENT_ONLY_TOKENS = (
 )
 
 
+def _first_sentence(text: str) -> str:
+    text = " ".join(text.split())
+    head, dot, _ = text.partition(". ")
+    return (head + "." if dot else text).replace("|", "\\|")
+
+
 def render_models_doc() -> str:
+    """A compact table of card facts; ``tsf catalog`` is the full, searchable view."""
     records = model_records(ROOT)
+    passed = sum(1 for r in records if (r.get("admission") or {}).get("status") == "passed")
     intro = (
         "# Models and methods\n\n"
         f"TSFLab exposes {len(records)} model and method entries through one flat "
-        "public catalog. Architecture families are retrieval tags on each card, not directories or categories. Presets "
-        "configure runs and do not create additional entries.\n\n"
-        "Every entry is maintained as a local implementation; verification status "
-        "is derived from executable evidence.\n\n"
-        "| Name | Preset | Capabilities | Model card |\n"
-        "|---|---|---|---|\n"
+        "public catalog. Architecture families are retrieval tags on each card, not "
+        "directories or categories. Presets configure runs and do not create additional "
+        "entries. This page is generated from the model cards; search and open them with "
+        "`tsf catalog search` and `tsf catalog show <name>`.\n\n"
+        "**Fidelity** says how the implementation was checked: `reference-checked` "
+        "(paper and pinned official code), `paper-only`, `inferred` (the paper leaves "
+        "material details open), or `composed` (assembled from catalog components). "
+        "**Admission** is the recorded result of the executable contract "
+        f"(`tsf model verify`); {passed} of {len(records)} entries have passed.\n\n"
+        "| Name | Description | Fidelity | Admission | Card |\n"
+        "|---|---|---|---|---|\n"
     )
     rows = []
     for record in records:
-        name = str(record["name"])
-        config = str(record["config_path"])
         package = str(record["package"])
-        capabilities = ", ".join(sorted(record.get("capabilities", ()))) or "—"
+        status = str((record.get("admission") or {}).get("status") or "pending")
         rows.append(
-            f"| `{name}` | [`{config}`](../../{config}) | {capabilities} | "
-            f"[README](../../src/tsflab/models/{package}/README.md) |"
+            f"| `{record['name']}` | {_first_sentence(str(record['summary']))} | "
+            f"{record.get('fidelity') or '—'} | {status} | "
+            f"[card](../../src/tsflab/models/{package}/README.md) |"
         )
     return intro + "\n".join(rows) + "\n"
 
@@ -67,13 +92,34 @@ def _generated_model_doc_problems() -> list[str]:
     problems: list[str] = []
     path = DOC_DIR / "models.md"
     if path.read_text(encoding="utf-8") != render_models_doc():
-        problems.append(f"{path.relative_to(ROOT)} is stale; regenerate from ModelSpec")
+        problems.append(f"{path.relative_to(ROOT)} is stale; regenerate with `tsf repo cards`")
     return problems
 
 
 def write_generated_model_docs() -> None:
     """Refresh the human-readable model catalog projection."""
     (DOC_DIR / "models.md").write_text(render_models_doc(), encoding="utf-8")
+
+
+def _readme_count_problems() -> list[str]:
+    """The catalog counts quoted in README.md must match the code."""
+    from tsflab.catalog.cards.datasets import dataset_records
+    from tsflab.catalog.components import COMPONENT_CATALOG
+
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    expected = {
+        r"(\d+) methods as peers": len(model_records(ROOT)),
+        r"(\d+) shared components": len(COMPONENT_CATALOG.names()),
+        r"(\d+) dataset presets": len(dataset_records(ROOT)),
+    }
+    problems = []
+    for pattern, count in expected.items():
+        found = re.search(pattern, text)
+        if found is None or int(found.group(1)) != count:
+            stated = found.group(1) if found else "nothing"
+            label = pattern.split(") ", 1)[1]
+            problems.append(f"README.md states {stated} {label}; the catalog has {count}")
+    return problems
 
 
 def _docs_index_problems() -> list[str]:
@@ -93,10 +139,12 @@ def _docs_index_problems() -> list[str]:
 
 def _obsolete_reference_problems() -> list[str]:
     problems: list[str] = []
-    paths = [ROOT / "README.md", *DOC_DIR.glob("*.md")]
-    for path in paths:
+    human = [ROOT / "README.md", ROOT / "CONTRIBUTING.md", *DOC_DIR.glob("*.md")]
+    agent = [ROOT / "AGENTS.md", *(ROOT / ".agents").rglob("*.md"), *(ROOT / ".agents").rglob("*.toml")]
+    for path in human + agent:
         text = path.read_text(encoding="utf-8")
-        for token in OBSOLETE_DOC_TOKENS:
+        tokens = (*OBSOLETE_DOC_TOKENS, *REMOVED_SYSTEM_TOKENS) if path in human else REMOVED_SYSTEM_TOKENS
+        for token in tokens:
             if token in text:
                 problems.append(f"{path.relative_to(ROOT)} references obsolete {token!r}")
     return problems
@@ -151,6 +199,7 @@ def _relative_link_problems() -> list[str]:
 def check() -> list[str]:
     return (
         _generated_model_doc_problems()
+        + _readme_count_problems()
         + _docs_index_problems()
         + _obsolete_reference_problems()
         + _audience_boundary_problems()

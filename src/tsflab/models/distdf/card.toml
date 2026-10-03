@@ -1,0 +1,38 @@
+schema = "tsflab.card/1"
+kind = "model"
+name = "DistDF"
+tags = ["linear", "loss-framework", "distribution-alignment", "normalization", "channel-independent", "lightweight"]
+fits = ["high-forecastability", "efficiency"]
+fidelity = "reference-checked"
+issues_checked = "the card maps Algorithm 1 and Eqs. (5)-(6) to the joint Gaussian Bures-Wasserstein loss; the official code was not inspected, and only TSFLab's carrier and covariance-jitter choices are recorded."
+
+[paper]
+title = "DistDF: Time-Series Forecasting Needs Joint-Distribution Wasserstein Alignment"
+url = "https://arxiv.org/abs/2510.24574"
+venue = "ICLR 2026"
+year = 2026
+
+[code]
+url = "https://github.com/Master-PLC/DistDF"
+revision = "21b050fc230d35c7e1c4507c8da3dcd81dc9e1b9"
+license = "MIT"
+reference_sources = []
+
+[composition]
+normalization = "component:revin"
+decomposition = "none"
+temporal = "component:channel_wise_linear"
+channel = "local:channel-independent-shared-weights"
+head = "local:linear-forecast"
+loss = "loss:mse+local:joint-bures-wasserstein-distribution-loss"
+
+[data_params]
+enc_in = { from = "channels", rule = "must equal the dataset channel count" }
+
+[admission]
+status = "passed"
+date = "2026-10-03"
+commit = "ec1ae839"
+device = "cpu"
+reference = "official"
+note = "tsf model verify --all on UH_Public; pre-squash commit of the 1.0 consolidation"

@@ -5,20 +5,6 @@ from __future__ import annotations
 import ast
 import json
 from pathlib import Path
-from typing import TypedDict, cast
-
-
-class PaperMetadata(TypedDict):
-    title: str
-    venue: str
-    year: int | None
-    url: str
-
-
-class CodebaseMetadata(TypedDict):
-    url: str
-    revision: str
-    license: str
 
 
 def _literal(node: ast.expr):
@@ -71,82 +57,43 @@ def _scalar(value: str) -> object:
         return value
 
 
-def read_front_matter(path: Path) -> dict[str, object]:
-    """Read the deliberately small YAML-like front matter without PyYAML."""
-    lines = path.read_text(encoding="utf-8").splitlines()
-    if not lines or lines[0].strip() != "---":
-        raise ValueError(f"{path} has no YAML front matter")
-    try:
-        end = lines.index("---", 1)
-    except ValueError as exc:
-        raise ValueError(f"{path} has unterminated YAML front matter") from exc
-    result: dict[str, object] = {}
-    section: dict[str, object] | None = None
-    for line in lines[1:end]:
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        indent = len(line) - len(line.lstrip(" "))
-        if ":" not in line:
-            raise ValueError(f"{path} has invalid front-matter line: {line!r}")
-        key, raw = line.strip().split(":", 1)
-        if indent == 0:
-            if raw.strip():
-                result[key] = _scalar(raw)
-                section = None
-            else:
-                nested: dict[str, object] = {}
-                result[key] = nested
-                section = nested
-        elif indent == 2 and section is not None:
-            section[key] = _scalar(raw)
-        else:
-            raise ValueError(f"{path} has unsupported front-matter indentation")
-    return result
-
-
 def read_model_card(path: Path) -> dict[str, object]:
-    """Validate the flat human header and return normalized metadata.
+    """Return normalized metadata for a model card (``card.toml`` + README description).
 
-    Model cards keep a short, flat header for people.  Runtime consumers receive
-    normalized ``paper`` and ``codebase`` mappings so generated indexes and
-    verification evidence do not duplicate parsing logic.
+    ``path`` is the card's README or its directory. Runtime consumers receive the
+    same flat shape as before (``summary``, ``tagline``, ``tags``, ``composition``
+    as ``slot=value`` strings, ``paper``, ``codebase``) plus the card's ``fits``,
+    ``fidelity``, ``data_params``, ``issues``, and ``admission``.
     """
-    fields = read_front_matter(path)
-    required = {"name", "summary", "paper", "paper_title", "venue", "year"}
-    allowed = required | {"code", "revision", "license", "tagline", "tags", "composition"}
-    missing = sorted(required - fields.keys())
-    if missing:
-        raise ValueError(f"{path} missing front matter: {', '.join(missing)}")
-    unexpected = sorted(fields.keys() - allowed)
-    if unexpected:
-        raise ValueError(f"{path} has unsupported front matter: {', '.join(unexpected)}")
-    source_fields = {key for key in ("code", "revision", "license") if key in fields}
-    if source_fields and source_fields != {"code", "revision", "license"}:
-        missing_source = sorted({"code", "revision", "license"} - source_fields)
-        raise ValueError(f"{path} missing code fields: {', '.join(missing_source)}")
-    if "code" in fields and not str(fields["code"] or "").strip():
-        raise ValueError(f"{path} front matter code must not be empty")
+    from tsflab.catalog.cards.store import load
+
+    card = load(path if path.is_dir() else path.parent)
+    facts = card.facts
+    if facts.get("kind") != "model":
+        raise ValueError(f"{card.directory}/card.toml is not a model card")
+    paper = facts.get("paper") or {}
+    code = facts.get("code")
     return {
-        "name": fields["name"],
-        "summary": fields["summary"],
-        "tagline": fields.get("tagline", ""),
-        "tags": list(fields.get("tags") or []),
-        "composition": list(fields.get("composition") or []),
+        "name": facts["name"],
+        "summary": card.description,
+        "tagline": card.description,
+        "tags": list(facts.get("tags") or []),
+        "composition": [f"{slot}={value}" for slot, value in (facts.get("composition") or {}).items()],
         "paper": {
-            "title": fields["paper_title"],
-            "venue": fields["venue"],
-            "year": fields["year"],
-            "url": fields["paper"],
+            "title": paper.get("title", ""),
+            "venue": paper.get("venue", ""),
+            "year": paper.get("year"),
+            "url": paper.get("url", ""),
         },
         "codebase": (
-            {
-                "url": fields["code"],
-                "revision": fields["revision"],
-                "license": fields["license"],
-            }
-            if "code" in fields
-            else None
+            {"url": code["url"], "revision": code["revision"], "license": code["license"]}
+            if code else None
         ),
+        "fits": list(facts.get("fits") or []),
+        "fidelity": facts.get("fidelity", ""),
+        "data_params": dict(facts.get("data_params") or {}),
+        "issues": list(facts.get("issues") or []),
+        "admission": dict(facts.get("admission") or {}),
     }
 
 
@@ -194,11 +141,3 @@ def model_records(
     return sorted(records, key=lambda record: str(record["name"]).casefold())
 
 
-def paper_metadata(record: dict[str, object]) -> PaperMetadata:
-    """Return the typed paper mapping from a model record."""
-    return cast(PaperMetadata, record["paper"])
-
-
-def codebase_metadata(record: dict[str, object]) -> CodebaseMetadata | None:
-    """Return the typed codebase mapping from a model record."""
-    return cast(CodebaseMetadata | None, record["codebase"])

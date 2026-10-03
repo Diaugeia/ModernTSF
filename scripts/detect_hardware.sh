@@ -1,53 +1,62 @@
 #!/usr/bin/env bash
 #
-# Detect GPU / CUDA on this machine and recommend a uv PyTorch backend tag for
-# UV_TORCH_BACKEND (cpu | cu118 | cu121 | cu124 | cu126 | cu128).
+# Pre-install hardware probe: map the NVIDIA driver to a TSFLab install profile
+# for torch 2.14.1 (cpu | cuda126 | cuda130). Same mapping as `tsf env doctor`
+# (src/tsflab/experiments/infra/machine.py), which also checks the installed
+# torch build once the environment exists.
+#
+#   driver CUDA >= 13.0        -> cuda130  (uv sync --frozen; the locked build)
+#   driver CUDA 12.6 .. 12.9   -> cuda126  (torch 2.14.1 has no cu128 wheel)
+#   older driver / no NVIDIA   -> cpu
 #
 # Usage:
 #   bash scripts/detect_hardware.sh             # human-readable report
-#   bash scripts/detect_hardware.sh --backend   # print only the backend tag
-#   UV_TORCH_BACKEND="$(bash scripts/detect_hardware.sh --backend)" uv sync
-#
-# Note: prefer `UV_TORCH_BACKEND=auto uv sync` — uv detects the driver itself.
-# This script is for visibility and for the explicit-override path.
+#   bash scripts/detect_hardware.sh --backend   # print only the uv backend tag
+#   bash scripts/detect_hardware.sh --profile   # print only the profile name
 set -euo pipefail
 
 MODE="${1:-report}"
+gpu="none"; driver="none"; cuda=""
 
-# No NVIDIA tooling → CPU build.
-if ! command -v nvidia-smi >/dev/null 2>&1; then
-  if [ "$MODE" = "--backend" ]; then echo "cpu"; else
-    echo "gpu=none"
-    echo "driver=none"
-    echo "cuda=none"
-    echo "backend=cpu"
+if command -v nvidia-smi >/dev/null 2>&1; then
+  gpu="$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | paste -sd';' - || true)"
+  driver="$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 || true)"
+  # Max CUDA version the driver supports: "CUDA Version: 12.8" or "CUDA UMD Version: 13.4".
+  cuda="$(nvidia-smi 2>/dev/null | sed -n 's/.*CUDA[A-Za-z ]*Version: *\([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -1 || true)"
+  if [ -z "$cuda" ]; then  # fall back to the driver branch
+    major="${driver%%.*}"
+    if [ "${major:-0}" -ge 580 ] 2>/dev/null; then cuda="13.0"
+    elif [ "${major:-0}" -ge 560 ] 2>/dev/null; then cuda="12.6"
+    fi
   fi
-  exit 0
 fi
 
-gpu="$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | paste -sd';' - || true)"
-driver="$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 || true)"
-# Max CUDA version the driver supports (top-right of `nvidia-smi`).
-cuda="$(nvidia-smi 2>/dev/null | sed -n 's/.*CUDA Version: \([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | head -1 || true)"
-
-# Map driver CUDA → nearest available PyTorch wheel backend (≤ driver CUDA).
-# CUDA minor versions are backward compatible within a major, so a newer driver
-# can run an older cuXXX wheel.
-case "${cuda:-}" in
-  13.*)               backend="cu128" ;;
-  12.8*|12.9*)        backend="cu128" ;;
-  12.6*|12.7*)        backend="cu126" ;;
-  12.4*|12.5*)        backend="cu124" ;;
-  12.1*|12.2*|12.3*)  backend="cu121" ;;
-  11.8*|11.9*|12.0*)  backend="cu118" ;;
-  *)                  backend="cpu"   ;;
+profile="cpu"
+if [ "$(uname -s)" = "Linux" ] && [ -n "$cuda" ]; then
+  cmajor="${cuda%%.*}"; cminor="${cuda#*.}"
+  if [ "$cmajor" -ge 13 ]; then profile="cuda130"
+  elif [ "$cmajor" -eq 12 ] && [ "$cminor" -ge 6 ]; then profile="cuda126"
+  fi
+fi
+case "$profile" in
+  cuda130) backend="cu130" ;;
+  cuda126) backend="cu126" ;;
+  *)       backend="cpu" ;;
 esac
 
-if [ "$MODE" = "--backend" ]; then
-  echo "${backend}"
-else
-  echo "gpu=${gpu:-unknown}"
-  echo "driver=${driver:-unknown}"
-  echo "cuda=${cuda:-none}"
-  echo "backend=${backend}"
-fi
+case "$MODE" in
+  --backend) echo "$backend" ;;
+  --profile) echo "$profile" ;;
+  *)
+    echo "gpu=${gpu:-unknown}"
+    echo "driver=${driver:-unknown}"
+    echo "cuda=${cuda:-none}"
+    echo "profile=${profile}"
+    echo "backend=${backend}"
+    if [ "$profile" = "cuda130" ] || [ "$(uname -s)" != "Linux" ]; then
+      echo "install: uv sync --frozen --python 3.12 --extra models --extra data --extra experiments"
+    else
+      echo "install: uv venv --python 3.12 && uv pip install --torch-backend ${backend} -e \".[models,data,experiments]\" pytest && export UV_NO_SYNC=1"
+    fi
+    ;;
+esac

@@ -1,105 +1,31 @@
 ---
 name: "AirCade"
-summary: "AirCade separates synchronous AQI-weather causality from propagation through uncertain future weather. This local implementation maps paper equations (1)-(13) to domain prompts, four-path DK-MSA, historical Cade, future Cadi, intervention masks, and a point predictor."
-paper: "https://doi.org/10.1109/ICASSP49660.2025.11099015"
-paper_title: "Spatiotemporal Causal Decoupling Model for Air Quality Forecasting"
-venue: "ICASSP 2025"
-year: 2025
-code: "https://github.com/PoorOtterBob/AirCade"
-revision: "179067f5b9fbc05f894022809e0b1c83e9f61fd8"
-license: "NOASSERTION"
-tagline: "Air-quality Transformer with four-path domain-knowledge attention decoupling AQI-weather causality in past and future."
-tags: ["transformer", "spatiotemporal", "covariates", "attention-variant", "causal", "air-quality"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:dk-msa-temporal-cade-cadi", "channel=local:dk-msa-spatial-attention-over-stations", "head=local:history-to-future-linear+local:linear-predictor", "loss=loss:mse"]
+description: "Air-quality Transformer with four-path domain-knowledge attention decoupling AQI-weather causality in past and future. Use for multi-station pollutant forecasting with past and future weather covariates; not for data without covariates or tasks needing a fixed adjacency."
 ---
+
 # AirCade
 
-## Key ideas
+## Idea
 
-- `DomainKnowledgeAttention` mixes four paths (direct, inverse, and two adaptive-graph attention matrices) with learnable multi-environment intervention masks.
-- Cade layers (`temporal_cade`, `spatial_cade`) use historical weather as query/key and pollutant values as value to decouple synchronous AQI-weather causality.
-- A linear map from history to horizon length feeds Cadi layers (`temporal_cadi`, `spatial_cadi`) that condition on future weather covariates built from calendar marks.
+- `DomainKnowledgeAttention` (DK-MSA) mixes four paths (direct, inverse, and two adaptive-graph attention matrices) with learnable multi-environment intervention masks.
+- Cade layers (temporal and spatial) use historical weather as query/key and pollutant values as value to decouple synchronous AQI-weather causality.
+- A linear map from history to horizon length feeds Cadi layers that condition on future weather covariates.
 - Learnable time and station prompts are concatenated to the value and weather embeddings.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 24, channels]`. The
-declared output contract is a `[batch, 24, channels]` point forecast. Timestamp or exogenous marks are supplied through the runtime batch contract.
+- Multi-station air-quality (AQI, pollutant) forecasting where meteorology drives the target and weather covariates are available for history and horizon.
+- Spatial dependence is learned by attention over stations; a supplied adjacency is ignored.
+- Without node-structured covariates it falls back to two calendar covariates from raw marks, which removes the causal-decoupling motivation.
+- Time prompts are sized by `seq_len` and `pred_len`, so the trained model is tied to one window; point output only.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1109/ICASSP49660.2025.11099015); title: Spatiotemporal Causal Decoupling Model for Air Quality Forecasting; venue/year: ICASSP 2025 / 2025
-- [codebase](https://github.com/PoorOtterBob/AirCade); revision: `179067f5b9fbc05f894022809e0b1c83e9f61fd8`; license: `NOASSERTION`
+- `enc_in`: number of stations.
+- `cov_dim`: covariate features per station (`[B, T, N, cov_dim]` marks); 2 when raw six-column calendar marks are converted.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/AirCade.toml`](../../../../configs/models/AirCade.toml).
+Other hyperparameters: preset defaults in `configs/models/AirCade.toml`; tune generically. `d_model` must divide across heads and exceed `2 * prompt_dim`.
 
 ## Differences
 
-Pinned source inspection: `src/tsflab/models/AirCade.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-- Local implementation: confirmed from the paper; reference-only source code was inspected at the pinned revision; no external source code was copied.
-- Structure evidence maps equations (1)--(13) to prompts, DK-MSA, Cade/Cadi, interventions, and the forecast head. Runtime evidence covers covariates, gradients, serialization, CPU, batch/sequence/node boundaries, and the graph-free adjacency contract.
-
-## Shared components
-
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=24` and `pred_len=24`. Default
-model parameters are: `enc_in=6`, `d_model=32`, `prompt_dim=8`, `adaptive_dim=8`, `num_heads=4`, `temporal_layers=2`, `spatial_layers=2`, `environments=3`, `cov_dim=2`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Spatiotemporal Causal Decoupling Model for Air Quality Forecasting
-- **Venue**: ICASSP 2025
-- **Published**: 2025 (arXiv: 2025-05)
-- **arXiv**: https://arxiv.org/abs/2505.20119
-
-## Abstract
-Due to the profound impact of air pollution on human health, livelihoods, and economic development, air quality forecasting is of paramount significance. Initially, we employ the causal graph method to scrutinize the constraints of existing research in comprehensively modeling the causal relationships between the air quality index (AQI) and meteorological features. In order to enhance prediction accuracy, we introduce a novel air quality forecasting model, AirCade, which incorporates a causal decoupling approach. AirCade leverages a spatiotemporal module in conjunction with knowledge embedding techniques to capture the internal dynamics of AQI. Subsequently, a causal decoupling module is proposed to disentangle synchronous causality from past AQI and meteorological features, followed by the dissemination of acquired knowledge to future time steps to enhance performance. Additionally, we introduce a causal intervention mechanism to explicitly represent the uncertainty of future meteorological features, thereby bolstering the model's robustness. Our evaluation of AirCade on an open-source air quality dataset demonstrates over 20% relative improvement over state-of-the-art models. Our source code is available at https://github.com/PoorOtterBob/AirCade.
-
-## In TSFLab
-Default config: `configs/models/AirCade.toml`; model specification: `spec.py`; local implementation: `model.py`.
-
-The runtime consumes `x_enc [B, seq_len, N]`, historical marks/covariates `[B, seq_len, N, cov_dim]`, and future covariates `[B, pred_len, N, cov_dim]`; raw six-column marks are converted to two calendar covariates. It returns `[B, pred_len, N]`, permits unequal history/horizon lengths, and intentionally learns spatial matrices rather than consuming adjacency. Equation (1) maps to prompted embeddings, equations (2)-(7) to `DomainKnowledgeAttention`, equations (8)-(11) to Cade/Cadi, equation (12) to the predictor, and equation (13) to relaxed multi-environment masks.
-
-## Source and verification
-
-Pinned source inspection: `src/tsflab/models/AirCade.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-- Local implementation: confirmed from the paper; reference-only source code was inspected at the pinned revision; no external source code was copied.
-- Structure evidence maps equations (1)--(13) to prompts, DK-MSA, Cade/Cadi, interventions, and the forecast head. Runtime evidence covers covariates, gradients, serialization, CPU, batch/sequence/node boundaries, and the graph-free adjacency contract.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/icassp/MaWHYWWW25,
-  author       = {Jiaming Ma and
-                  Guanjun Wang and
-                  Sheng Huang and
-                  Kuo Yang and
-                  Binwu Wang and
-                  Pengkun Wang and
-                  Yang Wang},
-  title        = {Spatiotemporal Causal Decoupling Model for Air Quality Forecasting},
-  booktitle    = {2025 {IEEE} International Conference on Acoustics, Speech and Signal
-                  Processing, {ICASSP} 2025, Hyderabad, India, April 6-11, 2025},
-  pages        = {1--5},
-  publisher    = {{IEEE}},
-  year         = {2025},
-  url          = {https://doi.org/10.1109/ICASSP49660.2025.11099015},
-  doi          = {10.1109/ICASSP49660.2025.11099015},
-  timestamp    = {Wed, 11 Feb 2026 11:45:24 +0100},
-  biburl       = {https://dblp.org/rec/conf/icassp/MaWHYWWW25.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Local implementation of the paper's Eq. (1)-(13) after inspecting `src/models/AirCade.py` at the pinned revision; no source copied (the repository has no license file). Eq. (1) maps to prompted embeddings, Eq. (2)-(7) to `DomainKnowledgeAttention`, Eq. (8)-(11) to Cade/Cadi, Eq. (12) to the predictor, Eq. (13) to relaxed multi-environment masks. The runtime accepts unequal history and horizon lengths and learns spatial matrices instead of consuming adjacency.

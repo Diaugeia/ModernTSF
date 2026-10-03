@@ -1,83 +1,31 @@
 ---
 name: "LSTMForecasterTS"
-summary: "LSTMForecasterTS is a clean-room LSTM baseline that encodes a fixed history and directly projects the final hidden state to a multistep forecast."
-paper: "https://doi.org/10.1162/neco.1997.9.8.1735"
-paper_title: "Long Short-Term Memory"
-venue: "Neural Computation 1997"
-year: 1997
-tagline: "LSTM encoder over the normalized multichannel window with a direct linear decode of its final hidden state."
-tags: ["rnn", "baseline", "channel-mixing", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:lstm-final-state-encoder", "channel=local:channel-mixing-recurrent-input", "head=local:linear-direct-multi-horizon-head", "loss=loss:mse"]
+description: "LSTM encoder over the RevIN-normalized multichannel window with a direct linear decode of its final hidden state. Use as a simple recurrent baseline on few-channel multivariate data; not for many channels (output head grows with pred_len * channels) or long lookbacks."
 ---
+
 # LSTMForecasterTS
 
-## Key ideas
+## Idea
 
 - An `nn.LSTM` consumes all channels jointly at every step, so channels are mixed in the recurrent state.
 - The last layer's final hidden state goes through one linear `head` to `pred_len * enc_in` values (direct multi-horizon, no autoregression).
 - `revin` normalizes the input and denormalizes the forecast (`use_revin`).
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A recurrent baseline for multivariate forecasting where a compact sequential model is the comparison point.
+- RevIN handles level shifts between windows.
+- Channels share one recurrent state, which suits a few related channels; with hundreds of channels the joint input and the `pred_len * enc_in` head become a bottleneck.
+- Sequential recurrence over every step makes long lookbacks slow.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1162/neco.1997.9.8.1735); title: Long Short-Term Memory; venue/year: Neural Computation 1997 / 1997
-- codebase: not available
+- `enc_in`: must equal the channel count (LSTM input width and head output `pred_len * enc_in`).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/LSTMForecasterTS.toml`](../../../../configs/models/LSTMForecasterTS.toml).
+Other hyperparameters: preset defaults in `configs/models/LSTMForecasterTS.toml`; tune generically.
 
 ## Differences
 
-Clean-room implementation: confirmed. The local code was independently designed from the published LSTM gate equations and the repository tensor contract; no external implementation source was copied. The 1997 paper does not define the direct multi-horizon head, joint-channel setup, or optional RevIN, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/LSTMForecasterTS.json`.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `dropout=0.0`, `num_layers=1`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Long Short-Term Memory
-- **Venue**: Neural Computation
-- **Published**: 1997
-- **DOI**: https://doi.org/10.1162/neco.1997.9.8.1735
-
-## Abstract
-Long Short-Term Memory (LSTM) is a gated recurrent neural network architecture introduced by Hochreiter and Schmidhuber (1997) to address the vanishing-gradient problem in standard RNNs. An LSTM cell maintains a cell state and three learned gates — input, forget, and output — that regulate how information flows across time steps, allowing the network to selectively remember or discard information over long sequences. In the forecasting setting used here, the encoder processes the historical window token-by-token and the final hidden state seeds a linear projection head that produces the full prediction horizon in one shot. No single canonical paper defines this forecasting variant; the classical LSTM architecture is the sole methodological contribution.
-
-## Source and verification
-
-Clean-room implementation: confirmed. The local code was independently designed from the published LSTM gate equations and the repository tensor contract; no external implementation source was copied. The 1997 paper does not define the direct multi-horizon head, joint-channel setup, or optional RevIN, so no experimental reference comparison is claimed. Formula and full runtime-contract evidence are recorded in `../../../../verification/evidence/LSTMForecasterTS.json`.
-
-## In TSFLab
-Default config: `configs/models/LSTMForecasterTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@article{hochreiter1997long,
-  author  = {Sepp Hochreiter and J{\"u}rgen Schmidhuber},
-  title   = {Long Short-Term Memory},
-  journal = {Neural Computation},
-  volume  = {9},
-  number  = {8},
-  pages   = {1735--1780},
-  year    = {1997},
-  doi     = {10.1162/neco.1997.9.8.1735}
-}
-```
+- Clean-room implementation from the published LSTM gate equations and the repository tensor contract; no external source was copied.
+- The 1997 paper does not define the direct multi-horizon head, joint-channel setup, or optional RevIN; these are TSFLab choices, so no experimental reference comparison is claimed.
+- Citation: S. Hochreiter and J. Schmidhuber, "Long Short-Term Memory", Neural Computation 9(8):1735-1780, 1997, doi:10.1162/neco.1997.9.8.1735.

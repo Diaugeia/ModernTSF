@@ -19,13 +19,16 @@ context AutoResearch reads before it picks models.
 uv run tsf catalog show <name>
 uv run tsf data inspect --config configs/datasets/<name>.toml --split train --per-channel
 uv run tsf data analyze <name>        # structured profile for model selection
+uv run tsf data analyze <name> --write-card   # only when asked: record characteristics
 uv run tsf data plot --config configs/datasets/<name>.toml --split train --num-samples 3
 ```
 
-Start from the card's front matter (`domain`, `frequency`, `length`, `channels`,
-`protocol`) and its "Standard protocol and known pitfalls", then confirm them
-against the files. `analyze` writes `work_dirs/profiles/<name>/profile.{json,md}` from train statistics plus
-labelled train/val/test shift; use it before choosing models.
+Start from the card facts (`domain`, `characteristics`, `[shape]` frequency, length,
+channels, `[protocol]`) and its Protocol and pitfalls section, then confirm them
+against the files. `analyze` writes `work_dirs/profiles/<name>/profile.{json,md}` from
+train statistics plus labelled train/val/test shift; use it before choosing models.
+Its fired rule ids are the card's data `characteristics`; `--write-card` records them
+with their basis, which `tsf catalog match <name>` then reads.
 
 Check split boundaries, tensor dimensions, missing values, target-channel
 behavior, leakage across splits, inferred seasonal period, and adjacency or
@@ -35,7 +38,7 @@ covariate metadata.
 
 - Module: Data.
 - Reads: dataset card (L1, then L2) and the loaded splits.
-- Produces: profile `work_dirs/profiles/<name>/profile.{json,md}` and a measured-fact report.
+- Produces: profile `work_dirs/profiles/<name>/profile.{json,md}`, a measured-fact report, and (when asked) card `characteristics`.
 - Hands off to: `run-autoresearch` (re-runs `tsf data analyze` per approved dataset), `run-experiment` (design), `add-dataset` (card fixes).
 
 ## Success
@@ -43,9 +46,9 @@ covariate metadata.
 - A short report with artifact paths, the facts observed, and which
   characteristics are inferred.
 - Any card fact the data contradicts is reported with the measured value; fix the
-  card (`stats_basis: "measured"`) only when asked to update it.
+  card (`stats_basis = "measured"`, `--write-card`) only when asked to update it.
 
 ## Stop and hand off
 
-- Inspection never modifies data. Fixes belong to `add-dataset`; model output
+- Inspection never modifies data; the card changes only with `--write-card` when asked. Fixes belong to `add-dataset`; model output
   plots belong to `analyze-results`; profile-driven search to `run-autoresearch`.

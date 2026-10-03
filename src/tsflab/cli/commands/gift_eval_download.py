@@ -25,7 +25,7 @@ import argparse
 import os
 import sys
 
-# All 53 dataset/freq combinations in GIFT-EVAL
+# All 55 dataset/freq combinations in GIFT-EVAL
 ALL_DATASETS = [
     "LOOP_SEATTLE/5T",
     "LOOP_SEATTLE/D",
@@ -168,7 +168,7 @@ def main() -> None:
         nargs="*",
         default=None,
         help="Specific datasets to download (e.g. electricity/15T m4_monthly). "
-        "Omit to download all 53.",
+        "Omit to download all 55.",
     )
     parser.add_argument(
         "--link-only",

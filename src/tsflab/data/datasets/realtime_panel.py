@@ -117,6 +117,12 @@ class _RealtimePanelBase(Dataset):
         if max_windows is not None and len(centers) > max_windows:
             centers = centers[np.linspace(0, len(centers) - 1, max_windows).astype(np.int64)]
         self.idx = centers
+        self._split_rows = (start_row, end_row)
+
+    def series_array(self) -> np.ndarray:
+        """Return this split's (scaled) panel rows as a ``(T, N)`` array."""
+        start_row, end_row = self._split_rows
+        return self.values[start_row:end_row]
 
     def _marks(self, index: pd.DatetimeIndex, calendar: bool) -> np.ndarray | None:  # pragma: no cover
         raise NotImplementedError

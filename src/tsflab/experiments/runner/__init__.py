@@ -1,21 +1,6 @@
-"""Lazy single-run and sweep execution entry points.
+"""Single-run and sweep execution.
 
-Keeping this package initializer import-free prevents the evaluation and runner
-layers from pulling each other in while their focused submodules are loading.
+Import the focused submodules directly (``runner.run_one``, ``runner.run_sweep``);
+the package initializer stays import-free so the evaluation and runner layers do
+not pull each other in while loading.
 """
-
-__all__ = ["run_one", "run_sweep"]
-
-
-def __getattr__(name: str):
-    if name == "run_one":
-        from tsflab.experiments.runner.run_one import run_one
-
-        globals()[name] = run_one
-        return run_one
-    if name == "run_sweep":
-        from tsflab.experiments.runner.run_sweep import run_sweep
-
-        globals()[name] = run_sweep
-        return run_sweep
-    raise AttributeError(name)

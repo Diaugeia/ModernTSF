@@ -1,19 +1,11 @@
 ---
 name: "global_patch_compression_attention"
-kind: "component"
-module: "tsflab.models._components.global_patch_compression_attention"
-summary: "Two-stage cross-patch attention: each group's last patch queries all patches to form a summary token, then every patch attends to the summaries; post-norm residual blocks with GELU MLPs."
-category: "attention"
-input: "patches [batch, groups, patches_per_group, d_model]"
-output: "[batch, groups, patches_per_group, d_model]"
-origin: "Sensor Attention Block of Sensorformer (arXiv 2501.03284, 2025): cross-patch attention with global-patch compression"
-origin_models: ["sensorformer"]
-tags: ["attention", "compression", "cross-patch", "global", "patch", "sensor", "transformer", "linear-in-patches"]
+description: "Two-stage cross-patch attention: each variable's last patch queries all patches to form a summary token, then every patch attends to the summaries (Sensorformer). Use for patch forecasters over many correlated variables where full cross-patch attention is too costly; not for few variables or causal group ordering."
 ---
 
 # global_patch_compression_attention
 
-## Purpose
+## What it does
 
 For tokens `P [B, G, N, d]` (G groups such as variables, N patches each):
 
@@ -25,14 +17,13 @@ For tokens `P [B, G, N, d]` (G groups such as variables, N patches each):
 
 Cost `O(G^2 N d)` instead of `O(G^2 N^2 d)` for full cross-patch attention.
 
-## Origin and granularity
+## When to use
 
-Added with Sensorformer, whose paper describes the Sensor Attention Block; the only consumer is `sensorformer`,
-which stacks `layers` copies. The cut is the block alone: the module docstring
-frames it as a paper-neutral "compress tokens, then attend through the
-compressed set" primitive. Patching, embedding and the flatten forecast head
-stay in the model. The choice of the last patch as the compression query is
-inherited from the model description and is hard-coded here.
+Use for patch-token forecasters over many variables where full cross-patch
+attention is too costly and every patch should see cross-variable context
+through a bottleneck. Do not use when ordering of groups must be preserved
+causally (no mask), when `G` is tiny (the bottleneck gains nothing), or if the
+last patch is not a sensible summary query.
 
 ## Interface
 
@@ -48,62 +39,3 @@ and both MLPs (`Linear-GELU-Dropout-Linear`).
 `norm_broadcast_attn`, `norm_broadcast_mlp`. Stateless, no masking, no
 positional information, attention maps are discarded. Because the query
 is the last patch, patch order within a group matters; `N >= 1` is required.
-
-## Invariants and equivalence evidence
-
-- `test_global_patch_compression_attention` and
-  `test_global_patch_compression_last_patch_is_query` in
-  `tests/test_component_contracts_attention.py`: state-dict key prefixes, output
-  shape and dtype, per-token zero mean after the final LayerNorm, finite input
-  gradient and parameter gradients, `ValueError` for 3-D input and for
-  `d_model` not divisible by `n_heads`, and that perturbing a non-last patch changes the
-  output.
-  Reference values: `tests/fixtures/components/global_patch_compression_attention.pt`.
-- `tests/test_frequency_wavelet_attention_forecasters.py`
-  (`test_global_patch_compression_attention_shapes_and_last_patch_query`):
-  output shape equals input shape and perturbing non-last patches changes the
-  output (information flows through the shared summaries).
-- No fixture against the official Sensorformer code exists, so equivalence with the
-  paper's block is by structure only; `sensorformer` is also exercised by the
-  runtime tests in the same file.
-
-## Variants and options
-
-Only `d_model`, `n_heads`, `d_ff`, `dropout`. A different compression query
-(learned or mean-pooled summary) or multiple summaries per group are not options.
-
-## When to use and when not to use
-
-Use for patch-token forecasters over many variables where full cross-patch
-attention is too costly and every patch should see cross-variable context
-through a bottleneck. Do not use when ordering of groups must be preserved
-causally (no mask), when `G` is tiny (the bottleneck gains nothing), or if the
-last patch is not a sensible summary query.
-
-## Related components
-
-`patchtst` and `tst_transformer` (channel-independent encoders without
-cross-variable mixing), `topk_expert_attention` (routed alternative),
-`flatten_forecast_head` (the head `sensorformer` pairs with this block),
-`self_attention_family` (`FullAttention`: the quadratic full attention over all patches that this block replaces; it also offers other efficient variants that do not use a compression bottleneck).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `GlobalPatchCompressionAttention(d_model: int, n_heads: int, d_ff: int, dropout: float=0.0)`
-  Compress each group's patches into one summary, then attend through it.
-
-```python
-from tsflab.models._components.global_patch_compression_attention import GlobalPatchCompressionAttention
-```
-
-## Retrieval terms
-
-`attention`, `compression`, `cross-patch`, `global`, `patch`, `sensor`, `transformer`
-
-## Current model consumers (1)
-
-`sensorformer`
-<!-- component-card:generated:end -->

@@ -1,84 +1,29 @@
 ---
 name: "BayesianRidgeTS"
-summary: "BayesianRidgeTS is a channel-wise lag regression baseline with a learned Gaussian weight-prior precision, optimized as a differentiable MAP adaptation."
-paper: "https://doi.org/10.1162/neco.1992.4.3.415"
-paper_title: "Bayesian Interpolation"
-venue: "Neural Computation 1992"
-year: 1992
-tagline: "Linear lag regression whose weights carry a learned Gaussian prior precision, trained as a differentiable MAP objective."
-tags: ["statistical", "linear", "probabilistic", "baseline", "channel-independent", "lightweight"]
-composition: ["normalization=none", "decomposition=none", "temporal=local:direct-linear-lag-regression", "channel=local:channel-independent-shared-weights", "head=local:direct-multi-horizon-linear-projection", "loss=loss:mse+local:gaussian-prior-map-penalty"]
+description: "Linear lag regression whose weights carry a learned Gaussian prior precision, trained as a differentiable MAP objective. Use as a regularized linear baseline for short training data or tight budgets; not for predictive uncertainty or nonlinear dynamics."
 ---
+
 # BayesianRidgeTS
 
-## Key ideas
+## Idea
 
 - A shared `nn.Linear(seq_len, pred_len)` forecasts every channel from its own lags.
-- `log_weight_precision` is learned; the forward pass sets `aux_loss` to the Gaussian weight-prior negative log-density (0.5 precision ||w||^2 - 0.5 n log precision), turning training into MAP estimation.
-- It does not do evidence maximization, infer observation precision, or return predictive uncertainty.
+- `log_weight_precision` is learned; the forward pass sets `aux_loss` to the Gaussian weight-prior negative log-density (`0.5 precision ||w||^2 - 0.5 n log precision`), turning training into MAP estimation.
+- No evidence maximization, no observation-precision inference, no predictive uncertainty.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A ridge-regularized linear floor: the learned prior shrinks weights, which helps when training windows are few relative to `seq_len * pred_len` weights.
+- Despite the Bayesian name and tag, it returns point forecasts only.
+- Channel-independent with no normalization; level shifts hurt it directly.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1162/neco.1992.4.3.415); title: Bayesian Interpolation; venue/year: Neural Computation 1992 / 1992
-- codebase: not available
+- `enc_in`: number of channels (shape check only).
+- No other data-dependent parameter.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/BayesianRidgeTS.toml`](../../../../configs/models/BayesianRidgeTS.toml).
+Other hyperparameters: preset defaults in `configs/models/BayesianRidgeTS.toml`; tune generically.
 
 ## Differences
 
-This clean-room implementation uses the cited Bayesian linear-regression prior as its mathematical basis. It performs gradient-trained MAP forecasting; it does not implement MacKay evidence maximization, infer observation precision, or return posterior predictive uncertainty. No third-party implementation was inspected or copied.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `initial_weight_precision=0.001`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Bayesian Interpolation
-- **Venue**: Neural Computation
-- **Published**: 1992
-- **Link**: https://doi.org/10.1162/neco.1992.4.3.415
-
-## Abstract
-Bayesian ridge regression places a Gaussian prior over linear-regression weights. The local MAP adaptation uses a learned positive prior precision and a shared channel-wise lag projection; it does not claim full posterior inference or uncertainty calibration.
-
-## In TSFLab
-Default config: `configs/models/BayesianRidgeTS.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-This clean-room implementation uses the cited Bayesian linear-regression prior as its mathematical basis. It performs gradient-trained MAP forecasting; it does not implement MacKay evidence maximization, infer observation precision, or return posterior predictive uncertainty. No third-party implementation was inspected or copied.
-
-## Citation
-
-```bibtex
-@article{mackay1992bayesian,
-  author  = {David J. C. MacKay},
-  title   = {Bayesian Interpolation},
-  journal = {Neural Computation},
-  volume  = {4},
-  number  = {3},
-  pages   = {415--447},
-  year    = {1992},
-  doi     = {10.1162/neco.1992.4.3.415},
-  url     = {https://doi.org/10.1162/neco.1992.4.3.415}
-}
-```
+Clean-room implementation using the Gaussian weight prior of MacKay, "Bayesian Interpolation", *Neural Computation* 4(3):415-447, 1992 (doi:10.1162/neco.1992.4.3.415). It performs gradient-trained MAP forecasting with a learned positive prior precision and a shared channel-wise lag projection; it does not implement MacKay evidence maximization, infer observation precision, or return posterior predictive uncertainty. No third-party implementation was inspected or copied.

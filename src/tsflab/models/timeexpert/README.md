@@ -1,109 +1,34 @@
 ---
 name: "TimeExpert"
-summary: "TimeExpert replaces vanilla self-attention in a channel-independent patch Transformer with Temporal Mix of Experts (TMOE): every key/value patch position becomes a candidate expert, each query differentiably routes to only its top-k most relevant experts, and one optional shared global expert preserves long-range context."
-paper: "https://arxiv.org/abs/2509.23145"
-paper_title: "TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts"
-venue: "arXiv preprint"
-year: 2025
-code: "https://github.com/xwmaxwma/TimeExpert"
-revision: "f53b5220f22767a91040aaa04679c2eb9b2eb9c5"
-license: "NOASSERTION"
-tagline: "Channel-independent patch Transformer whose attention is replaced by top-k temporal mixture of experts over patches."
-tags: ["transformer", "mixture-of-experts", "patching", "channel-independent", "attention-variant", "normalization"]
-composition: ["normalization=local:instance-standardization", "decomposition=none", "temporal=component:embed+component:topk_expert_attention", "channel=local:channel-independent-shared-weights", "head=component:flatten_forecast_head", "loss=loss:mse"]
+description: "Channel-independent patch Transformer whose attention is a temporal mixture of experts: each query patch attends only to its top-k most relevant patch positions, optionally plus a shared global expert. Use for long-term forecasting where only a few past segments are relevant; not for cross-channel structure."
 ---
+
 # TimeExpert
 
-## Key ideas
+## Idea
 
 - `TopKExpertAttention` treats each key/value patch position as an expert; each query routes to its top-k most relevant ones, with an optional shared global expert (`shared`).
-- `TMOEBlock` pairs it with a residual feed-forward network, stacked `e_layers` times over `PatchEmbedding` tokens.
-- Channels are folded into the batch, so all share weights; `FlattenForecastHead` maps patch tokens to the horizon.
+- `TMOEBlock` pairs it with a residual feed-forward network, stacked `e_layers` times over `PatchEmbedding` tokens (end-padded by one stride).
+- Each channel is standardized over the lookback and folded into the batch, so all channels share weights; `FlattenForecastHead` maps patch tokens to the horizon.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 12, channels]` point forecast.
+- Long lookbacks where each future segment depends on a few relevant past segments rather than on all of them; sparse top-k routing filters irrelevant patches.
+- Channels that can be modelled independently with shared weights.
+- Not when cross-channel interactions, covariates, or calendar effects drive the target.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2509.23145); title: TimeExpert: Boosting Long Time Series Forecasting with Temporal Mix of Experts; venue/year: arXiv preprint / 2025
-- [codebase](https://github.com/xwmaxwma/TimeExpert); revision: `f53b5220f22767a91040aaa04679c2eb9b2eb9c5`; license: `NOASSERTION`
+- `enc_in`: number of channels; input must be `[B, seq_len, enc_in]`.
+- `patch_len`, `stride`: give `(seq_len - patch_len) // stride + 2` patches.
+- `topk`: at most the patch count above (each query keeps `topk` key positions).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/TimeExpert.toml`](../../../../configs/models/TimeExpert.toml).
+Other hyperparameters: preset defaults in `configs/models/TimeExpert.toml`; tune generically.
 
 ## Differences
 
-The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
-
-Clean-room implementation: confirmed. The TMOE routing/gathering/attention
-data flow was re-derived from the pinned official file's class boundaries and
-docstrings; no source lines were copied. The differentiable top-k local
-expert attention itself was extracted into the cataloged, paper-neutral
-`topk_expert_attention` component rather than kept model-local, since the
-mechanism (score every key/value position, keep only the top-k per query,
-optionally append one shared global expert) is not specific to any one
-patch-embedding or head choice.
-
-- The official code implements only "soft" or "none" routing-weight
-  multiplication modes (`mul_weight`); this implementation always applies the
-  top-k softmax weighting to the gathered key before the second attention
-  softmax is taken over the gathered set, which is mathematically the
-  official `mul_weight='none'` behavior composed with softmax attention
-  (the router's softmax weights are not separately reapplied, matching
-  `TMOE.forward` when `mul_weight != 'soft'`).
-- The official multi-task `Model` supports `long_term_forecast`,
-  `imputation`, `anomaly_detection`, and `classification`; only the
-  forecasting path is implemented here, matching this catalog's scope.
-- Official defaults use `d_model=512`/`n_heads=8`; the TSFLab preset
-  lowers `d_model` to 128 to match this catalog's other patch-Transformer
-  presets, keeping `n_heads=8`, `patch_len=16`, `stride=8`, `topk=4`,
-  `shared=False` unchanged.
-
-## Shared components
-
-- [`embed`](../_components/embed/README.md)
-- [`flatten_forecast_head`](../_components/flatten_forecast_head/README.md)
-- [`topk_expert_attention`](../_components/topk_expert_attention/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=12`. Default
-model parameters are: `enc_in=7`, `d_model=128`, `n_heads=8`, `e_layers=2`, `patch_len=16`, `stride=8`, `dropout=0.1`, `topk=4`, `shared=False`
-<!-- model-card:canonical:end -->
-
-## Source and verification
-
-The official repository publishes no LICENSE file (recorded as `NOASSERTION`). It was consulted only as a reference for paper details, and no source was copied; the implementation is an independent rewrite from the paper (see THIRD_PARTY_NOTICES.md).
-
-Clean-room implementation: confirmed. The TMOE routing/gathering/attention
-data flow was re-derived from the pinned official file's class boundaries and
-docstrings; no source lines were copied. The differentiable top-k local
-expert attention itself was extracted into the cataloged, paper-neutral
-`topk_expert_attention` component rather than kept model-local, since the
-mechanism (score every key/value position, keep only the top-k per query,
-optionally append one shared global expert) is not specific to any one
-patch-embedding or head choice.
-
-- The official code implements only "soft" or "none" routing-weight
-  multiplication modes (`mul_weight`); this implementation always applies the
-  top-k softmax weighting to the gathered key before the second attention
-  softmax is taken over the gathered set, which is mathematically the
-  official `mul_weight='none'` behavior composed with softmax attention
-  (the router's softmax weights are not separately reapplied, matching
-  `TMOE.forward` when `mul_weight != 'soft'`).
-- The official multi-task `Model` supports `long_term_forecast`,
-  `imputation`, `anomaly_detection`, and `classification`; only the
-  forecasting path is implemented here, matching this catalog's scope.
-- Official defaults use `d_model=512`/`n_heads=8`; the TSFLab preset
-  lowers `d_model` to 128 to match this catalog's other patch-Transformer
-  presets, keeping `n_heads=8`, `patch_len=16`, `stride=8`, `topk=4`,
-  `shared=False` unchanged.
+- Independent rewrite; the official repository has no LICENSE file (`NOASSERTION`) and was consulted only for paper details (see THIRD_PARTY_NOTICES.md). The TMOE routing/gathering/attention data flow was re-derived from the pinned official file's class boundaries and docstrings; no source lines copied.
+- The top-k expert attention is the cataloged, paper-neutral `topk_expert_attention` component, since scoring every position, keeping the top-k per query and optionally appending a shared expert does not depend on the patch embedding or head.
+- The official code offers `mul_weight` modes "soft" and "none"; this implementation matches `mul_weight='none'` composed with softmax attention (router weights scale the gathered keys before the second softmax and are not reapplied).
+- Only forecasting is implemented (the official model also covers imputation, anomaly detection, classification).
+- The preset lowers `d_model` from the official 512 to 128 to match the catalog's other patch Transformers; `n_heads=8`, `patch_len=16`, `stride=8`, `topk=4`, `shared=False` are unchanged.

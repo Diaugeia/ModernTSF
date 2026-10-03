@@ -23,32 +23,33 @@ current Agent (no second Agent needed). Read each reference only at its step.
 
 | Module | Context | Read with |
 | --- | --- | --- |
-| Data | dataset cards, train-only profile | `tsf catalog show`, `tsf data analyze` |
-| Models | model cards, six-slot compositions, component interfaces | `tsf catalog search`, `tsf catalog show` |
+| Data | dataset card `characteristics`, train-only profile | `tsf catalog show`, `tsf data analyze` |
+| Models | card `fits`, compositions, `data_params`, component interfaces | `tsf catalog match`, `tsf catalog search`, `tsf catalog show` |
 | Experiments | result board (aggregates, ranks) | `tsf result board --dataset <d>`, `tsf result aggregate` |
 | Release | leaderboard, real-time summaries (`apps/web/data/`) | read-only reference bar |
 | AutoResearch | round ledger `work_dirs/_research/<id>/` | `tsf research show <id>` |
 
 ## Steps
 
-1. Profile each approved dataset before choosing models:
-   `uv run tsf data analyze <preset>` (or `--path FILE`). Read the profile and the
-   fired catalog rules per [data-profile](references/data-profile.md).
+1. Profile each dataset first: `uv run tsf data analyze <preset>` (or `--path FILE`);
+   read the fired rules (= card data terms) per [data-profile](references/data-profile.md).
 2. Write 2-4 falsifiable hypotheses, each tied to a profile fact, with the metric
    change that would refute it. Design controls and seeds per `run-experiment`.
 3. Open a round for durable budgets (`tsf research start --goal ... --max-runs N
    --max-iterations M`, or reuse a supplied one) and note each hypothesis
    (`tsf research note <id> --kind hypothesis --text ...`). Claim one iteration per phase
    with `tsf research iteration <id> --operation <phase>`; reuse of an id is free.
-4. Retrieve candidates progressively: `uv run tsf catalog search <terms>` (L0 lines),
-   `tsf catalog show <name>` (L1), `--depth 2|3` only when a
-   decision needs it; see [retrieval-baselines](references/retrieval-baselines.md).
+4. Retrieve candidates: `uv run tsf catalog match <preset> [--extra TERM...]` ranks
+   models and slot-grouped components whose card `fits` overlap the dataset's
+   characteristics; widen with `tsf catalog search`, open L1 with `tsf catalog show`;
+   see [retrieval-baselines](references/retrieval-baselines.md). A match is a hypothesis.
 5. Evaluate a small baseline panel before any search (same split, horizon, metric,
    seeds); it sets the bar every later candidate must beat.
 6. Search by changing one factor per iteration from the best baseline, starting with
-   the cheapest run that can reject a hypothesis. Recombine cataloged pieces through
-   the slot grid and prune from the profile per [recombination](references/recombination.md);
-   `tsf model compose <spec.toml>` dry-runs a composition.
+   the cheapest run that can reject a hypothesis. Set data-dependent parameters from
+   card `[data_params]` and the profile; tune generic hyperparameters yourself within
+   budget. Recombine via the slot grid per [recombination](references/recombination.md)
+   (`tsf model compose <spec.toml>` dry-runs a composition).
 7. Confirm only finalists with the declared seeds; compare with spread, not a single
    best run. If authorized and a recombined method wins, register it with `add-model`.
 8. Record decisions, runs, and conclusions as round events per

@@ -1,101 +1,35 @@
 ---
 name: "GWNet"
-summary: "GWNet (Graph WaveNet) is a spatiotemporal graph neural network that serves the spatiotemporal forecasting setting on node-structured data. It jointly models hidden spatial dependencies via a learned adaptive adjacency matrix and long-range temporal trends via stacked dilated 1D causal convolutions whose receptive field grows exponentially with depth — enabling end-to-end, scalable traffic and sensor-network forecasting."
-paper: "https://www.ijcai.org/proceedings/2019/264"
-paper_title: "Graph WaveNet for Deep Spatial-Temporal Graph Modeling"
-venue: "IJCAI 2019"
-year: 2019
-code: "https://github.com/GestaltCogTeam/BasicTS"
-revision: "c218c07b6ce5e4cf908b147fd180c486346fed9c"
-license: "Apache-2.0"
-tagline: "Stacked causal dilated gated convolutions with diffusion graph convolution over fixed and learned adaptive adjacency."
-tags: ["gnn", "cnn", "spatiotemporal", "graph-learning", "dilated-convolution"]
-composition: ["normalization=none", "decomposition=none", "temporal=component:gated_dilated_conv", "channel=component:diffusion_conv+component:adaptive_node_embedding_adjacency+component:graph_utils", "head=local:skip-sum-two-layer-conv-head", "loss=loss:mse"]
+description: "Graph WaveNet: stacked causal dilated gated convolutions with diffusion graph convolution over a given adjacency and a learned adaptive adjacency. Use for spatio-temporal sensor networks (traffic) with a full or incomplete graph; not for unstructured channels or long horizons."
 ---
+
 # GWNet
 
-## Key ideas
+## Idea
 
-- `gated_dilated_conv` applies filter and gate causal convolutions with dilation `2**layer` per `WaveNetGraphLayer`, so the receptive field grows exponentially.
-- `DiffusionConv2d` propagates over three supports: forward and reverse random-walk supports from the given adjacency (`adj_to_supports`, `graph_utils`) and a learned adaptive adjacency from source/target node embeddings (`adaptive_node_embedding_adjacency`).
+- `gated_dilated_conv` applies causal filter and gate convolutions with dilation `2**layer` per `WaveNetGraphLayer`, so the receptive field grows exponentially with depth.
+- `DiffusionConv2d` propagates over three supports: forward and reverse random walks of the given adjacency (`graph_utils.adj_to_supports`) and a learned adaptive adjacency from source/target node embeddings (`adaptive_node_embedding_adjacency`).
 - Each layer has a residual path with `BatchNorm2d` and emits a skip connection; skips are summed across layers.
-- A ReLU/1x1-conv head maps the summed skip features straight to the `pred_len` horizon.
+- A ReLU/1x1-conv head maps the summed skip features at the last time step straight to the `pred_len` horizon (non-autoregressive).
+- Input features are the value plus calendar channels (`input_dim = 3`: value, time of day, day of week).
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 12, nodes]`. The
-declared output contract is a `[batch, 12, nodes]` point forecast. Adjacency and temporal/node covariates are supplied only when the model's executable contract requires them.
+- Designed for spatio-temporal graph forecasting (METR-LA, PEMS-BAY in the paper) where the given graph may be incomplete or not reflect the true dependency: the adaptive adjacency recovers hidden spatial relations.
+- Works without a predefined graph (identity static supports), relying on the adaptive graph.
+- Uses calendar marks as extra inputs, so timestamps should carry signal.
+- Not for unstructured multivariate data with independent channels, or long horizons (the head emits all steps from one feature map, preset 12-step setting).
 
-## Paper and code
+## Configure
 
-- [paper](https://www.ijcai.org/proceedings/2019/264); title: Graph WaveNet for Deep Spatial-Temporal Graph Modeling; venue/year: IJCAI 2019 / 2019
-- [codebase](https://github.com/GestaltCogTeam/BasicTS); revision: `c218c07b6ce5e4cf908b147fd180c486346fed9c`; license: `Apache-2.0`
+- `enc_in`: the dataset's node count (runner-injected `num_nodes` takes precedence).
+- `adj_mx`: predefined graph, injected by the runner; identity when absent.
+- `layers` (with `blocks`, `kernel_size`): the causal receptive field `1 + blocks * (2**layers - 1) * (kernel_size - 1)` should cover `seq_len`, since the head reads only the last step (7 steps with the preset).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/GWNet.toml`](../../../../configs/models/GWNet.toml).
+Other hyperparameters: preset defaults in `configs/models/GWNet.toml`; tune generically.
 
 ## Differences
 
-TSFLab rewrites Graph WaveNet locally after reviewing the paper and pinned official codebase. It retains causal dilated gated convolutions, forward/reverse random-walk supports, a learned adaptive graph, diffusion convolution, residual paths, and accumulated skip forecasts. Canonical evidence is stored in [`verification/evidence/GWNet.json`](../../../../verification/evidence/GWNet.json).
-
-## Shared components
-
-- [`adaptive_node_embedding_adjacency`](../_components/adaptive_node_embedding_adjacency/README.md)
-- [`diffusion_conv`](../_components/diffusion_conv/README.md)
-- [`gated_dilated_conv`](../_components/gated_dilated_conv/README.md)
-- [`graph_utils`](../_components/graph_utils/README.md)
-- [`marks`](../_components/marks/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=12` and `pred_len=12`. Default
-model parameters are: `enc_in=8`, `input_dim=3`, `dropout=0.3`, `residual_channels=16`, `dilation_channels=16`, `skip_channels=64`, `end_channels=128`, `kernel_size=2`, `blocks=2`, `layers=2`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Graph WaveNet for Deep Spatial-Temporal Graph Modeling
-- **Venue**: IJCAI 2019
-- **Published**: 2019 (arXiv: 2019-05)
-- **arXiv**: https://arxiv.org/abs/1906.00121
-
-## Abstract
-Spatial-temporal graph modeling is an important task to analyze the spatial relations and temporal trends of components in a system. Existing approaches mostly capture the spatial dependency on a fixed graph structure, assuming that the underlying relation between entities is pre-determined. However, the explicit graph structure (relation) does not necessarily reflect the true dependency and genuine relation may be missing due to the incomplete connections in the data. Furthermore, existing methods are ineffective to capture the temporal trends as the RNNs or CNNs employed in these methods cannot capture long-range temporal sequences. To overcome these limitations, we propose in this paper a novel graph neural network architecture, Graph WaveNet, for spatial-temporal graph modeling. By developing a novel adaptive dependency matrix and learn it through node embedding, our model can precisely capture the hidden spatial dependency in the data. With a stacked dilated 1D convolution component whose receptive field grows exponentially as the number of layers increases, Graph WaveNet is able to handle very long sequences. These two components are integrated seamlessly in a unified framework and the whole framework is learned in an end-to-end manner. Experimental results on two public traffic network datasets, METR-LA and PEMS-BAY, demonstrate the superior performance of our algorithm.
-
-## In TSFLab
-Default config: `configs/models/GWNet.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Verification
-
-TSFLab rewrites Graph WaveNet locally after reviewing the paper and pinned official codebase. It retains causal dilated gated convolutions, forward/reverse random-walk supports, a learned adaptive graph, diffusion convolution, residual paths, and accumulated skip forecasts. Canonical evidence is stored in [`verification/evidence/GWNet.json`](../../../../verification/evidence/GWNet.json).
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/ijcai/WuPLJZ19,
-  author       = {Zonghan Wu and
-                  Shirui Pan and
-                  Guodong Long and
-                  Jing Jiang and
-                  Chengqi Zhang},
-  editor       = {Sarit Kraus},
-  title        = {Graph WaveNet for Deep Spatial-Temporal Graph Modeling},
-  booktitle    = {Proceedings of the Twenty-Eighth International Joint Conference on
-                  Artificial Intelligence, {IJCAI} 2019, Macao, China, August 10-16,
-                  2019},
-  pages        = {1907--1913},
-  publisher    = {ijcai.org},
-  year         = {2019},
-  url          = {https://doi.org/10.24963/ijcai.2019/264},
-  doi          = {10.24963/IJCAI.2019/264},
-  timestamp    = {Sun, 02 Nov 2025 21:27:16 +0100},
-  biburl       = {https://dblp.org/rec/conf/ijcai/WuPLJZ19.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Local rewrite after reviewing the paper and the pinned BasicTS code: causal dilated gated convolutions, forward/reverse random-walk supports, a learned adaptive graph, diffusion convolution (order 2), residual paths and accumulated skip forecasts are retained.
+- `residual_channels` must equal `dilation_channels`; adaptive embedding width is `min(10, max(2, num_nodes))`.
+- Citation: Wu, Z., Pan, S., Long, G., Jiang, J., Zhang, C. "Graph WaveNet for Deep Spatial-Temporal Graph Modeling." IJCAI 2019, pp. 1907-1913.

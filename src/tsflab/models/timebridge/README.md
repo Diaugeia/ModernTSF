@@ -1,116 +1,34 @@
 ---
 name: "TimeBridge"
-summary: "TimeBridge is a patch-based Transformer framework for multivariate long-term time-series forecasting that explicitly handles non-stationarity at two granularities: Integrated Attention removes short-term non-stationarity within each variate's patches to capture stable local dependencies, while Cointegrated Attention preserves non-stationarity across variates to model long-term cointegration relationships between channels."
-paper: "https://arxiv.org/abs/2410.04442"
-paper_title: "TimeBridge: Non-Stationarity Matters for Long-term Time Series Forecasting"
-venue: "ICML 2025"
-year: 2025
-code: "https://github.com/Hank0626/TimeBridge"
-revision: "0f9a83fbc3e1260c9ddd527c522dff0ce4b9554b"
-license: "MIT"
-tagline: "Patch attention that removes short-term trend within a variate, then attends across variates to keep cointegration."
-tags: ["transformer", "patching", "normalization", "attention-variant", "channel-mixing", "decomposition"]
-composition: ["normalization=component:revin", "decomposition=local:moving-average-stationarization-in-integrated-attention", "temporal=local:integrated-attention+local:patch-downsample", "channel=local:cointegrated-attention-across-variates", "head=local:flatten-linear-head", "loss=loss:mse"]
+description: "Patch Transformer that detrends queries/keys for attention within each variate but keeps non-stationarity when attending across variates (cointegration). Use for non-stationary multivariate series with long-term co-movement (e.g. financial indices); not for aperiodic data or calendar-driven targets."
 ---
+
 # TimeBridge
 
-## Key ideas
+## Idea
 
-- `IntegratedAttention` attends over each variate's patch tokens with queries and keys taken from the series minus a moving-average trend (`stable_len`), so short-term non-stationarity is removed from the attention scores while values keep it.
-- `PatchDownsample` pools queries to `long_count` tokens and cross-attends to the full patch sequence.
-- `CointegratedAttention` attends across variates at each patch position on the raw (non-stationary) tokens to model long-term cross-channel relations.
+- Each variate is cut into patches of one `period`; `IntegratedAttention` attends over a variate's patch tokens with queries and keys from the tokens minus a moving-average trend (`stable_len`), so short-term non-stationarity leaves the scores while values keep it.
+- `PatchDownsample` pools queries to `long_count` tokens and cross-attends to the full patch sequence to aggregate long context.
+- `CointegratedAttention` attends across variates at each downsampled position on the raw (non-stationary) tokens to model long-term cointegration.
 - `revin` normalizes the input; a flatten linear layer maps tokens to the horizon.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Multivariate series with short-term fluctuations and long-term trends, where removing non-stationarity everywhere would hide cross-variate cointegration; the paper also reports strong results on CSI 500 and S&P 500.
+- Data with a known period that sets the patch length.
+- Moderate channel counts: cross-variate attention is quadratic in `enc_in`.
+- Not when calendar marks or covariates matter (not used), or for probabilistic output.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2410.04442); title: TimeBridge: Non-Stationarity Matters for Long-term Time Series Forecasting; venue/year: ICML 2025 / 2025
-- [codebase](https://github.com/Hank0626/TimeBridge); revision: `0f9a83fbc3e1260c9ddd527c522dff0ce4b9554b`; license: `MIT`
+- `enc_in`: number of channels.
+- `period`: patch length in steps; the dataset's dominant period (24 for hourly daily cycles).
+- `num_p`: number of period patches; defaults to `ceil(seq_len / period)`. A smaller value uses only the last `num_p * period` steps; a larger one replicate-pads the lookback on the left.
+- `stable_len`: moving-average window for detrending queries/keys; also sets `long_count = num_p // stable_len` downsampled tokens.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/TimeBridge.toml`](../../../../configs/models/TimeBridge.toml).
+Other hyperparameters: preset defaults in `configs/models/TimeBridge.toml`; tune generically.
 
 ## Differences
 
-**Paper-driven local implementation.** The implementation follows Equations
-(3)–(10): moving-average detrending supplies stationary queries and keys for
-intra-variate Integrated Attention while original patches remain values;
-attention downsampling aggregates long context; Cointegrated Attention then
-mixes variates without removing non-stationarity. Calendar marks are not part
-of this local contract. The external repository is reference-only; no source
-file was copied or adapted.
-
-## Shared components
-
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `period=24`, `num_p=2`, `ia_layers=2`, `pd_layers=1`, `ca_layers=2`, `stable_len=3`, `d_model=16`, `n_heads=4`, `d_ff=128`, `attn_dropout=0.15`, `dropout=0.0`, `activation='gelu'`, `revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: TimeBridge: Non-Stationarity Matters for Long-term Time Series Forecasting
-- **Venue**: ICML 2025
-- **Published**: 2025 (arXiv: 2024-10)
-- **arXiv**: https://arxiv.org/abs/2410.04442
-
-## Abstract
-Non-stationarity poses significant challenges for multivariate time series forecasting due to the inherent short-term fluctuations and long-term trends that can lead to spurious regressions or obscure essential long-term relationships. Most existing methods either eliminate or retain non-stationarity without adequately addressing its distinct impacts on short-term and long-term modeling. Eliminating non-stationarity is essential for avoiding spurious regressions and capturing local dependencies in short-term modeling, while preserving it is crucial for revealing long-term cointegration across variates. In this paper, we propose TimeBridge, a novel framework designed to bridge the gap between non-stationarity and dependency modeling in long-term time series forecasting. By segmenting input series into smaller patches, TimeBridge applies Integrated Attention to mitigate short-term non-stationarity and capture stable dependencies within each variate, while Cointegrated Attention preserves non-stationarity to model long-term cointegration across variates. Extensive experiments show that TimeBridge consistently achieves state-of-the-art performance in both short-term and long-term forecasting. Additionally, TimeBridge demonstrates exceptional performance in financial forecasting on the CSI 500 and S&P 500 indices, further validating its robustness and effectiveness. Code is available at https://github.com/Hank0626/TimeBridge.
-
-## In TSFLab
-Default config: `configs/models/TimeBridge.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Source and verification
-
-**Paper-driven local implementation.** The implementation follows Equations
-(3)–(10): moving-average detrending supplies stationary queries and keys for
-intra-variate Integrated Attention while original patches remain values;
-attention downsampling aggregates long context; Cointegrated Attention then
-mixes variates without removing non-stationarity. Calendar marks are not part
-of this local contract. The external repository is reference-only; no source
-file was copied or adapted.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/icml/LiuWHL0BX25,
-  author       = {Peiyuan Liu and
-                  Beiliang Wu and
-                  Yifan Hu and
-                  Naiqi Li and
-                  Tao Dai and
-                  Jigang Bao and
-                  Shu{-}Tao Xia},
-  editor       = {Aarti Singh and
-                  Maryam Fazel and
-                  Daniel Hsu and
-                  Simon Lacoste{-}Julien and
-                  Felix Berkenkamp and
-                  Tegan Maharaj and
-                  Kiri Wagstaff and
-                  Jerry Zhu},
-  title        = {TimeBridge: Non-Stationarity Matters for Long-term Time Series Forecasting},
-  booktitle    = {Forty-second International Conference on Machine Learning, {ICML}
-                  2025, Vancouver, BC, Canada, July 13-19, 2025},
-  series       = {Proceedings of Machine Learning Research},
-  publisher    = {{PMLR} / OpenReview.net},
-  year         = {2025},
-  url          = {https://proceedings.mlr.press/v267/liu25cb.html},
-  timestamp    = {Thu, 26 Feb 2026 08:16:33 +0100},
-  biburl       = {https://dblp.org/rec/conf/icml/LiuWHL0BX25.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Paper-driven local implementation of Equations (3)-(10); the external repository is reference-only and no source was copied or adapted.
+- Calendar marks are not part of this local contract.

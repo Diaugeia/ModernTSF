@@ -31,6 +31,8 @@ class Resources(StrictConfig):
     min_free_memory_mb: int = Field(default=0, ge=0)
     wait_timeout_minutes: float = Field(default=30, gt=0)
     min_free_disk_gb: float = Field(default=0.1, ge=0)
+    # Caps OpenMP/MKL/OpenBLAS threads in each run process; None keeps library defaults.
+    threads_per_run: int | None = Field(default=None, ge=1)
 
 
 class Recovery(StrictConfig):

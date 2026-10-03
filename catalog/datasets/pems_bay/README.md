@@ -1,33 +1,6 @@
 ---
 name: "pems_bay"
-kind: "dataset"
-summary: "PEMS-BAY: 5-minute traffic speed from 325 Caltrans PeMS sensors in the San Francisco Bay Area (first half of 2017), packaged by the DCRNN authors."
-domain: "Transport / road traffic"
-tags: ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems_bay", "speed", "bay-area", "dcrnn", "pems-bay"]
-source: "Caltrans PeMS; packaged by Li, Yu, Shahabi and Liu (DCRNN)"
-source_url: "https://github.com/liyaguang/DCRNN"
-citation: "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018)"
-citation_url: "https://arxiv.org/abs/1707.01926"
-license: "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
-redistribution: "conditional"
-frequency: "5-minute (5min)"
-time_span: "2017-01-01 to about 2017-06-30 (52,116 steps; the DCRNN paper text says to 2017-05-31)"
-length: 52116
-channels: 325
-channel_kind: "nodes"
-target: "traffic speed"
-missing_values: "not verified"
-protocol: "TSFLab: chronological 7:1:2 split, values unscaled by default (scale = false, calendar covariates kept raw); lookback 12, horizons 12"
-literature_protocol: "DCRNN: 12 steps in, 12 steps out (reported at 15/30/60 minutes), chronological 7:1:2, masked MAE/RMSE/MAPE"
-seq_lens: [12]
-pred_lens: [12]
-split: "7:1:2"
-stats_basis: "source-reported"
-related: ["metr_la", "pems04", "ultratraffic_ba_st"]
-config: "configs/datasets/pems_bay.toml"
-loader: "cauair_st"
-alias: "pems_bay"
-task_modes: ["spatiotemporal", "covariate"]
+description: "PEMS-BAY: 5-minute traffic speed at 325 Caltrans PeMS sensors in the San Francisco Bay Area (first half of 2017) with a sensor graph, the DCRNN benchmark. Use for graph-based spatiotemporal short-term (12-in/12-out) forecasting; not for long-horizon LTSF or comparison with masked-metric papers without masking."
 ---
 
 # pems_bay
@@ -36,78 +9,11 @@ task_modes: ["spatiotemporal", "covariate"]
 
 PEMS-BAY is a spatiotemporal traffic benchmark: 325 sensors recording traffic speed every five minutes over six months of 2017 (52,116 steps), with a sensor graph. The data come from Caltrans PeMS. In this repository it loads through the `cauair_st` node loader as a `(T, N, 3)` bundle (value, time-in-day, day-in-week) with an adjacency matrix, so graph and spatiotemporal models can use the road network.
 
-## Provenance and license
+## Protocol and pitfalls
 
-- Producer: DCRNN authors packaged Caltrans PeMS (Bay Area) data; repository https://github.com/liyaguang/DCRNN (code MIT per GitHub API). The README gives only Google Drive / Baidu links for `pems-bay.h5` and states no data license. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
-- Cite: Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018), https://arxiv.org/abs/1707.01926.
-- Obtain `pems-bay.h5` and `adj_mx_bay.pkl` from the DCRNN README; TSFLab does not ship them.
-
-## Structure and statistics
-
-| Item | Value | Basis |
-| --- | --- | --- |
-| Sensors | 325 | source-reported (DCRNN) |
-| Steps | 52,116 at 5 minutes | source-reported (TFB Table 5; file not re-counted) |
-| Span | paper: 2017-01-01 to 2017-05-31; step count implies to about 2017-06-30 | source-reported (conflicting) |
-| Quantity | traffic speed | source-reported |
-
-The preset reads a converted node bundle (`his.npz` with `data` shaped `(T, N, 3)`, `adj_mx.npy`, and `idx_train/val/test.npy`) produced by `tsf data prepare --from traffic`; the repository neither ships nor pins it, so the numbers above are those of the public distribution, and the converted bundle must be inspected before use.
-
-## Standard protocol and known pitfalls
-
-- **Protocol.** DCRNN predicts 12 steps from 12 steps with a 70/10/20 split; the `[12]` fields above are that protocol, not a preset default. The DCRNN paper's date range conflicts with its step count (52,116 steps is about 181 days, i.e. January to June).
+- **Protocol.** DCRNN predicts 12 steps from 12 steps with a 70/10/20 split; the preset's `seq_lens`/`pred_lens` of 12 record that protocol. The DCRNN paper's date range conflicts with its step count (52,116 steps is about 181 days, i.e. January to June).
 - **Bundle contract.** `input_dim = 3` keeps the value plus two calendar covariates (time-in-day, day-in-week) appended by `tsf data prepare --from traffic --add-time`; `scale = false` leaves values unscaled, so scale the value channel upstream or flip `scale` if the model expects z-scored input.
-- **Window split.** Window centres are split chronologically by `tsf data prepare --from traffic --splits` (default 0.7,0.1,0.2); the window indices depend on the converter's `--seq-len` and `--pred-len` (default 12 each, the PeMS 12-in/12-out protocol; rebuild the bundle to change either). The converter fits the `mean`/`std` in `his.npz` on the training rows only (rows before `train_end`, covering the training windows' history and targets) and records `seq_len`, `pred_len`, `train_end`, and the window counts in `his.npz` and `split.json`, so a `scale = true` variant does not use validation or test statistics. Bundles built by older converter versions (96/96 defaults, whole-series statistics) should be rebuilt.
+- **Window split.** `tsf data prepare --from traffic --splits` (default 0.7,0.1,0.2) splits window centres chronologically; the indices depend on the converter's `--seq-len` and `--pred-len` (default 12 each; rebuild the bundle to change either). The `mean`/`std` in `his.npz` are fitted on training rows only (before `train_end`), and `seq_len`, `pred_len`, `train_end` and window counts are recorded in `his.npz` and `split.json`, so `scale = true` uses no validation or test statistics. Rebuild bundles from older converters (96/96 defaults, whole-series statistics).
 - **Adjacency.** `adj_mx.npy` comes from the converter's `--adj` input; check how it was built before comparing graph models across papers.
 - **Metrics.** The repository evaluator has no masked-metric option; DCRNN-style papers mask zero (missing) targets, so unmasked numbers are not comparable.
 - **`drop_last`.** Loaders keep the last partial batch for every split.
-
-<!-- dataset-card:canonical:start -->
-## Loader and files
-
-- Registry loader: `cauair_st`
-- Config: [`configs/datasets/pems_bay.toml`](../../../configs/datasets/pems_bay.toml)
-- Local path: `./dataset/pems_bay`
-- Dataset id: `(not applicable)`
-- Track: `standard`
-
-## Input and output contract
-
-Each item is `(value_history, value_future, covariate_history, covariate_future)`; values use `[time, nodes]` and covariates `[time, nodes, features]` before batching. There are no separate timestamp marks: calendar information, when present, is carried by the covariates.
-
-Sequence length, label length, feature mode, and batch size are supplied by the
-experiment task unless explicitly overridden below.
-
-## Dataset parameters
-
-```json
-{
-  "input_dim": 3,
-  "npz_name": "his.npz",
-  "scale": false
-}
-```
-
-## Task overrides
-
-```json
-{}
-```
-
-## Preparation and use
-
-Inspect availability with `tsf data inspect --config configs/datasets/pems_bay.toml`. Not published. Convert a raw value array and adjacency into the node bundle with `tsf data prepare --from traffic --values <values.npz> --adj <adj> --output-dir ./dataset/pems_bay --add-time --freq-min <minutes>` (defaults: 12-step history and horizon, statistics fitted on the training rows only). Reference this preset from an experiment configuration rather than duplicating its loader parameters.
-
-## Composition constraints
-
-Task modes: `spatiotemporal`, `covariate`. Match one of them to the model's declared task mode; the
-config loader rejects other combinations. Change feature or scaling parameters
-only after reading the loader. Paths are repository defaults and may need local
-overrides; the card does not imply that the data is bundled.
-<!-- dataset-card:canonical:end -->
-
-## Related datasets
-
-- [`metr_la`](../metr_la/README.md): other DCRNN speed benchmark
-- [`pems04`](../pems04/README.md): flow benchmark for the same district (District 4) with the same loader
-- [`ultratraffic_ba_st`](../ultratraffic_ba_st/README.md): hourly flow for the same Bay Area district (District 4), 2023

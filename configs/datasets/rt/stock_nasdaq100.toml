@@ -8,6 +8,6 @@ path = "./dataset/realtime/stock_nasdaq100"
 
 [dataset.params]
 track = "stock_nasdaq100"
-# version is not pinned: no release of this track is available locally; pin the release used in a study.
+# version is not pinned here; pin the release used in a study via dataset.params.version.
 split_ratio = [0.7, 0.1, 0.2]
 scale = true

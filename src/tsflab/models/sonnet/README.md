@@ -1,130 +1,34 @@
 ---
 name: "Sonnet"
-summary: "Sonnet (Spectral Operator Neural Network) is a time series forecasting model for multivariate prediction. It applies learnable wavelet transformations to the input and incorporates spectral analysis using the Koopman operator. The core of its predictive skill is Multivariable Coherence Attention (MVCA), which leverages spectral coherence among variables to model inter-variable dependencies in the frequency domain, avoiding the pitfalls of naive self-attention for time series."
-paper: "https://arxiv.org/abs/2505.15312"
-paper_title: "Sonnet: Spectral Operator Neural Network for Multivariable Time Series Forecasting"
-venue: "AAAI 2026"
-year: 2026
-code: "https://github.com/ClaudiaShu/Sonnet"
-revision: "bf3d4801d34c5e7261718490f287c6fb15cadfdb"
-license: "NOASSERTION"
-tagline: "Learnable wavelet atoms, spectral-coherence attention across variables, and a unitary Koopman operator over atoms."
-tags: ["hybrid", "wavelet", "frequency", "koopman", "attention-variant", "channel-mixing"]
-composition: ["normalization=none", "decomposition=local:learnable-wavelet-atoms", "temporal=local:stable-koopman-operator-over-wavelet-atoms", "channel=local:multivariable-coherence-attention", "head=local:conv-decoder-adaptive-pool", "loss=loss:mse"]
+description: "Learnable wavelet atoms, spectral-coherence attention across variables, and a unitary Koopman operator over atoms, with a conv decoder. Use for multivariate data whose variables share frequency-domain dependencies; not for channel-independent data, level-shifting series (no instance norm), or probabilistic output."
 ---
+
 # Sonnet
 
-## Key ideas
+## Idea
 
+- Naive Transformers struggle to model relationships among variables over time; Sonnet uses learnable wavelets, Koopman spectral dynamics, and Multivariable Coherence Attention (MVCA).
 - `LearnableWavelets` builds `num_wavelets` damped-cosine atoms with learnable parameters and modulates the embedded series by each atom.
 - `SpectralCoherence` (MVCA) scores variable pairs by FFT magnitude-squared coherence of their query and key and uses it as the attention weight.
 - `StableKoopman` evolves the atom axis with a norm-preserving operator `U D U^H` (QR-orthonormalized, unit-modulus diagonal).
-- The evolved atoms are recombined, passed through a small conv decoder, and `adaptive_avg_pool1d` resamples to `pred_len`; there is no instance normalization.
+- Evolved atoms are recombined, passed through a small conv decoder, and `adaptive_avg_pool1d` resamples to `pred_len`; there is no instance normalization.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Multivariate data where variables are related through shared oscillatory components (spectral coherence), e.g. targets driven by other measured variables.
+- Oscillatory dynamics that a stable linear (Koopman) operator over wavelet atoms can evolve.
+- No instance normalization, so train/test level shifts are not compensated inside the model. Point forecasts only.
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2505.15312); title: Sonnet: Spectral Operator Neural Network for Multivariable Time Series Forecasting; venue/year: AAAI 2026 / 2026
-- [codebase](https://github.com/ClaudiaShu/Sonnet); revision: `bf3d4801d34c5e7261718490f287c6fb15cadfdb`; license: `NOASSERTION`
-
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/Sonnet.toml`](../../../../configs/models/Sonnet.toml).
+- `enc_in` follows the dataset channel count; it must equal it exactly (input embedding and decoder output width).
+- Other hyperparameters: preset defaults in `configs/models/Sonnet.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `sonnet/mts_model/models/Sonnet.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
+Clean-room rewrite after inspecting `sonnet/mts_model/models/Sonnet.py` at `ClaudiaShu/Sonnet@bf3d480` (no license, `NOASSERTION`); nothing copied. Equations (1)-(3) map to `LearnableWavelets` and `SpectralCoherence`; `StableKoopman` builds `U diag(exp(i p)) U*`; reconstruction multiplies and sums evolved states by their atoms before the three-layer conv decoder.
 
-Local implementation: confirmed.
+- The paper separates one endogenous target from exogenous variables via an alpha-controlled joint embedding; TSFLab embeds all channels jointly and forecasts all of them.
+- The decoder uses adaptive pooling for arbitrary horizons; dataset-specific target selection, alpha splits, and the original training/evaluation harness are not included.
 
-This clean-room rewrite maps paper equations (1)--(3) to
-`LearnableWavelets` and `SpectralCoherence`. `StableKoopman` constructs the
-unitary-eigenbasis operator `U diag(exp(i p)) U*`, and reconstruction multiplies
-and sums the evolved states by their wavelet atoms before the three-layer
-convolutional decoder. The linked repository is reference-only; its source was
-inspected at the pinned revision; no external source code was copied.
-
-The paper separates one endogenous target from exogenous variables using an
-alpha-controlled joint embedding. TSFLab's symmetric multivariate contract
-instead embeds all channels jointly and forecasts all of them. The decoder uses
-adaptive pooling for arbitrary configured horizons; dataset-specific target
-selection, alpha splits, and the original training/evaluation harness remain
-outside this local implementation.
-
-## Shared components
-
-No cataloged shared component is imported; the architecture remains model-local.
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=16`, `num_wavelets=4`, `dropout=0.0`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Sonnet: Spectral Operator Neural Network for Multivariable Time Series Forecasting
-- **Venue**: AAAI 2026 (Oral)
-- **Published**: 2026 (arXiv: 2025-05)
-- **arXiv**: https://arxiv.org/abs/2505.15312
-
-## Abstract
-Multivariable time series forecasting methods can integrate information from exogenous variables, leading to significant prediction accuracy gains. The transformer architecture has been widely applied in various time series forecasting models due to its ability to capture long-range sequential dependencies. However, a naïve application of transformers often struggles to effectively model complex relationships among variables over time. To mitigate against this, we propose a novel architecture, termed Spectral Operator Neural Network (Sonnet). Sonnet applies learnable wavelet transformations to the input and incorporates spectral analysis using the Koopman operator. Its predictive skill relies on the Multivariable Coherence Attention (MVCA), an operation that leverages spectral coherence to model variable dependencies. Our empirical analysis shows that Sonnet yields the best performance on 34 out of 47 forecasting tasks with an average mean absolute error (MAE) reduction of 2.2% against the most competitive baseline. We further show that MVCA can remedy the deficiencies of naïve attention in various deep learning models, reducing MAE by 10.7% on average in the most challenging forecasting tasks.
-
-## Source and verification
-
-Pinned source inspection: `sonnet/mts_model/models/Sonnet.py` were examined at the recorded revision to confirm implementation details. The local module was written for TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-This clean-room rewrite maps paper equations (1)--(3) to
-`LearnableWavelets` and `SpectralCoherence`. `StableKoopman` constructs the
-unitary-eigenbasis operator `U diag(exp(i p)) U*`, and reconstruction multiplies
-and sums the evolved states by their wavelet atoms before the three-layer
-convolutional decoder. The linked repository is reference-only; its source was
-inspected at the pinned revision; no external source code was copied.
-
-The paper separates one endogenous target from exogenous variables using an
-alpha-controlled joint embedding. TSFLab's symmetric multivariate contract
-instead embeds all channels jointly and forecasts all of them. The decoder uses
-adaptive pooling for arbitrary configured horizons; dataset-specific target
-selection, alpha splits, and the original training/evaluation harness remain
-outside this local implementation.
-
-## In TSFLab
-Default config: `configs/models/Sonnet.toml`; model specification: `spec.py`; local runtime implementation: `model.py`.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/aaai/ShuL26,
-  author       = {Yuxuan Shu and
-                  Vasileios Lampos},
-  editor       = {Sven Koenig and
-                  Chad Jenkins and
-                  Matthew E. Taylor},
-  title        = {Sonnet: Spectral Operator Neural Network for Multivariable Time Series
-                  Forecasting},
-  booktitle    = {Fortieth {AAAI} Conference on Artificial Intelligence, Thirty-Eighth
-                  Conference on Innovative Applications of Artificial Intelligence,
-                  Sixteenth Symposium on Educational Advances in Artificial Intelligence,
-                  {AAAI} 2026, Singapore, January 20-27, 2026},
-  pages        = {25419--25427},
-  publisher    = {{AAAI} Press},
-  year         = {2026},
-  url          = {https://doi.org/10.1609/aaai.v40i30.39736},
-  doi          = {10.1609/AAAI.V40I30.39736},
-  timestamp    = {Wed, 25 Mar 2026 16:59:58 +0100},
-  biburl       = {https://dblp.org/rec/conf/aaai/ShuL26.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Shu, Lampos, "Sonnet: Spectral Operator Neural Network for Multivariable Time Series Forecasting", AAAI 2026, doi:10.1609/aaai.v40i30.39736 (arXiv:2505.15312).

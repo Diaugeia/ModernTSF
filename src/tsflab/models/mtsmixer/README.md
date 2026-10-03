@@ -1,113 +1,34 @@
 ---
 name: "MTSMixer"
-summary: "MTSMixer is an MLP-Mixer-based model for multivariate time-series forecasting that replaces Transformer attention with two factorised mixing modules: one captures temporal dependencies and another captures cross-channel dependencies, avoiding the entanglement and redundancy introduced by joint attention. It also explicitly models the input-to-prediction mapping, yielding strong accuracy with significantly lower computational cost than Transformer-based baselines."
-paper: "https://arxiv.org/abs/2302.04501"
-paper_title: "MTS-Mixers: Multivariate Time Series Forecasting via Factorized Temporal and Channel Mixing"
-venue: "IJCNN 2025"
-year: 2025
-code: "https://github.com/plumprc/MTS-Mixers"
-revision: "262448f00cf8b7e0ee38ef2ca510cc70ed4b8dc8"
-license: "NOASSERTION"
-tagline: "MLP-Mixer with factorized temporal subsequence mixing and bottlenecked channel mixing, under RevIN."
-tags: ["mlp", "mixer", "channel-mixing", "normalization", "lightweight"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=local:factorized-subsequence-mlp-mixer", "channel=local:channel-interaction-bottleneck-mlp", "head=component:channel_wise_linear", "loss=loss:mse"]
+description: "Attention-free MLP mixer with factorized temporal mixing over interleaved subsequences and a low-rank channel bottleneck, under RevIN. Use for multivariate forecasting with redundant, correlated channels on a tight budget; not for exogenous inputs, univariate data, or probabilistic output."
 ---
+
 # MTSMixer
 
-## Key ideas
+## Idea
 
-- `TemporalSubsequenceMixer` splits the time axis into `sampling` interleaved subsequences and gives each its own MLP (`fac_T`).
-- `ChannelInteraction` mixes channels through a narrow `d_ff` bottleneck instead of attention (`fac_C`).
+- `TemporalSubsequenceMixer` splits the time axis into `sampling` interleaved subsequences and gives each its own MLP (`fac_T`), replacing attention for temporal dependence.
+- `ChannelInteraction` mixes channels through a narrow `d_ff` bottleneck (`fac_C`), exploiting redundancy among channels.
 - `FactorizedMixerBlock` adds temporal and channel residuals in sequence with optional LayerNorm.
 - `channel_wise_linear` maps `seq_len` to `pred_len` after the blocks; `revin` (no affine) normalizes the input.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Multivariate data whose channels are redundant or low-rank (few principal components): the factorized channel bottleneck mixes them cheaply.
+- Tight compute budgets: MLP-only, no attention; the paper reports higher efficiency than Transformer forecasters.
+- Not for univariate data with `fac_C` on (the rank must be below the channel count), exogenous or calendar inputs (marks are ignored), or quantile output (point forecast only).
 
-## Paper and code
+## Configure
 
-- [paper](https://arxiv.org/abs/2302.04501); title: MTS-Mixers: Multivariate Time Series Forecasting via Factorized Temporal and Channel Mixing; venue/year: IJCNN 2025 / 2025
-- [codebase](https://github.com/plumprc/MTS-Mixers); revision: `262448f00cf8b7e0ee38ef2ca510cc70ed4b8dc8`; license: `NOASSERTION`
+- `enc_in`: must equal the dataset's channel count.
+- `d_ff`: channel-bottleneck rank; with `fac_C = true` it must be smaller than `enc_in`.
+- `sampling`: number of interleaved temporal subsequences; at most `seq_len` (with `fac_T = true`).
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/MTSMixer.toml`](../../../../configs/models/MTSMixer.toml).
+Other hyperparameters: preset defaults in `configs/models/MTSMixer.toml`; tune generically.
 
 ## Differences
 
-Pinned source inspection: `models/MTSMixer.py` was examined at the recorded
-revision to confirm implementation details. The local module was written for
-TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-Local implementation confirmed from paper equations (3), (6), and (8); the unlicensed reference repository was inspected at the pinned revision; no external source code was copied. The default uses equidistant interleaved temporal subsequences, independent temporal MLPs, a low-rank channel bottleneck, residual composition, RevIN, and a direct history-to-horizon projection. Attention/random-matrix variants and SVD/NMF refinement are omitted; GELU, pre-LayerNorm, and the compact forecast-only runtime are disclosed local choices rather than benchmark-reference comparison claims.
-
-Component audit (`mixer_block`): `FactorizedMixerBlock` normalizes over the channel axis only (not the joint `(seq_len, channels)` shape), mixes through the subsequence-grouped `TemporalSubsequenceMixer` (Eq. 6) instead of a single dense time projection, and uses a low-rank `ChannelInteraction` bottleneck (Eq. 8) instead of the hidden-width feature MLP; it is not the same operator and stays model-local.
-
-## Shared components
-
-- [`channel_wise_linear`](../_components/channel_wise_linear/README.md)
-- [`revin`](../_components/revin/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `d_model=64`, `d_ff=4`, `e_layers=2`, `fac_T=True`, `fac_C=True`, `sampling=2`, `norm=True`, `individual=False`, `rev=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: MTS-Mixers: Multivariate Time Series Forecasting via Factorized Temporal and Channel Mixing
-- **Venue**: IJCNN 2025
-- **Published**: 2025 (arXiv: 2023-02)
-- **arXiv**: https://arxiv.org/abs/2302.04501
-
-## Abstract
-Multivariate time series forecasting has been widely used in various practical scenarios. Recently, Transformer-based models have shown significant potential in forecasting tasks due to the capture of long-range dependencies. However, recent studies in the vision and NLP fields show that the role of attention modules is not clear, which can be replaced by other token aggregation operations. This paper investigates the contributions and deficiencies of attention mechanisms on the performance of time series forecasting. Specifically, we find that (1) attention is not necessary for capturing temporal dependencies, (2) the entanglement and redundancy in the capture of temporal and channel interaction affect the forecasting performance, and (3) it is important to model the mapping between the input and the prediction sequence. To this end, we propose MTS-Mixers, which use two factorized modules to capture temporal and channel dependencies. Experimental results on several real-world datasets show that MTS-Mixers outperform existing Transformer-based models with higher efficiency.
-
-## In TSFLab
-Default config: `configs/models/MTSMixer.toml`; model specification: `spec.py`; implementation: `model.py`.
-
-## Verification
-
-Pinned source inspection: `models/MTSMixer.py` was examined at the recorded
-revision to confirm implementation details. The local module was written for
-TSFLab; no external source file is copied.
-
-Local implementation: confirmed.
-
-Local implementation confirmed from paper equations (3), (6), and (8); the unlicensed reference repository was inspected at the pinned revision; no external source code was copied. The default uses equidistant interleaved temporal subsequences, independent temporal MLPs, a low-rank channel bottleneck, residual composition, RevIN, and a direct history-to-horizon projection. Attention/random-matrix variants and SVD/NMF refinement are omitted; GELU, pre-LayerNorm, and the compact forecast-only runtime are disclosed local choices rather than benchmark-reference comparison claims.
-
-Component audit (`mixer_block`): `FactorizedMixerBlock` normalizes over the channel axis only (not the joint `(seq_len, channels)` shape), mixes through the subsequence-grouped `TemporalSubsequenceMixer` (Eq. 6) instead of a single dense time projection, and uses a low-rank `ChannelInteraction` bottleneck (Eq. 8) instead of the hidden-width feature MLP; it is not the same operator and stays model-local.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/ijcnn/LiLRPX25,
-  author       = {Zhe Li and
-                  Xuanxuan Li and
-                  Zhongwen Rao and
-                  Lujia Pan and
-                  Zenglin Xu},
-  title        = {MTS-Mixers: Multivariate Time Series Forecasting via Factorized Temporal
-                  and Channel Mixing},
-  booktitle    = {International Joint Conference on Neural Networks, {IJCNN} 2025, Rome,
-                  Italy, June 30 - July 5, 2025},
-  pages        = {1--8},
-  publisher    = {{IEEE}},
-  year         = {2025},
-  url          = {https://doi.org/10.1109/IJCNN64981.2025.11229402},
-  doi          = {10.1109/IJCNN64981.2025.11229402},
-  timestamp    = {Fri, 21 Nov 2025 20:23:55 +0100},
-  biburl       = {https://dblp.org/rec/conf/ijcnn/LiLRPX25.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+- Local implementation from paper Eqs. (3), (6), and (8); the unlicensed reference repository (`models/MTSMixer.py`) was inspected at the pinned revision, nothing copied.
+- Default variant only: equidistant interleaved subsequences, independent temporal MLPs, low-rank channel bottleneck, residual composition, RevIN, and a direct history-to-horizon projection. Attention and random-matrix variants and SVD/NMF refinement are omitted.
+- GELU, pre-LayerNorm, and the forecast-only runtime are local choices.
+- `FactorizedMixerBlock` is not the cataloged `mixer_block`: it normalizes over channels only, groups temporal mixing by subsequence (Eq. 6), and uses a low-rank channel bottleneck (Eq. 8), so it stays model-local.

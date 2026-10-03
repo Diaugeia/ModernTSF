@@ -1,119 +1,35 @@
 ---
 name: "FEDformer"
-summary: "FEDformer is a Transformer-based model for long-term multivariate and univariate time-series forecasting that combines seasonal-trend decomposition with a frequency-enhanced attention mechanism. The decomposition component captures the global profile of the series while Transformer blocks model finer-grained structure; exploiting the sparse Fourier representation of most time series yields linear complexity in sequence length, making FEDformer more efficient than standard Transformers."
-paper: "https://proceedings.mlr.press/v162/zhou22g.html"
-paper_title: "FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting"
-venue: "ICML 2022"
-year: 2022
-code: "https://github.com/MAZiqing/FEDformer"
-revision: "c0f6b972def125691434d62be1ecadf710ae921a"
-license: "MIT"
-tagline: "Fourier-enhanced block and frequency cross-attention in a progressive seasonal-trend decomposition encoder-decoder."
-tags: ["transformer", "frequency", "decomposition", "attention-variant", "channel-mixing", "long-horizon"]
-composition: ["normalization=none", "decomposition=component:series_decomposition", "temporal=local:fourier-enhanced-block-and-frequency-attention", "channel=component:forecast_embedding", "head=local:seasonal-projection-plus-accumulated-trend", "loss=loss:mse"]
+description: "Encoder-decoder Transformer with Fourier-enhanced blocks and frequency cross-attention on a few selected modes, inside progressive seasonal-trend decomposition. Use for long-term forecasting of series with a sparse Fourier representation and a global trend; not for strongly irregular or noise-like series."
 ---
+
 # FEDformer
 
-## Key ideas
+## Idea
 
-- Replaces self-attention with `FrequencyEnhancedBlock`: rFFT, a learned per-head complex kernel on a selected subset of modes, then irFFT (`mode_select` low or random).
-- `FrequencyEnhancedAttention` does decoder cross-attention on the selected Fourier modes of queries, keys and values with a tanh score.
-- Applies `series_decomposition` after every encoder and decoder sub-layer; the decoder accumulates three projected trend updates per layer on top of a mean-initialized trend.
-- Only the Fourier variant is implemented (no wavelet); channels are mixed in the value embedding (`forecast_embedding`).
+- `FrequencyEnhancedBlock` replaces self-attention: rFFT, a learned per-head complex kernel on a selected subset of modes (`mode_select` low or random), then irFFT (Eqs. 3-4).
+- `FrequencyEnhancedAttention` does decoder cross-attention on the selected Fourier modes of queries, keys and values with a tanh score (Eqs. 6-7).
+- `series_decomposition` follows every encoder and decoder sub-layer; the decoder accumulates three projected trend updates per layer on a mean-initialized trend (shared `decomposition_encdec` scaffold with `autoformer`).
+- Channels are mixed in the value embedding (`forecast_embedding`, with calendar marks).
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- Designed for long-term forecasting where decomposition captures the global profile (trend) and a sparse set of Fourier modes captures the seasonal detail.
+- Linear complexity in sequence length (fixed number of modes), cheaper than full attention on long inputs.
+- Channels are embedded jointly; on many weakly correlated channels, channel-independent models are often preferable.
 
-## Paper and code
+## Configure
 
-- [paper](https://proceedings.mlr.press/v162/zhou22g.html); title: FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting; venue/year: ICML 2022 / 2022
-- [codebase](https://github.com/MAZiqing/FEDformer); revision: `c0f6b972def125691434d62be1ecadf710ae921a`; license: `MIT`
+- `enc_in`, `dec_in`, `c_out`: number of channels; all three must match.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/FEDformer.toml`](../../../../configs/models/FEDformer.toml).
+Other hyperparameters: preset defaults in `configs/models/FEDformer.toml`; tune generically.
 
 ## Differences
 
-**Clean-room implementation: confirmed.** `FrequencyEnhancedBlock` maps paper
-Eqs. (3)-(4), `FrequencyEnhancedAttention` maps Eqs. (6)-(7), and decoder
-decomposition accumulates three trend updates per layer. Inputs are
-`[B, seq_len, enc_in]` with optional six-column marks; outputs are
-`[B, pred_len, c_out]`. Only Fourier mode is implemented, using head-local
-complex kernels and deterministic random mode sets; wavelet, checkpoint, and
-published-metric reference comparison are not claimed.
+Clean-room implementation; `MAZiqing/FEDformer` at `c0f6b972` (MIT) is reference only, nothing copied.
 
-## Shared components
+- Only the Fourier variant is implemented (no wavelet), with head-local complex kernels and deterministic random mode sets.
+- Inputs `[B, seq_len, enc_in]` with optional six-column marks; outputs `[B, pred_len, c_out]`.
+- No checkpoint or published-metric reference comparison is claimed.
 
-- [`forecast_embedding`](../_components/forecast_embedding/README.md)
-- [`series_decomposition`](../_components/series_decomposition/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `dec_in=7`, `c_out=7`, `d_model=512`, `n_heads=8`, `e_layers=2`, `d_layers=1`, `d_ff=2048`, `moving_avg=25`, `dropout=0.1`, `activation='gelu'`, `mode_select='random'`, `modes=32`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting
-- **Venue**: ICML 2022
-- **Published**: 2022 (arXiv: 2022-01)
-- **arXiv**: https://arxiv.org/abs/2201.12740
-
-## Abstract
-Although Transformer-based methods have significantly improved state-of-the-art results for long-term series forecasting, they are not only computationally expensive but more importantly, are unable to capture the global view of time series (e.g. overall trend). To address these problems, we propose to combine Transformer with the seasonal-trend decomposition method, in which the decomposition method captures the global profile of time series while Transformers capture more detailed structures. To further enhance the performance of Transformer for long-term prediction, we exploit the fact that most time series tend to have a sparse representation in well-known basis such as Fourier transform, and develop a frequency enhanced Transformer. Besides being more effective, the proposed method, termed as Frequency Enhanced Decomposed Transformer (FEDformer), is more efficient than standard Transformer with a linear complexity to the sequence length. Our empirical studies with six benchmark datasets show that compared with state-of-the-art methods, FEDformer can reduce prediction error by 14.8% and 22.6% for multivariate and univariate time series, respectively.
-
-## In TSFLab
-Default config: `configs/models/FEDformer.toml`; model specification: `spec.py`;
-clean-room implementation: `model.py`. The linked MIT repository remains
-`reference-only`; its source was not copied. Structural and runtime evidence is
-generated by `uv run tsf model verify FEDformer`.
-
-## Verification
-
-**Clean-room implementation: confirmed.** `FrequencyEnhancedBlock` maps paper
-Eqs. (3)-(4), `FrequencyEnhancedAttention` maps Eqs. (6)-(7), and decoder
-decomposition accumulates three trend updates per layer. Inputs are
-`[B, seq_len, enc_in]` with optional six-column marks; outputs are
-`[B, pred_len, c_out]`. Only Fourier mode is implemented, using head-local
-complex kernels and deterministic random mode sets; wavelet, checkpoint, and
-published-metric reference comparison are not claimed.
-
-## Citation
-
-```bibtex
-@inproceedings{DBLP:conf/icml/ZhouMWW0022,
-  author       = {Tian Zhou and
-                  Ziqing Ma and
-                  Qingsong Wen and
-                  Xue Wang and
-                  Liang Sun and
-                  Rong Jin},
-  editor       = {Kamalika Chaudhuri and
-                  Stefanie Jegelka and
-                  Le Song and
-                  Csaba Szepesv{\'{a}}ri and
-                  Gang Niu and
-                  Sivan Sabato},
-  title        = {FEDformer: Frequency Enhanced Decomposed Transformer for Long-term
-                  Series Forecasting},
-  booktitle    = {International Conference on Machine Learning, {ICML} 2022, 17-23 July
-                  2022, Baltimore, Maryland, {USA}},
-  series       = {Proceedings of Machine Learning Research},
-  pages        = {27268--27286},
-  publisher    = {{PMLR}},
-  year         = {2022},
-  url          = {https://proceedings.mlr.press/v162/zhou22g.html},
-  timestamp    = {Thu, 23 Jan 2025 19:51:39 +0100},
-  biburl       = {https://dblp.org/rec/conf/icml/ZhouMWW0022.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-```
+Citation: Zhou, T., Ma, Z., Wen, Q., Wang, X., Sun, L., Jin, R. "FEDformer: Frequency Enhanced Decomposed Transformer for Long-term Series Forecasting." ICML 2022, PMLR 162, pp. 27268-27286. arXiv:2201.12740.

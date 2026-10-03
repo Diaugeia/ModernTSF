@@ -35,6 +35,10 @@ def launch_run(path, policy, gpus, attempt, log):
         TSFLAB_ATTEMPT=str(attempt),
         TSFLAB_CONTROLLER_PID=str(os.getpid()),
     )
+    threads = policy.resources.threads_per_run
+    if threads:
+        for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+            env[name] = str(threads)
     if gpus:
         env["CUDA_VISIBLE_DEVICES"] = ",".join(gpus)
         env["TSFLAB_ASSIGNED_GPUS"] = str(len(gpus))

@@ -1,14 +1,14 @@
 ---
 name: add-model
-description: "Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, model card, spec, preset, verification manifest, and tests. Use for adding or replacing one locally implemented model; not for paper discovery, foundation checkpoints, or placeholder entries."
+description: "Turn one forecasting paper into an admitted flat-catalog model, from structure extraction and component decisions through local implementation, card, spec, preset, and admission. Use for adding or replacing one locally implemented model; not for paper discovery, foundation checkpoints, or placeholder entries."
 ---
 
 # Add a model
 
 Models module, step two: create one flat catalog entry and admit it atomically once
-it is implemented and verified. Models and methods are peers; no family directories.
-Its cards (tagline, tags, composition, Key ideas) are the model context AutoResearch
-retrieves.
+it is implemented. Models and methods are peers; no family directories. Its card
+(description, fits, composition, data_params, Idea) is the model context AutoResearch
+retrieves and `tsf catalog match` ranks.
 
 ## Inputs
 
@@ -37,18 +37,24 @@ retrieves.
    masking, residual order, initialization, state, and outputs before reusing.
 4. Implement locally per [references/implementation.md](references/implementation.md);
    replace every scaffold placeholder and never import another named model package.
-5. Fill the retrieval layer first (rules in STANDARDS "Progressive disclosure"):
-   `tagline`, `tags`, the six-slot `composition`, `## Key ideas`; then inputs/outputs,
-   links, local implementation, differences, components, and constraints. Put
-   provenance in README front matter; keep `spec.py` to construction and runtime facts.
-6. Add a preset (and a smoke preset when training is cheap), plus focused
-   paper/equation and reference checks in `verification/models.toml` and `tests/`.
-7. Admit atomically; admission registers the model, runs unified verification and
-   all audits, and rolls back on failure:
+5. Write the card (STANDARDS "Cards"). `card.toml`: `tags` (one family), `fits`
+   (vocabulary terms the method is designed for), `fidelity`, `[paper]`, `[code]`
+   with `reference_sources`, the six-slot `[composition]`, `[data_params]` for every
+   time-series-specific data-dependent parameter (`from` + `rule`; generic
+   hyperparameters stay in the preset), and `[[issues]]` for every paper or
+   official-code problem (bugs, mismatches, gaps, leakage, license), else
+   `issues_checked`; these findings are a contribution. `README.md`: `description`
+   (what; when to use and not), then Idea, When to use, Configure, Differences
+   (<= 60 lines; overflow to `reference.md`). Leave `[admission]` to the tools.
+6. Add a preset (and a smoke preset when training is cheap). Equation and reference
+   checks are part of implementation review, not a test suite; record what was
+   compared in Differences and the fidelity.
+7. Admit atomically; admission registers the model, runs the static audits, runs
+   the strict contract, writes `[admission]`, and rolls back on failure:
 
    ```bash
-   uv run tsf model add --name MyModel
-   uv run tsf repo cards        # if components or dataset cards changed
+   uv run tsf model add --name MyModel --verify
+   uv run tsf repo cards        # refresh generated pages
    uv run tsf repo check --audit
    ```
 
@@ -56,17 +62,19 @@ retrieves.
 
 - Module: Models.
 - Reads: component cards (L0 search, L1 interface) and dataset cards when inputs matter.
-- Produces: model card (tagline, tags, six-slot composition, Key ideas), spec, preset `configs/models/<Name>.toml`, evidence under `verification/evidence/`.
+- Produces: card (`card.toml` facts with fits, composition, data_params, `[admission]`; `README.md`), spec, preset `configs/models/<Name>.toml`.
 - Hands off to: `run-experiment` (preset), `run-autoresearch` (catalog search and compositions), `audit`.
 
 ## Success
 
-- One indexed card and runtime spec, a preset, passing evidence, truthful source
-  and artifact facts, and every reused component declared in `spec.py` and card.
-- Tests that pin catalog counts are updated to the new totals.
+- One audited card and runtime spec, a preset, `[admission]` status `passed`,
+  truthful source and artifact facts, and every reused component declared in
+  `spec.py` and the card composition.
 
 ## Stop and hand off
 
-- Generated placeholder code is never a catalog entry; stop if admission fails.
+- Generated placeholder code is never a catalog entry; stop if admission fails
+  (fix and rerun `tsf model verify MyModel`).
+  A declined paper goes into `catalog/declined.toml` (reason plus issues found).
 - Released pretrained runtimes use `integrate-foundation-model`; cross-model
   consolidation uses `curate-components`; do not widen into an unsolicited refactor.

@@ -54,7 +54,7 @@ SPEC = ModelSpec(
     model_card='src/tsflab/models/gts/README.md',
     smoke_config=None,
     capabilities=frozenset(['spatiotemporal']),
-    components=('channel_alignment', 'marks'),
+    components=('channel_alignment', 'graph_conv_gru', 'marks'),
     contract_task={'seq_len': 12, 'pred_len': 12, 'label_len': 0},
     training_objective=training_objective,
 )

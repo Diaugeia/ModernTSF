@@ -42,6 +42,6 @@ SPEC = ModelSpec(
     model_card='src/tsflab/models/dgcrn/README.md',
     smoke_config=None,
     capabilities=frozenset(['spatiotemporal']),
-    components=('marks',),
+    components=('graph_conv_gru', 'marks'),
     contract_task={'seq_len': 12, 'pred_len': 12, 'label_len': 0},
 )

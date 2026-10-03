@@ -1,0 +1,32 @@
+schema = "tsflab.card/1"
+kind = "dataset"
+name = "rt/grid_ercot"
+domain = "Energy / electricity load"
+tags = ["electricity", "load", "ercot", "texas", "weather-zones", "hourly", "real-time", "spatiotemporal"]
+related = ["rt/grid_eia_us", "electricity"]
+realtime_track = "grid_ercot"
+
+[source]
+name = "ERCOT hourly load by weather zone: Native_Load archives, then MIS report NP6-345-CD"
+url = "https://www.ercot.com/gridinfo/load/load_hist"
+citation = "n/a (no dataset paper; TSFLab real-time track)"
+citation_url = "n/a"
+license = "unknown"
+redistribution = "unknown"
+
+[shape]
+frequency = "hourly (1h)"
+time_span = "2019-01-01 onward (grows with each weekly release)"
+length = "grows weekly; bootstrap history starts 2019-01-01"
+channels = "8 (COAST, EAST, FWEST, NORTH, NCENT, SOUTH, SCENT, WEST)"
+channel_kind = "nodes"
+target = "hourly load per weather zone (megawatts per ERCOT; unit not re-measured)"
+missing_values = "none expected for the archive; the repeated hour of the autumn clock change is averaged"
+stats_basis = "source-reported"
+
+[protocol]
+protocol = "TSFLab static protocol on a frozen release: chronological 7:1:2 split, one z-score from the training rows, seq_len 168 and horizon 24 as in the real-time track; the live rolling rounds are the separate real-time evaluation"
+literature = ""
+split = "7:1:2"
+seq_lens = [168]
+pred_lens = [24]

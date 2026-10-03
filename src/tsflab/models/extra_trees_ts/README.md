@@ -1,84 +1,33 @@
 ---
 name: "ExtraTreesTS"
-summary: "ExtraTreesTS is an independent differentiable ensemble with frozen random axis-aligned splits and learned leaf forecasts."
-paper: "https://doi.org/10.1007/s10994-006-6226-1"
-paper_title: "Extremely Randomized Trees"
-venue: "Machine Learning 2006"
-year: 2006
-tagline: "Ensemble of soft decision trees with frozen random axis-aligned splits and learned leaf forecasts, trained by gradient."
-tags: ["tree", "ensemble", "baseline", "channel-mixing", "normalization"]
-composition: ["normalization=component:revin", "decomposition=none", "temporal=component:soft_tree+local:frozen-random-splits", "channel=local:flattened-channel-mixing", "head=local:mean-of-tree-leaf-forecasts", "loss=loss:mse"]
+description: "Ensemble of soft decision trees with frozen random axis-aligned splits over the flattened window and learned leaf forecasts, trained by gradient. Use as a cheap nonlinear tree-style baseline on small data; not as a faithful Extra-Trees or for long, many-channel windows."
 ---
+
 # ExtraTreesTS
 
-## Key ideas
+## Idea
 
 - Samples a feature axis and a threshold per split once from a seeded generator and freezes them (`fixed_split_weight`, `fixed_threshold` of `soft_tree`); only leaf forecasts are learned.
-- Routes the flattened `seq_len * enc_in` window softly through each tree (`SoftDecisionTree`) and averages the `num_estimators` trees' forecasts, so it is gradient-fit rather than the Extra-Trees algorithm.
+- Routes the flattened `seq_len * enc_in` window softly through each tree (`SoftDecisionTree`) and averages the `num_estimators` trees' forecasts.
 - Wraps the ensemble in reversible instance normalization (`revin`); no decomposition or channel-specific weights.
 
-<!-- model-card:canonical:start -->
-## Input and output
+## When to use
 
-The primary input is a history tensor shaped `[batch, 96, channels]`. The
-declared output contract is a `[batch, 96, channels]` point forecast.
+- A low-variance nonlinear baseline in the spirit of Extra-Trees (random splits trade a little bias for less variance), useful when training data is small.
+- Splits read any lag of any channel, so it can pick up cross-channel thresholds, but with few shallow trees it captures little temporal structure.
+- Each split sees one feature of a flattened window; very long or many-channel windows dilute the random splits.
 
-## Paper and code
+## Configure
 
-- [paper](https://doi.org/10.1007/s10994-006-6226-1); title: Extremely Randomized Trees; venue/year: Machine Learning 2006 / 2006
-- codebase: not available
+- `enc_in`: number of channels; split axes are drawn over `seq_len * enc_in` features.
 
-## Local implementation
-
-TSFLab implements the model locally after checking the paper and, when
-available, the pinned official codebase. Construction and runtime schema live
-in [`spec.py`](spec.py), the implementation lives in
-[`model.py`](model.py) (imported, strictly shared building blocks are listed
-under Shared components), and the default preset is
-[`configs/models/ExtraTreesTS.toml`](../../../../configs/models/ExtraTreesTS.toml).
+Other hyperparameters: preset defaults in `configs/models/ExtraTreesTS.toml`; tune generically.
 
 ## Differences
 
-This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../../verification/evidence/ExtraTreesTS.json`.
+Clean-room baseline; no external source inspected or copied.
 
-## Shared components
+- Feature axes and normalized thresholds are sampled once and frozen; only leaf forecasts are learned.
+- Soft routing and gradient fitting replace the Extra-Trees induction algorithm (random cut-points, full-sample unpruned trees); scikit-learn is not reproduced.
 
-- [`revin`](../_components/revin/README.md)
-- [`soft_tree`](../_components/soft_tree/README.md)
-
-## Configuration constraints
-
-The contract fixture uses `seq_len=96` and `pred_len=96`. Default
-model parameters are: `enc_in=7`, `num_estimators=24`, `tree_depth=2`, `threshold_range=1.0`, `temperature=1.0`, `random_seed=1733`, `use_revin=True`
-<!-- model-card:canonical:end -->
-
-## Paper
-- **Title**: Extremely Randomized Trees
-- **Venue**: Machine Learning 2006
-- **Published**: 2006
-- **arXiv**: N/A
-
-## Abstract
-Extremely Randomized Trees (Extra-Trees) is a tree-based ensemble learning method introduced by Geurts, Ernst, and Wehenkel (2006). Like Random Forests, it builds an ensemble of unpruned decision or regression trees from the full training set, but with two key differences that increase randomisation: (1) split points are chosen uniformly at random within each feature's range rather than by optimising an impurity criterion, and (2) all training samples are used for building each tree (no bootstrap). These two choices trade a small increase in bias for a substantial reduction in variance and a significant speedup in training. The method consistently achieves competitive accuracy with Random Forests and gradient-boosted trees across regression and classification benchmarks, while being considerably faster to train.
-
-## In TSFLab
-Default config: `configs/models/ExtraTreesTS.toml`; model specification: `spec.py`; clean-room implementation: `model.py`.
-
-## Verification
-
-This clean-room baseline samples feature axes and normalized thresholds once, freezes that split geometry, and learns only leaf forecasts. It uses soft routing and gradient fitting; it is not the Extra-Trees training algorithm and does not reproduce scikit-learn. No external source code was inspected or copied. Evidence is in `../../../../verification/evidence/ExtraTreesTS.json`.
-
-## Citation
-
-```bibtex
-@article{geurts2006extremely,
-  author  = {Pierre Geurts and Damien Ernst and Louis Wehenkel},
-  title   = {Extremely Randomized Trees},
-  journal = {Machine Learning},
-  volume  = {63},
-  number  = {1},
-  pages   = {3--42},
-  year    = {2006},
-  doi     = {10.1007/s10994-006-6226-1}
-}
-```
+Citation: Geurts, P., Ernst, D., Wehenkel, L. "Extremely Randomized Trees." Machine Learning 63(1), 3-42 (2006). doi:10.1007/s10994-006-6226-1.

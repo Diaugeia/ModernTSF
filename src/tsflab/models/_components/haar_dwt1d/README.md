@@ -1,19 +1,11 @@
 ---
 name: "haar_dwt1d"
-kind: "component"
-module: "tsflab.models._components.haar_dwt1d"
-summary: "Stateless single-level orthonormal Haar DWT along the last axis returning (approx, detail) of length ceil(T/2), with an exact inverse that can truncate odd-length padding."
-category: "decomposition"
-input: "x [..., T] (T >= 2); inverse: approx [..., M], detail [..., M] (same shape), optional length"
-output: "forward: (approx, detail) each [..., ceil(T/2)]; inverse: [..., 2M] or [..., length]"
-origin: "Haar wavelet sub-series mapping of SWIFT, Mapping Sub-series with Wavelet Decomposition Improves Time Series Forecasting (arXiv 2501.16178, 2025)"
-origin_models: ["swift"]
-tags: ["dwt", "haar", "sub-series", "wavelet", "lossless", "orthonormal", "odd-length-padding", "stateless", "decimated"]
+description: "Stateless one-level orthonormal Haar DWT along the last axis returning (approx, detail) of length ceil(T/2), with an exact inverse that can truncate odd-length padding. Use for an exact one-level Haar split of [..., T] tensors; not for deeper pyramids or other wavelets (wavelet) or time-aligned sub-series."
 ---
 
 # haar_dwt1d
 
-## Purpose
+## What it does
 
 `HaarDWT1D` rotates adjacent sample pairs `(a, b)` into
 `approx = (a + b) / sqrt(2)` and `detail = (a - b) / sqrt(2)`.
@@ -22,14 +14,12 @@ tags: ["dwt", "haar", "sub-series", "wavelet", "lossless", "orthonormal", "odd-l
 and lossless; an odd-length input is first extended by replicating its last
 sample, and the inverse can truncate back with `length`.
 
-## Origin and granularity
+## When to use
 
-Extracted from `swift` (introduced in the automated intake commit `6b491e13`),
-where the forward transform splits the (reversible-normalized) window into
-sub-series, a small convolution fuses them, per-sub-series linear maps predict the
-output sub-series, and the inverse reconstructs the horizon. Only the Haar pair is
-here; the fusion convolution, the linear maps, and the `_half_length`
-bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
+Use for a stateless, exact one-level Haar split of `[..., T]` tensors where the
+caller tracks the original length. Do not use for deeper pyramids or
+non-Haar filters (use `wavelet`), or when sub-series must stay aligned
+with the time axis (the outputs are decimated by 2).
 
 ## Interface
 
@@ -45,63 +35,3 @@ bookkeeping stay in `swift`. For multi-level or longer filters use `wavelet`.
   rejected and returns the full reconstruction).
 - No parameters, buffers, or state-dict keys; no stored padding record, so the
   caller must remember the original length.
-
-## Invariants and equivalence evidence
-
-- `test_haar_dwt_round_trip_is_lossless_for_even_and_odd_lengths` in
-  `tests/test_frequency_wavelet_attention_forecasters.py` checks reconstruction
-  for lengths 8 and 9 on `[2, 3, T]` tensors.
-- `test_haar_dwt_matches_closed_form_on_a_known_pair` in the same file checks
-  `[2, 4, 6, 8]` against the closed form.
-- `tests/test_component_contracts_signal.py` (`test_haar_round_trip_and_shapes`,
-  `test_haar_energy_preserved_reference_and_grad`, `test_haar_errors`) checks
-  shapes for lengths 8 and 9, round trip, energy preservation (even length),
-  gradient flow, empty state dicts, and the two `ValueError` cases (`T = 1`,
-  mismatched shapes); a seeded regression, including an odd-length input, is
-  pinned by `tests/fixtures/components/haar_dwt1d.pt`.
-
-## Variants and options
-
-None. Single level, Haar only, last axis only, no boundary modes. For
-multi-level, db2/db4, or undecimated transforms see `wavelet`. Its
-`DecimatedWaveletTransform("haar")` uses the same filters and the same
-last-sample replication for odd lengths, so a single level should agree with
-this pair numerically (by inspection of the code; no test compares them), but it
-returns a list `[approx, detail]`, is a stateful module that remembers the
-padding for `reconstruct`, and does not need a `length` argument.
-
-## When to use and when not to use
-
-Use for a stateless, exact one-level Haar split of `[..., T]` tensors where the
-caller tracks the original length. Do not use for deeper pyramids or
-non-Haar filters (use `wavelet`), or when sub-series must stay aligned
-with the time axis (the outputs are decimated by 2).
-
-## Related components
-
-`wavelet` (multi-level, db2/db4, a-trous; overlaps at level 1 as described
-above), `series_decomposition` (moving-average trend/seasonal split, not
-decimated), `revin` (applied before the DWT in `swift`).
-
-<!-- component-card:generated:start -->
-## Public API
-
-Implementation: [`__init__.py`](__init__.py)
-
-- `HaarDWT1D()`
-  Forward single-level Haar DWT along the last axis.
-- `HaarIDWT1D()`
-  Inverse single-level Haar DWT along the last axis.
-
-```python
-from tsflab.models._components.haar_dwt1d import HaarDWT1D, HaarIDWT1D
-```
-
-## Retrieval terms
-
-`dwt`, `haar`, `sub-series`, `wavelet`
-
-## Current model consumers (1)
-
-`swift`
-<!-- component-card:generated:end -->
