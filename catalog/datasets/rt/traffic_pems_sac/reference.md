@@ -2,9 +2,10 @@
 
 ## Provenance and license
 
-- Source system: Caltrans PeMS (https://pems.dot.ca.gov), District 3. Its Conditions of Use say site information is in the public domain unless otherwise indicated; this is a generic policy, not a statement about the packaged data.
-- The 2019-2023 bootstrap history comes from the UltraTraffic_CL archive (publisher not identified in the repository; see `ultratraffic_sac_st`); weekly increments come from the PeMS clearinghouse `station_5min` files summed to hourly flow (free PeMS account).
-- `license` and `redistribution` are `unknown`; confirm the archive's terms before publishing a release or this preset's data.
+- Source system: Caltrans PeMS (https://pems.dot.ca.gov), District 3. The PeMS conditions of use (https://pems.dot.ca.gov/?view=tou) put the data in the public domain; `redistribution` is `allowed` with attribution to Caltrans PeMS.
+- History: the UltraTraffic_CL archive (inside `TrafficCL.zip`; publisher not identified, no paper or repository found) holds hourly total flow per station for region `PEMS_SAC`, one static panel per year from 2003 to 2023 (84 to 801 stations per year), plus continual-learning slices (2023: 110 added, 691 common stations). 2023 values range 0 to 13,783, mean 1,663.6 vehicles per hour (measured from the store).
+- Build the history store once with `uv run tsf data prepare --from ultratraffic --archive TrafficCL.zip` (written to `dataset/ultratraffic`, or `ULTRATRAFFIC_ROOT`); the track bootstrap reads the `static` panels from 2019 and keeps the 2023 station set. The archive has no station coordinates.
+- Weekly increments come from the PeMS clearinghouse `station_5min` files summed to hourly flow. They need a free PeMS account (`PEMS_USER`, `PEMS_PASSWORD`); without it the track keeps its history only.
 
 ## Structure and statistics
 
@@ -25,8 +26,7 @@ Measured from the local store `dataset/realtime/traffic_pems_sac` (read-only). W
 
 ## Related datasets
 
-- [`ultratraffic_sac_st`](../../ultratraffic_sac_st/README.md): the same district, 2023 only, loaded from the UltraTraffic store
-- [`ultratraffic_sac_ts`](../../ultratraffic_sac_ts/README.md): the same data with stations as plain channels
+- [`pems03`](../../pems03/README.md): 5-minute PeMS flow graph of District 3 (STSGCN)
 - [`rt/traffic_pems_ba`](../traffic_pems_ba/README.md): another PeMS district as a real-time preset
 - [`rt/traffic_pems_la`](../traffic_pems_la/README.md): another PeMS district as a real-time preset
 - [`rt/traffic_pems_sb`](../traffic_pems_sb/README.md): another PeMS district as a real-time preset

@@ -27,10 +27,6 @@ from tsflab.data.datasets.gift_eval import (
     _pandas_freq,
 )
 from tsflab.data.datasets.solar import Dataset_Solar
-from tsflab.data.datasets.ultratraffic import (
-    Dataset_UltraTraffic_ST,
-    Dataset_UltraTraffic_TS,
-)
 from tsflab.data.prepare.ultratraffic import convert
 from tsflab.data.ultratraffic_store import load_panel
 
@@ -392,7 +388,7 @@ def test_extract_series_reduces_and_caps_channels() -> None:
 
 
 # ---------------------------------------------------------------------------
-# UltraTraffic store and loader
+# UltraTraffic store (history of the real-time traffic tracks)
 # ---------------------------------------------------------------------------
 
 
@@ -431,22 +427,6 @@ def test_panel_station_policies(tmp_path: Path) -> None:
     inter = load_panel(root, "PEMS_SB", [2022, 2023], "static", "intersection")
     assert list(last.columns) == ["801", "803"] and last["803"].iloc[:10].isna().all()
     assert list(inter.columns) == ["801"]
-
-
-def test_datasets_follow_the_item_contracts(tmp_path: Path) -> None:
-    convert(_archive(tmp_path), tmp_path / "store")
-    kwargs = dict(root_path=str(tmp_path / "store"), data_path="", size=(24, 0, 12), region="PEMS_SB", years=[2023])
-    st = Dataset_UltraTraffic_ST(flag="train", **kwargs)
-    value_hist, value_fut, cov_hist, cov_fut = st[0]
-    assert value_hist.shape == (24, 2) and value_fut.shape == (12, 2)
-    assert cov_hist.shape == (24, 2, 2) and cov_fut.shape == (12, 2, 2)
-    assert st.num_nodes == 2 and st.adj_mx is None
-    test = Dataset_UltraTraffic_ST(flag="test", **kwargs)
-    assert test.idx.min() > st.idx.max()  # chronological, non-overlapping targets
-    ts = Dataset_UltraTraffic_TS(flag="val", **kwargs)
-    assert ts[0][2].shape == (24, 6)
-    restored = st.inverse_transform(value_hist)
-    assert abs(restored.mean() - 100.5) < 10
 
 
 def test_calendar_covariates() -> None:

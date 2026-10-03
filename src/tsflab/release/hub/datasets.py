@@ -2,8 +2,8 @@
 
 ``configs/hub/datasets.json`` maps every published file (a path relative to the
 local ``dataset/`` root) to the commit that holds it and its SHA-256. A preset's
-files are selected from its config ``path``; UltraTraffic presets narrow that to
-their region, variant, and years. Downloads use only the standard library;
+files are selected from its config ``path`` (a file or a directory subtree).
+Downloads use only the standard library;
 publishing requires ``huggingface_hub`` and explicit authorization.
 """
 
@@ -29,31 +29,9 @@ class Selection:
 
     preset: str
     base: str
-    region: str | None = None
-    variant: str | None = None
-    years: tuple[int, ...] = ()
 
     def matches(self, relative: str) -> bool:
-        if not self.region:
-            return relative == self.base or relative.startswith(self.base + "/")
-        root = self.base + "/"
-        if relative == root + "manifest.json":
-            return True
-        region = f"{root}{self.region}/"
-        if not relative.startswith(region):
-            return False
-        rest = relative[len(region):]
-        if "/" not in rest:  # region-level sidecars (sensor change logs)
-            return True
-        if not self.variant:
-            return True
-        from tsflab.data.ultratraffic_store import _FILES
-
-        template = _FILES[self.variant]
-        if not self.years:
-            return rest.startswith(template.split("/", 1)[0] + "/")
-        stems = {template.format(year=year).rsplit(".", 1)[0] for year in self.years}
-        return rest.rsplit(".", 1)[0] in stems
+        return relative == self.base or relative.startswith(self.base + "/")
 
 
 def selection(preset: str, root: Path | None = None) -> Selection:
@@ -65,16 +43,7 @@ def selection(preset: str, root: Path | None = None) -> Selection:
     path = str(dataset.get("path", ""))
     if not path.startswith(_DATASET_PREFIX):
         raise ValueError(f"preset {preset!r} has no downloadable files (path={path!r})")
-    base = path[len(_DATASET_PREFIX):].strip("/")
-    params = dataset.get("params", {})
-    region = params.get("region")
-    return Selection(
-        preset=preset,
-        base=base,
-        region=region,
-        variant=params.get("variant") if region else None,
-        years=tuple(int(year) for year in params.get("years", ())) if region else (),
-    )
+    return Selection(preset=preset, base=path[len(_DATASET_PREFIX):].strip("/"))
 
 
 def manifest_path(root: Path | None = None) -> Path:
@@ -132,6 +101,18 @@ def local_files(preset: str, data_root: Path = Path("dataset"), root: Path | Non
     return [name for name in names if chosen.matches(name) and not Path(name).name.startswith(".")]
 
 
+#: Redistribution classes whose files TSFLab may host; ``link-only`` and ``upstream`` never.
+REHOSTABLE = ("allowed", "conditional")
+
+
+def redistribution(preset: str, root: Path | None = None) -> str:
+    """The ``[source] redistribution`` class from the preset's dataset card."""
+    card = (root or repository_root()) / "catalog" / "datasets" / preset / "card.toml"
+    if not card.is_file():
+        return "unknown"
+    return str(tomllib.loads(card.read_text(encoding="utf-8")).get("source", {}).get("redistribution", "unknown"))
+
+
 def publish_presets(presets: list[str], data_root: Path = Path("dataset"),
                     repo_id: str = DEFAULT_STATIC_REPO, *, paths: tuple[str, ...] = (),
                     create: bool = False, private: bool = False,
@@ -143,6 +124,11 @@ def publish_presets(presets: list[str], data_root: Path = Path("dataset"),
     """
     if is_packaged_root(root or repository_root()):
         raise RuntimeError("publishing datasets requires a TSFLab checkout")
+    blocked = {preset: klass for preset in presets
+               if (klass := redistribution(preset, root)) not in REHOSTABLE}
+    if blocked:
+        raise PermissionError("not re-hostable (card [source] redistribution): "
+                              + ", ".join(f"{p}={k}" for p, k in sorted(blocked.items())))
     try:
         from huggingface_hub import HfApi
     except ImportError as exc:

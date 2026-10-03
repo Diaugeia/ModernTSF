@@ -1,7 +1,9 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "gift_eval/ett1_15T"
-domain = "Energy"
+domain = "energy"
+topic = "electricity transformer"
+benchmarks = ["gift-eval"]
 tags = ["gift-eval", "benchmark", "zero-shot", "foundation-model", "multivariate", "energy", "15min", "ett", "transformer", "oil-temperature"]
 related = ["etth1", "ettm1", "gift_eval/ett1_D", "gift_eval/ett1_H", "gift_eval/ett1_W"]
 
@@ -11,7 +13,7 @@ url = "https://github.com/zhouhaoyi/ETDataset"
 citation = "GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation (Aksu et al., 2024)"
 citation_url = "https://arxiv.org/abs/2410.10393"
 license = "CC-BY-ND-4.0"
-redistribution = "conditional"
+redistribution = "upstream"
 
 [shape]
 frequency = "15-minute (15min)"

@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "nasdaq"
-domain = "Finance / stock market"
+domain = "finance"
+topic = "stock market"
+benchmarks = ["tfb"]
 tags = ["stock", "nasdaq", "equity", "finance", "moving-average", "daily", "trading-days", "tfb", "multivariate", "short-series", "rsr"]
 related = ["nyse", "exchange", "rt/stock_sp500"]
+characteristics = ["multi-periodic", "non-stationary", "train-val-level-shift", "within-train-drift", "regime-changes", "high-cross-correlation", "short-train"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Feng et al., Temporal Relational Ranking for Stock Prediction, processed NASDAQ data (file NASDAQ_AMSWA_1.csv, from Google Finance end-of-day prices); TFB packaging by Qiu et al."
 url = "https://github.com/fulifeng/Temporal_Relational_Stock_Ranking"
 citation = "Temporal Relational Ranking for Stock Prediction (Feng et al., ACM Transactions on Information Systems 37(2), 2019)"
 citation_url = "https://arxiv.org/abs/1809.09441"
-license = "AGPL-3.0 (license of the Feng et al. repository that hosts the processed file); terms of the underlying Google Finance prices unknown"
-redistribution = "unknown"
+license = "Google Finance prices; no redistribution (the Feng et al. repository's AGPL-3.0 covers code)"
+license_url = "https://github.com/fulifeng/Temporal_Relational_Stock_Ranking"
+redistribution = "link-only"
 
 [shape]
 frequency = "daily trading days (1 business day; file dates are an integer row index)"

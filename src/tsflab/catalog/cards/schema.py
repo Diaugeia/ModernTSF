@@ -30,7 +30,15 @@ ISSUE_KINDS = ("code-bug", "paper-code-mismatch", "paper-error", "underspecified
                "leakage", "license")
 DATA_PARAM_SOURCES = ("period", "frequency", "channels", "nodes", "covariates", "seq_len", "pred_len",
                       "graph", "train-split")
-REDISTRIBUTION = ("allowed", "conditional", "restricted", "unknown")
+#: ``allowed``: attribution only; ``conditional``: extra conditions, stated in ``source.conditions``;
+#: ``link-only``: never re-hosted, users fetch the file from the source; ``upstream``: fetched
+#: from the upstream benchmark package (GIFT-Eval), never re-hosted.
+REDISTRIBUTION = ("allowed", "conditional", "link-only", "upstream")
+#: Application domain of a dataset (exactly one); ``mixed`` only for a dataset family.
+DOMAINS = ("energy", "transport", "environment", "finance", "healthcare", "cloud-web", "sales")
+FAMILY_DOMAINS = (*DOMAINS, "mixed")
+#: Benchmark suites a preset belongs to.
+BENCHMARKS = ("ltsf", "tfb", "st-graph", "gift-eval", "realtime")
 STATS_BASIS = ("measured", "source-reported", "mixed")
 CHANNEL_KINDS = ("channels", "nodes", "series", "stations")
 FIDELITY = ("reference-checked", "paper-only", "inferred", "composed")
@@ -167,7 +175,17 @@ class Source(_Strict):
     citation: str = Field(min_length=1)
     citation_url: str = Field(min_length=1)
     license: str = Field(min_length=1)
+    #: Evidence for ``license`` (terms page or license file).
+    license_url: str = ""
     redistribution: Literal[REDISTRIBUTION]  # type: ignore[valid-type]
+    #: Required when ``redistribution`` is ``conditional``: what a re-host must do.
+    conditions: str = ""
+
+    @model_validator(mode="after")
+    def _conditions(self) -> "Source":
+        if self.redistribution == "conditional" and not self.conditions.strip():
+            raise ValueError("conditional redistribution needs conditions")
+        return self
 
 
 class Shape(_Strict):
@@ -193,7 +211,10 @@ class DatasetCard(_Strict):
     schema_: Literal[SCHEMA] = Field(SCHEMA, alias="schema")  # type: ignore[valid-type]
     kind: Literal["dataset", "dataset-family"]
     name: str = Field(min_length=1)
-    domain: str = Field(min_length=1)
+    domain: Literal[FAMILY_DOMAINS]  # type: ignore[valid-type]
+    #: Free-text detail below the domain, e.g. "electricity transformer".
+    topic: str = ""
+    benchmarks: list[Literal[BENCHMARKS]] = []  # type: ignore[valid-type]
     tags: list[str] = Field(min_length=3)
     characteristics: list[str] = []
     characteristics_basis: str = ""
@@ -213,6 +234,10 @@ class DatasetCard(_Strict):
     def _basis(self) -> "DatasetCard":
         if self.characteristics and not self.characteristics_basis:
             raise ValueError("characteristics need characteristics_basis")
+        if self.domain == "mixed" and self.kind != "dataset-family":
+            raise ValueError(f"domain 'mixed' is only for a dataset family; choose one of {', '.join(DOMAINS)}")
+        if len(set(self.benchmarks)) != len(self.benchmarks):
+            raise ValueError("benchmarks must not repeat")
         return self
 
 

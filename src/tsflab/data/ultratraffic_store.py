@@ -1,6 +1,6 @@
 """Read the local UltraTraffic parquet store (torch-free).
 
-Shared by the ``ultratraffic_*`` datasets and the real-time traffic tracks.
+Read by the real-time traffic tracks (``traffic_pems_*``) to bootstrap their history.
 """
 
 from __future__ import annotations

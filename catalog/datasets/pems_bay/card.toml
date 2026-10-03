@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "pems_bay"
-domain = "Transport / road traffic"
+domain = "transport"
+topic = "road traffic"
+benchmarks = ["tfb", "st-graph"]
 tags = ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems_bay", "speed", "bay-area", "dcrnn", "pems-bay"]
-related = ["metr_la", "pems04", "ultratraffic_ba_st"]
+related = ["metr_la", "pems04", "rt/traffic_pems_ba"]
+characteristics = ["weak-seasonality", "heavy-tails", "outliers", "low-dimensional-channels", "weak-cross-correlation", "many-channels", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Caltrans PeMS; packaged by Li, Yu, Shahabi and Liu (DCRNN)"
 url = "https://github.com/liyaguang/DCRNN"
 citation = "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018)"
 citation_url = "https://arxiv.org/abs/1707.01926"
-license = "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
-redistribution = "conditional"
+license = "Public domain (Caltrans PeMS conditions of use)"
+license_url = "https://pems.dot.ca.gov/?view=tou"
+redistribution = "allowed"
 
 [shape]
 frequency = "5-minute (5min)"

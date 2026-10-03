@@ -301,9 +301,23 @@ Data has three non-overlapping layers:
   protocol, measured characteristics) and a short README with the pitfalls. Loader,
   files, and task modes are derived from the preset and code.
 
-There are 108 dataset presets: 84 conventional `time_series` presets (including the
-GIFT-Eval series) and 24 spatiotemporal or covariate presets; 16 presets under
-`rt/` are frozen releases of the real-time tracks. Every dataset has
+There are 93 dataset presets: 79 conventional `time_series` presets (including the
+GIFT-Eval series) and 14 spatiotemporal or covariate presets; 11 presets under
+`rt/` are frozen releases of the real-time tracks. Each card states one `domain`
+and the benchmark suites it belongs to (`benchmarks`: `ltsf`, `tfb`, `st-graph`,
+`gift-eval`, `realtime`):
+
+| Domain | Presets |
+| --- | --- |
+| `energy` (25) | `etth1`, `etth2`, `ettm1`, `ettm2`, `electricity`, `solar`, `wind`, `rt/grid_ercot`, `rt/solar_openmeteo_ghi`; GIFT-Eval `electricity_*` (4), `ett1_*` (4), `ett2_*` (4), `solar_*` (4) |
+| `transport` (18) | `traffic`, `pems03`, `pems04`, `pems07`, `pems08`, `pems_bay`, `metr_la`, `rt/traffic_pems_{ba,la,sac,sb}`; GIFT-Eval `LOOP_SEATTLE_*` (3), `M_DENSE_*` (2), `SZ_TAXI_*` (2) |
+| `environment` (16) | `weather`, `aqshunyi`, `aqwan`, `czelan`, `zafnoo`, `rt/air_airnow_us`, `rt/weather_openmeteo_temp`; GIFT-Eval `jena_weather_*` (3), `kdd_cup_2018_*` (2), `saugeenday_*` (3), `temperature_rain_with_missing` |
+| `finance` (14) | `exchange`, `fred_md`, `nasdaq`, `nyse`, `nn5`, `rt/stock_{hs300,nasdaq100,sp500}`; GIFT-Eval `m4_*` (6) |
+| `healthcare` (7) | `ili`, `covid19`; GIFT-Eval `covid_deaths`, `hospital`, `us_births_*` (3) |
+| `cloud-web` (9) | `wike2000`; GIFT-Eval `bitbrains_*` (4), `bizitobs_*` (4) |
+| `sales` (4) | GIFT-Eval `car_parts_with_missing`, `hierarchical_sales_*` (2), `restaurant` |
+
+Every dataset has
 exactly one TSFLab protocol, stated in its card (chronological split, scaling fitted
 on the training split only, lookbacks and horizons), so results on a dataset are
 comparable across models. Where the literature uses a different protocol, the card
@@ -328,12 +342,21 @@ uv run tsf catalog match etth1      # models and components that fit its charact
 uv run tsf data audit            # required facts, no placeholders
 ```
 
-`card.toml` is the quick reference (`[source]`, `[shape]`, `[protocol]`,
-`characteristics`, `related`, optionally `realtime_track`); the README adds the
-overview, protocol, and known pitfalls, and `reference.md` longer provenance or
-statistics. `license = "unknown"` means no explicit terms were found, not that
-redistribution is allowed. `stats_basis` says whether numbers were measured from
-local files or reported by the source.
+`card.toml` is the quick reference (`domain`, optional `topic`, `benchmarks`,
+`[source]`, `[shape]`, `[protocol]`, `characteristics`, `related`, optionally
+`realtime_track`); the README adds the overview, protocol, and known pitfalls, and
+`reference.md` longer provenance or statistics. `stats_basis` says whether numbers
+were measured from local files or reported by the source.
+
+`[source].redistribution` says what TSFLab may do with the data files, with
+`license_url` as evidence:
+
+| Value | Meaning | Presets |
+| --- | --- | --- |
+| `allowed` | re-host with attribution only | 21 |
+| `conditional` | re-host only under the extra `conditions` in the card (ETT, `solar`, `covid19`, `wike2000`, `rt/grid_ercot`, `rt/air_airnow_us`) | 9 |
+| `link-only` | never re-hosted; fetch the file from the source, as the card's README says (`exchange`, `fred_md`, `nasdaq`, `nyse`, `metr_la`, `rt/stock_*`) | 8 |
+| `upstream` | fetched from the upstream GIFT-Eval package (`tsf data prepare --from gift`), never re-hosted | 55 |
 
 Use an existing CSV preset or create a loader-backed dataset:
 
@@ -365,21 +388,15 @@ loaders must declare compatible task modes.
 ### PeMS traffic (UltraTraffic)
 
 The UltraTraffic archive (hourly total flow per Caltrans PeMS station, four
-districts, 2003–2023) is converted once into a local parquet store:
+districts, 2003–2023) is the history of the `traffic_pems_*` real-time tracks; it
+has no static presets of its own. Convert it once into a local parquet store:
 
 ```bash
-uv run tsf data download ultratraffic_ba_st                  # published slice, or
 uv run tsf data prepare --from ultratraffic --archive TrafficCL.zip   # -> dataset/ultratraffic
 ```
 
-`ultratraffic_st` (spatiotemporal, with calendar covariates) and
-`ultratraffic_ts` (stations as channels) read the store; presets
-`ultratraffic_{ba,la,sac,sb}_{st,ts}` load 2023 for Districts 4, 7, 3, and 8.
-Parameters select `years`, the station policy across years (`last` or
-`intersection`), and the continual-learning splits `cl_common` / `cl_added`
-(stations retained from, or new relative to, the previous year; see
-`ultratraffic_sb_cl`). The same store bootstraps the `traffic_pems_*`
-real-time tracks.
+See [the real-time page](realtime.md#tracks) for the stations per district and how
+the tracks read the store; `rt/traffic_pems_*` are their frozen static presets.
 
 ## Experiments
 

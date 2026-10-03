@@ -10,10 +10,11 @@ name: weekly
 #   hub-check confirm every file pinned in configs/hub/datasets.json still resolves
 #             on the Hugging Face Hub with its recorded size (no download).
 #
-# Secrets: HF_TOKEN (dataset writes), PEMS_USER / PEMS_PASSWORD (PeMS account),
-# OPENAQ_API_KEY (air_openaq_*), EIA_API_KEY (grid_eia_us, solar_eia_us). Stock,
-# AirNow, Open-Meteo, and ERCOT tracks need no secret. A track whose credentials
-# are missing is skipped; the others still run.
+# Secrets: HF_TOKEN (dataset writes); PEMS_USER / PEMS_PASSWORD (optional PeMS
+# account for live traffic increments; without them the traffic_pems_* tracks keep
+# their UltraTraffic history only and the update step for them is skipped). Stock,
+# AirNow, Open-Meteo, and ERCOT tracks need no secret; the others still run when
+# one track fails.
 
 on:
   # Manual only until secrets and repository settings are configured; the
@@ -22,7 +23,7 @@ on:
     inputs:
       tracks:
         description: "Space-separated track ids"
-        default: "stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us"
+        default: "stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot"
 permissions:
   contents: read
 
@@ -45,8 +46,6 @@ jobs:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       PEMS_USER: ${{ secrets.PEMS_USER }}
       PEMS_PASSWORD: ${{ secrets.PEMS_PASSWORD }}
-      OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
-      EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -58,7 +57,7 @@ jobs:
         run: pip install --quiet "pydantic==2.12.5" pandas pyarrow numpy requests huggingface_hub akshare
       - name: Run the weekly cycle
         env:
-          TRACKS: ${{ inputs.tracks || 'stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_openaq_cn air_openaq_us air_openaq_eu air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot grid_eia_us solar_eia_us' }}
+          TRACKS: ${{ inputs.tracks || 'stock_hs300 stock_nasdaq100 stock_sp500 traffic_pems_ba traffic_pems_la traffic_pems_sac traffic_pems_sb air_airnow_us weather_openmeteo_temp solar_openmeteo_ghi grid_ercot' }}
         run: |
           for track in $TRACKS; do
             echo "::group::$track"

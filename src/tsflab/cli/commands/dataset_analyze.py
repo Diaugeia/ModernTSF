@@ -38,7 +38,7 @@ def _full_array(ds) -> np.ndarray:
 def _extract_splits(datasets: dict[str, object]) -> dict[str, np.ndarray]:
     """Chronological train/val/test arrays from three split-flagged datasets.
 
-    Window-indexed loaders (CauAir, UltraTraffic) share one full array; their
+    Window-indexed loaders (CauAir, real-time panels) share one full array; their
     split boundaries are the first window centre of val and test.
     """
     if hasattr(datasets["val"], "idx"):
@@ -99,17 +99,6 @@ def load_preset(name_or_path: str, freq: str | None) -> tuple[dict[str, np.ndarr
     freq_info = _freq_override(freq)
     if freq_info is None:
         stamps = _frequency_from_file(Path(file_path)) if file_path else None
-        if stamps is None and "region" in params:  # UltraTraffic store: panel index
-            from tsflab.catalog.registry.datasets import DATASET_REGISTRY
-            from tsflab.data.ultratraffic_store import load_panel
-
-            root, _ = DATASET_REGISTRY.get(config.dataset.name).resolve_location(
-                config.dataset.path, config.dataset.id
-            )
-            stamps = load_panel(
-                root, params["region"], list(params.get("years") or [2023]),
-                params.get("variant", "static"), params.get("stations", "last"),
-            ).index[:500]
         freq_info = prof.infer_frequency(stamps)
     meta["frequency"] = freq_info
     return splits, meta

@@ -7,6 +7,7 @@
 - License of the underlying data: `CDLA-Sharing-1.0` (explicit license found for the source).
 - Bytes are not bundled; download them with `tsf data prepare --from gift`.
 - CDLA-Sharing-1.0 asks that shared data stay under the same terms; check it before republishing derived files.
+- Redistribution: `upstream`. TSFLab never re-hosts GIFT-Eval files; `uv run tsf data prepare --from gift` fetches them from https://huggingface.co/datasets/Salesforce/GiftEval (Apache-2.0 packaging, research use). The license above still binds the data.
 
 ## Structure and statistics
 

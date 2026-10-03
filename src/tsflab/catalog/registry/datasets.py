@@ -118,8 +118,6 @@ DATASET_NAME_MAP = {
     # CauAir spatiotemporal / air-quality datasets (index-windowed .npz).
     "cauair_st": "tsflab.data.datasets.cauair",
     "cauair_ts": "tsflab.data.datasets.cauair",
-    "ultratraffic_st": "tsflab.data.datasets.ultratraffic",
-    "ultratraffic_ts": "tsflab.data.datasets.ultratraffic",
     # Real-time tracks frozen at a release as static datasets.
     "realtime_panel_st": "tsflab.data.datasets.realtime_panel",
     "realtime_panel_ts": "tsflab.data.datasets.realtime_panel",

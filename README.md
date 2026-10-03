@@ -6,9 +6,10 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
-[![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Models: 217](https://img.shields.io/badge/models-217-orange.svg)](docs/en/models.md)
-[![Real-time tracks: 16](https://img.shields.io/badge/real--time%20tracks-16-purple.svg)](docs/en/realtime.md)
+[![PyTorch 2.14](https://img.shields.io/badge/PyTorch-2.14-ee4c2c.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Models: 311](https://img.shields.io/badge/models-311-orange.svg)](docs/en/models.md)
+[![Datasets: 93](https://img.shields.io/badge/datasets-93-teal.svg)](docs/en/workflows.md#data)
+[![Real-time tracks: 11](https://img.shields.io/badge/real--time%20tracks-11-purple.svg)](docs/en/realtime.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Every forecasting method, one interface, one protocol, evaluated on the data
@@ -42,7 +43,7 @@ protocols, run records) that any coding agent operates through declarative skill
 | --- | --- |
 | 📚 **Paper reading** | Scans arXiv and Hugging Face Papers, deduplicates against the catalog, and records each paper's structure, equations, and pinned official code |
 | 🧩 **Code & interface** | 311 methods as peers in one flat catalog, composed from 63 shared components, one forecasting signature, and an executable admission contract recorded in every card; each card states its fidelity to the paper and pinned official code, a six-slot composition, the data characteristics it fits, and its data-dependent parameters |
-| 🗃️ **Data** | 108 dataset presets (84 conventional, including the GIFT-Eval family, and 24 spatiotemporal or covariate; 16 of them are frozen releases of the real-time tracks), each with a card and one TSFLab protocol; plus 16 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
+| 🗃️ **Data** | 93 dataset presets in seven domains (energy 25, transport 18, environment 16, finance 14, cloud-web 9, healthcare 7, sales 4; 79 conventional, including the GIFT-Eval family, and 14 spatiotemporal or covariate; 11 of them are frozen releases of the real-time tracks), each with a card, its benchmark suites, a verified redistribution class, and one TSFLab protocol; plus 11 rolling real-time tracks (stocks, traffic, air quality, weather, grid, solar) |
 | ⚙️ **Experiments** | Declarative TOML sweeps, pre-run validation, seeds, budgets, GPU leases, queues, and recovery; `tsf data analyze` profiles a dataset, `tsf catalog match` maps its characteristics to models and components, and `tsf model compose` dry-runs a recombination for AutoResearch |
 | 🏆 **Release & compare** | Run records → submissions → a leaderboard recomputed from evidence; weights as pinned `hf://` bundles |
 
@@ -111,12 +112,9 @@ no model, including ours, can have seen its evaluation data.
 | `stock_nasdaq100` | NASDAQ-100 constituents, daily log returns (Nasdaq API, Yahoo fallback) | time series | 5 trading days |
 | `stock_sp500` | S&P 500 constituents, daily log returns (Nasdaq API, Yahoo fallback) | time series | 5 trading days |
 | `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS Districts 4, 7, 3, 8: hourly flow at 2,472 / 1,926 / 801 / 1,105 stations | spatiotemporal | 24 h |
-| `air_openaq_cn` | OpenAQ hourly PM2.5, government monitors in China | spatiotemporal | 24 h |
-| `air_openaq_{us,eu}` | OpenAQ hourly PM2.5, US / European reference monitors | spatiotemporal | 24 h |
 | `air_airnow_us` | EPA AirNow hourly PM2.5, US monitors (no key) | spatiotemporal | 24 h |
 | `weather_openmeteo_temp`, `solar_openmeteo_ghi` | Open-Meteo hourly temperature at 82 US/EU cities, irradiance at 55 PV sites | spatiotemporal | 24 h |
 | `grid_ercot` | ERCOT hourly load in 8 weather zones | spatiotemporal | 24 h |
-| `grid_eia_us`, `solar_eia_us` | EIA-930 hourly demand / solar generation per US balancing authority | spatiotemporal | 24 h |
 
 ```bash
 uv run tsf realtime forecast --track traffic_pems_sb --model DLinear   # produce a forecast
@@ -176,7 +174,9 @@ Ordinary paper architectures are maintained locally under the project license.
 Released pretrained foundation models use optional official packages and unchanged
 checkpoints through the offline runtime boundary; see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Real-time data remain subject to
-their providers' terms (Caltrans PeMS, OpenAQ, exchange data via AKShare).
+their providers' terms (Caltrans PeMS, AirNow, Open-Meteo, ERCOT, and the stock
+vendors behind AKShare, Nasdaq, and Yahoo). Each dataset card records its license
+and redistribution class; `link-only` data are never re-hosted.
 
 ---
 

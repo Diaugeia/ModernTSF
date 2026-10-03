@@ -1,10 +1,10 @@
 """Bootstrap a traffic track from the local UltraTraffic parquet store.
 
 The store (``dataset/ultratraffic``, built by
-:mod:`tsflab.data.prepare.ultratraffic`) is the same one the static
-``ultratraffic_*`` datasets read, so a track's history and the static presets
-share one loader. The bootstrap keeps the station set of the most recent year,
-so live PeMS increments extend exactly the same channels.
+:mod:`tsflab.data.prepare.ultratraffic`) is the history source of the four
+``traffic_pems_*`` tracks; it has no static dataset presets of its own. The
+bootstrap keeps the station set of the most recent year, so live PeMS
+increments extend exactly the same channels.
 """
 
 from __future__ import annotations

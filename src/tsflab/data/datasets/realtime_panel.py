@@ -4,7 +4,7 @@ A track's append-only :class:`~tsflab.realtime.store.PanelStore` is read at a
 fixed release (``version``) or pinned Hub ``revision`` and exposed under the
 standard dataset contract, so every catalog model can be trained and scored on
 the same frozen snapshot that a real-time round used as history. Two names
-share this class, mirroring the UltraTraffic pair:
+share this class, mirroring the CauAir pair:
 
 * ``realtime_panel_ts`` - channels are the panel columns; items carry the
   six calendar marks of the base loader;

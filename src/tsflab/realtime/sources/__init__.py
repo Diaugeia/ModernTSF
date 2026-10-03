@@ -33,8 +33,6 @@ def fetch(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp, channels: li
         from .nasdaq100 import fetch as run
     elif kind == "pems":
         from .pems import fetch as run
-    elif kind == "openaq":
-        from .openaq import fetch as run
     elif kind == "sp500":
         from .sp500 import fetch as run
     elif kind == "openmeteo":
@@ -43,8 +41,6 @@ def fetch(track: TrackSpec, start: pd.Timestamp, end: pd.Timestamp, channels: li
         from .airnow import fetch as run
     elif kind == "ercot":
         from .ercot import fetch as run
-    elif kind == "eia930":
-        from .eia930 import fetch as run
     else:
         raise ValueError(f"track {track.id!r}: unknown source kind {kind!r}")
     return run(track, start, end, channels)

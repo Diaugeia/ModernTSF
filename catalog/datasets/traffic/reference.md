@@ -2,8 +2,8 @@
 
 ## Provenance and license
 
-- Source system: Caltrans Performance Measurement System (PeMS), http://pems.dot.ca.gov. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". That covers the raw PeMS data; the packaged copy below carries no license of its own, so redistribute it only after confirming the packager's terms.
-- Packaging: Lai et al. 2018, https://github.com/laiguokun/multivariate-time-series-data, which has no license file (GitHub API: none) and no data terms in its README; the preprocessed copy therefore carries no license of its own. Raw source and packaging are separate: the PeMS public-domain policy applies to the raw data, but redistribute the LSTNet copy only after weighing both, hence `conditional`.
+- Source system: Caltrans Performance Measurement System (PeMS), http://pems.dot.ca.gov. Caltrans PeMS Conditions of Use (https://pems.dot.ca.gov/?view=tou) say: "In general, information presented on this web site, unless otherwise indicated, is considered in the public domain", and that to use information "not owned or created by the State, you must seek permission directly from the owning (or holding) sources". The packagers add no terms of their own, so `redistribution` is `allowed` with credit to Caltrans PeMS.
+- Packaging: Lai et al. 2018, https://github.com/laiguokun/multivariate-time-series-data, which has no license file (GitHub API: none) and no data terms in its README; the preprocessed copy therefore carries no license of its own. The PeMS public-domain policy applies, so the LSTNet copy is `allowed` with credit to Caltrans PeMS.
 - Cite LSTNet (SIGIR 2018) and credit Caltrans PeMS.
 
 ## Structure and statistics
@@ -24,4 +24,4 @@ Measured on `dataset/traffic/traffic.csv` (read-only).
 
 - [`electricity`](../electricity/README.md): other hourly LTSF set with hundreds of channels
 - [`pems04`](../pems04/README.md): 5-minute PeMS flow graph with adjacency
-- [`ultratraffic_ba_ts`](../ultratraffic_ba_ts/README.md): hourly PeMS flow per station, 2023, stations as channels
+- [`rt/traffic_pems_ba`](../rt/traffic_pems_ba/README.md): hourly PeMS flow per station, District 4, 2019-2023

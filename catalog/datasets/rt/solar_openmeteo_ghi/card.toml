@@ -1,18 +1,23 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "rt/solar_openmeteo_ghi"
-domain = "Energy / solar"
+domain = "energy"
+topic = "solar"
+benchmarks = ["realtime"]
 tags = ["solar", "irradiance", "ghi", "open-meteo", "hourly", "real-time", "spatiotemporal", "covariate"]
-related = ["rt/solar_eia_us", "solar"]
+related = ["solar", "rt/weather_openmeteo_temp"]
 realtime_track = "solar_openmeteo_ghi"
+characteristics = ["strong-seasonality", "high-forecastability", "train-val-level-shift", "level-dependent-variance", "outliers", "zero-inflation", "high-cross-correlation", "low-dimensional-channels", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Open-Meteo Historical Forecast API, shortwave radiation (global horizontal irradiance)"
 url = "https://open-meteo.com/en/docs/historical-forecast-api"
 citation = "n/a (no dataset paper; TSFLab real-time track)"
 citation_url = "n/a"
-license = "CC-BY-4.0 (Open-Meteo; non-commercial free tier, attribution required)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (Open-Meteo data; the free API is non-commercial, used here for collection only)"
+license_url = "https://open-meteo.com/en/terms"
+redistribution = "allowed"
 
 [shape]
 frequency = "hourly (1h)"

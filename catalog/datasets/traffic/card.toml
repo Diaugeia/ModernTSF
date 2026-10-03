@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "traffic"
-domain = "Transport / road traffic"
+domain = "transport"
+topic = "road traffic"
+benchmarks = ["ltsf", "tfb"]
 tags = ["traffic", "pems", "road", "occupancy", "california", "bay-area", "ltsf", "benchmark", "multivariate", "hourly", "lstnet", "high-dimensional"]
-related = ["electricity", "pems04", "ultratraffic_ba_ts"]
+related = ["electricity", "pems04", "rt/traffic_pems_ba"]
+characteristics = ["strong-seasonality", "level-dependent-variance", "high-cross-correlation", "low-dimensional-channels", "many-channels"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "California Department of Transportation (Caltrans PeMS); packaged by Lai et al. (LSTNet)"
 url = "http://pems.dot.ca.gov"
 citation = "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018)"
 citation_url = "https://arxiv.org/abs/1703.07015"
-license = "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
-redistribution = "conditional"
+license = "Public domain (Caltrans PeMS conditions of use)"
+license_url = "https://pems.dot.ca.gov/?view=tou"
+redistribution = "allowed"
 
 [shape]
 frequency = "hourly (1h)"

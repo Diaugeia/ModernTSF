@@ -1,18 +1,23 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "rt/weather_openmeteo_temp"
-domain = "Weather / temperature"
+domain = "environment"
+topic = "air temperature"
+benchmarks = ["realtime"]
 tags = ["weather", "temperature", "open-meteo", "hourly", "cities", "real-time", "spatiotemporal", "covariate"]
 related = ["rt/solar_openmeteo_ghi", "weather"]
 realtime_track = "weather_openmeteo_temp"
+characteristics = ["strong-seasonality", "multi-periodic", "non-stationary", "train-val-level-shift", "train-val-scale-shift", "within-train-drift", "regime-changes", "high-cross-correlation", "low-dimensional-channels", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Open-Meteo Historical Forecast API, 2 m temperature"
 url = "https://open-meteo.com/en/docs/historical-forecast-api"
 citation = "n/a (no dataset paper; TSFLab real-time track)"
 citation_url = "n/a"
-license = "CC-BY-4.0 (Open-Meteo; non-commercial free tier, attribution required)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (Open-Meteo data; the free API is non-commercial, used here for collection only)"
+license_url = "https://open-meteo.com/en/terms"
+redistribution = "allowed"
 
 [shape]
 frequency = "hourly (1h)"

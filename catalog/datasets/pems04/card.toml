@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "pems04"
-domain = "Transport / road traffic"
+domain = "transport"
+topic = "road traffic"
+benchmarks = ["tfb", "st-graph"]
 tags = ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "pems04", "flow", "district-4", "stsgcn", "astgcn"]
 related = ["pems03", "pems07", "metr_la"]
+characteristics = ["high-forecastability", "level-dependent-variance", "high-cross-correlation", "low-dimensional-channels", "weak-cross-correlation", "many-channels", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Caltrans PeMS District 4; processed by Song et al. (STSGCN) and Guo et al. (ASTGCN)"
 url = "https://github.com/Davidham3/STSGCN"
 citation = "Spatial-Temporal Synchronous Graph Convolutional Networks (Song et al., AAAI 2020)"
 citation_url = "https://ojs.aaai.org/index.php/AAAI/article/view/5438"
-license = "Public domain unless otherwise indicated (Caltrans PeMS Conditions of Use; raw source only, the packaged copy states no license)"
-redistribution = "conditional"
+license = "Public domain (Caltrans PeMS conditions of use)"
+license_url = "https://pems.dot.ca.gov/?view=tou"
+redistribution = "allowed"
 
 [shape]
 frequency = "5-minute (5min)"

@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "czelan"
-domain = "Nature / ecophysiology"
+domain = "environment"
+topic = "ecophysiology"
+benchmarks = ["tfb"]
 tags = ["sap-flow", "transpiration", "sapfluxnet", "ecology", "plant", "meteorology", "half-hourly", "tfb", "multivariate", "czelan", "diurnal"]
 related = ["zafnoo", "weather", "aqshunyi"]
+characteristics = ["strong-seasonality", "high-forecastability", "regime-changes", "level-dependent-variance", "zero-inflation"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "SAPFLUXNET database (Poyatos et al.), site CZE_LAN; TFB packaging by Qiu et al."
 url = "https://doi.org/10.5281/zenodo.3971689"
 citation = "Global transpiration data from sap flow measurements: the SAPFLUXNET database (Poyatos et al., Earth System Science Data, 2021)"
 citation_url = "https://doi.org/10.5194/essd-13-2607-2021"
-license = "CC-BY-4.0 (SAPFLUXNET Zenodo record; the TFB repository's MIT license covers code, not data)"
-redistribution = "conditional"
+license = "CC-BY-4.0 (SAPFLUXNET Zenodo record)"
+license_url = "https://doi.org/10.5281/zenodo.3971689"
+redistribution = "allowed"
 
 [shape]
 frequency = "30 minutes (30min)"

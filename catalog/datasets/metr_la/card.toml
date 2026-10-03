@@ -1,17 +1,22 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "metr_la"
-domain = "Transport / road traffic"
+domain = "transport"
+topic = "road traffic"
+benchmarks = ["tfb", "st-graph"]
 tags = ["traffic", "graph", "spatiotemporal", "5min", "california", "sensors", "adjacency", "benchmark", "nodes", "metr_la", "speed", "los-angeles", "dcrnn", "metr-la"]
 related = ["pems_bay", "pems04", "traffic"]
+characteristics = ["weak-seasonality", "multi-periodic", "regime-changes", "outliers", "high-cross-correlation", "low-dimensional-channels", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Los Angeles County loop detectors (via Jagadish et al., 2014); packaged by Li, Yu, Shahabi and Liu (DCRNN)"
 url = "https://github.com/liyaguang/DCRNN"
 citation = "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting (Li et al., ICLR 2018)"
 citation_url = "https://arxiv.org/abs/1707.01926"
-license = "unknown"
-redistribution = "unknown"
+license = "No data license (the DCRNN repository's MIT license covers code only)"
+license_url = "https://github.com/liyaguang/DCRNN"
+redistribution = "link-only"
 
 [shape]
 frequency = "5-minute (5min)"

@@ -20,7 +20,7 @@ source. Stop before replacing an existing output directory without authorization
    # graph traffic bundles and GIFT-Eval: read the options first
    uv run tsf data prepare --from traffic --help
    uv run tsf data prepare --from gift --help
-   # UltraTraffic archive -> dataset/ultratraffic parquet store
+   # UltraTraffic archive -> dataset/ultratraffic (history of the traffic_pems_* tracks)
    uv run tsf data prepare --from ultratraffic --archive <TrafficCL.zip>
    ```
 
@@ -30,5 +30,5 @@ source. Stop before replacing an existing output directory without authorization
 3. Verify every split, shape, window, and the train-only scaling policy.
 4. Publishing local files (`uv run tsf data publish <preset>`) is a maintainer
    action that needs explicit authorization and redistributable source terms.
-   Read the card's `license` and `redistribution`; `unknown` or `restricted`
-   means do not publish without that authorization.
+   Read the card's `license` and `redistribution`: publish only `allowed`, or
+   `conditional` with its `conditions` met; never publish `link-only` or `upstream`.

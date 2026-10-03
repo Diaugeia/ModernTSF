@@ -1,18 +1,24 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "rt/air_airnow_us"
-domain = "Environment / air quality"
+domain = "environment"
+topic = "air quality"
+benchmarks = ["realtime"]
 tags = ["air-quality", "pm25", "airnow", "epa", "united-states", "hourly", "real-time", "stations", "spatiotemporal", "covariate"]
-related = ["rt/air_openaq_us", "rt/air_openaq_cn", "rt/air_openaq_eu"]
+related = ["aqshunyi", "aqwan", "rt/weather_openmeteo_temp"]
 realtime_track = "air_airnow_us"
+characteristics = ["non-stationary", "train-val-scale-shift", "within-train-drift", "level-dependent-variance", "weak-cross-correlation", "short-train", "spatial-graph"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "EPA AirNow HourlyData file products, PM2.5 (preliminary, unvalidated)"
 url = "https://www.airnow.gov"
 citation = "n/a (no dataset paper; TSFLab real-time track)"
 citation_url = "n/a"
-license = "US government public data (preliminary; not for regulatory use)"
+license = "AirNow data use guidelines (US EPA AirNow)"
+license_url = "https://docs.airnowapi.org/docs/DataUseGuidelines.pdf"
 redistribution = "conditional"
+conditions = "Attribute AirNow and state that the data are preliminary and unvalidated (not for regulatory use)."
 
 [shape]
 frequency = "hourly (1h)"

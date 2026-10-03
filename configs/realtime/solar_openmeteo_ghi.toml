@@ -1,6 +1,5 @@
 # Hourly global horizontal irradiance at PV-relevant US and European sites.
-# Irradiance is the weather driver of PV output and is available without a key;
-# for measured PV generation see solar_eia_us.
+# Irradiance is the weather driver of PV output and is available without a key.
 [track]
 id = "solar_openmeteo_ghi"
 tz = "UTC"

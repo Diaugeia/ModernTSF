@@ -9,36 +9,31 @@ forecasts are made.
 
 ## Tracks
 
-There are 16 tracks (`tsf realtime list`), each declared in `configs/realtime/<id>.toml`. Hourly tracks use a
+There are 11 tracks (`tsf realtime list`), each declared in `configs/realtime/<id>.toml`. Hourly tracks use a
 168-step input and a 24-step horizon (a week of context, one forecast day, the
-same as the PeMS and OpenAQ tracks); daily stock tracks use 20 and 5 trading
+same as the PeMS tracks); daily stock tracks use 20 and 5 trading
 days. All hourly stamps are naive in the track's `tz` (UTC unless noted).
 
 | Track | Source | Auth | License / terms | Bootstrap history | Frequency · horizon |
 | --- | --- | --- | --- | --- | --- |
-| `stock_hs300` | AKShare, forward-adjusted closes → daily log returns | none | vendor terms, research use | AKShare, from 2019-01-02 | trading days · 5 |
-| `stock_nasdaq100` | Nasdaq API, then Yahoo chart API, Sina last resort → daily log returns | none | vendor terms, research use | Nasdaq API, from 2019-01-02 | trading days · 5 |
-| `stock_sp500` | constituents from `datasets/s-and-p-500-companies` (Wikipedia fallback); closes as above | none | list ODC-PDDL; prices vendor terms | Nasdaq API, from 2019-01-02 | trading days · 5 |
-| `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS clearinghouse `station_5min` (Districts 4, 7, 3, 8), summed to hourly flow | free PeMS account | Caltrans PeMS terms | UltraTraffic store (2019–2023) | hourly · 24 |
-| `air_openaq_cn` | OpenAQ v3 hourly averages, PM2.5, China | free OpenAQ key | OpenAQ CC BY 4.0 (per-provider licenses) | API backfill (365 days) | hourly · 24 |
-| `air_openaq_us` | OpenAQ v3 PM2.5, US reference monitors only | free OpenAQ key | as above | API backfill (365 days) | hourly · 24 |
-| `air_openaq_eu` | OpenAQ v3 PM2.5, reference monitors in DE, FR, ES, IT, PL, GB, NL, AT, CZ, SE | free OpenAQ key | as above | API backfill (365 days) | hourly · 24 |
-| `air_airnow_us` | EPA AirNow `HourlyData` file products, US PM2.5 (preliminary) | none | US government, public (preliminary data, not for regulatory use) | AirNow archive files, 56 days | hourly · 24 |
-| `weather_openmeteo_temp` | Open-Meteo Historical Forecast API, 2 m temperature at 82 US and EU cities | none | CC BY 4.0, non-commercial free tier, attribution | same API, 365 days | hourly · 24 |
+| `stock_hs300` | AKShare, forward-adjusted closes → daily log returns | none | vendor terms forbid redistribution (link-only) | AKShare, from 2019-01-02 | trading days · 5 |
+| `stock_nasdaq100` | Nasdaq API, then Yahoo chart API, Sina last resort → daily log returns | none | vendor terms forbid redistribution (link-only) | Nasdaq API, from 2019-01-02 | trading days · 5 |
+| `stock_sp500` | constituents from `datasets/s-and-p-500-companies` (Wikipedia fallback); closes as above | none | list ODC-PDDL; prices link-only | Nasdaq API, from 2019-01-02 | trading days · 5 |
+| `traffic_pems_{ba,la,sac,sb}` | Caltrans PeMS clearinghouse `station_5min` (Districts 4, 7, 3, 8), summed to hourly flow | optional free PeMS account | public domain (Caltrans PeMS conditions of use) | UltraTraffic store (2019–2023) | hourly · 24 |
+| `air_airnow_us` | EPA AirNow `HourlyData` file products, US PM2.5 (preliminary) | none | AirNow data use guidelines: attribution, preliminary and unvalidated notice | AirNow archive files, 56 days | hourly · 24 |
+| `weather_openmeteo_temp` | Open-Meteo Historical Forecast API, 2 m temperature at 82 US and EU cities | none | CC BY 4.0 data; the free API is non-commercial (collection only) | same API, 365 days | hourly · 24 |
 | `solar_openmeteo_ghi` | Open-Meteo, global horizontal irradiance (`shortwave_radiation`) at 55 PV-relevant sites | none | as above | same API, 365 days | hourly · 24 |
-| `grid_ercot` | ERCOT hourly load, 8 weather zones: `Native_Load` archives + MIS report NP6-345-CD | none | ERCOT public data | `Native_Load` archives, from 2019 | hourly · 24 (America/Chicago) |
-| `grid_eia_us` | EIA-930 hourly demand per US balancing authority | free EIA key | US government, public domain | API backfill (365 days) | hourly · 24 |
-| `solar_eia_us` | EIA-930 hourly utility-scale solar generation per balancing authority | free EIA key | US government, public domain | API backfill (365 days) | hourly · 24 |
+| `grid_ercot` | ERCOT hourly load, 8 weather zones: `Native_Load` archives + MIS report NP6-345-CD | none | ERCOT terms: unmodified, credit ERCOT | `Native_Load` archives, from 2019 | hourly · 24 (America/Chicago) |
 
 Credentials are read from the environment and never written to disk:
 
 | Variable | Used by | Where to get it |
 | --- | --- | --- |
-| `PEMS_USER`, `PEMS_PASSWORD` | `traffic_pems_*` | free account at https://pems.dot.ca.gov |
-| `OPENAQ_API_KEY` | `air_openaq_*` | free key at https://explore.openaq.org (account settings) |
-| `EIA_API_KEY` | `grid_eia_us`, `solar_eia_us` | free key, instant, at https://www.eia.gov/opendata/ |
+| `PEMS_USER`, `PEMS_PASSWORD` | `traffic_pems_*` (optional) | free account at https://pems.dot.ca.gov |
 
-The stock, AirNow, Open-Meteo, and ERCOT tracks need no key. Notes per source:
+The PeMS credentials are optional: they add the live weekly increments. Without
+them, the traffic tracks use their UltraTraffic history only. The stock, AirNow,
+Open-Meteo, and ERCOT tracks need no key. Notes per source:
 
 - **Stocks.** Nasdaq and Yahoo both return split-adjusted, not dividend-adjusted,
   closes, so either serves a day identically; the Sina fallback is
@@ -67,11 +62,22 @@ The stock, AirNow, Open-Meteo, and ERCOT tracks need no key. Notes per source:
   (`api.ercot.com`, registration at https://apiexplorer.ercot.com plus a
   subscription key) offers deeper history and the solar and wind reports, whose
   public files keep only about a week; it is not used by default.
-- **EIA-930.** Operator-reported values (a few outliers and gaps are normal);
-  regional aggregates such as `US48` or `TEX` are excluded so channels do not
-  overlap. Demand lags about an hour, solar generation about half a day.
-- **OpenAQ.** `monitor_only` keeps government reference monitors and drops
-  low-cost sensor networks; sensors are spread evenly over the listed countries.
+- **PeMS (UltraTraffic history).** The four traffic tracks bootstrap from a
+  local UltraTraffic parquet store, not from the live API. The `UltraTraffic_CL`
+  archive (inside `TrafficCL.zip`) holds hourly total flow per Caltrans PeMS
+  station for Districts 4 (`PEMS_BA`), 7 (`PEMS_LA`), 3 (`PEMS_SAC`), and 8
+  (`PEMS_SB`), one file per year from 2003 to 2023. Its publisher is not
+  identified; the raw PeMS data are public domain under the PeMS conditions of
+  use. Build the store once with
+  `uv run tsf data prepare --from ultratraffic --archive TrafficCL.zip`
+  (written to `dataset/ultratraffic`, override with `ULTRATRAFFIC_ROOT`). The
+  tracks read the `static` panels from 2019 and keep the 2023 station set:
+  2,472 stations (District 4), 1,926 (7), 801 (3), and 1,105 (8). Stations per
+  year range from 1,177 to 2,472 (District 4), 1,295 to 1,927 (7), 84 to 801 (3),
+  and 108 to 1,252 (8). The archive carries no station coordinates, so the
+  tracks have no adjacency. The weekly increments come from the clearinghouse
+  `station_5min` files summed to hourly flow, which match the archive's
+  `station_hour` flow values.
 
 A new track is bootstrapped once by a maintainer (`tsf realtime update --bootstrap --track T
 --push`); the weekly workflow then pulls the store from the Hub and appends.

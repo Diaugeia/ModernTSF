@@ -36,17 +36,29 @@ def resolve_url(url: str) -> str:
     return parse(url).resolve_url(endpoint)
 
 
+def hf_token() -> str | None:
+    """``HF_TOKEN``, else the token saved by ``hf auth login`` (``HF_HOME``)."""
+    if os.environ.get("HF_TOKEN"):
+        return os.environ["HF_TOKEN"]
+    home = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface"))
+    try:
+        return (home / "token").read_text(encoding="utf-8").strip() or None
+    except OSError:
+        return None
+
+
 def download(url: str, destination: Path, sha256: str | None = None) -> Path:
     """Atomically download ``url`` to ``destination``, verifying ``sha256`` if given.
 
-    ``HF_TOKEN`` is sent only to the Hugging Face endpoint, so private
-    repositories work without exposing the token to other hosts.
+    The Hugging Face token (``HF_TOKEN``, else the ``hf auth login`` token file)
+    is sent only to the Hugging Face endpoint, so private repositories work
+    without exposing the token to other hosts.
     """
     if sha256 and destination.is_file() and sha256_file(destination) == sha256:
         return destination
     resolved = resolve_url(url)
     request = Request(resolved)
-    token = os.environ.get("HF_TOKEN")
+    token = hf_token()
     endpoint = os.environ.get("HF_ENDPOINT", DEFAULT_ENDPOINT).rstrip("/")
     if token and resolved.startswith(endpoint + "/"):
         request.add_header("Authorization", f"Bearer {token}")

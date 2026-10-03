@@ -1,17 +1,23 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "solar"
-domain = "Energy / solar power"
+domain = "energy"
+topic = "solar power"
+benchmarks = ["tfb"]
 tags = ["solar", "photovoltaic", "pv", "alabama", "nrel", "energy", "ltsf", "benchmark", "multivariate", "10min", "lstnet", "zero-inflated"]
 related = ["electricity", "gift_eval/solar_10T"]
+characteristics = ["strong-seasonality", "high-forecastability", "level-dependent-variance", "zero-inflation", "high-cross-correlation", "low-dimensional-channels"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "NREL (now NLR) Solar Power Data for Integration Studies; packaged by Lai et al. (LSTNet)"
 url = "https://www.nlr.gov/grid/solar-power-data"
 citation = "Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks (Lai et al., SIGIR 2018)"
 citation_url = "https://arxiv.org/abs/1703.07015"
-license = "unknown"
-redistribution = "unknown"
+license = "NREL Data Use Disclaimer"
+license_url = "https://www.nlr.gov/disclaimer.html"
+redistribution = "conditional"
+conditions = "Credit DOE/NREL as the source, include the NREL data disclaimer, and imply no DOE/NREL endorsement."
 
 [shape]
 frequency = "10-minute (10min)"

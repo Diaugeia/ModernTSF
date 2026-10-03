@@ -2,7 +2,7 @@
 
 ## Provenance and license
 
-- Source: the Open-Meteo Historical Forecast API (https://open-meteo.com), which stitches the analysis hours of operational weather models. `docs/en/realtime.md` records CC BY 4.0, a non-commercial free tier, and attribution.
+- Source: the Open-Meteo Historical Forecast API (https://open-meteo.com), which stitches the analysis hours of operational weather models. The data are CC BY 4.0 (https://open-meteo.com/en/terms), so `redistribution` is `allowed` with attribution; the free API itself is non-commercial and serves collection only.
 - Releases are mirrored to the Hugging Face dataset `Diaugeia/TSFLab-RealTime` (`solar_openmeteo_ghi/`).
 
 ## Structure and statistics
@@ -16,5 +16,5 @@ No local copy of `dataset/realtime/solar_openmeteo_ghi` exists in a development 
 
 ## Related datasets
 
-- [`rt/solar_eia_us`](../solar_eia_us/README.md): US PV generation as a real-time preset
 - [`solar`](../../solar/README.md): static PV power set
+- [`rt/weather_openmeteo_temp`](../weather_openmeteo_temp/README.md): the same Open-Meteo source, 2 m temperature

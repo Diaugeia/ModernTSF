@@ -1,16 +1,21 @@
 schema = "tsflab.card/1"
 kind = "dataset"
 name = "weather"
-domain = "Weather / meteorology"
+domain = "environment"
+topic = "meteorology"
+benchmarks = ["ltsf", "tfb"]
 tags = ["weather", "meteorology", "jena", "climate", "ltsf", "benchmark", "multivariate", "10min", "max-planck", "autoformer", "temperature", "pressure"]
 related = ["ettm1", "electricity", "gift_eval/jena_weather_10T", "gift_eval/jena_weather_H", "gift_eval/jena_weather_D"]
+characteristics = ["regime-changes", "level-dependent-variance"]
+characteristics_basis = "measured by tsf data analyze (tsflab.dataset-profile/1, decision-safe train/val metrics, thresholds in profile_rules.toml) on 2026-10-03"
 
 [source]
 name = "Max Planck Institute for Biogeochemistry, Jena (Beutenberg weather station)"
 url = "https://www.bgc-jena.mpg.de/wetter/"
 citation = "Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting (Wu et al., NeurIPS 2021)"
 citation_url = "https://arxiv.org/abs/2106.13008"
-license = "CC-BY-4.0"
+license = "CC-BY-4.0 (Max Planck Institute for Biogeochemistry, Jena weather station)"
+license_url = "https://www.bgc-jena.mpg.de/wetter/weather_data.html"
 redistribution = "allowed"
 
 [shape]
